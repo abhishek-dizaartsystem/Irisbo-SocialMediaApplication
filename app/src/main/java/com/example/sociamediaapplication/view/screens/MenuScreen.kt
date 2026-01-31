@@ -1,0 +1,275 @@
+package com.example.sociamediaapplication.view.screens
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.Black
+import com.example.sociamediaapplication.ui.theme.GreyBtn
+import com.example.sociamediaapplication.ui.theme.GreyTxt
+import com.example.sociamediaapplication.ui.theme.LGrey
+import com.example.sociamediaapplication.ui.theme.Transparent
+import com.example.sociamediaapplication.view.components.CustomCard
+
+@Composable
+fun MenuScreen(){
+    Column(
+        modifier = Modifier.padding(12.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp)
+        ) {
+            IconButton(
+                onClick = { },
+                modifier = Modifier.size(120.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.rectangle_5),
+                    contentDescription = "Profile Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(120.dp)
+                        .clip(CircleShape)
+                )
+
+            }
+            Column(modifier = Modifier.padding(start = 12.dp)) {
+                Text(
+                    text = "John Doe",
+                    fontSize = 20.sp
+                )
+                Button(
+                    onClick = {},
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Transparent
+                    ),
+                    contentPadding = PaddingValues(0.dp),
+                    shape = RoundedCornerShape(0.dp),
+                    modifier = Modifier.height(24.dp)
+                ) {
+                    Text(
+                        text = "See your Profile",
+                        fontSize = 15.sp,
+                        color = GreyTxt
+                    )
+                }
+
+            }
+        }
+
+        Card(
+            onClick = {},
+            elevation = CardDefaults.cardElevation(16.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.BottomStart,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.rectangle_24),
+                        contentDescription = "",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxSize(0.1f)
+                        .background(LGrey)
+                        .padding(top = 16.dp, start = 8.dp)
+                ) {
+                    Text(
+                        text = "Apprentices",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Listed over a week"
+                    )
+                }
+
+                Column(
+                    modifier = Modifier.padding(50.dp)
+                ) {
+                    IconButton(
+                        onClick = { },
+                        modifier = Modifier.size(40.dp),
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = GreyBtn
+                        )
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.market_stall_svgrepo_com),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(30.dp)
+                        )
+                    }
+                }
+
+
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Column() {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                CustomCard(
+                    onClicked = {},
+                    painter = painterResource(R.drawable.market_stall_svgrepo_com),
+                    tint = Black,
+                    text = "MarketPlace",
+                    modifier = Modifier.weight(1f)
+                )
+                CustomCard(
+                    onClicked = {},
+                    painter = painterResource(R.drawable.team_3),
+                    tint = Black,
+                    text = "Groups",
+                    modifier = Modifier.weight(1f)
+                )
+                CustomCard(
+                    onClicked = {},
+                    painter = painterResource(R.drawable.video_frame_play_horizontal_svgrepo_com),
+                    tint = Black,
+                    text = "Videos",
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 12.dp) ,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                CustomCard(
+                    onClicked = {},
+                    painter = painterResource(R.drawable.clock_167),
+                    tint = Black,
+                    text = "Memories",
+                    modifier = Modifier.weight(1f)
+                )
+                CustomCard(
+                    onClicked = {},
+                    painter = painterResource(R.drawable.text_pages),
+                    tint = Black,
+                    text = "Pages",
+                    modifier = Modifier.weight(1f)
+                )
+                CustomCard(
+                    onClicked = {},
+                    painter = painterResource(R.drawable.add_friend_24),
+                    tint = Black,
+                    text = "Friends",
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                CustomCard(
+                    onClicked = {},
+                    painter = painterResource(R.drawable.text_pages),
+                    tint = Black,
+                    text = "Events",
+                    modifier = Modifier.weight(1f)
+                )
+                CustomCard(
+                    onClicked = {},
+                    painter = painterResource(R.drawable.briefcase_91),
+                    tint = Black,
+                    text = "Jobs",
+                    modifier = Modifier.weight(1f)
+                )
+                CustomCard(
+                    onClicked = {},
+                    painter = painterResource(R.drawable.game_165),
+                    tint = Black,
+                    text = "Gaming",
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Row(
+                modifier = Modifier.padding(vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                CustomCard(
+                    onClicked = {},
+                    painter = painterResource(R.drawable.up_trend_round_svgrepo_com),
+                    tint = Black,
+                    text = "Video Analytics",
+                    modifier = Modifier.weight(1f)
+                )
+
+
+                CustomCard(
+                    onClicked = {},
+                    painter = painterResource(R.drawable.advanced_options_svgrepo_com),
+                    tint = Black,
+                    text = "Advanced Settings",
+                    modifier = Modifier.weight(1f)
+                )
+
+
+                CustomCard(
+                    onClicked = {},
+                    painter = painterResource(R.drawable.rupee_sign_svgrepo_com),
+                    tint = Black,
+                    text = "Video Monetization",
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
+
+
+
+    }
+
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun MenuScreenPreview(){
+    MenuScreen()
+}

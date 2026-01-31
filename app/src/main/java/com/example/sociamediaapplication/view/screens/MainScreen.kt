@@ -1,0 +1,248 @@
+package com.example.sociamediaapplication.view.screens
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.Black
+import com.example.sociamediaapplication.ui.theme.Blue
+import com.example.sociamediaapplication.view.components.HexagonShape
+import com.example.sociamediaapplication.view.navigation.MainRoutes
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainScreen(){
+
+    val navController = rememberNavController()
+
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Row (
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column() {
+                            Text(
+                                text = "@Irisbo",
+                                color = Blue,
+                                fontSize = 28.sp
+                            )
+                            Row(
+                                modifier = Modifier.width(150.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                IconButton(
+                                    onClick = {},
+                                    modifier = Modifier.size(40.dp)
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.add_square_svgrepo_com),
+                                        contentDescription = "",
+                                        modifier = Modifier.height(36.dp)
+                                    )
+                                }
+                                IconButton(onClick = {}) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.search_svgrepo_com),
+                                        contentDescription = "",
+                                        modifier = Modifier.height(32.dp)
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {},
+                                    modifier = Modifier.size(48.dp)
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.notification_13_svgrepo_com),
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                    )
+                                }
+                            }
+                        }
+                        IconButton(
+                            onClick = { /* Navigate to profile */ },
+                            modifier = Modifier
+                                .size(80.dp) // Set the size of the clickable area
+                                .border(
+                                    width = 1.dp,
+                                    color = Black,
+                                    shape = HexagonShape
+                                )
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.rectangle_5),
+                                contentDescription = "Profile Image",
+                                // This crops the image into a square before clipping to a circle
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(80.dp) // Ensure the image fills the button
+                                    .clip(HexagonShape) // Makes it perfectly circular
+                            )
+                        }
+
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFFE9F1FA)),
+                modifier = Modifier.height(110.dp)
+            )
+        },
+        bottomBar = {
+            BottomAppBar(
+                containerColor = Color(0xFFF3F3F3),
+                contentPadding = PaddingValues(horizontal = 16.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    IconButton(
+                        onClick = { /* Navigate to profile */ },
+                        modifier = Modifier.size(50.dp) // Set the size of the clickable area
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.rectangle_5),
+                            contentDescription = "Profile Image",
+                            // This crops the image into a square before clipping to a circle
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(50.dp) // Ensure the image fills the button
+                                .clip(CircleShape) // Makes it perfectly circular
+                        )
+                    }
+                    IconButton(
+                        onClick = {},
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(0.dp))
+                            .size(70.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.video_frame_play_horizontal_svgrepo_com),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .size(40.dp)
+                        )
+                    }
+                    IconButton(
+                        onClick = {},
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(0.dp))
+                            .size(50.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.home_svgrepo_com),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .size(40.dp)
+                        )
+                    }
+                    IconButton(
+                        onClick = {},
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(0.dp))
+                            .size(60.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.video_plus_svgrepo_com),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .size(70.dp)
+                        )
+                    }
+                    IconButton(
+                        onClick = {},
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(0.dp))
+                            .size(50.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.chat_dots_svgrepo_com),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .size(40.dp)
+                        )
+                    }
+                }
+            }
+        }
+    ) { innerPadding ->
+        NavHost(
+        navController = navController,
+        startDestination = MainRoutes.Chat.route,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+        ) {
+
+            composable(MainRoutes.Home.route) {
+                HomeScreen()
+            }
+
+            composable(MainRoutes.Search.route) {
+                SearchScreen()
+            }
+
+            composable(MainRoutes.Reels.route) {
+                ReelsScreen()
+            }
+
+            composable(MainRoutes.Chat.route) {
+                ChatsScreen()
+            }
+
+            composable(MainRoutes.Profile.route) {
+                ProfileScreen()
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun MainScreenPreview(){
+    MainScreen()
+}
