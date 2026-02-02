@@ -60,3 +60,5 @@ val Gold = Color(0xFFEAB308)
 val GreyTrack = Color(0xFFE1E7EF)
 
 val Purple = Color(0xFFA855F7)
+
+val Yellow = Color(0xFFFFEB3B)

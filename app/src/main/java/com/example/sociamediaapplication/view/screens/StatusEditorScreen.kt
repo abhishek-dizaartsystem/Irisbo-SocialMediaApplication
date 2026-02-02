@@ -1,158 +1,68 @@
 package com.example.sociamediaapplication.view.screens
+
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.draw.rotate
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.model.editor.ImageLayer
 import com.example.sociamediaapplication.model.editor.TextLayer
-import com.example.sociamediaapplication.ui.theme.Black
-import com.example.sociamediaapplication.view.components.editor.EditorLayerRenderer
+import com.example.sociamediaapplication.ui.theme.Blue
+import com.example.sociamediaapplication.ui.theme.TransparentBlack
 import com.example.sociamediaapplication.viewmodel.StatusEditorViewModel
+import com.example.sociamediaapplication.view.components.editor.EditorLayerRenderer
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import com.example.sociamediaapplication.R
-import com.example.sociamediaapplication.ui.theme.Blue
-import com.example.sociamediaapplication.ui.theme.DTransparentBlack
-import com.example.sociamediaapplication.ui.theme.TransparentBlack
 
 @Composable
-fun StatusEditorScreen( viewModel: StatusEditorViewModel = viewModel() ) {
+fun StatusEditorScreen(
+    viewModel: StatusEditorViewModel = viewModel()
+) {
 
     val layers by viewModel.layers.collectAsState()
     val selectedId by viewModel.selectedLayerId.collectAsState()
 
-    Scaffold(
-        topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp, horizontal = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                IconButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .size(30.dp)
-                        .background(
-                            color = TransparentBlack,
-                            shape = CircleShape
-                        ),
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.text_size_svgrepo_com),
-                        contentDescription = "",
-                        modifier = Modifier.size(24.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Blue)
+    ) {
 
-                    )
-                }
-                IconButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .size(30.dp)
-                        .background(
-                            color = TransparentBlack,
-                            shape = CircleShape
-                        )
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.music_svgrepo_com),
-                        contentDescription = "",
-                        modifier = Modifier.size(24.dp)
-                        )
-                }
-                IconButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .size(30.dp)
-                        .background(
-                            color = TransparentBlack,
-                            shape = CircleShape
-                        )
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.edit_1_svgrepo_com),
-                        contentDescription = "",
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-                IconButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .size(30.dp)
-                        .background(
-                            color = TransparentBlack,
-                            shape = CircleShape
-                        )
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.sticker_add_svgrepo_com),
-                        contentDescription = "",
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-                IconButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .size(30.dp)
-                        .background(
-                            color = TransparentBlack,
-                            shape = CircleShape
-                        )
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.photo_svgrepo_com),
-                        contentDescription = "",
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-            }
-        }
-    ) {innerPadding->
-        Column(
+        // 🔥 Canvas Layer
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .background(
-                    color = Blue,
-                    shape = RoundedCornerShape(20.dp)
-                )
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .onSizeChanged {
-                        Log.d("EDITOR_DEBUG", "Canvas size: $it")
-                        viewModel.setCanvasSize(it)
+                .onSizeChanged {
+                    Log.d("EDITOR_DEBUG", "Canvas size: $it")
+                    viewModel.setCanvasSize(it)
+                }
+                .pointerInput(Unit) {
+                    detectTapGestures {
+                        viewModel.selectLayer(null)
                     }
-            ) {
-                layers.sortedBy {
-                    it.zIndex
-                }.forEach { layer ->
+                }
+        ) {
+
+            layers
+                .sortedBy { it.zIndex }
+                .forEach { layer ->
+
                     EditorLayerRenderer(
                         layer = layer,
                         isSelected = layer.id == selectedId,
@@ -170,23 +80,92 @@ fun StatusEditorScreen( viewModel: StatusEditorViewModel = viewModel() ) {
                         },
                         onSizeMeasured = { size ->
                             viewModel.updateLayerSize(layer.id, size)
+                        },
+                        onTextChange = { newText ->
+                            viewModel.updateText(layer.id, newText)
+                        },
+                        onTextColorChange = { color ->
+                            viewModel.updateTextColor(layer.id, color)
                         }
                     )
                 }
-            }
         }
+
+        // 🔥 Top Toolbar Overlay
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
+                .padding(top = 40.dp, start = 24.dp, end = 24.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+
+            ToolIcon(R.drawable.text_size_svgrepo_com)
+            ToolIcon(R.drawable.music_svgrepo_com)
+            ToolIcon(R.drawable.edit_1_svgrepo_com)
+            ToolIcon(R.drawable.sticker_add_svgrepo_com)
+            ToolIcon(R.drawable.photo_svgrepo_com)
+            ToolIcon(
+                icon = R.drawable.menu_dots_svgrepo_com,
+                rotate = 90f
+            )
+        }
+
+        // 🔥 Bottom Toolbar Overlay
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .align(Alignment.BottomCenter)
+//                .padding(bottom = 40.dp),
+//            horizontalArrangement = Arrangement.Center
+//        ) {
+//
+//            ToolIcon(R.drawable.text_size_svgrepo_com)
+//            Spacer(Modifier.width(20.dp))
+//            ToolIcon(R.drawable.sticker_add_svgrepo_com)
+//            Spacer(Modifier.width(20.dp))
+//            ToolIcon(R.drawable.photo_svgrepo_com)
+//        }
     }
+}
 
-
+@Composable
+fun ToolIcon(
+    icon: Int,
+    rotate: Float = 0f
+) {
+    IconButton(
+        onClick = {},
+        modifier = Modifier
+            .size(36.dp)
+            .background(
+                color = TransparentBlack,
+                shape = CircleShape
+            )
+    ) {
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = null,
+            modifier = Modifier
+                .size(24.dp)
+                .rotate(rotate),
+            tint = Color.White
+        )
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun StoryEditorPreview() {
+
     val viewModel = remember { StatusEditorViewModel() }
+
     LaunchedEffect(Unit) {
         viewModel.addCenteredText("Hello Story")
-        viewModel.addCenteredImage("https://img.freepik.com/free-vector/modern-abstract-dark-violate-pink-background_84443-2784.jpg?semt=ais_user_personalization&w=740&q=80")
+        viewModel.addCenteredImage(
+            "https://img.freepik.com/free-vector/modern-abstract-dark-violate-pink-background_84443-2784.jpg"
+        )
     }
+
     StatusEditorScreen(viewModel = viewModel)
 }

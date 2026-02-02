@@ -2,9 +2,13 @@ package com.example.sociamediaapplication.viewmodel
 
 import android.util.Log
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.toColorLong
 import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.ViewModel
 import com.example.sociamediaapplication.model.editor.*
+import com.example.sociamediaapplication.ui.theme.Black
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -53,7 +57,7 @@ class StatusEditorViewModel : ViewModel() {
         val layer = TextLayer(
             id = generateId(),
             text = text,
-            textColor = 0xFFFFFFFF,
+            textColor = Black,
             textSize = 24f
         )
         addLayer(layer)
@@ -73,6 +77,34 @@ class StatusEditorViewModel : ViewModel() {
         }
         selectLayer(layer.id)
     }
+
+    fun updateText(id: String, newText: String){
+        _layers.update { current ->
+            current.map { layer ->
+                if (layer.id != id) return@map layer
+
+                when (layer) {
+                    is TextLayer -> layer.copy(text = newText)
+                    else -> layer
+                }
+            }
+        }
+    }
+    fun updateTextColor(id: String, color: Color) {
+        _layers.update { current ->
+            current.map { layer ->
+                if (layer.id != id) return@map layer
+
+                when (layer) {
+                    is TextLayer -> layer.copy(
+                        textColor = color
+                    )
+                    else -> layer
+                }
+            }
+        }
+    }
+
 
     fun updateLayerSize(id: String, size: IntSize) {
 

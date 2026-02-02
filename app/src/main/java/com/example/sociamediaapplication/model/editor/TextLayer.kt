@@ -1,12 +1,14 @@
 package com.example.sociamediaapplication.model.editor
 
+
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntSize
 
 data class TextLayer(
     override val id: String,
-    val text: String,
-    val textColor: Long,
+    var text: String,
+    val textColor: Color,
     val textSize: Float,
     override val offset: Offset = Offset.Zero,
     override val scale: Float = 1f,
