@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
@@ -32,8 +33,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.IntOffset
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -43,6 +46,7 @@ import com.example.sociamediaapplication.ui.theme.TransparentBlack
 import com.example.sociamediaapplication.ui.theme.TransparentWhite
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.ui.theme.Yellow
+import kotlin.math.roundToInt
 
 @Composable
 fun EditorLayerRenderer(
@@ -62,23 +66,31 @@ fun EditorLayerRenderer(
         modifier = Modifier
             .wrapContentSize()
             .onSizeChanged {
-                Log.d("EDITOR_DEBUG", "Layer ${layer.id} size: $it")
                 onSizeMeasured(it)
             }
+
             .graphicsLayer(
-                translationX = currentLayer.offset.x,
-                translationY = currentLayer.offset.y,
                 scaleX = currentLayer.scale,
                 scaleY = currentLayer.scale,
-                rotationZ = currentLayer.rotation
+                rotationZ = currentLayer.rotation,
+                transformOrigin = TransformOrigin.Center
             )
+            .offset {
+                IntOffset(
+                    currentLayer.offset.x.roundToInt(),
+                    currentLayer.offset.y.roundToInt()
+                )
+            }
             .pointerInput(currentLayer.id) {
                 detectTransformGestures { _, pan, zoom, rotation ->
-                    onTransform(
-                        currentLayer.offset + pan,
-                        currentLayer.scale * zoom,
-                        currentLayer.rotation + rotation
-                    )
+                    Log.d("PAN_DEBUG", "pan=$pan scale=${currentLayer.scale}")
+                    val newScale = currentLayer.scale * zoom
+
+                    val newOffset = currentLayer.offset + (pan)
+
+                    val newRotation = currentLayer.rotation + rotation
+
+                    onTransform(newOffset, newScale, newRotation)
                 }
             }
                 .pointerInput(currentLayer.id + "_tap") {
@@ -95,6 +107,11 @@ fun EditorLayerRenderer(
                 AsyncImage(
                     model = layer.imageUri,
                     contentDescription = null,
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .onSizeChanged {
+                            onSizeMeasured(it)
+                        }
                 )
             }
             is TextLayer -> {

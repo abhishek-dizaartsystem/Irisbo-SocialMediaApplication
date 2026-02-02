@@ -36,15 +36,12 @@ class StatusEditorViewModel : ViewModel() {
         val width = layer.size.width * layer.scale
         val height = layer.size.height * layer.scale
 
-        Log.d("EDITOR_DEBUG", "Canvas: $canvasSize")
-        Log.d("EDITOR_DEBUG", "Layer size: ${layer.size}")
 
         val offset = Offset(
             x = (canvasSize.width - width) / 2f,
             y = (canvasSize.height - height) / 2f
         )
 
-        Log.d("EDITOR_DEBUG", "Calculated offset: $offset")
         return Offset(
             x = (canvasSize.width - width) / 2f,
             y = (canvasSize.height - height) / 2f

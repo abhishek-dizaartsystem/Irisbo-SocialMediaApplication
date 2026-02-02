@@ -1,6 +1,9 @@
 package com.example.sociamediaapplication.view.screens
 
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -45,6 +48,16 @@ fun StatusEditorScreen(
     val selectedLayer = layers.find { it.id == selectedId }
     val isTextSelected = selectedLayer is TextLayer
 
+    val selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) {uri: Uri?->
+        uri?.let{
+            viewModel.addCenteredImage(it.toString())
+        }
+    }
+
 
     Box(
         modifier = Modifier
@@ -57,7 +70,6 @@ fun StatusEditorScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .onSizeChanged {
-                    Log.d("EDITOR_DEBUG", "Canvas size: $it")
                     viewModel.setCanvasSize(it)
                 }
                 .pointerInput(Unit) {
@@ -128,7 +140,9 @@ fun StatusEditorScreen(
                     onClick = {}
                 )
                 ToolIcon(R.drawable.photo_svgrepo_com,
-                    onClick = {}
+                    onClick = {
+                        imagePickerLauncher.launch("image/*")
+                    }
                 )
                 ToolIcon(
                     icon = R.drawable.menu_dots_svgrepo_com,
