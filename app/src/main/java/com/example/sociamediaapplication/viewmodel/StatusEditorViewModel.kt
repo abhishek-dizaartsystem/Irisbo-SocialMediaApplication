@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.viewmodel
 
+import android.util.Log
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.ViewModel
@@ -24,6 +25,16 @@ class StatusEditorViewModel : ViewModel() {
     private fun centerOffset(layer: EditorLayer): Offset {
         val width = layer.size.width * layer.scale
         val height = layer.size.height * layer.scale
+
+        Log.d("EDITOR_DEBUG", "Canvas: $canvasSize")
+        Log.d("EDITOR_DEBUG", "Layer size: ${layer.size}")
+
+        val offset = Offset(
+            x = (canvasSize.width - width) / 2f,
+            y = (canvasSize.height - height) / 2f
+        )
+
+        Log.d("EDITOR_DEBUG", "Calculated offset: $offset")
         return Offset(
             x = (canvasSize.width - width) / 2f,
             y = (canvasSize.height - height) / 2f
@@ -64,42 +75,49 @@ class StatusEditorViewModel : ViewModel() {
     }
 
     fun updateLayerSize(id: String, size: IntSize) {
-        _layers.update { current ->
-            current.map { layer ->
-                if (layer.id != id)
-                    return@map layer
-                if (
-                    layer.hasBeenCentered ||
-                    size.width == 0 ||
-                    size.height == 0 ||
-                    layer.offset != Offset.Zero
-                ) return@map layer
 
-                val updated = when (layer) {
-                    is ImageLayer ->
-                        layer.copy(size = size)
-                    is TextLayer ->
-                        layer.copy(size = size)
-                    else -> layer
-                }
-                updated.let {
-                    when (it) {
-                        is ImageLayer ->
-                            it.copy(
-                                offset = centerOffset(it),
-                                hasBeenCentered = true
-                            )
-                        is TextLayer ->
-                            it.copy(
-                                offset = centerOffset(it),
-                                hasBeenCentered = true
-                            )
-                        else -> it
+        if (size == IntSize.Zero) return
+
+        _layers.update { current ->
+
+            current.map { layer ->
+
+                if (layer.id != id) return@map layer
+
+                // Only center if it hasn't been moved yet
+                if (layer.offset != Offset.Zero) {
+                    return@map when (layer) {
+                        is ImageLayer -> layer.copy(size = size)
+                        is TextLayer -> layer.copy(size = size)
+                        is StickerLayer -> layer.copy(size = size)
+                        else -> layer
                     }
+                }
+
+                when (layer) {
+
+                    is ImageLayer -> {
+                        val updated = layer.copy(size = size)
+                        updated.copy(offset = centerOffset(updated))
+                    }
+
+                    is TextLayer -> {
+                        val updated = layer.copy(size = size)
+                        updated.copy(offset = centerOffset(updated))
+                    }
+
+                    is StickerLayer -> {
+                        val updated = layer.copy(size = size)
+                        updated.copy(offset = centerOffset(updated))
+                    }
+
+                    else -> layer
                 }
             }
         }
     }
+
+
 
     fun updateTransform(
         id: String,

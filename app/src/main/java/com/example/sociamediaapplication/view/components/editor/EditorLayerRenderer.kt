@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.components.editor
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -34,6 +35,7 @@ fun EditorLayerRenderer(
         modifier = Modifier
             .wrapContentSize()
             .onSizeChanged {
+                Log.d("EDITOR_DEBUG", "Layer ${layer.id} size: $it")
                 onSizeMeasured(it)
             }
             .graphicsLayer(

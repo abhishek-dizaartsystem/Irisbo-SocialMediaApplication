@@ -43,6 +43,8 @@ val LRed = Color(0xFFF7E8E9)
 
 val DTransparentBlack = Color(0x54000000)
 
+val TransparentBlack = Color(0x1D000000)
+
 val Green = Color(0xFF0DB619)
 
 val LGreen = Color(0xFF22C55E)
