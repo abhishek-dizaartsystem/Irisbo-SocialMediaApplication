@@ -28,9 +28,9 @@ import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.Post
 
 @Composable
-fun HomeScreen2(modifier: Modifier){
+fun HomeScreen2(){
     LazyColumn(
-        modifier = modifier
+        modifier = Modifier.fillMaxSize()
     ) {
         item {
             LazyRow(
@@ -108,5 +108,5 @@ fun HomeScreen2(modifier: Modifier){
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun HomeScreen2Preview(){
-    HomeScreen2(modifier = Modifier.fillMaxSize())
+    HomeScreen2()
 }

@@ -1,16 +1,16 @@
 package com.example.sociamediaapplication.view.navigation
 
 sealed class MainRoutes(val route: String) {
-    object Home : MainRoutes("home")
+    object Home1 : MainRoutes("home1")
     object Search : MainRoutes("search")
     object Reels : MainRoutes("reels")
     object Add : MainRoutes("upload")
-    object Chat : MainRoutes("chat")
+    object Chats : MainRoutes("chats")
     object Profile : MainRoutes("profile")
     object Category: MainRoutes("category")
     object Menu: MainRoutes("menu")
     object Notifications: MainRoutes("notifications")
-    object Status: MainRoutes("status")
+    object Home2: MainRoutes("home2")
     object Videos: MainRoutes("videos")
 
 }

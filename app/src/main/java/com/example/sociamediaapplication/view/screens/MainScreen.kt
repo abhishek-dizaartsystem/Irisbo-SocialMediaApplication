@@ -34,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -42,6 +43,7 @@ import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.view.navigation.MainRoutes
+import com.example.sociamediaapplication.view.navigation.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +72,9 @@ fun MainScreen(){
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 IconButton(
-                                    onClick = {},
+                                    onClick = {
+                                        navController.navigate(MainRoutes.Add.route)
+                                    },
                                     modifier = Modifier.size(40.dp)
                                 ) {
                                     Icon(
@@ -79,7 +83,11 @@ fun MainScreen(){
                                         modifier = Modifier.height(36.dp)
                                     )
                                 }
-                                IconButton(onClick = {}) {
+                                IconButton(
+                                    onClick = {
+                                        navController.navigate(MainRoutes.Search.route)
+                                    }
+                                ) {
                                     Icon(
                                         painter = painterResource(R.drawable.search_svgrepo_com),
                                         contentDescription = "",
@@ -87,7 +95,9 @@ fun MainScreen(){
                                     )
                                 }
                                 IconButton(
-                                    onClick = {},
+                                    onClick = {
+                                        navController.navigate(MainRoutes.Notifications.route)
+                                    },
                                     modifier = Modifier.size(48.dp)
                                 ) {
                                     Icon(
@@ -106,7 +116,7 @@ fun MainScreen(){
                                 .border(
                                     width = 1.dp,
                                     color = Black,
-                                    shape = HexagonShape
+                                    shape = CircleShape
                                 )
                         ) {
                             Image(
@@ -116,7 +126,7 @@ fun MainScreen(){
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .size(80.dp) // Ensure the image fills the button
-                                    .clip(HexagonShape) // Makes it perfectly circular
+                                    .clip(CircleShape) // Makes it perfectly circular
                             )
                         }
 
@@ -137,8 +147,16 @@ fun MainScreen(){
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     IconButton(
-                        onClick = { /* Navigate to profile */ },
-                        modifier = Modifier.size(50.dp) // Set the size of the clickable area
+                        onClick = {
+                            navController.navigate(MainRoutes.Profile.route)
+                        },
+                        modifier = Modifier
+                            .size(50.dp)
+                            .border(
+                                width = 1.dp,
+                                color = Black,
+                                shape = HexagonShape
+                            )// Set the size of the clickable area
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.rectangle_5),
@@ -151,7 +169,9 @@ fun MainScreen(){
                         )
                     }
                     IconButton(
-                        onClick = {},
+                        onClick = {
+                            navController.navigate(MainRoutes.Videos.route)
+                        },
                         modifier = Modifier
                             .clip(RoundedCornerShape(0.dp))
                             .size(70.dp)
@@ -165,7 +185,9 @@ fun MainScreen(){
                         )
                     }
                     IconButton(
-                        onClick = {},
+                        onClick = {
+                            navController.navigate(MainRoutes.Home1.route)
+                        },
                         modifier = Modifier
                             .clip(RoundedCornerShape(0.dp))
                             .size(50.dp)
@@ -179,7 +201,9 @@ fun MainScreen(){
                         )
                     }
                     IconButton(
-                        onClick = {},
+                        onClick = {
+                            navController.navigate(MainRoutes.Reels.route)
+                        },
                         modifier = Modifier
                             .clip(RoundedCornerShape(0.dp))
                             .size(60.dp)
@@ -193,7 +217,9 @@ fun MainScreen(){
                         )
                     }
                     IconButton(
-                        onClick = {},
+                        onClick = {
+                            navController.navigate(MainRoutes.Chats.route)
+                        },
                         modifier = Modifier
                             .clip(RoundedCornerShape(0.dp))
                             .size(50.dp)
@@ -212,14 +238,14 @@ fun MainScreen(){
     ) { innerPadding ->
         NavHost(
         navController = navController,
-        startDestination = MainRoutes.Chat.route,
+        startDestination = MainRoutes.Home1.route,
         modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
         ) {
 
-            composable(MainRoutes.Home.route) {
-                HomeScreen()
+            composable(MainRoutes.Home1.route) {
+                HomeScreen1()
             }
 
             composable(MainRoutes.Search.route) {
@@ -230,12 +256,36 @@ fun MainScreen(){
                 ReelsScreen()
             }
 
-            composable(MainRoutes.Chat.route) {
+            composable(MainRoutes.Add.route){
+                UploadScreen()
+            }
+
+            composable(MainRoutes.Chats.route) {
                 ChatsScreen()
             }
 
             composable(MainRoutes.Profile.route) {
                 ProfileScreen()
+            }
+
+            composable(MainRoutes.Category.route){
+                CategoryScreen()
+            }
+
+            composable(MainRoutes.Menu.route){
+                MenuScreen()
+            }
+
+            composable(MainRoutes.Notifications.route){
+                NotificationsScreen()
+            }
+
+            composable(MainRoutes.Home2.route){
+                HomeScreen2()
+            }
+
+            composable(MainRoutes.Videos.route){
+                VideosScreen()
             }
         }
     }

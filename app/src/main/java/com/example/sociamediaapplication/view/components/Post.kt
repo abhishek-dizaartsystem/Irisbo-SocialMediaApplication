@@ -26,6 +26,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,6 +62,11 @@ fun Post(
     val size = mediaList.size
 
     val pagerState = rememberPagerState(pageCount = {mediaList.size})
+
+    var isLiked by remember { mutableStateOf(false) }
+    var showCommentSection by remember { mutableStateOf(false) }
+    var showSendSection by remember { mutableStateOf(false) }
+
     Card(
         colors = CardDefaults
             .cardColors(containerColor = White),
@@ -98,14 +107,17 @@ fun Post(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp
                             )
-                            Icon(
-                                painter = painterResource(R.drawable.verified_check_svgrepo_com),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .size(20.dp)
-                                    .padding(2.dp),
-                                tint = Blue
-                            )
+                            if(isVerified){
+                                Icon(
+                                    painter = painterResource(R.drawable.verified_check_svgrepo_com),
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .padding(2.dp),
+                                    tint = Blue
+                                )
+                            }
+
                         }
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -262,7 +274,10 @@ fun Post(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(
-                        onClick = { /* Navigate to profile */ },
+                        onClick = {
+                            //Like Button
+                            isLiked = !isLiked
+                        },
                         modifier = Modifier
                             .size(30.dp)
                             .clip(RoundedCornerShape(0.dp))
@@ -274,7 +289,9 @@ fun Post(
                         )
                     }
                     IconButton(
-                        onClick = { /* Navigate to profile */ },
+                        onClick = {
+                            showCommentSection = !showCommentSection
+                        },
                         modifier = Modifier
                             .size(30.dp)
                             .clip(RoundedCornerShape(0.dp))
@@ -286,7 +303,9 @@ fun Post(
                         )
                     }
                     IconButton(
-                        onClick = { /* Navigate to profile */ },
+                        onClick = {
+                            showSendSection = !showSendSection
+                        },
                         modifier = Modifier
                             .size(30.dp)
                             .clip(RoundedCornerShape(0.dp))
