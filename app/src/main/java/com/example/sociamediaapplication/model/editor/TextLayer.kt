@@ -3,13 +3,18 @@ package com.example.sociamediaapplication.model.editor
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 
 data class TextLayer(
     override val id: String,
     var text: String,
     val textColor: Color,
-    val textSize: Float,
+    val fontSize: Int,
+    val fontWeight: FontWeight,
+    val fontFamily: FontFamily = FontFamily.Default,
     override val offset: Offset = Offset.Zero,
     override val scale: Float = 1f,
     override val rotation: Float = 0f,

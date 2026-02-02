@@ -56,9 +56,6 @@ fun EditorLayerRenderer(
 ) {
     val currentLayer by rememberUpdatedState(layer)
 
-    var textColorOptions = remember { mutableStateListOf(
-        Black, White, Blue, Red, Green, Yellow
-    ) }
 
 
     Box(
@@ -101,54 +98,31 @@ fun EditorLayerRenderer(
                 )
             }
             is TextLayer -> {
-                val selectedTextColor = layer.textColor
+
 
                 if (isSelected) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            textColorOptions.forEach { color->
-                                IconButton(
-                                    onClick = {
-                                        //selectedTextColor = color
-                                        onTextColorChange(color)
-                                    },
-                                    modifier = Modifier.size(30.dp),
-                                    colors = IconButtonDefaults.iconButtonColors(
-                                        containerColor = if(color == selectedTextColor) TransparentWhite else TransparentBlack
-                                    )
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.dot),
-                                        contentDescription = "",
-                                        tint = color,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                            }
+                    BasicTextField(
+                        value = layer.text,
+                        onValueChange = { newText ->
+                            onTextChange(newText)
+                        },
+                        textStyle = TextStyle(
+                            color = layer.textColor,
+                            fontSize = layer.fontSize.sp,
+                            fontFamily = layer.fontFamily
+                        ),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .widthIn(max = 300.dp, min = 50.dp)
+                    )
 
-                        }
-                        BasicTextField(
-                            value = layer.text,
-                            onValueChange = { newText ->
-                                onTextChange(newText)
-                            },
-                            textStyle = TextStyle(
-                                color = layer.textColor,
-                                fontSize = layer.textSize.sp
-                            ),
-                            modifier = Modifier.widthIn(max = 300.dp)
-                        )
-                    }
 
                 } else {
                     Text(
                         text = layer.text,
                         color = layer.textColor,
-                        fontSize = layer.textSize.sp
+                        fontSize = layer.fontSize.sp,
+                        fontFamily = layer.fontFamily
                     )
                 }
             } else -> {}

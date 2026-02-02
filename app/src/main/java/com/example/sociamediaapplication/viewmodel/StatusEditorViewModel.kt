@@ -2,10 +2,16 @@ package com.example.sociamediaapplication.viewmodel
 
 import android.util.Log
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.toColorLong
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import com.example.sociamediaapplication.model.editor.*
 import com.example.sociamediaapplication.ui.theme.Black
@@ -53,12 +59,21 @@ class StatusEditorViewModel : ViewModel() {
         addLayer(layer)
     }
 
+    fun addCenteredSticker(uri:String){
+
+    }
+
+    fun addMusic(uri:String){
+
+    }
+
     fun addCenteredText(text: String) {
         val layer = TextLayer(
             id = generateId(),
             text = text,
             textColor = Black,
-            textSize = 24f
+            fontSize = 24,
+            fontWeight = FontWeight.Bold
         )
         addLayer(layer)
     }
@@ -105,6 +120,46 @@ class StatusEditorViewModel : ViewModel() {
         }
     }
 
+    fun updateTextSize(id: String, fontSize: Int)
+    {
+        _layers.update{current->
+            current.map{layer->
+                if(layer.id!=id) return@map layer
+
+                when(layer){
+                    is TextLayer -> layer.copy(
+                        fontSize = fontSize
+                    )
+                    else-> layer
+                }
+            }
+        }
+    }
+    fun updateFontFamily(id: String, fontFamily: FontFamily) {
+        _layers.update { current ->
+            current.map { layer ->
+                if (layer.id == id && layer is TextLayer) {
+                    layer.copy(fontFamily = fontFamily)
+                } else layer
+            }
+        }
+    }
+
+
+    fun updateTextStyle(id:String, fontWeight: FontWeight){
+        _layers.update { current->
+            current.map { layer->
+                if(layer.id!=id) return@map layer
+
+                when(layer){
+                    is TextLayer-> layer.copy(
+                        fontWeight = fontWeight
+                    )
+                    else->layer
+                }
+            }
+        }
+    }
 
     fun updateLayerSize(id: String, size: IntSize) {
 

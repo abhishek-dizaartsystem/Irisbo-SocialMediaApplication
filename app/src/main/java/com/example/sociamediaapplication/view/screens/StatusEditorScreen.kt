@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +30,9 @@ import com.example.sociamediaapplication.viewmodel.StatusEditorViewModel
 import com.example.sociamediaapplication.view.components.editor.EditorLayerRenderer
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.unit.sp
+import com.example.sociamediaapplication.view.components.TextEditorControls
+import com.example.sociamediaapplication.view.components.ToolIcon
 
 @Composable
 fun StatusEditorScreen(
@@ -37,6 +41,10 @@ fun StatusEditorScreen(
 
     val layers by viewModel.layers.collectAsState()
     val selectedId by viewModel.selectedLayerId.collectAsState()
+
+    val selectedLayer = layers.find { it.id == selectedId }
+    val isTextSelected = selectedLayer is TextLayer
+
 
     Box(
         modifier = Modifier
@@ -92,24 +100,55 @@ fun StatusEditorScreen(
         }
 
         // 🔥 Top Toolbar Overlay
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.TopCenter)
-                .padding(top = 40.dp, start = 24.dp, end = 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            ToolIcon(R.drawable.text_size_svgrepo_com)
-            ToolIcon(R.drawable.music_svgrepo_com)
-            ToolIcon(R.drawable.edit_1_svgrepo_com)
-            ToolIcon(R.drawable.sticker_add_svgrepo_com)
-            ToolIcon(R.drawable.photo_svgrepo_com)
-            ToolIcon(
-                icon = R.drawable.menu_dots_svgrepo_com,
-                rotate = 90f
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 40.dp, start = 24.dp, end = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                ToolIcon(
+                    icon = R.drawable.text_size_svgrepo_com,
+                    onClick = {
+                        viewModel.addCenteredText("Text")
+                    }
+                )
+                ToolIcon(
+                    icon = R.drawable.music_svgrepo_com,
+                    onClick = {}
+                )
+                ToolIcon(R.drawable.edit_1_svgrepo_com,
+                    onClick = {}
+                )
+                ToolIcon(R.drawable.sticker_add_svgrepo_com,
+                    onClick = {}
+                )
+                ToolIcon(R.drawable.photo_svgrepo_com,
+                    onClick = {}
+                )
+                ToolIcon(
+                    icon = R.drawable.menu_dots_svgrepo_com,
+                    rotate = 90f,
+                    onClick = {}
+                )
+
+
+            }
+            if (isTextSelected) {
+                TextEditorControls(
+                    textLayer = selectedLayer as TextLayer,
+                    onTextColorChange = { viewModel.updateTextColor(selectedLayer.id, it) },
+                    onTextSizeChange = {  viewModel.updateTextSize(selectedLayer.id, fontSize = it.toInt())},
+                    onFontFamilyChange = { viewModel.updateFontFamily(selectedLayer.id, fontFamily = it)}
+                )
+            }
         }
+
+
 
         // 🔥 Bottom Toolbar Overlay
 //        Row(
@@ -129,30 +168,7 @@ fun StatusEditorScreen(
     }
 }
 
-@Composable
-fun ToolIcon(
-    icon: Int,
-    rotate: Float = 0f
-) {
-    IconButton(
-        onClick = {},
-        modifier = Modifier
-            .size(36.dp)
-            .background(
-                color = TransparentBlack,
-                shape = CircleShape
-            )
-    ) {
-        Icon(
-            painter = painterResource(icon),
-            contentDescription = null,
-            modifier = Modifier
-                .size(24.dp)
-                .rotate(rotate),
-            tint = Color.White
-        )
-    }
-}
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
