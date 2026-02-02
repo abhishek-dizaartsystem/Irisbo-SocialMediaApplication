@@ -9,8 +9,14 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +42,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.view.components.TextEditorControls
 import com.example.sociamediaapplication.view.components.ToolIcon
+import kotlin.contracts.contract
 
 @Composable
 fun StatusEditorScreen(
@@ -57,6 +64,8 @@ fun StatusEditorScreen(
             viewModel.addCenteredImage(it.toString())
         }
     }
+
+    var isDropDownMenu by remember { mutableStateOf(false) }
 
 
     Box(
@@ -122,17 +131,20 @@ fun StatusEditorScreen(
                     .padding(top = 40.dp, start = 24.dp, end = 24.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
+                ToolIcon(
+                    icon = R.drawable.menu_dots_svgrepo_com,
+                    rotate = 90f,
+                    onClick = {
+                        isDropDownMenu = true
+                    }
+                )
                 ToolIcon(
                     icon = R.drawable.text_size_svgrepo_com,
                     onClick = {
                         viewModel.addCenteredText("Text")
                     }
                 )
-                ToolIcon(
-                    icon = R.drawable.music_svgrepo_com,
-                    onClick = {}
-                )
+
                 ToolIcon(R.drawable.edit_1_svgrepo_com,
                     onClick = {}
                 )
@@ -145,14 +157,66 @@ fun StatusEditorScreen(
                     }
                 )
                 ToolIcon(
-                    icon = R.drawable.menu_dots_svgrepo_com,
-                    rotate = 90f,
+                    icon = R.drawable.music_svgrepo_com,
                     onClick = {}
                 )
 
 
+
             }
+
+            DropdownMenu(
+                expanded = isDropDownMenu,
+                onDismissRequest = {
+                    isDropDownMenu = false
+                }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Save") },
+                    onClick = {
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.download_svgrepo_com),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    modifier = Modifier.height(30.dp)
+                )
+                HorizontalDivider()
+                DropdownMenuItem(
+                    text = { Text("Mention") },
+                    onClick = {
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.at_sign_svgrepo_com),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    modifier = Modifier.height(30.dp)
+                )
+                HorizontalDivider()
+                DropdownMenuItem(
+                    text = { Text("Hashtag") },
+                    onClick = {
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.hashtag_svgrepo_com),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    modifier = Modifier.height(30.dp)
+                )
+
+            }
+
             if (isTextSelected) {
+                isDropDownMenu = false
                 TextEditorControls(
                     textLayer = selectedLayer as TextLayer,
                     onTextColorChange = { viewModel.updateTextColor(selectedLayer.id, it) },
@@ -165,13 +229,29 @@ fun StatusEditorScreen(
 
 
         // 🔥 Bottom Toolbar Overlay
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .align(Alignment.BottomCenter)
-//                .padding(bottom = 40.dp),
-//            horizontalArrangement = Arrangement.Center
-//        ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 40.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Button(
+                onClick = {
+                    //Upload Status
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = TransparentBlack
+                ),
+                contentPadding = PaddingValues(vertical = 0.dp, horizontal = 16.dp),
+
+            ) {
+                Text(
+                    text = "Upload Status",
+                    fontSize = 16.sp
+                )
+            }
+        }
 //
 //            ToolIcon(R.drawable.text_size_svgrepo_com)
 //            Spacer(Modifier.width(20.dp))

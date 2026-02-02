@@ -28,7 +28,7 @@ import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.Post
 
 @Composable
-fun StatusScreen(modifier: Modifier){
+fun HomeScreen2(modifier: Modifier){
     LazyColumn(
         modifier = modifier
     ) {
@@ -107,6 +107,6 @@ fun StatusScreen(modifier: Modifier){
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun StatusScreenPreview(){
-    StatusScreen(modifier = Modifier.fillMaxSize())
+fun HomeScreen2Preview(){
+    HomeScreen2(modifier = Modifier.fillMaxSize())
 }

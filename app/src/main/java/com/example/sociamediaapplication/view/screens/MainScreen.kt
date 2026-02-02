@@ -147,7 +147,7 @@ fun MainScreen(){
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .size(50.dp) // Ensure the image fills the button
-                                .clip(CircleShape) // Makes it perfectly circular
+                                .clip(HexagonShape) // Makes it perfectly circular
                         )
                     }
                     IconButton(
