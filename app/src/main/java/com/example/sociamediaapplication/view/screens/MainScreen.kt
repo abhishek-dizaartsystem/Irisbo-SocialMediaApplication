@@ -45,12 +45,17 @@ import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.view.components.HexagonShape
+import com.example.sociamediaapplication.view.navigation.ChatsNavGraph
 import com.example.sociamediaapplication.view.navigation.MainRoutes
+import com.example.sociamediaapplication.view.navigation.MenuNavGraph
+import com.example.sociamediaapplication.view.navigation.ProfileNavGraph
 import com.example.sociamediaapplication.view.navigation.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(){
+fun MainScreen(
+    mainNavController: NavController
+){
 
     val navController = rememberNavController()
 
@@ -173,7 +178,7 @@ fun MainScreen(){
                     }
                     IconButton(
                         onClick = {
-                            navController.navigate(MainRoutes.Videos.route)
+                            navController.navigate(MainRoutes.Category.route)
                         },
                         modifier = Modifier
                             .clip(RoundedCornerShape(0.dp))
@@ -267,11 +272,11 @@ fun MainScreen(){
             }
 
             composable(MainRoutes.Chats.route) {
-                ChatsScreen()
+                ChatsNavGraph()
             }
 
             composable(MainRoutes.Profile.route) {
-                ProfileScreen()
+                ProfileNavGraph(mainNavController)
             }
 
             composable(MainRoutes.Category.route){
@@ -279,7 +284,7 @@ fun MainScreen(){
             }
 
             composable(MainRoutes.Menu.route){
-                MenuScreen()
+                MenuNavGraph(mainNavController)
             }
 
             composable(MainRoutes.Notifications.route){
@@ -289,10 +294,6 @@ fun MainScreen(){
             composable(MainRoutes.Home2.route){
                 HomeScreen2()
             }
-
-            composable(MainRoutes.Videos.route){
-                VideosScreen()
-            }
         }
     }
 }
@@ -300,5 +301,7 @@ fun MainScreen(){
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MainScreenPreview(){
-    MainScreen()
+    MainScreen(
+        mainNavController = rememberNavController()
+    )
 }

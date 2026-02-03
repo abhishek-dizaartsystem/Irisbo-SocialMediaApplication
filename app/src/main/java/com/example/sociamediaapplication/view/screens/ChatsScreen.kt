@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -47,9 +48,12 @@ import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.view.components.ChatThumbnail
+import okhttp3.internal.userAgent
 
 @Composable
-fun ChatsScreen(){
+fun ChatsScreen(
+    onChatClick: (String) -> Unit
+){
 
     var chatListSeen = remember { List(8){R.drawable.rectangle_5} }
 
@@ -72,7 +76,7 @@ fun ChatsScreen(){
             },
             placeholder = {
                 Text(
-                    text = "Search groups",
+                    text = "Search friends...",
                     color = GreyTxt
                 )
             },
@@ -102,6 +106,10 @@ fun ChatsScreen(){
         LazyColumn() {
             items(chatListUnseen){friendPic->
                 ChatThumbnail(
+                    onChatClick = { userId ->
+                        onChatClick(userId)
+                    },
+                    userId = "123",
                     friendName = "Nikhil Rawat",
                     recentMsg = "Hello",
                     msgTime = "4:32A.M",
@@ -112,6 +120,8 @@ fun ChatsScreen(){
             }
             items(chatListSeen){friendPic->
                 ChatThumbnail(
+                    onChatClick,
+                    userId = "124",
                     friendName = "Kartik",
                     recentMsg = "Sent a photo",
                     msgTime = "2 days ago",
@@ -128,5 +138,7 @@ fun ChatsScreen(){
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ChatsScreenPreview(){
-    ChatsScreen()
+    ChatsScreen(
+        onChatClick = {}
+    )
 }

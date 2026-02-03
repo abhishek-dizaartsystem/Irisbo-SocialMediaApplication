@@ -9,6 +9,7 @@ import com.example.sociamediaapplication.data.repository.AuthRepository
 import com.example.sociamediaapplication.view.screens.AuthScreen
 import com.example.sociamediaapplication.view.screens.MainScreen
 import com.example.sociamediaapplication.view.screens.SplashScreen
+import com.example.sociamediaapplication.view.screens.StatusEditorScreen
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
 
 @Composable
@@ -18,7 +19,7 @@ fun AppNavGraph() {
 
     NavHost(
         navController = navController,
-        startDestination = Routes.Splash.route
+        startDestination = Routes.Main.route
     ) {
 
         composable(Routes.Splash.route) {
@@ -53,7 +54,14 @@ fun AppNavGraph() {
         }
 
         composable(Routes.Main.route) {
-            MainScreen()
+            MainScreen(
+                navController
+            )
         }
+
+        composable(Routes.EditStatus.route) {
+            StatusEditorScreen()
+        }
+
     }
 }

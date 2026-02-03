@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.ui.theme.SociaMediaApplicationTheme
 import com.example.sociamediaapplication.view.navigation.AppNavGraph
 import com.example.sociamediaapplication.view.screens.MainScreen
@@ -20,7 +21,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MainScreen()
+            AppNavGraph()
         }
     }
 }

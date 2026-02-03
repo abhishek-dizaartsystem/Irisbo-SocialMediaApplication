@@ -104,7 +104,8 @@ fun SearchScreen() {
                         shape = RoundedCornerShape(50.dp),
                         modifier = Modifier
                             .height(54.dp)
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .padding(end = 12.dp),
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(R.drawable.search_svgrepo_com),

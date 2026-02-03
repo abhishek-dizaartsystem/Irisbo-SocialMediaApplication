@@ -2,6 +2,7 @@ package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +37,8 @@ import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
 fun ChatThumbnail(
+    onChatClick: (String)-> Unit,
+    userId:String,
     friendName: String,
     recentMsg: String,
     msgTime: String,
@@ -49,6 +52,9 @@ fun ChatThumbnail(
                 color = if (seen) White else LBlue
             )
             .padding(horizontal = 12.dp)
+            .clickable(
+                onClick = { onChatClick(userId) }
+            )
     ) {
         Spacer(modifier = Modifier.height(8.dp))
         Row(
@@ -106,10 +112,12 @@ fun ChatThumbnail(
 @Composable
 fun ChatTHumbnailPreview(){
     ChatThumbnail(
+        onChatClick = {},
         friendName = "Kartik",
         recentMsg = "Hello",
         msgTime = "fri at 5:40A.M",
         friendProfilePhoto = painterResource(R.drawable.rectangle_24),
-        seen = false
+        seen = false,
+        userId = "1"
     )
 }

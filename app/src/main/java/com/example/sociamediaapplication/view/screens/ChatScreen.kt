@@ -40,6 +40,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.model.ChatMessage
 import com.example.sociamediaapplication.ui.theme.Black
@@ -61,7 +63,10 @@ val messages = listOf(
 
 
 @Composable
-fun ChatScreen(){
+fun ChatScreen(
+    userId: String = "Kartik",
+    navController: NavController
+){
 
     var typeMessage by remember { mutableStateOf("") }
     var showAttachmentMenu by remember { mutableStateOf(true) }
@@ -79,7 +84,9 @@ fun ChatScreen(){
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
-                        onClick = {},
+                        onClick = {
+                            navController.popBackStack()
+                        },
                         colors = IconButtonDefaults.iconButtonColors(containerColor = Transparent),
                         shape = RoundedCornerShape(4.dp),
                         modifier = Modifier.widthIn(30.dp, 70.dp)
@@ -97,7 +104,7 @@ fun ChatScreen(){
                         modifier = Modifier.size(40.dp)
                     )
                     Text(
-                        text = "Kartik",
+                        text = userId,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -281,5 +288,7 @@ fun ChatScreen(){
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ChatScreenPreview(){
-    ChatScreen()
+    ChatScreen(
+        navController = rememberNavController()
+    )
 }

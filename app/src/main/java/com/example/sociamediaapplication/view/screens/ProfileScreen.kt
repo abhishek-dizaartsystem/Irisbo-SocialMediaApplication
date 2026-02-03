@@ -47,6 +47,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -59,7 +61,12 @@ import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
-fun ProfileScreen(){
+fun ProfileScreen(
+    navController: NavController,
+    onEditProfile: ()-> Unit,
+    onMenu: ()-> Unit,
+    onEditStatus: ()-> Unit
+){
 
     var postSelected by remember { mutableStateOf(true) }
     val userPosts = remember { List(15) { R.drawable.rectangle_24 } }
@@ -171,7 +178,9 @@ fun ProfileScreen(){
                 .padding(top = 8.dp, bottom = 20.dp)
         ) {
             Button(
-                onClick = {},
+                onClick = {
+                    onEditStatus()
+                },
                 modifier = Modifier
                     .fillMaxWidth(0.37f)
                     .padding(horizontal = 4.dp),
@@ -190,7 +199,9 @@ fun ProfileScreen(){
                 )
             }
             Button(
-                onClick = {},
+                onClick = {
+                    onEditProfile()
+                },
                 modifier = Modifier
                     .fillMaxWidth(0.55f)
                     .padding(end = 4.dp),
@@ -213,7 +224,9 @@ fun ProfileScreen(){
                 )
             }
             Button(
-                onClick = {},
+                onClick = {
+                    onMenu()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(end = 4.dp),
@@ -387,5 +400,10 @@ fun ProfileScreen(){
 @Preview
 @Composable
 fun ProfileScreenPreview(){
-    ProfileScreen()
+    ProfileScreen(
+        navController = rememberNavController(),
+        onEditStatus = {},
+        onEditProfile = {},
+        onMenu = {}
+    )
 }

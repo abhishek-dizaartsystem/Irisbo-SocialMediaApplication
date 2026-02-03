@@ -36,6 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -47,7 +49,22 @@ import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.CustomCard
 
 @Composable
-fun MenuScreen(){
+fun MenuScreen(
+    onProfile:()-> Unit,
+    onMarketplace:()-> Unit,
+    onGroups:()-> Unit,
+    onUserVideos:()-> Unit,
+    onMemories:()-> Unit,
+    onPages:()-> Unit,
+    onFriends:()-> Unit,
+    onEvents:()-> Unit,
+    onJobs:()-> Unit,
+    onGaming:()-> Unit,
+    onVideoAnalytics:()-> Unit,
+    onAdvancedSettings:()-> Unit,
+    onVideoMonetization:()-> Unit,
+    
+){
     LazyColumn(
         modifier = Modifier
             .padding(16.dp)
@@ -63,14 +80,14 @@ fun MenuScreen(){
             ) {
                 IconButton(
                     onClick = { },
-                    modifier = Modifier.size(120.dp)
+                    modifier = Modifier.size(90.dp)
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.rectangle_5),
                         contentDescription = "Profile Image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(120.dp)
+                            .size(90.dp)
                             .clip(CircleShape)
                     )
 
@@ -81,7 +98,7 @@ fun MenuScreen(){
                         fontSize = 20.sp
                     )
                     Button(
-                        onClick = {},
+                        onClick = onProfile,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Transparent
                         ),
@@ -175,21 +192,21 @@ fun MenuScreen(){
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     CustomCard(
-                        onClicked = {},
+                        onClicked = onMarketplace,
                         painter = painterResource(R.drawable.market_stall_svgrepo_com),
                         tint = Black,
                         text = "MarketPlace",
                         modifier = Modifier.weight(1f)
                     )
                     CustomCard(
-                        onClicked = {},
+                        onClicked = onGroups,
                         painter = painterResource(R.drawable.team_3),
                         tint = Black,
                         text = "Groups",
                         modifier = Modifier.weight(1f)
                     )
                     CustomCard(
-                        onClicked = {},
+                        onClicked = onUserVideos,
                         painter = painterResource(R.drawable.video_frame_play_horizontal_svgrepo_com),
                         tint = Black,
                         text = "Videos",
@@ -202,21 +219,21 @@ fun MenuScreen(){
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     CustomCard(
-                        onClicked = {},
+                        onClicked = onMemories,
                         painter = painterResource(R.drawable.clock_167),
                         tint = Black,
                         text = "Memories",
                         modifier = Modifier.weight(1f)
                     )
                     CustomCard(
-                        onClicked = {},
+                        onClicked = onPages,
                         painter = painterResource(R.drawable.text_pages),
                         tint = Black,
                         text = "Pages",
                         modifier = Modifier.weight(1f)
                     )
                     CustomCard(
-                        onClicked = {},
+                        onClicked = onFriends,
                         painter = painterResource(R.drawable.add_friend_24),
                         tint = Black,
                         text = "Friends",
@@ -227,21 +244,21 @@ fun MenuScreen(){
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     CustomCard(
-                        onClicked = {},
+                        onClicked = onEvents,
                         painter = painterResource(R.drawable.text_pages),
                         tint = Black,
                         text = "Events",
                         modifier = Modifier.weight(1f)
                     )
                     CustomCard(
-                        onClicked = {},
+                        onClicked = onJobs,
                         painter = painterResource(R.drawable.briefcase_91),
                         tint = Black,
                         text = "Jobs",
                         modifier = Modifier.weight(1f)
                     )
                     CustomCard(
-                        onClicked = {},
+                        onClicked = onGaming,
                         painter = painterResource(R.drawable.game_165),
                         tint = Black,
                         text = "Gaming",
@@ -253,7 +270,7 @@ fun MenuScreen(){
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     CustomCard(
-                        onClicked = {},
+                        onClicked = onVideoAnalytics,
                         painter = painterResource(R.drawable.up_trend_round_svgrepo_com),
                         tint = Black,
                         text = "Video Analytics",
@@ -262,7 +279,7 @@ fun MenuScreen(){
 
 
                     CustomCard(
-                        onClicked = {},
+                        onClicked = onAdvancedSettings,
                         painter = painterResource(R.drawable.advanced_options_svgrepo_com),
                         tint = Black,
                         text = "Advanced Settings",
@@ -271,7 +288,7 @@ fun MenuScreen(){
 
 
                     CustomCard(
-                        onClicked = {},
+                        onClicked = onVideoMonetization,
                         painter = painterResource(R.drawable.rupee_sign_svgrepo_com),
                         tint = Black,
                         text = "Video Monetization",
@@ -292,5 +309,19 @@ fun MenuScreen(){
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MenuScreenPreview(){
-    MenuScreen()
+    MenuScreen(
+        onProfile = {},
+        onMarketplace = {},
+        onGroups = {},
+        onUserVideos = {},
+        onMemories = {},
+        onPages = {},
+        onFriends = {},
+        onEvents = {},
+        onJobs = {},
+        onGaming = {},
+        onVideoAnalytics = {},
+        onAdvancedSettings = {},
+        onVideoMonetization = {}
+    )
 }
