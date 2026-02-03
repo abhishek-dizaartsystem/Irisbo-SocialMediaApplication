@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,8 +40,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
+import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.view.navigation.MainRoutes
 import com.example.sociamediaapplication.view.navigation.Routes
@@ -52,93 +55,91 @@ fun MainScreen(){
     val navController = rememberNavController()
 
 
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Row (
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column() {
-                            Text(
-                                text = "@Irisbo",
-                                color = Blue,
-                                fontSize = 28.sp
-                            )
-                            Row(
-                                modifier = Modifier.width(150.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                IconButton(
-                                    onClick = {
-                                        navController.navigate(MainRoutes.Add.route)
-                                    },
-                                    modifier = Modifier.size(40.dp)
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.add_square_svgrepo_com),
-                                        contentDescription = "",
-                                        modifier = Modifier.height(36.dp)
-                                    )
-                                }
-                                IconButton(
-                                    onClick = {
-                                        navController.navigate(MainRoutes.Search.route)
-                                    }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.search_svgrepo_com),
-                                        contentDescription = "",
-                                        modifier = Modifier.height(32.dp)
-                                    )
-                                }
-                                IconButton(
-                                    onClick = {
-                                        navController.navigate(MainRoutes.Notifications.route)
-                                    },
-                                    modifier = Modifier.size(48.dp)
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.notification_13_svgrepo_com),
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .size(40.dp)
-                                    )
-                                }
-                            }
-                        }
                         IconButton(
-                            onClick = { /* Navigate to profile */ },
+                            onClick = {
+                                navController.navigate(MainRoutes.Menu.route)
+                            },
                             modifier = Modifier
-                                .size(80.dp) // Set the size of the clickable area
-                                .border(
-                                    width = 1.dp,
-                                    color = Black,
-                                    shape = CircleShape
-                                )
+                                .size(40.dp)
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.rectangle_5),
-                                contentDescription = "Profile Image",
-                                // This crops the image into a square before clipping to a circle
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .size(80.dp) // Ensure the image fills the button
-                                    .clip(CircleShape) // Makes it perfectly circular
+                            Icon(
+                                painter = painterResource(R.drawable.menu_svgrepo_com),
+                                contentDescription = "",
+                                modifier = Modifier.size(36.dp)
                             )
                         }
 
+                        Text(
+                            text = "@Irisbo",
+                            color = Blue,
+                            fontSize = 28.sp
+                        )
+
+
+                        Row(
+                            modifier = Modifier.width(130.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    navController.navigate(MainRoutes.Add.route)
+                                },
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.add_square_svgrepo_com),
+                                    contentDescription = "",
+                                    modifier = Modifier.height(36.dp)
+                                )
+                            }
+                            IconButton(
+                                onClick = {
+                                    navController.navigate(MainRoutes.Search.route)
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.search_svgrepo_com),
+                                    contentDescription = "",
+                                    modifier = Modifier.height(32.dp)
+                                )
+                            }
+                            IconButton(
+                                onClick = {
+                                    navController.navigate(MainRoutes.Notifications.route)
+                                },
+                                modifier = Modifier.size(48.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.notification_13_svgrepo_com),
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                )
+                            }
+                        }
+
+
+
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFFE9F1FA)),
-                modifier = Modifier.height(110.dp)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = LLBlue),
+                modifier = Modifier
             )
         },
         bottomBar = {
             BottomAppBar(
-                containerColor = Color(0xFFF3F3F3),
+                containerColor = LLBlue,
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
                 Row(
@@ -242,6 +243,9 @@ fun MainScreen(){
         modifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
+            .background(
+                color = BackgroundColor
+            )
         ) {
 
             composable(MainRoutes.Home1.route) {

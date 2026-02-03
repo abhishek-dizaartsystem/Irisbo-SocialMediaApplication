@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Grey
@@ -54,15 +55,14 @@ fun AppearanceScreen() {
     Scaffold(
         topBar = {
             Column(
-                modifier = Modifier.background(White)
+                modifier = Modifier.background(BackgroundColor)
             ) {
 
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(White),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -110,7 +110,7 @@ fun AppearanceScreen() {
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .background(White)
+                .background(BackgroundColor)
                 .fillMaxSize()
         ) {
 

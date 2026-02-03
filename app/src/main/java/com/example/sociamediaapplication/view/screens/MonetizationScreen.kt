@@ -69,14 +69,13 @@ fun MonetizationScreen(){
         topBar = {
             Column(
                 modifier = Modifier
-                    .background(White)
+                    .background(BackgroundColor)
             ) {
 
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(White),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {

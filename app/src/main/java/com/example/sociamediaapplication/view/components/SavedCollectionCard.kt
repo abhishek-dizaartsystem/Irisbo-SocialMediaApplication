@@ -46,7 +46,9 @@ fun SavedCollectionCard(
             containerColor = White
         ),
         elevation = CardDefaults.cardElevation(2.dp),
-        modifier = Modifier.height(250.dp)
+        modifier = Modifier
+            .height(250.dp)
+            .aspectRatio(0.75f)
 
     ) {
         LazyVerticalGrid(

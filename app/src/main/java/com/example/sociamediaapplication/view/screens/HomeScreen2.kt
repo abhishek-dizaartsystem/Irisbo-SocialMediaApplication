@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,11 +19,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.Post
@@ -30,28 +33,32 @@ import com.example.sociamediaapplication.view.components.Post
 @Composable
 fun HomeScreen2(){
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .background(
+                color = BackgroundColor
+            ).fillMaxSize()
     ) {
         item {
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 item {
                     Column(
                         modifier = Modifier
-                            .width(150.dp)
                             .height(220.dp)
-                            .padding(horizontal = 4.dp)
+                            .aspectRatio(0.5f)
                     ) {
                         Box(modifier = Modifier.fillMaxSize()){
                             Image(
                                 painter = painterResource(R.drawable.rectangle_5),
                                 contentDescription = "",
                                 modifier = Modifier
-                                    .width(150.dp)
-                                    .height(300.dp)
+                                    .height(220.dp)
+                                    .aspectRatio(0.5f),
+                                contentScale = ContentScale.Crop
                             )
                             Column(
                                 modifier = Modifier.fillMaxSize(),
@@ -82,17 +89,17 @@ fun HomeScreen2(){
                 items(4) {
                     Column(
                         modifier = Modifier
-                            .width(150.dp)
                             .height(220.dp)
-                            .padding(horizontal = 4.dp)
+                            .aspectRatio(0.5f)
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             Image(
                                 painter = painterResource(R.drawable.rectangle_6),
                                 contentDescription = "",
                                 modifier = Modifier
-                                    .width(150.dp)
-                                    .height(300.dp)
+                                    .height(220.dp)
+                                    .aspectRatio(0.5f),
+                                contentScale = ContentScale.Crop
                             )
                         }
                     }
@@ -100,7 +107,15 @@ fun HomeScreen2(){
             }
         }
         items(count = 4) {
-            Post(caption = "Springs bright, all sustainable! Everything shown was made before 1982, except vintage")
+            Column(
+                modifier = Modifier.padding(
+                    vertical = 8.dp,
+                    horizontal = 16.dp
+                )
+            ) {
+                Post(caption = "Springs bright, all sustainable! Everything shown was made before 1982, except vintage")
+            }
+
         }
     }
 }

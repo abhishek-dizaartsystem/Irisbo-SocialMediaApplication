@@ -2,11 +2,13 @@ package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +22,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -33,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.painterResource
@@ -42,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.TTransparentWhite
 import com.example.sociamediaapplication.ui.theme.TransparentWhite
@@ -83,7 +88,13 @@ fun Post(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
                         onClick = { /* Navigate to profile */ },
-                        modifier = Modifier.size(50.dp) // Set the size of the clickable area
+                        modifier = Modifier
+                            .size(50.dp) // Set the size of the clickable area
+                            .border(
+                                width = 1.dp,
+                                color = Black,
+                                shape = HexagonShape
+                            )
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.rectangle_5),
@@ -92,7 +103,7 @@ fun Post(
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .size(50.dp) // Ensure the image fills the button
-                                .clip(CircleShape) // Makes it perfectly circular
+                                .clip(HexagonShape) // Makes it perfectly circular
                         )
                     }
                     Column(
@@ -117,6 +128,22 @@ fun Post(
                                     tint = Blue
                                 )
                             }
+                            Button(
+                                onClick = {},
+                                contentPadding = PaddingValues(0.dp),
+                                modifier = Modifier
+                                    .padding(horizontal = 12.dp)
+                                    .height(24.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Blue
+                                )
+                            ) {
+                                Text(
+                                    text = "Follow",
+
+                                    )
+                            }
 
                         }
                         Row(
@@ -135,6 +162,7 @@ fun Post(
                         }
 
                     }
+
                 }
                 IconButton(onClick = {}) {
                     Icon(
@@ -145,10 +173,12 @@ fun Post(
                 }
             }
 
+            Spacer(modifier = Modifier.height(8.dp))
             //Caption
             Text(
                 text = caption
             )
+            Spacer(modifier = Modifier.height(8.dp))
             Box(
                 modifier = Modifier.aspectRatio(1f)
             ){

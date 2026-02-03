@@ -79,7 +79,7 @@ fun VideoPlayScreen() {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp, vertical = 12.dp)
+                .padding(16.dp)
         ) {
 
             // Title

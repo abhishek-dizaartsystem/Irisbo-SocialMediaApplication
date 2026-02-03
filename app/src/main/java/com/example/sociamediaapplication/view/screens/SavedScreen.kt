@@ -3,6 +3,7 @@ package com.example.sociamediaapplication.view.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -107,15 +108,16 @@ fun SavedScreen(){
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 modifier = Modifier
-                    .padding(12.dp)
-                    .fillMaxSize()
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(16.dp)
             ) {
                 item(span = { GridItemSpan(2) }){
                     Text(
                         text = "Collections",
                         color = GreyTxt,
-                        modifier = Modifier.padding(bottom = 12.dp),
-                        fontWeight = FontWeight.SemiBold
+                        modifier = Modifier.padding(bottom = 4.dp),
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp
                     )
                 }
                 items(4){

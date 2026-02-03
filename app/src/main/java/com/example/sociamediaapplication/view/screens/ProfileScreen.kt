@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
@@ -47,6 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.DBlue
@@ -156,15 +158,17 @@ fun ProfileScreen(){
         Text(
             text = "John Doe",
             fontSize = 25.sp,
-            modifier = Modifier.padding(start = 4.dp)
+            modifier = Modifier.padding(start = 16.dp)
         )
         Text(
             text = "Bio",
             fontSize = 15.sp,
-            modifier = Modifier.padding(start = 4.dp)
+            modifier = Modifier.padding(start = 16.dp)
         )
         Row(
-            modifier = Modifier.padding(top = 8.dp, bottom = 20.dp)
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .padding(top = 8.dp, bottom = 20.dp)
         ) {
             Button(
                 onClick = {},
@@ -232,124 +236,134 @@ fun ProfileScreen(){
                 )
             }
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .background(Color(0xfff8fafc)),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(
-                onClick = {},
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-                    .height(30.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if(postSelected) LBlue else White
-                ),
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "Posts",
-                    color = if(postSelected) DBlue else Black
-                )
-            }
-            Button(
-                onClick = {},
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-                    .height(30.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if(!postSelected) LBlue else White
-                ),
-                contentPadding = PaddingValues(0.dp)
-
-            ) {
-                Text(
-                    text = "Reels",
-                    color = if(!postSelected) LBlue else GreyTxt
-                )
-            }
-        }
-        Spacer(
-            modifier = Modifier
-                .height(1.dp)
-                .fillMaxWidth()
-                .background(color = Grey)
-        )
-        Column(
-            modifier = Modifier.padding(start = 8.dp)
-        ) {
-            Text(
-                text = "Details",
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 12.dp)
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 6.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.briefcase_svgrepo_com),
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = GreyTxt
-                )
-                Text(
-                    text = "Works at Dizaart",
-                    modifier = Modifier
-                        .padding(start = 6.dp),
-                    color = GreyTxt
-                )
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 6.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.scholar_cap),
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = GreyTxt
-                )
-                Text(
-                    text = "Studied at AKTU",
-                    modifier = Modifier
-                        .padding(start = 6.dp),
-                    color = GreyTxt
-                )
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 6.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.location_pin_svgrepo_com),
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = GreyTxt
-                )
-                Text(
-                    text = "Lives in India",
-                    modifier = Modifier
-                        .padding(start = 6.dp),
-                    color = GreyTxt
-                )
-            }
-        }
         //Posts or Reels
         if (postSelected) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3), // 3 Columns
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(GreyTxt),
+                    .background(BackgroundColor),
                 contentPadding = PaddingValues(1.dp),
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
+                item(span = { GridItemSpan(maxLineSpan) }){
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .background(Color(0xfff8fafc))
+                            .padding(horizontal = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Button(
+                            onClick = {
+                                postSelected = true
+                            },
+                            modifier = Modifier
+                                .padding(horizontal = 4.dp)
+                                .height(30.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if(postSelected) LBlue else White
+                            ),
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Text(
+                                text = "Posts",
+                                color = if(postSelected) DBlue else Black
+                            )
+                        }
+                        Button(
+                            onClick = {
+                                postSelected = false
+                            },
+                            modifier = Modifier
+                                .padding(horizontal = 4.dp)
+                                .height(30.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if(!postSelected) LBlue else White
+                            ),
+                            contentPadding = PaddingValues(0.dp)
+
+                        ) {
+                            Text(
+                                text = "Reels",
+                                color = if(!postSelected) LBlue else GreyTxt
+                            )
+                        }
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .height(1.dp)
+                            .fillMaxWidth()
+                            .background(color = Grey)
+                    )
+                }
+                item(span = { GridItemSpan(maxLineSpan) }){
+                    Column(
+                        modifier = Modifier.padding(start = 16.dp)
+                    ) {
+                        Text(
+                            text = "Details",
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(vertical = 12.dp)
+                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(bottom = 6.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.briefcase_svgrepo_com),
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = GreyTxt
+                            )
+                            Text(
+                                text = "Works at Dizaart",
+                                modifier = Modifier
+                                    .padding(start = 6.dp),
+                                color = GreyTxt
+                            )
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(bottom = 6.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.scholar_cap),
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = GreyTxt
+                            )
+                            Text(
+                                text = "Studied at AKTU",
+                                modifier = Modifier
+                                    .padding(start = 6.dp),
+                                color = GreyTxt
+                            )
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(bottom = 6.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.location_pin_svgrepo_com),
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = GreyTxt
+                            )
+                            Text(
+                                text = "Lives in India",
+                                modifier = Modifier
+                                    .padding(start = 6.dp),
+                                color = GreyTxt
+                            )
+                        }
+                    }
+                }
+
                 items(userPosts) { postImage ->
                     Image(
                         painter = painterResource(id = postImage),

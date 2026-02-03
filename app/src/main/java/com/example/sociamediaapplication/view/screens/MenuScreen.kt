@@ -2,6 +2,7 @@ package com.example.sociamediaapplication.view.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,17 +35,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
+import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.CustomCard
 
 @Composable
 fun MenuScreen(){
     Column(
-        modifier = Modifier.padding(12.dp)
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxSize()
+            .background(BackgroundColor)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -92,7 +98,10 @@ fun MenuScreen(){
 
         Card(
             onClick = {},
-            elevation = CardDefaults.cardElevation(16.dp)
+            elevation = CardDefaults.cardElevation(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = White
+            )
         ) {
             Box(
                 contentAlignment = Alignment.BottomStart,
@@ -114,7 +123,7 @@ fun MenuScreen(){
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxSize(0.1f)
-                        .background(LGrey)
+                        .background(White)
                         .padding(top = 16.dp, start = 8.dp)
                 ) {
                     Text(
@@ -134,14 +143,15 @@ fun MenuScreen(){
                         onClick = { },
                         modifier = Modifier.size(40.dp),
                         colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = GreyBtn
+                            containerColor = Black
                         )
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.market_stall_svgrepo_com),
                             contentDescription = "",
                             modifier = Modifier
-                                .size(30.dp)
+                                .size(30.dp),
+                            tint = White
                         )
                     }
                 }

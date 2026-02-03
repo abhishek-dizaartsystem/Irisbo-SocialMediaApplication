@@ -100,7 +100,7 @@ fun VideoAnalyticsScreen(){
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(White),
+                        .background(BackgroundColor),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -146,7 +146,7 @@ fun VideoAnalyticsScreen(){
                 )
         ) {
             LazyColumn(
-                contentPadding = PaddingValues(12.dp),
+                contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // 🔹 GRID SECTION (2 columns)

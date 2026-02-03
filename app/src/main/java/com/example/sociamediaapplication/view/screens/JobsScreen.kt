@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Grey
@@ -63,14 +64,13 @@ fun JobsScreen(){
         topBar = {
             Column(
                 modifier = Modifier
-                    .background(White)
+                    .background(BackgroundColor)
             ) {
 
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(White),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -157,11 +157,11 @@ fun JobsScreen(){
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(
-                    color = White
+                    color = BackgroundColor
                 )
         ) {
             LazyColumn(
-                modifier = Modifier.padding(horizontal = 12.dp)
+                modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 item{
                     Row(
@@ -257,9 +257,6 @@ fun JobsScreen(){
                         )
                     }
 
-                }
-                item {
-                    HorizontalDivider()
                 }
                 items(10){
                     if(optionSelected=="Browse"){

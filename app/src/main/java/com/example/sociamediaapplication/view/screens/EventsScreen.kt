@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
@@ -50,14 +51,13 @@ fun EventsScreen(){
         topBar = {
             Column(
                 modifier = Modifier
-                    .background(White)
+                    .background(BackgroundColor)
             ) {
 
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(White),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -140,7 +140,7 @@ fun EventsScreen(){
                 .padding(innerPadding)
                 .fillMaxSize()
                 .background(
-                    color = White
+                    color = BackgroundColor
                 )
         ) {
             LazyColumn(

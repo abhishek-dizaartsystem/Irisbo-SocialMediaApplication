@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
@@ -53,14 +54,14 @@ fun MemoriesScreen(){
         topBar = {
             Column(
                 modifier = Modifier
-                    .background(White)
+                    .background(BackgroundColor)
             ) {
 
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(White),
+                        .background(BackgroundColor),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -105,11 +106,11 @@ fun MemoriesScreen(){
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(
-                    color = White
+                    color = BackgroundColor
                 )
         ) {
             LazyColumn(
-                modifier = Modifier.padding(12.dp)
+                modifier = Modifier.padding(16.dp)
             ) {
                 item {
                     Row(

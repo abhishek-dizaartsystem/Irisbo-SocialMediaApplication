@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,11 +14,15 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,10 +33,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.view.components.VideoThumbnail
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VideosScreen(){
 
@@ -52,51 +59,64 @@ fun VideosScreen(){
 
     Scaffold(
         topBar = {
-            Row(
-                modifier = Modifier.padding(8.dp)
-            ) {
-                TextField(
-                    value = searchTxt,
-                    onValueChange = {newMessage->
-                        searchTxt = newMessage
-                    },
-                    placeholder = {
-                        Text("Search videos...")
-                    },
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Transparent,
-                        unfocusedIndicatorColor = Transparent,
-                        disabledIndicatorColor = Transparent,
-                        unfocusedContainerColor = Transparent,
-                        focusedContainerColor = Transparent
-                    ),
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            width = 3.dp,
-                            color = Blue,
-                            shape = RoundedCornerShape(16.dp)
-                        ),
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.search_svgrepo_com),
-                            contentDescription = "",
-                            modifier = Modifier.size(30.dp)
+            TopAppBar(
+                title = {
+                    Row(
+                        modifier = Modifier.padding(end = 16.dp)
+                    ) {
+                        TextField(
+                            value = searchTxt,
+                            onValueChange = {newMessage->
+                                searchTxt = newMessage
+                            },
+                            placeholder = {
+                                Text("Search videos...")
+                            },
+                            colors = TextFieldDefaults.colors(
+                                focusedIndicatorColor = Transparent,
+                                unfocusedIndicatorColor = Transparent,
+                                disabledIndicatorColor = Transparent,
+                                unfocusedContainerColor = Transparent,
+                                focusedContainerColor = Transparent
+                            ),
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(
+                                    width = 3.dp,
+                                    color = Blue,
+                                    shape = RoundedCornerShape(16.dp)
+                                ),
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.search_svgrepo_com),
+                                    contentDescription = "",
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
                         )
                     }
-                )
-            }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = BackgroundColor
+                ),
+            )
+
 
         },
     ) {innerPadding->
         Column(
-            modifier = Modifier.fillMaxSize().padding(innerPadding)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(color = BackgroundColor)
         ) {
+            HorizontalDivider()
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
-                    .heightIn(200.dp, 2000.dp), // IMPORTANT: prevent infinite height
+                    .heightIn(200.dp, 2000.dp)
+                    .padding(16.dp), // IMPORTANT: prevent infinite height
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {

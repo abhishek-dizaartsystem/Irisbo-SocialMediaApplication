@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Grey
@@ -61,14 +62,13 @@ fun FriendsScreen(){
         topBar = {
             Column(
                 modifier = Modifier
-                    .background(White)
+                    .background(BackgroundColor)
             ) {
 
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(White),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -155,7 +155,7 @@ fun FriendsScreen(){
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(
-                    color = White
+                    color = BackgroundColor
                 )
         ) {
             LazyColumn(
@@ -255,9 +255,6 @@ fun FriendsScreen(){
                         )
                     }
 
-                }
-                item {
-                    HorizontalDivider()
                 }
                 items(10){
                     if(optionSelected=="All Friends"){

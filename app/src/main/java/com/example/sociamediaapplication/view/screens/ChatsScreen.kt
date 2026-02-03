@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.DGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
@@ -55,6 +57,10 @@ fun ChatsScreen(){
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(16.dp)
+            .background(
+                BackgroundColor
+            )
     ) {
         Spacer(modifier = Modifier.height(12.dp))
         TextField(

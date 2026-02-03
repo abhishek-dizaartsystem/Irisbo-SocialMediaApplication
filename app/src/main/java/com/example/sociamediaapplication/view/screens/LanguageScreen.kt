@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.model.LanguageModel
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Grey
@@ -62,7 +63,7 @@ fun LanguageScreen(){
     Scaffold(
         topBar = {
             Column(
-                modifier = Modifier.background(White)
+                modifier = Modifier.background(BackgroundColor)
             ) {
 
                 Spacer(modifier = Modifier.height(6.dp))
@@ -70,7 +71,7 @@ fun LanguageScreen(){
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(White),
+                        .background(BackgroundColor),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -118,7 +119,7 @@ fun LanguageScreen(){
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .background(White)
+                .background(BackgroundColor)
                 .fillMaxSize()
         ) {
 

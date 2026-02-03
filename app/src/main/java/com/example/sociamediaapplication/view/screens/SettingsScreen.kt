@@ -96,7 +96,7 @@ fun SettingsScreen(){
                 .background(Color(0xFFF8FAFC))
         ) {
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(12.dp)
+                modifier = Modifier.fillMaxSize().padding(16.dp)
             ) {
                 item{
                     Card(

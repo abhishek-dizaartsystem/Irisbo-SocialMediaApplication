@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.model.CategoriesMarketplace
 import com.example.sociamediaapplication.model.MarketplaceItem
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
@@ -106,14 +108,14 @@ fun MarketplaceScreen(){
         topBar = {
             Column(
                 modifier = Modifier
-                    .background(White)
+                    .background(BackgroundColor)
             ) {
 
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(White),
+                        .background(BackgroundColor),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -211,7 +213,7 @@ fun MarketplaceScreen(){
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(White)
+                .background(BackgroundColor)
         ) {
             LazyVerticalGrid (
                 columns = GridCells.Fixed(2),
@@ -236,7 +238,11 @@ fun MarketplaceScreen(){
                     LazyRow() {
                         items(categories){category->
                             Card(
-                                onClick = {}
+                                onClick = {},
+                                colors = CardDefaults.cardColors(
+                                    containerColor = White
+                                ),
+                                elevation = CardDefaults.cardElevation(2.dp)
                             ) {
                                 Column(
                                     modifier = Modifier

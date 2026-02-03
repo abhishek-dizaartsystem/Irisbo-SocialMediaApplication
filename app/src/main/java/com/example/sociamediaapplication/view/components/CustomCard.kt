@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Black
+import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
 fun CustomCard(
@@ -34,7 +35,10 @@ fun CustomCard(
     Card(
         onClick = onClicked,
         elevation = CardDefaults.cardElevation(4.dp),
-        modifier = modifier
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = White
+        )
     ) {
         Column(
             modifier = Modifier.padding(10.dp)

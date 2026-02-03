@@ -17,6 +17,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -24,6 +26,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Grey
@@ -44,6 +49,7 @@ import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.White
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrivacyScreen(){
 
@@ -54,63 +60,68 @@ fun PrivacyScreen(){
 
     Scaffold(
         topBar = {
-            Column(
-                modifier = Modifier
-                    .background(White)
-            ) {
-
-                Spacer(modifier = Modifier.height(6.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(White),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    IconButton(
-                        onClick = {}
+            TopAppBar(
+                title = {
+                    Column(
+                        modifier = Modifier
+                            .background(BackgroundColor)
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.back_svgrepo_com),
-                            contentDescription = ""
-                        )
-                    }
-                    Text(
-                        text = "Privacy",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
-                    )
-                    Button(
-                        onClick = {},
-                        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
-                        modifier = Modifier.height(34.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Blue)
-                    ) {
-                        Text(
-                            text = "Save",
-                            fontSize = 18.sp
-                        )
-                    }
 
-                }
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
 
-                Spacer(modifier = Modifier.height(6.dp))
-                Spacer(
-                    modifier = Modifier
-                        .background(color = Grey)
-                        .height(1.dp)
-                        .fillMaxWidth()
-                )
-            }
+                            IconButton(
+                                onClick = {},
+                                modifier = Modifier.size(30.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.back_svgrepo_com),
+                                    contentDescription = ""
+                                )
+                            }
+                            Text(
+                                text = "Privacy",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                            Button(
+                                onClick = {},
+                                contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
+                                modifier = Modifier.height(34.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Blue)
+                            ) {
+                                Text(
+                                    text = "Save",
+                                    fontSize = 18.sp
+                                )
+                            }
+
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = BackgroundColor
+                ),
+                expandedHeight = 40.dp
+            )
+
         }
     ){innerPadding->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .background(White)
+                .background(BackgroundColor)
         ) {
+            HorizontalDivider()
             LazyColumn(
                 modifier = Modifier
                     .padding(16.dp)
