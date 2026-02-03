@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -42,6 +43,8 @@ import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.DGrey
+import com.example.sociamediaapplication.ui.theme.GreyTxt
+import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.view.components.ChatThumbnail
 
@@ -57,40 +60,40 @@ fun ChatsScreen(){
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(vertical = 16.dp)
             .background(
                 BackgroundColor
             )
     ) {
-        Spacer(modifier = Modifier.height(12.dp))
         TextField(
             value = searchTxt,
             onValueChange = {newMessage->
                 searchTxt = newMessage
             },
             placeholder = {
-                Text("Search User, Posts...")
+                Text(
+                    text = "Search groups",
+                    color = GreyTxt
+                )
             },
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Transparent,
                 unfocusedIndicatorColor = Transparent,
                 disabledIndicatorColor = Transparent,
-                unfocusedContainerColor = Transparent,
-                focusedContainerColor = Transparent
+                unfocusedContainerColor = LGrey,
+                focusedContainerColor = LGrey
             ),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(50.dp),
             modifier = Modifier
+                .height(54.dp)
                 .fillMaxWidth()
-                .border(
-                    width = 3.dp,
-                    color = Blue,
-                    shape = RoundedCornerShape(16.dp)
-                ),
+                .padding(horizontal = 12.dp),
             leadingIcon = {
                 Icon(
                     painter = painterResource(R.drawable.search_svgrepo_com),
                     contentDescription = "",
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier.size(24.dp),
+                    tint = GreyTxt
                 )
             }
         )
@@ -105,6 +108,7 @@ fun ChatsScreen(){
                     friendProfilePhoto = painterResource(friendPic),
                     seen = false
                 )
+                HorizontalDivider()
             }
             items(chatListSeen){friendPic->
                 ChatThumbnail(
@@ -113,6 +117,7 @@ fun ChatsScreen(){
                     msgTime = "2 days ago",
                     friendProfilePhoto = painterResource(friendPic)
                 )
+                HorizontalDivider()
             }
         }
 

@@ -48,7 +48,7 @@ fun ChatThumbnail(
             .background(
                 color = if (seen) White else LBlue
             )
-            .padding(horizontal = 6.dp)
+            .padding(horizontal = 12.dp)
     ) {
         Spacer(modifier = Modifier.height(8.dp))
         Row(
@@ -98,12 +98,6 @@ fun ChatThumbnail(
 
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(2.dp)
-                .background(color = GreyTxt)
-        )
 
     }
 }

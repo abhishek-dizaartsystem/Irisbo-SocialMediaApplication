@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -84,31 +85,32 @@ fun SearchScreen() {
                 title = {
                     TextField(
                         value = searchTxt,
-                        onValueChange = { searchTxt = it },
+                        onValueChange = {newMessage->
+                            searchTxt = newMessage
+                        },
                         placeholder = {
-                            Text("Search User, Posts...")
+                            Text(
+                                text = "Search groups",
+                                color = GreyTxt
+                            )
                         },
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Transparent,
                             unfocusedIndicatorColor = Transparent,
                             disabledIndicatorColor = Transparent,
-                            unfocusedContainerColor = Transparent,
-                            focusedContainerColor = Transparent
+                            unfocusedContainerColor = LGrey,
+                            focusedContainerColor = LGrey
                         ),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(50.dp),
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp, vertical = 8.dp)
-                            .border(
-                                width = 3.dp,
-                                color = Blue,
-                                shape = RoundedCornerShape(16.dp)
-                            ),
+                            .height(54.dp)
+                            .fillMaxWidth(),
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(R.drawable.search_svgrepo_com),
                                 contentDescription = "",
-                                modifier = Modifier.size(30.dp)
+                                modifier = Modifier.size(24.dp),
+                                tint = GreyTxt
                             )
                         }
                     )

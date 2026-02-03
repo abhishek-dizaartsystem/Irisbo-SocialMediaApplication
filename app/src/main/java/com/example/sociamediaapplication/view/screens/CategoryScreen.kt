@@ -59,7 +59,7 @@ fun CategoryScreen(){
             },
             placeholder = {
                 Text(
-                    text = "Search groups",
+                    text = "Search Categories, videos...",
                     color = GreyTxt
                 )
             },

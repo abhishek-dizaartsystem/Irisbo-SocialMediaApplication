@@ -1,6 +1,8 @@
 package com.example.sociamediaapplication.view.screens
 
-import androidx.compose.foundation.BorderStroke
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,52 +25,50 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
-import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.DBlue
 import com.example.sociamediaapplication.ui.theme.Grey
-import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.GreyTxt
-import com.example.sociamediaapplication.ui.theme.LBlue
-import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.UploadItem
-import com.example.sociamediaapplication.view.components.VideoThumbnail
+import com.example.sociamediaapplication.viewmodel.UploadViewModel
 
 @Composable
-fun UploadScreen(){
+fun UploadScreen(
+    viewModel: UploadViewModel = viewModel()
+){
 
-    var caption by remember { mutableStateOf("") }
+    val caption by viewModel.caption.collectAsState()
 
-    val uploadList = remember {
-        mutableStateListOf(
-            R.drawable.rectangle_5,
-            R.drawable.rectangle_36,
-            R.drawable.rectangle_24,
-            R.drawable.rectangle_58,
-            R.drawable.rectangle_6,
-            R.drawable.rectangle_37,
-            R.drawable.rectangle_36__2_,
-            R.drawable.rectangle_36__1_,
-            R.drawable.rectangle_38,
-            R.drawable.rectangle_39
-        )
+    val mediaList by viewModel.mediaList.collectAsState()
+
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) {uri: Uri?->
+        uri?.let{
+            viewModel.addImage(it)
+        }
+    }
+
+    val videoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) {uri:Uri?->
+        uri?.let{
+            viewModel.addVideo(it)
+        }
     }
 
     Column(
@@ -85,7 +85,7 @@ fun UploadScreen(){
             TextField(
                 value = caption,
                 onValueChange = {newValue->
-                    caption = newValue
+                    viewModel.updateCaption(newValue)
                 },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Transparent,
@@ -119,7 +119,9 @@ fun UploadScreen(){
         ) {
             Row() {
                 Button(
-                    onClick = {},
+                    onClick = {
+                        imagePicker.launch("image/*")
+                    },
                     modifier = Modifier
                         .padding(end = 8.dp)
                         .height(40.dp),
@@ -141,7 +143,9 @@ fun UploadScreen(){
                     )
                 }
                 Button(
-                    onClick = {},
+                    onClick = {
+                        videoPicker.launch("video/*")
+                    },
                     modifier = Modifier
                         .padding(end = 8.dp)
                         .height(40.dp),
@@ -188,11 +192,11 @@ fun UploadScreen(){
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(uploadList) { thumbnailImage ->
+            items(mediaList) { item ->
                 UploadItem(
-                    painter = painterResource(thumbnailImage),
+                    item = item,
                     onDelete = {
-                        uploadList.remove(thumbnailImage)
+                        viewModel.removeMedia(item)
                     }
                 )
             }

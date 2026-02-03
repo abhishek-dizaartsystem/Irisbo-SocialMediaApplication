@@ -41,7 +41,7 @@ fun CustomCard(
         )
     ) {
         Column(
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(9.dp)
         ) {
             Icon(
                 painter = painter,

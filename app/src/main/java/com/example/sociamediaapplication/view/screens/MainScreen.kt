@@ -152,21 +152,23 @@ fun MainScreen(){
                             navController.navigate(MainRoutes.Profile.route)
                         },
                         modifier = Modifier
-                            .size(50.dp)
                             .border(
                                 width = 1.dp,
                                 color = Black,
                                 shape = HexagonShape
-                            )// Set the size of the clickable area
+                            )
+                            .size(40.dp)
+                            // Set the size of the clickable area
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.rectangle_5),
                             contentDescription = "Profile Image",
                             // This crops the image into a square before clipping to a circle
-                            contentScale = ContentScale.Crop,
+
                             modifier = Modifier
                                 .size(50.dp) // Ensure the image fills the button
-                                .clip(HexagonShape) // Makes it perfectly circular
+                                .clip(HexagonShape), // Makes it perfectly circular
+                            contentScale = ContentScale.Crop,
                         )
                     }
                     IconButton(
@@ -175,7 +177,7 @@ fun MainScreen(){
                         },
                         modifier = Modifier
                             .clip(RoundedCornerShape(0.dp))
-                            .size(70.dp)
+                            .size(40.dp)
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.video_frame_play_horizontal_svgrepo_com),
@@ -191,7 +193,7 @@ fun MainScreen(){
                         },
                         modifier = Modifier
                             .clip(RoundedCornerShape(0.dp))
-                            .size(50.dp)
+                            .size(40.dp)
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.home_svgrepo_com),
@@ -207,7 +209,7 @@ fun MainScreen(){
                         },
                         modifier = Modifier
                             .clip(RoundedCornerShape(0.dp))
-                            .size(60.dp)
+                            .size(50.dp)
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.video_plus_svgrepo_com),
@@ -223,7 +225,7 @@ fun MainScreen(){
                         },
                         modifier = Modifier
                             .clip(RoundedCornerShape(0.dp))
-                            .size(50.dp)
+                            .size(40.dp)
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.chat_dots_svgrepo_com),

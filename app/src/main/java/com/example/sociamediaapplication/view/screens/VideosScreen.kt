@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
+import com.example.sociamediaapplication.ui.theme.GreyTxt
+import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.view.components.VideoThumbnail
 
@@ -61,41 +64,38 @@ fun VideosScreen(){
         topBar = {
             TopAppBar(
                 title = {
-                    Row(
-                        modifier = Modifier.padding(end = 16.dp)
-                    ) {
-                        TextField(
-                            value = searchTxt,
-                            onValueChange = {newMessage->
-                                searchTxt = newMessage
-                            },
-                            placeholder = {
-                                Text("Search videos...")
-                            },
-                            colors = TextFieldDefaults.colors(
-                                focusedIndicatorColor = Transparent,
-                                unfocusedIndicatorColor = Transparent,
-                                disabledIndicatorColor = Transparent,
-                                unfocusedContainerColor = Transparent,
-                                focusedContainerColor = Transparent
-                            ),
-                            shape = RoundedCornerShape(16.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .border(
-                                    width = 3.dp,
-                                    color = Blue,
-                                    shape = RoundedCornerShape(16.dp)
-                                ),
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.search_svgrepo_com),
-                                    contentDescription = "",
-                                    modifier = Modifier.size(30.dp)
-                                )
-                            }
-                        )
-                    }
+                    TextField(
+                        value = searchTxt,
+                        onValueChange = {newMessage->
+                            searchTxt = newMessage
+                        },
+                        placeholder = {
+                            Text(
+                                text = "Search Videos...",
+                                color = GreyTxt
+                            )
+                        },
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Transparent,
+                            unfocusedIndicatorColor = Transparent,
+                            disabledIndicatorColor = Transparent,
+                            unfocusedContainerColor = LGrey,
+                            focusedContainerColor = LGrey
+                        ),
+                        shape = RoundedCornerShape(50.dp),
+                        modifier = Modifier
+                            .height(54.dp)
+                            .fillMaxWidth(),
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.search_svgrepo_com),
+                                contentDescription = "",
+                                modifier = Modifier.size(24.dp),
+                                tint = GreyTxt
+                            )
+                        }
+                    )
+
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = BackgroundColor
@@ -104,6 +104,7 @@ fun VideosScreen(){
 
 
         },
+        modifier = Modifier.background(BackgroundColor)
     ) {innerPadding->
         Column(
             modifier = Modifier
