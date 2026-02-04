@@ -21,13 +21,21 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,22 +44,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.TTransparentWhite
-import com.example.sociamediaapplication.ui.theme.TransparentWhite
 import com.example.sociamediaapplication.ui.theme.White
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Post(
     uName: String = "John Doe",
@@ -62,15 +68,24 @@ fun Post(
         (R.drawable.rectangle_6),
         (R.drawable.rectangle_5),
         (R.drawable.rectangle_24)
-    )
+    ),
+    isFollowing: Boolean = false,
+    postLikes: Int = 20
 ){
     val size = mediaList.size
 
     val pagerState = rememberPagerState(pageCount = {mediaList.size})
 
     var isLiked by remember { mutableStateOf(false) }
+
     var showCommentSection by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+
     var showSendSection by remember { mutableStateOf(false) }
+
+    var showDropDownMenu by remember { mutableStateOf(false) }
 
     Card(
         colors = CardDefaults
@@ -140,7 +155,7 @@ fun Post(
                                 )
                             ) {
                                 Text(
-                                    text = "Follow",
+                                    text = if(isFollowing) "Unfollow" else "Follow"
 
                                     )
                             }
@@ -164,11 +179,24 @@ fun Post(
                     }
 
                 }
-                IconButton(onClick = {}) {
+                IconButton(
+                    onClick = {showDropDownMenu = true}
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.menu_dots_svgrepo_com),
                         contentDescription = "",
                         modifier = Modifier.size(30.dp)
+                    )
+                }
+                DropdownMenu(
+                    expanded = showDropDownMenu,
+                    onDismissRequest = {showDropDownMenu = false}
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text("fea")
+                        },
+                        onClick = {showDropDownMenu = false},
                     )
                 }
             }
@@ -280,7 +308,8 @@ fun Post(
                                 .padding(8.dp)
                                 .background(
                                     color = TTransparentWhite,
-                                    shape = RoundedCornerShape(12.dp))
+                                    shape = RoundedCornerShape(12.dp)
+                                )
                                 .width(40.dp)
                                 .height(20.dp),
                             horizontalArrangement = Arrangement.Center,
@@ -303,19 +332,29 @@ fun Post(
                         .padding(top = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    IconButton(
-                        onClick = {
-                            //Like Button
-                            isLiked = !isLiked
-                        },
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clip(RoundedCornerShape(0.dp))
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.like_svgrepo_com),
-                            contentDescription = "",
-                            modifier = Modifier.padding(2.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        IconButton(
+                            onClick = {
+                                //Like Button
+                                isLiked = !isLiked
+                            },
+                            modifier = Modifier
+                                .size(30.dp)
+                                .clip(RoundedCornerShape(0.dp))
+                        ) {
+                            Icon(
+                                painter = painterResource(
+                                    if (isLiked) R.drawable.like_svgrepo_com__1_ else R.drawable.like_svgrepo_com
+                                ),
+                                contentDescription = "",
+                                modifier = Modifier.padding(2.dp)
+                            )
+                        }
+                        Text(
+                            text = postLikes.toString(),
+                            fontSize = 18.sp
                         )
                     }
                     IconButton(
@@ -351,6 +390,29 @@ fun Post(
             }
 
         }
+    }
+
+    if(showCommentSection){
+        ModalBottomSheet(
+            onDismissRequest = {showCommentSection = false},
+            sheetState = sheetState,
+            containerColor = White
+        ) {
+            CommentSection()
+        }
+    }
+    if (showSendSection) {
+        AlertDialog(
+            onDismissRequest = {showSendSection = false},
+            confirmButton = {
+            },
+            text = {
+                SendSection()
+            },
+            modifier = Modifier.fillMaxHeight(0.7f),
+            containerColor = White,
+
+        )
     }
 
 }

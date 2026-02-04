@@ -37,10 +37,18 @@ import com.example.sociamediaapplication.ui.theme.Red
 import com.example.sociamediaapplication.ui.theme.Transparent
 
 @Composable
-fun CommentItem(){
+fun CommentItem(
+    userName: String = "@coolboy",
+    comment: String = "This is Amazing",
+    totalLikes: Int = 20,
+    totalDislikes: Int = 2,
+    totalReplies: Int = 3
+){
     Row(
         verticalAlignment = Alignment.Top,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp)
     ) {
         IconButton(
             onClick = { },
@@ -65,7 +73,7 @@ fun CommentItem(){
                 verticalAlignment = Alignment.Bottom
             ) {
                 Text(
-                    text = "@coolboy",
+                    text = userName,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -77,7 +85,7 @@ fun CommentItem(){
                 )
             }
             Text(
-                text = "Everyone follow this diet surely healthy one",
+                text = comment,
                 modifier = Modifier.padding(vertical = 6.dp)
             )
             Row() {
@@ -98,7 +106,7 @@ fun CommentItem(){
                         tint = GreyTxt
                     )
                     Text(
-                        text = "89",
+                        text = totalLikes.toString(),
                         fontSize = 14.sp,
                         color = GreyTxt,
                         modifier = Modifier.padding(start = 4.dp)
@@ -117,11 +125,13 @@ fun CommentItem(){
                     Icon(
                         painter = painterResource(R.drawable.like_svgrepo_com),
                         contentDescription = "",
-                        modifier = Modifier.size(20.dp).rotate(180f),
+                        modifier = Modifier
+                            .size(20.dp)
+                            .rotate(180f),
                         tint = GreyTxt
                     )
                     Text(
-                        text = "89",
+                        text = totalDislikes.toString(),
                         fontSize = 14.sp,
                         color = GreyTxt,
                         modifier = Modifier.padding(start = 4.dp)
@@ -135,14 +145,16 @@ fun CommentItem(){
                 colors = ButtonDefaults.buttonColors(containerColor = Transparent)
             ) {
                 Text(
-                    text = "7 replies",
+                    text = "${totalReplies} replies",
                     modifier = Modifier.padding(end = 8.dp),
                     color = Blue
                 )
                 Icon(
                     painter = painterResource(R.drawable.back_svgrepo_com),
                     contentDescription = "",
-                    modifier = Modifier.size(14.dp).rotate(-90f),
+                    modifier = Modifier
+                        .size(14.dp)
+                        .rotate(-90f),
                     tint = Blue
                 )
             }
@@ -153,5 +165,11 @@ fun CommentItem(){
 @Preview(showBackground = true)
 @Composable
 fun CommentItemPreview(){
-    CommentItem()
+    CommentItem(
+        userName = "@coolboy",
+        comment = "This is Amazing",
+        totalLikes = 10,
+        totalDislikes = 2,
+        totalReplies = 4
+    )
 }

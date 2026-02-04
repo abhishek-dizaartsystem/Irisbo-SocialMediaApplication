@@ -162,7 +162,7 @@ fun ChatScreen(
                         )
                     }
                     IconButton(
-                        onClick = {}
+                        onClick = { showAttachmentMenu = true }
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.attachment_svgrepo_com),
@@ -188,7 +188,7 @@ fun ChatScreen(
                     shape = RoundedCornerShape(50.dp),
                     trailingIcon = {
                         IconButton(
-                            onClick = { showAttachmentMenu = true},
+                            onClick = {},
                             modifier = Modifier.padding(end = 4.dp)
                         ) {
                             Icon(
