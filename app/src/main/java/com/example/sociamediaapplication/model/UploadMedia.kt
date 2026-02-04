@@ -2,7 +2,7 @@ package com.example.sociamediaapplication.model
 
 import android.net.Uri
 
-class UploadMedia(
+data class UploadMedia(
     val uri: Uri,
     val mediaType: MediaType
 )

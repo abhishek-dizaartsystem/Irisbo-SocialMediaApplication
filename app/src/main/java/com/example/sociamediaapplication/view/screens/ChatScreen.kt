@@ -1,5 +1,13 @@
 package com.example.sociamediaapplication.view.screens
 
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,11 +43,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
@@ -50,6 +62,8 @@ import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.view.components.ChatBubble
+import com.example.sociamediaapplication.viewmodel.ChatViewModel
+import java.io.File
 
 
 val messages = listOf(
@@ -64,12 +78,89 @@ val messages = listOf(
 
 @Composable
 fun ChatScreen(
-    userId: String = "Kartik",
-    navController: NavController
+    userId: String = "Somu",
+    navController: NavController,
+    viewModel: ChatViewModel = viewModel()
 ){
-
+    
     var typeMessage by remember { mutableStateOf("") }
-    var showAttachmentMenu by remember { mutableStateOf(true) }
+    var showAttachmentMenu by remember { mutableStateOf(false) }
+
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) {uri: Uri?->
+        uri?.let{
+            viewModel.addImage(it)
+        }
+    }
+
+    val videoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) {uri: Uri?->
+        uri?.let{
+            viewModel.addVideo(it)
+        }
+    }
+
+//    val documentPicker = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.GetContent()
+//    ) {uri: Uri? ->
+//        uri?.let{
+//
+//        }
+//    }
+
+    val context = LocalContext.current
+
+    var photoUri by remember { mutableStateOf<Uri?>(null) }
+    var videoUri by remember { mutableStateOf<Uri?>(null) }
+
+    fun createMediaUri(extension: String): Uri {
+        val file = File.createTempFile(
+            "media_${System.currentTimeMillis()}",
+            extension,
+            context.cacheDir
+        )
+        return FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            file
+        )
+    }
+
+    /* ---------------- PHOTO CAPTURE ---------------- */
+
+    val takePictureLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success && photoUri != null) {
+            viewModel.addImage(photoUri!!)
+        }
+    }
+
+    /* ---------------- VIDEO CAPTURE ---------------- */
+
+    val captureVideoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CaptureVideo()
+    ) { success ->
+        if (success && videoUri != null) {
+            viewModel.addVideo(videoUri!!)
+        }
+    }
+
+    /* ---------------- CAMERA PERMISSION ---------------- */
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            // Default open photo
+            photoUri = createMediaUri(".jpg")
+            takePictureLauncher.launch(photoUri!!)
+        }
+    }
+
+
 
 
     Scaffold(
@@ -211,6 +302,18 @@ fun ChatScreen(
                         text = { Text("Camera") },
                         onClick = {
                             showAttachmentMenu = false
+
+                            if (
+                                ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.CAMERA
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                photoUri = createMediaUri(".jpg")
+                                takePictureLauncher.launch(photoUri!!)
+                            } else {
+                                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                            }
                         },
                         leadingIcon = {
                             Icon(
@@ -226,6 +329,7 @@ fun ChatScreen(
                         text = { Text("Photo") },
                         onClick = {
                             showAttachmentMenu = false
+                            imagePicker.launch("image/*")
                         },
                         leadingIcon = {
                             Icon(
@@ -241,6 +345,7 @@ fun ChatScreen(
                         text = { Text("Video") },
                         onClick = {
                             showAttachmentMenu = false
+                            videoPicker.launch("video/*")
                         },
                         leadingIcon = {
                             Icon(
