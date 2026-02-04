@@ -71,40 +71,40 @@ fun MenuNavGraph(mainNavController: NavController){
             )
         }
         composable(MenuRoutes.Marketplace.route) {
-            MarketplaceScreen()
+            MarketplaceScreen(navController)
         }
         composable(MenuRoutes.Groups.route) {
-            GroupsScreen()
+            GroupsScreen(navController)
         }
         composable(MenuRoutes.UserVideos.route) {
-            UserVideosScreen()
+            UserVideosScreen(navController)
         }
         composable(MenuRoutes.Memories.route) {
-            MemoriesScreen()
+            MemoriesScreen(navController)
         }
         composable(MenuRoutes.Pages.route) {
-            PagesScreen()
+            PagesScreen(navController)
         }
         composable(MenuRoutes.Friends.route) {
-            FriendsScreen()
+            FriendsScreen(navController)
         }
         composable(MenuRoutes.Events.route) {
-            EventsScreen()
+            EventsScreen(navController)
         }
         composable(MenuRoutes.Jobs.route) {
-            JobsScreen()
+            JobsScreen(navController)
         }
         composable(MenuRoutes.Gaming.route) {
-            GamesScreen()
+            GamesScreen(navController)
         }
         composable(MenuRoutes.VideoAnalytics.route) {
-            VideoAnalyticsScreen()
+            VideoAnalyticsScreen(navController)
         }
         composable(MenuRoutes.AdvancedSettings.route) {
-            AdvancedSettingsScreen()
+            AdvancedSettingsScreen(navController)
         }
         composable(MenuRoutes.VideoMonetization.route) {
-            MonetizationScreen()
+            MonetizationScreen(navController)
         }
         composable(MenuRoutes.Profile.route) {
             ProfileNavGraph(mainNavController)

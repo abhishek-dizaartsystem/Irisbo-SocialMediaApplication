@@ -39,6 +39,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -52,7 +54,9 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
-fun AdvancedSettingsScreen(){
+fun AdvancedSettingsScreen(
+    navController: NavController = rememberNavController()
+){
 
     var isDataSaver by remember { mutableStateOf(true) }
     var isHDUpload by remember { mutableStateOf(false) }
@@ -77,7 +81,9 @@ fun AdvancedSettingsScreen(){
                 ) {
 
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            navController.popBackStack()
+                        }
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.back_svgrepo_com),
@@ -120,7 +126,7 @@ fun AdvancedSettingsScreen(){
         ) {
             LazyColumn(
                 modifier = Modifier
-                    .padding(12.dp)
+                    .padding(16.dp)
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
@@ -264,9 +270,9 @@ fun AdvancedSettingsScreen(){
                             }
 
                             Switch(
-                                checked = isHDUpload,
+                                checked = isAutoPlay,
                                 onCheckedChange = {
-                                    isHDUpload = it
+                                    isAutoPlay = it
                                 },
                                 colors = SwitchDefaults.colors(
                                     checkedThumbColor = White,
@@ -379,9 +385,9 @@ fun AdvancedSettingsScreen(){
                             }
 
                             Switch(
-                                checked = isHDUpload,
+                                checked = shareUsageAnalytics,
                                 onCheckedChange = {
-                                    isHDUpload = it
+                                    shareUsageAnalytics = it
                                 },
                                 colors = SwitchDefaults.colors(
                                     checkedThumbColor = White,

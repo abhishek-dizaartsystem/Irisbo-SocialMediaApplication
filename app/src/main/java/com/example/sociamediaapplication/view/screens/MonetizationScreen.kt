@@ -40,6 +40,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -59,7 +61,9 @@ import com.example.sociamediaapplication.view.components.EarningsItem
 import com.example.sociamediaapplication.view.components.PaymentsItem
 
 @Composable
-fun MonetizationScreen(){
+fun MonetizationScreen(
+    navController: NavController = rememberNavController()
+){
 
     var isMonetizationEnabled by remember { mutableStateOf(false) }
 
@@ -81,7 +85,9 @@ fun MonetizationScreen(){
                 ) {
 
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            navController.popBackStack()
+                        }
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.back_svgrepo_com),
@@ -132,12 +138,12 @@ fun MonetizationScreen(){
                             .padding(vertical = 8.dp)
                             .fillMaxWidth(),
                         colors = CardDefaults.cardColors(
-                            containerColor = LLGreen
+                            containerColor = if(isMonetizationEnabled) LLGreen else White
                         ),
                         elevation = CardDefaults.cardElevation(2.dp),
                         border = BorderStroke(
                             width = 1.dp,
-                            color = LGreen
+                            color = if(isMonetizationEnabled) LGreen else Grey
                         )
                     ) {
                         Row(
@@ -148,22 +154,25 @@ fun MonetizationScreen(){
                             verticalAlignment = Alignment.CenterVertically
                         ){
                             Row() {
-                                Box(
-                                    contentAlignment = Alignment.Center
-                                ){
-                                    Icon(
-                                        painter = painterResource(R.drawable.circle_svgrepo_com),
-                                        contentDescription = "",
-                                        modifier = Modifier.size(40.dp),
-                                        tint = LGreen
-                                    )
-                                    Icon(
-                                        painter = painterResource(R.drawable.tick_svgrepo_com),
-                                        contentDescription = "",
-                                        modifier = Modifier.size(24.dp),
-                                        tint = LGreen
-                                    )
+                                if(isMonetizationEnabled){
+                                    Box(
+                                        contentAlignment = Alignment.Center
+                                    ){
+                                        Icon(
+                                            painter = painterResource(R.drawable.circle_svgrepo_com),
+                                            contentDescription = "",
+                                            modifier = Modifier.size(40.dp),
+                                            tint = LGreen
+                                        )
+                                        Icon(
+                                            painter = painterResource(R.drawable.tick_svgrepo_com),
+                                            contentDescription = "",
+                                            modifier = Modifier.size(24.dp),
+                                            tint = LGreen
+                                        )
+                                    }
                                 }
+
                                 Column(
                                     modifier = Modifier
                                         .padding(start = 12.dp)
@@ -175,7 +184,7 @@ fun MonetizationScreen(){
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        text = "You're earning from your content",
+                                        text = "You're ${if(!isMonetizationEnabled) "not" else ""} earning from your content",
                                         color = GreyTxt
                                     )
                                 }
@@ -190,7 +199,7 @@ fun MonetizationScreen(){
                                     },
                                     colors = SwitchDefaults.colors(
                                         checkedThumbColor = White,
-                                        checkedTrackColor = Blue,
+                                        checkedTrackColor = LGreen,
                                         uncheckedThumbColor = White,
                                         uncheckedTrackColor = Grey,
                                         uncheckedBorderColor = Grey,
@@ -199,13 +208,13 @@ fun MonetizationScreen(){
                                 Row(
                                     modifier = Modifier
                                         .background(
-                                            color = if(isMonetizationEnabled)LGreen else LBlue,
+                                            color = if(isMonetizationEnabled)LGreen else Grey,
                                             shape = RoundedCornerShape(16.dp)
                                         )
                                 ) {
                                     Text(
                                         text = if(isMonetizationEnabled) "Enabled" else "Disabled",
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                                         color = Black
                                     )
                                 }
@@ -323,7 +332,9 @@ fun MonetizationScreen(){
                             modifier = Modifier.padding(4.dp)
                         ) {
                             Button(
-                                onClick = {},
+                                onClick = {
+                                    earningsSelected = true
+                                },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = if(!earningsSelected) LGrey else White
                                 ),
@@ -338,7 +349,9 @@ fun MonetizationScreen(){
                                 )
                             }
                             Button(
-                                onClick = {},
+                                onClick = {
+                                    earningsSelected = false
+                                },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = if(earningsSelected) LGrey else White
                                 ),

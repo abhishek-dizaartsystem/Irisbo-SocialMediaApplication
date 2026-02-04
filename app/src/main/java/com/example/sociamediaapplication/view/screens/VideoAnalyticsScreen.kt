@@ -40,6 +40,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.model.VideoAnalyticsCardModel
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
@@ -58,7 +60,9 @@ import com.example.sociamediaapplication.view.components.VideoAnalyticsCard
 import com.example.sociamediaapplication.view.components.VideoAnalyticsItem
 
 @Composable
-fun VideoAnalyticsScreen(){
+fun VideoAnalyticsScreen(
+    navController: NavController = rememberNavController()
+){
 
     var videosSelected by remember { mutableStateOf(false) }
 
@@ -93,7 +97,7 @@ fun VideoAnalyticsScreen(){
         topBar = {
             Column(
                 modifier = Modifier
-                    .background(White)
+                    .background(BackgroundColor)
             ) {
 
                 Spacer(modifier = Modifier.height(6.dp))
@@ -106,7 +110,9 @@ fun VideoAnalyticsScreen(){
                 ) {
 
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            navController.popBackStack()
+                        }
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.back_svgrepo_com),
