@@ -3,6 +3,7 @@ package com.example.sociamediaapplication.view.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -33,7 +33,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalBottomSheetDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -50,7 +49,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogProperties
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -70,13 +68,15 @@ fun Post(
         (R.drawable.rectangle_24)
     ),
     isFollowing: Boolean = false,
-    postLikes: Int = 20
+    postLikes: Int = 20,
+    onLiked: () -> Unit = {},
+    onFollow: () -> Unit = {},
+    isLiked: Boolean = false,
+    onPostProfileClick: ()-> Unit = {}
 ){
     val size = mediaList.size
 
     val pagerState = rememberPagerState(pageCount = {mediaList.size})
-
-    var isLiked by remember { mutableStateOf(false) }
 
     var showCommentSection by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
@@ -102,7 +102,9 @@ fun Post(
                 modifier = Modifier.fillMaxWidth()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
-                        onClick = { /* Navigate to profile */ },
+                        onClick = {
+                            onPostProfileClick()
+                        },
                         modifier = Modifier
                             .size(50.dp) // Set the size of the clickable area
                             .border(
@@ -144,8 +146,11 @@ fun Post(
                                 )
                             }
                             Button(
-                                onClick = {},
-                                contentPadding = PaddingValues(0.dp),
+                                onClick = {onFollow()},
+                                contentPadding = PaddingValues(
+                                    vertical = 0.dp,
+                                    horizontal = 12.dp
+                                ),
                                 modifier = Modifier
                                     .padding(horizontal = 12.dp)
                                     .height(24.dp),
@@ -156,8 +161,7 @@ fun Post(
                             ) {
                                 Text(
                                     text = if(isFollowing) "Unfollow" else "Follow"
-
-                                    )
+                                )
                             }
 
                         }
@@ -179,26 +183,32 @@ fun Post(
                     }
 
                 }
-                IconButton(
-                    onClick = {showDropDownMenu = true}
+                Row(
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.menu_dots_svgrepo_com),
-                        contentDescription = "",
-                        modifier = Modifier.size(30.dp)
-                    )
+                    IconButton(
+                        onClick = {showDropDownMenu = true}
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.menu_dots_svgrepo_com),
+                            contentDescription = "",
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = showDropDownMenu,
+                        onDismissRequest = {showDropDownMenu = false},
+                        containerColor = White
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text("Report")
+                            },
+                            onClick = {showDropDownMenu = false},
+                        )
+                    }
                 }
-                DropdownMenu(
-                    expanded = showDropDownMenu,
-                    onDismissRequest = {showDropDownMenu = false}
-                ) {
-                    DropdownMenuItem(
-                        text = {
-                            Text("fea")
-                        },
-                        onClick = {showDropDownMenu = false},
-                    )
-                }
+
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -338,7 +348,7 @@ fun Post(
                         IconButton(
                             onClick = {
                                 //Like Button
-                                isLiked = !isLiked
+                                onLiked()
                             },
                             modifier = Modifier
                                 .size(30.dp)
@@ -420,6 +430,8 @@ fun Post(
 @Preview(showBackground = true)
 @Composable
 fun PostPreview(){
-    Post(caption = "Springs bright ,all sustainable !" +
-            "Everything shown was made before 1982,except vintage")
+    Post(
+        caption = "Springs bright ,all sustainable !" +
+                "Everything shown was made before 1982,except vintage",
+    )
 }

@@ -276,7 +276,7 @@ fun MainScreen(
             }
 
             composable(MainRoutes.Profile.route) {
-                ProfileNavGraph(mainNavController)
+                HomeScreen2(mainNavController)
             }
 
             composable(MainRoutes.Category.route){

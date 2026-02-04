@@ -20,6 +20,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,16 +33,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.model.CommentModel
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Red
 import com.example.sociamediaapplication.ui.theme.Transparent
 
 @Composable
-fun CommentSection() {
+fun CommentSection(
+    navController: NavController = rememberNavController()
+) {
 
-    var searchTxt by remember { mutableStateOf("") }
+    var comment by remember { mutableStateOf("") }
+
+    val commentList = remember { mutableStateListOf(
+        CommentModel("1", 20, 2,3, false, false),
+        CommentModel("2", 30, 4, 4,false, false),
+        CommentModel("3", 10, 6, 1,false, false),
+        CommentModel("4", 24, 2,3, false, false),
+        CommentModel("5", 22, 7, 2, false, false),
+        CommentModel("6", 2, 9, 8, false, false),
+        CommentModel("7", 1, 10,2, false, false)
+    ) }
 
     Column(
         modifier = Modifier
@@ -67,13 +83,13 @@ fun CommentSection() {
                 )
             }
             TextField(
-                value = searchTxt,
-                onValueChange = {newMessage->
-                    searchTxt = newMessage
+                value = comment,
+                onValueChange = {newValue->
+                    comment = newValue
                 },
                 placeholder = {
                     Text(
-                        text = "Search friends...",
+                        text = "Comment your views...",
                         color = GreyTxt
                     )
                 },
@@ -88,38 +104,76 @@ fun CommentSection() {
                 modifier = Modifier
                     .height(54.dp)
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
+                    .padding(horizontal = 12.dp),
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            //comment
+                        },
+                        modifier = Modifier
+                            .size(40.dp)
+                            .padding(end = 4.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.send_svgrepo_com),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(30.dp)
+                                .rotate(15f)
+                        )
+                    }
+                }
             )
 
-            IconButton(
-                onClick = { },
-                modifier = Modifier.padding(end = 4.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.send_svgrepo_com),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(30.dp)
-                        .rotate(15f)
-                )
-            }
+
         }
-        Text(
-            text = "Comments",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
-        )
 
         Spacer(modifier = Modifier.height(12.dp))
+        HorizontalDivider()
 
         LazyColumn() {
-            items(10){
+            items(commentList.size){index->
+                val comment = commentList[index]
                 CommentItem(
                     "@coolboy",
                     "This is amazing",
-                    20,
-                    2,
-                    3
+                    comment.likes,
+                    comment.dislikes,
+                    comment.replies,
+                    isLiked = comment.isLiked,
+                    isDisliked = comment.isDisliked,
+                    onLiked = {
+                        if(comment.isLiked){
+                            commentList[index] = comment.copy(
+                                isLiked = false,
+                                likes = comment.likes-1
+                            )
+                        }else{
+                            commentList[index] = comment.copy(
+                                isLiked = true,
+                                likes = comment.likes+1,
+                                isDisliked = false
+                            )
+                        }
+                    },
+                    onDisliked = {
+                        if(comment.isDisliked){
+                            commentList[index] = comment.copy(
+                                isDisliked = false,
+                                dislikes = comment.dislikes-1
+                            )
+                        }else{
+                            commentList[index] = comment.copy(
+                                isDisliked = true,
+                                dislikes = comment.likes+1,
+                                isLiked = false
+                            )
+                        }
+                    },
+                    onReplyClicked = {},
+                    onUserProfileClick = {
+
+                    }
                 )
                 HorizontalDivider()
             }

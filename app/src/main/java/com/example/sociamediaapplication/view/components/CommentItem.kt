@@ -42,7 +42,13 @@ fun CommentItem(
     comment: String = "This is Amazing",
     totalLikes: Int = 20,
     totalDislikes: Int = 2,
-    totalReplies: Int = 3
+    totalReplies: Int = 3,
+    isLiked: Boolean = false,
+    isDisliked: Boolean = false,
+    onLiked: ()-> Unit = {},
+    onDisliked: ()-> Unit = {},
+    onReplyClicked: ()-> Unit = {},
+    onUserProfileClick: ()-> Unit = {}
 ){
     Row(
         verticalAlignment = Alignment.Top,
@@ -51,7 +57,9 @@ fun CommentItem(
             .padding(vertical = 12.dp)
     ) {
         IconButton(
-            onClick = { },
+            onClick = {
+                onUserProfileClick()
+            },
             modifier = Modifier.size(48.dp),
             colors = IconButtonDefaults.iconButtonColors(
                 containerColor = Red
@@ -90,7 +98,9 @@ fun CommentItem(
             )
             Row() {
                 Button(
-                    onClick = {},
+                    onClick = {
+                        onLiked()
+                    },
                     modifier = Modifier
                         .height(30.dp)
                         .widthIn(50.dp, 150.dp)
@@ -100,7 +110,9 @@ fun CommentItem(
                     colors = ButtonDefaults.buttonColors(containerColor = Transparent),
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.like_svgrepo_com),
+                        painter = painterResource(
+                            if(isLiked) R.drawable.like_svgrepo_com__1_ else R.drawable.like_svgrepo_com
+                        ),
                         contentDescription = "",
                         modifier = Modifier.size(20.dp),
                         tint = GreyTxt
@@ -113,7 +125,9 @@ fun CommentItem(
                     )
                 }
                 Button(
-                    onClick = {},
+                    onClick = {
+                        onDisliked()
+                    },
                     modifier = Modifier
                         .height(30.dp)
                         .widthIn(50.dp, 150.dp)
@@ -123,7 +137,9 @@ fun CommentItem(
                     colors = ButtonDefaults.buttonColors(containerColor = Transparent),
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.like_svgrepo_com),
+                        painter = painterResource(
+                            if(isDisliked) R.drawable.like_svgrepo_com__1_ else R.drawable.like_svgrepo_com
+                        ),
                         contentDescription = "",
                         modifier = Modifier
                             .size(20.dp)
@@ -139,7 +155,9 @@ fun CommentItem(
                 }
             }
             Button(
-                onClick = {},
+                onClick = {
+                    onReplyClicked()
+                },
                 contentPadding = PaddingValues(0.dp),
                 modifier = Modifier.height(20.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Transparent)
