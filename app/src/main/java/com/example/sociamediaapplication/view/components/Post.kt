@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -419,9 +420,13 @@ fun Post(
             text = {
                 SendSection()
             },
-            modifier = Modifier.fillMaxHeight(0.7f),
+            modifier = Modifier
+                .fillMaxHeight(0.7f)
+                .fillMaxWidth(0.95f),
             containerColor = White,
-
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false
+            )
         )
     }
 

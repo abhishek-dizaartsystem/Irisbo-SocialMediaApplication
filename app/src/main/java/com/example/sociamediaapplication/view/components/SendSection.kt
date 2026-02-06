@@ -60,6 +60,15 @@ fun SendSection() {
             "Vivek",
             "x",
             "y",
+            "z",
+            "Abhinav",
+            "Kartik",
+            "Rohit",
+            "Aman",
+            "Nitin",
+            "Vivek",
+            "x",
+            "y",
             "z"
         )
     }
@@ -67,7 +76,9 @@ fun SendSection() {
     val selectedFriends = remember { mutableStateListOf<String>() }
 
     Column(
-        modifier = Modifier.fillMaxHeight()
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth()
     ) {
         TextField(
             value = searchTxt,
@@ -105,8 +116,8 @@ fun SendSection() {
         Spacer(modifier = Modifier.height(12.dp))
 
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(100.dp),
-            verticalArrangement = Arrangement.spacedBy(28.dp),
+            columns = GridCells.Adaptive(80.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalArrangement = Arrangement.spacedBy(28.dp),
             modifier = Modifier.weight(1f)
         ) {

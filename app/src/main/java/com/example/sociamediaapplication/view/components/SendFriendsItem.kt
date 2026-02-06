@@ -2,6 +2,7 @@ package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,7 +44,12 @@ fun SendFriendsItem(
                 painter = painter,
                 contentDescription = "",
                 modifier = Modifier
-                    .size(90.dp)
+                    .size(70.dp)
+                    .border(
+                        1.dp,
+                        Black,
+                        CircleShape
+                    )
                     .clip(CircleShape)
                     .aspectRatio(1f),
                 contentScale = ContentScale.Crop
@@ -51,7 +57,7 @@ fun SendFriendsItem(
             if(isSelected){
                 Column(
                     modifier = Modifier
-                        .padding(8.dp)
+                        .padding(4.dp)
                         .clip(CircleShape)
                         .background(Blue)
                 ) {
