@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,13 +59,16 @@ fun MainScreen(
     mainNavController: NavController
 ){
 
+
+
+
     val navController = rememberNavController()
-
-
-
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val isScrollingUp = scrollBehavior.state.collapsedFraction == 0f
     Scaffold(
         topBar = {
             TopAppBar(
+                scrollBehavior = scrollBehavior,
                 title = {
                     Row (
                         modifier = Modifier.fillMaxWidth(),
@@ -143,106 +148,110 @@ fun MainScreen(
             )
         },
         bottomBar = {
-            BottomAppBar(
-                containerColor = LLBlue,
-                contentPadding = PaddingValues(horizontal = 16.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+            AnimatedVisibility(visible = isScrollingUp) {
+                BottomAppBar(
+                    containerColor = LLBlue,
+                    contentPadding = PaddingValues(horizontal = 16.dp)
                 ) {
-                    IconButton(
-                        onClick = {
-                            navController.navigate(MainRoutes.Profile.route)
-                        },
-                        modifier = Modifier
-                            .border(
-                                width = 1.dp,
-                                color = Black,
-                                shape = HexagonShape
-                            )
-                            .size(40.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        IconButton(
+                            onClick = {
+                                navController.navigate(MainRoutes.Profile.route)
+                            },
+                            modifier = Modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = Black,
+                                    shape = HexagonShape
+                                )
+                                .size(40.dp)
                             // Set the size of the clickable area
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.rectangle_5),
-                            contentDescription = "Profile Image",
-                            // This crops the image into a square before clipping to a circle
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.rectangle_5),
+                                contentDescription = "Profile Image",
+                                // This crops the image into a square before clipping to a circle
 
+                                modifier = Modifier
+                                    .size(50.dp) // Ensure the image fills the button
+                                    .clip(HexagonShape), // Makes it perfectly circular
+                                contentScale = ContentScale.Crop,
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                navController.navigate(MainRoutes.Category.route)
+                            },
                             modifier = Modifier
-                                .size(50.dp) // Ensure the image fills the button
-                                .clip(HexagonShape), // Makes it perfectly circular
-                            contentScale = ContentScale.Crop,
-                        )
-                    }
-                    IconButton(
-                        onClick = {
-                            navController.navigate(MainRoutes.Category.route)
-                        },
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(0.dp))
-                            .size(40.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.video_frame_play_horizontal_svgrepo_com),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .padding(4.dp)
+                                .clip(RoundedCornerShape(0.dp))
                                 .size(40.dp)
-                        )
-                    }
-                    IconButton(
-                        onClick = {
-                            navController.navigate(MainRoutes.Home1.route)
-                        },
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(0.dp))
-                            .size(40.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.home_svgrepo_com),
-                            contentDescription = "",
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.video_frame_play_horizontal_svgrepo_com),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .size(40.dp)
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                navController.navigate(MainRoutes.Home1.route)
+                            },
                             modifier = Modifier
-                                .padding(4.dp)
+                                .clip(RoundedCornerShape(0.dp))
                                 .size(40.dp)
-                        )
-                    }
-                    IconButton(
-                        onClick = {
-                            navController.navigate(MainRoutes.Reels.route)
-                        },
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(0.dp))
-                            .size(50.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.video_plus_svgrepo_com),
-                            contentDescription = "",
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.home_svgrepo_com),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .size(40.dp)
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                mainNavController.navigate(Routes.Reels.route)
+                            },
                             modifier = Modifier
-                                .padding(4.dp)
-                                .size(70.dp)
-                        )
-                    }
-                    IconButton(
-                        onClick = {
-                            navController.navigate(MainRoutes.Chats.route)
-                        },
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(0.dp))
-                            .size(40.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.chat_dots_svgrepo_com),
-                            contentDescription = "",
+                                .clip(RoundedCornerShape(0.dp))
+                                .size(50.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.video_plus_svgrepo_com),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .size(70.dp)
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                navController.navigate(MainRoutes.Chats.route)
+                            },
                             modifier = Modifier
-                                .padding(4.dp)
+                                .clip(RoundedCornerShape(0.dp))
                                 .size(40.dp)
-                        )
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.chat_dots_svgrepo_com),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .size(40.dp)
+                            )
+                        }
                     }
                 }
             }
-        }
+
+        },
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         NavHost(
         navController = navController,

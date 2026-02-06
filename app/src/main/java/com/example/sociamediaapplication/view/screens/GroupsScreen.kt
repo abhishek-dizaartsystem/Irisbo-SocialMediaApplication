@@ -58,7 +58,7 @@ fun GroupsScreen(
 
     var searchTxt by remember { mutableStateOf("") }
 
-    var isDiscoverSelected by remember { mutableStateOf(true) }
+    var isDiscoverSelected by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {

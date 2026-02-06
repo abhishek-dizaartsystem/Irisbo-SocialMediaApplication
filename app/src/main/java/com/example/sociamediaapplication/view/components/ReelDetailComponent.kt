@@ -31,7 +31,7 @@ import com.example.sociamediaapplication.ui.theme.White
 fun ReelDetailComponent(){
     Column(
         horizontalAlignment = Alignment.Start,
-        modifier = Modifier.fillMaxWidth().padding(start = 4.dp)
+        modifier = Modifier.fillMaxWidth().padding(start = 4.dp, bottom = 8.dp)
     ) {
         Spacer(
             modifier = Modifier
