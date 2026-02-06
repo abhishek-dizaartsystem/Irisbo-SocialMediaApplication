@@ -18,28 +18,36 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.model.Reel
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.DTransparentBlack
 import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.ReelDetailComponent
 import com.example.sociamediaapplication.view.components.ReelItem
+import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 
 @Composable
 fun ReelsScreen() {
 
-    val reels = listOf(
-        (R.drawable.rectangle_24),
-        (R.drawable.rectangle_6),
-        (R.drawable.rectangle_5)
-    )
+    val viewModel: ReelsViewModel = viewModel()
+    val reels by viewModel.reelsList.collectAsState()
+    val isMuted by viewModel.isMuted.collectAsState()
+
+
 
     val pagerState = rememberPagerState(pageCount =  { reels.size })
 
@@ -49,11 +57,16 @@ fun ReelsScreen() {
             .fillMaxSize()
             .background(Black),
     ) { page ->
+        val reel = reels[page]
         Box(
             contentAlignment = Alignment.BottomEnd
         ) {
+            val isVisible = pagerState.currentPage == page
+
             ReelItem(
-            painter = painterResource(reels[page])
+                videoUrl = reels[page].videoUrl,
+                isVisible = isVisible,
+                isMuted = isMuted
             )
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -64,12 +77,15 @@ fun ReelsScreen() {
                     modifier = Modifier.fillMaxHeight(0.8f)
                 ) {
                     IconButton(
-                        onClick = {},
+                        onClick = {
+                            viewModel.toggleMuteVideo()
+                        },
                         colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
                         modifier = Modifier.size(45.dp)
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.mute_svgrepo_com),
+                            painter = painterResource(
+                                if (isMuted) R.drawable.sound_svgrepo_com else R.drawable.mute_svgrepo_com),
                             contentDescription = "",
                             modifier = Modifier.size(30.dp),
                             tint = White
@@ -78,21 +94,31 @@ fun ReelsScreen() {
                     Column(
                         verticalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
-                            .height(220.dp)
-                            .padding(end = 6.dp)
+                            .height(230.dp)
+                            .padding(end = 6.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         IconButton(
-                            onClick = {},
+                            onClick = {
+                                viewModel.toggleLike(page)
+
+                            },
                             colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
                             modifier = Modifier.size(45.dp)
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.like_svgrepo_com),
+                                painter = painterResource(
+                                    if(reels[page].isLiked) R.drawable.like_svgrepo_com__1_ else R.drawable.like_svgrepo_com),
                                 contentDescription = "",
                                 modifier = Modifier.size(30.dp),
                                 tint = White
                             )
                         }
+                        Text(
+                            text = reel.likeCount.toString(),
+                            color = White,
+                            fontSize = 16.sp
+                        )
                         IconButton(
                             onClick = {},
                             colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
@@ -118,12 +144,15 @@ fun ReelsScreen() {
                             )
                         }
                         IconButton(
-                            onClick = {},
+                            onClick = {
+                                viewModel.toggleSave(page)
+                            },
                             colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
                             modifier = Modifier.size(45.dp)
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.save_icon),
+                                painter = painterResource(
+                                    if(reel.isSaved) R.drawable.save_filled else R.drawable.save_icon),
                                 contentDescription = "",
                                 modifier = Modifier.size(30.dp),
                                 tint = White
