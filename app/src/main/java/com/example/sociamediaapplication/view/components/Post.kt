@@ -63,7 +63,7 @@ fun Post(
     sincePosted: String = "1m",
     isVerified: Boolean = false,
     caption: String = "",
-    mediaList: List<Int> = listOf(
+    mediaList: List<Int>? = listOf(
         (R.drawable.rectangle_6),
         (R.drawable.rectangle_5),
         (R.drawable.rectangle_24)
@@ -75,9 +75,12 @@ fun Post(
     isLiked: Boolean = false,
     onPostProfileClick: ()-> Unit = {}
 ){
-    val size = mediaList.size
+    val size = mediaList?.size
 
-    val pagerState = rememberPagerState(pageCount = {mediaList.size})
+
+
+    val pagerState = rememberPagerState(pageCount = { mediaList?.size ?: 0 })
+
 
     var showCommentSection by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
@@ -218,119 +221,123 @@ fun Post(
                 text = caption
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Box(
-                modifier = Modifier.aspectRatio(1f)
-            ){
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                ) { page ->
 
-                    Image(
-                        painter = painterResource(mediaList[page]),
-                        contentDescription = "",
-                        contentScale = ContentScale.Crop,
+            if(size!=null){
+                Box(
+                    modifier = Modifier.aspectRatio(1f)
+                ){
+                    HorizontalPager(
+                        state = pagerState,
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(1f)
-                    )
-                }
+                    ) { page ->
+
+                        Image(
+                            painter = painterResource(mediaList[page]),
+                            contentDescription = "",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1f)
+                        )
+                    }
 
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .aspectRatio(1f)
-                ) {
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {}
-                    Row (
+                    Row(
                         modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(1f),
-                        verticalAlignment = Alignment.Bottom,
-                        horizontalArrangement = Arrangement.Center
+                            .fillMaxSize()
+                            .aspectRatio(1f)
                     ) {
-                        // 🔥 Smart Dots Indicator
-                        if (mediaList.size > 1) {
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ) {}
+                        Row (
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1f),
+                            verticalAlignment = Alignment.Bottom,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            // 🔥 Smart Dots Indicator
+                            if (mediaList.size > 1) {
 
-                            val totalDots = mediaList.size
-                            val currentPage = pagerState.currentPage
-                            val maxVisibleDots = 5
+                                val totalDots = mediaList.size
+                                val currentPage = pagerState.currentPage
+                                val maxVisibleDots = 5
 
-                            val startIndex = when {
-                                totalDots <= maxVisibleDots -> 0
-                                currentPage <= 2 -> 0
-                                currentPage >= totalDots - 3 -> totalDots - maxVisibleDots
-                                else -> currentPage - 2
-                            }
-
-                            val endIndex = minOf(startIndex + maxVisibleDots, totalDots)
-
-
-
-                            Row(
-                                modifier = Modifier
-                                    .padding(bottom = 8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-
-                                val hasPrevious = startIndex > 0
-                                val hasNext = endIndex < totalDots
-
-                                for (i in startIndex until endIndex) {
-
-                                    val dotSize = when {
-                                        i == currentPage -> 10.dp
-                                        i == startIndex && hasPrevious -> 4.dp
-                                        i == endIndex - 1 && hasNext -> 4.dp
-                                        else -> 7.dp
-                                    }
-
-                                    Box(
-                                        modifier = Modifier
-                                            .size(dotSize)
-                                            .clip(CircleShape)
-                                            .background(
-                                                if (i == currentPage)
-                                                    White
-                                                else
-                                                    White.copy(alpha = 0.5f)
-                                            )
-                                    )
+                                val startIndex = when {
+                                    totalDots <= maxVisibleDots -> 0
+                                    currentPage <= 2 -> 0
+                                    currentPage >= totalDots - 3 -> totalDots - maxVisibleDots
+                                    else -> currentPage - 2
                                 }
 
-                            }
-                        }
+                                val endIndex = minOf(startIndex + maxVisibleDots, totalDots)
 
-                    }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(1f),
-                        horizontalAlignment = Alignment.End
-                    ) {
-                        Row(
+
+
+                                Row(
+                                    modifier = Modifier
+                                        .padding(bottom = 8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+
+                                    val hasPrevious = startIndex > 0
+                                    val hasNext = endIndex < totalDots
+
+                                    for (i in startIndex until endIndex) {
+
+                                        val dotSize = when {
+                                            i == currentPage -> 10.dp
+                                            i == startIndex && hasPrevious -> 4.dp
+                                            i == endIndex - 1 && hasNext -> 4.dp
+                                            else -> 7.dp
+                                        }
+
+                                        Box(
+                                            modifier = Modifier
+                                                .size(dotSize)
+                                                .clip(CircleShape)
+                                                .background(
+                                                    if (i == currentPage)
+                                                        White
+                                                    else
+                                                        White.copy(alpha = 0.5f)
+                                                )
+                                        )
+                                    }
+
+                                }
+                            }
+
+                        }
+                        Column(
                             modifier = Modifier
-                                .padding(8.dp)
-                                .background(
-                                    color = TTransparentWhite,
-                                    shape = RoundedCornerShape(12.dp)
-                                )
-                                .width(40.dp)
-                                .height(20.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
+                                .fillMaxHeight()
+                                .weight(1f),
+                            horizontalAlignment = Alignment.End
                         ) {
-                            Text("${pagerState.currentPage+1}/$size")
+                            Row(
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .background(
+                                        color = TTransparentWhite,
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .width(40.dp)
+                                    .height(20.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text("${pagerState.currentPage+1}/$size")
+                            }
                         }
                     }
                 }
             }
+
 
 
             Row(
