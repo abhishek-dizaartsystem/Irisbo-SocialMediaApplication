@@ -40,7 +40,7 @@ fun DiscoverGroupsItem(
     memberCount: String = "14K members"
 ){
     Card(
-        modifier = Modifier.fillMaxWidth().padding(4.dp),
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(
             containerColor = White

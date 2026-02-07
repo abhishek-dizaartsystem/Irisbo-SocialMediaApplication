@@ -157,7 +157,7 @@ fun PaymentStep(
 
             item {
                 if(selectedPaymentOption == paymentOptions[0]){
-                    AddressField(
+                    CustomTextField(
                         label = "Card Number",
                         value = "1234 5678 9012 1314",
                         onValueChange = {},
@@ -167,7 +167,7 @@ fun PaymentStep(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Phone
-                    AddressField(
+                    CustomTextField(
                         label = "Name on Card",
                         value = "John Dow",
                         onValueChange = {}
@@ -177,13 +177,13 @@ fun PaymentStep(
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        AddressField(
+                        CustomTextField(
                             label = "Expiry Date",
                             value = "MM/YY",
                             onValueChange = {},
                             modifier = Modifier.weight(1f),
                         )
-                        AddressField(
+                        CustomTextField(
                             label = "CVV",
                             value = "012",
                             onValueChange = {},

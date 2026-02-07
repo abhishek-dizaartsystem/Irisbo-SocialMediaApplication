@@ -14,9 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -24,7 +28,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,10 +44,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
+import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
@@ -50,15 +58,26 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.DiscoverGroupsItem
 import com.example.sociamediaapplication.view.components.GroupsItem
+import com.example.sociamediaapplication.view.components.ManageGroupsItem
+import com.example.sociamediaapplication.viewmodel.GroupViewModel
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupsScreen(
-    navController: NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
+    viewModel: GroupViewModel = viewModel()
 ){
 
     var searchTxt by remember { mutableStateOf("") }
 
     var isDiscoverSelected by remember { mutableStateOf(false) }
+
+    val options = listOf("Your Group", "Following", "Discover")
+    var selectedOption by remember { mutableStateOf("Your Group") }
+
+    val groups by viewModel.groups.collectAsState()
+
 
     Scaffold(
         topBar = {
@@ -95,7 +114,9 @@ fun GroupsScreen(
                         Button(
                             onClick = {},
                             contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
-                            modifier = Modifier.height(34.dp).padding(end = 8.dp),
+                            modifier = Modifier
+                                .height(34.dp)
+                                .padding(end = 8.dp),
                             shape = RoundedCornerShape(8.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Blue)
                         ) {
@@ -181,9 +202,9 @@ fun GroupsScreen(
                     ) {
                         Button(
                             onClick = {
-                                isDiscoverSelected = false
+                                selectedOption = options[0]
                             },
-                            modifier = Modifier.fillMaxWidth(0.5f),
+                            modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Transparent
                             ),
@@ -193,16 +214,35 @@ fun GroupsScreen(
                             Text(
                                 text = "Your Groups",
                                 fontSize = 16.sp,
-                                color = GreyTxt
+                                color = if(selectedOption == options[0]) Black else GreyTxt
                             )
 
 
                         }
                         Button(
                             onClick = {
-                                isDiscoverSelected = true
+                                selectedOption = options[1]
                             },
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Transparent
+                            ),
+                            shape = RoundedCornerShape(0.dp),
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Text(
+                                text = "Following",
+                                fontSize = 16.sp,
+                                color = if(selectedOption == options[1]) Black else GreyTxt
+                            )
+
+
+                        }
+                        Button(
+                            onClick = {
+                                selectedOption = options[2]
+                            },
+                            modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Transparent
                             ),
@@ -212,7 +252,7 @@ fun GroupsScreen(
                             Text(
                                 text = "Discover",
                                 fontSize = 16.sp,
-                                color = GreyTxt
+                                color = if(selectedOption == options[2]) Black else GreyTxt
                             )
 
 
@@ -225,29 +265,71 @@ fun GroupsScreen(
                     ) {
                         Spacer(
                             modifier = Modifier
-                                .fillMaxWidth(0.5f)
+                                .weight(1f)
                                 .height(1.dp)
                                 .background(
-                                    color = if (isDiscoverSelected) Transparent else Blue
+                                    color = if (selectedOption == options[0]) Blue else Transparent
                                 )
                         )
                         Spacer(
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .weight(1f)
                                 .height(1.dp)
                                 .background(
-                                    color = if (isDiscoverSelected) Blue else Transparent
+                                    color = if (selectedOption == options[1]) Blue else Transparent
+                                )
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(1.dp)
+                                .background(
+                                    color = if (selectedOption == options[2]) Blue else Transparent
                                 )
                         )
                     }
 
                 }
 
-                items(10){
-                    if(isDiscoverSelected){
-                        DiscoverGroupsItem()
-                    }else{
-                        GroupsItem()
+                when(selectedOption){
+                    options[0]->{
+                        item {
+                            Text(
+                                text = "Groups you manage",
+                                color = GreyTxt,
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        }
+                        items(groups){ group->
+                            Card(
+                                onClick = {},
+                                elevation = CardDefaults.cardElevation(2.dp)
+                            ) {
+                                ManageGroupsItem(
+                                    isPublic = group.isPublic,
+                                    onPrivacyToggle = {
+                                        viewModel.toggleMyGroupPrivacy(group.id)
+                                    },
+                                    isPostApproval = group.isPostApproval,
+                                    onPostApprovalToggle = { viewModel.togglePostApproval(group.id) }
+                                )
+                            }
+
+                            Spacer(Modifier.height(16.dp))
+
+
+                        }
+                    }
+                    options[1]->{
+                        items(10){
+                            GroupsItem()
+                        }
+                    }
+                    options[2]->{
+                        items(10){
+                            DiscoverGroupsItem()
+                        }
                     }
                 }
             }

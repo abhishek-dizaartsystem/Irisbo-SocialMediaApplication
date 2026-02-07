@@ -77,7 +77,7 @@ fun AddressStep(
             }
             item {
 // Full Name
-                AddressField(
+                CustomTextField(
                     label = "Full Name",
                     value = fullName,
                     onValueChange = onFullNameChange
@@ -86,7 +86,7 @@ fun AddressStep(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Phone
-                AddressField(
+                CustomTextField(
                     label = "Phone Number",
                     value = phone,
                     onValueChange = onPhoneChange,
@@ -96,7 +96,7 @@ fun AddressStep(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Address
-                AddressField(
+                CustomTextField(
                     label = "Address",
                     value = address,
                     onValueChange = onAddressChange
@@ -108,14 +108,14 @@ fun AddressStep(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    AddressField(
+                    CustomTextField(
                         label = "City",
                         value = city,
                         onValueChange = onCityChange,
                         modifier = Modifier.weight(1f)
                     )
 
-                    AddressField(
+                    CustomTextField(
                         label = "State",
                         value = state,
                         onValueChange = onStateChange,
@@ -126,7 +126,7 @@ fun AddressStep(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // ZIP
-                AddressField(
+                CustomTextField(
                     label = "ZIP Code",
                     value = zip,
                     onValueChange = onZipChange,
