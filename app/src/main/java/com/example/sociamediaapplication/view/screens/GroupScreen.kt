@@ -35,9 +35,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.model.FeedPost
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
+import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.DTransparentBlack
 import com.example.sociamediaapplication.ui.theme.GreyTxt
@@ -48,7 +51,9 @@ import com.example.sociamediaapplication.view.components.Post
 
 @Composable
 fun GroupScreen(
-    painter: Painter = painterResource(R.drawable.travel)
+    painter: Painter = painterResource(R.drawable.travel),
+    groupId: String = "1",
+    navController: NavController = rememberNavController()
 ){
 
     val posts = remember {
@@ -85,7 +90,9 @@ fun GroupScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         IconButton(
-                            onClick = {},
+                            onClick = {
+                                navController.popBackStack()
+                            },
                             colors = IconButtonDefaults.iconButtonColors(
                                 containerColor = DTransparentBlack
                             ),
@@ -101,6 +108,10 @@ fun GroupScreen(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
+                            Text(
+                                text = groupId,
+                                color = Black
+                            )
                             IconButton(
                                 onClick = {},
                                 colors = IconButtonDefaults.iconButtonColors(

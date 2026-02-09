@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -32,10 +33,17 @@ import com.example.sociamediaapplication.ui.theme.White
 fun GroupsItem(
     painter: Painter = painterResource(R.drawable.react_laptop),
     name: String = "React Developers",
-    memberCount: String = "14K members"
+    memberCount: String = "14K members",
+    groupId: String = "2",
+    onGroupClick:(String) -> Unit = {}
 ){
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clickable{
+                onGroupClick(groupId)
+            },
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(
             containerColor = White

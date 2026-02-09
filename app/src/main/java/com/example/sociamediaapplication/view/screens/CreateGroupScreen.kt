@@ -57,6 +57,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
@@ -73,6 +75,7 @@ import com.example.sociamediaapplication.viewmodel.GroupViewModel
 
 @Composable
 fun CreateGroupScreen(
+    navController: NavController = rememberNavController(),
     viewModel: GroupViewModel = viewModel()
 ){
 
@@ -122,7 +125,7 @@ fun CreateGroupScreen(
 
                 IconButton(
                     onClick = {
-                        //navController.popBackStack()
+                        navController.popBackStack()
                     }
                 ) {
                     Icon(

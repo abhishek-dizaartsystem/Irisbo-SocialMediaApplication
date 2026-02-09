@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,10 +39,17 @@ import com.example.sociamediaapplication.ui.theme.White
 fun DiscoverGroupsItem(
     painter: Painter = painterResource(R.drawable.react_laptop),
     name: String = "React Developers",
-    memberCount: String = "14K members"
+    memberCount: String = "14K members",
+    groupId: String = "3",
+    onGroupClick: (String)-> Unit = {}
 ){
     Card(
-        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clickable{
+                onGroupClick(groupId)
+            },
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(
             containerColor = White

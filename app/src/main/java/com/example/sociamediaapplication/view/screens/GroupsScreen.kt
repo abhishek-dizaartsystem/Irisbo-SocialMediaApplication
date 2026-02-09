@@ -59,13 +59,16 @@ import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.DiscoverGroupsItem
 import com.example.sociamediaapplication.view.components.GroupsItem
 import com.example.sociamediaapplication.view.components.ManageGroupsItem
+import com.example.sociamediaapplication.view.navigation.GroupsRoutes
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupsScreen(
+    bnavController: NavController = rememberNavController(),
     navController: NavController = rememberNavController(),
+    onGroupClick: (String)-> Unit = {},
     viewModel: GroupViewModel = viewModel()
 ){
 
@@ -96,7 +99,7 @@ fun GroupsScreen(
 
                     IconButton(
                         onClick = {
-                            navController.popBackStack()
+                            bnavController.popBackStack()
                         }
                     ) {
                         Icon(
@@ -112,7 +115,9 @@ fun GroupsScreen(
                     )
                     Row() {
                         Button(
-                            onClick = {},
+                            onClick = {
+                                navController.navigate(GroupsRoutes.CreateGroup.route)
+                            },
                             contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
                             modifier = Modifier
                                 .height(34.dp)
@@ -312,7 +317,8 @@ fun GroupsScreen(
                                         viewModel.toggleMyGroupPrivacy(group.id)
                                     },
                                     isPostApproval = group.isPostApproval,
-                                    onPostApprovalToggle = { viewModel.togglePostApproval(group.id) }
+                                    onPostApprovalToggle = { viewModel.togglePostApproval(group.id) },
+                                    onGroupClick = onGroupClick
                                 )
                             }
 
@@ -323,12 +329,16 @@ fun GroupsScreen(
                     }
                     options[1]->{
                         items(10){
-                            GroupsItem()
+                            GroupsItem(
+                                onGroupClick = onGroupClick
+                            )
                         }
                     }
                     options[2]->{
                         items(10){
-                            DiscoverGroupsItem()
+                            DiscoverGroupsItem(
+                                onGroupClick = onGroupClick
+                            )
                         }
                     }
                 }

@@ -121,7 +121,7 @@ fun ChatsScreen(
             items(chatListSeen){friendPic->
                 ChatThumbnail(
                     onChatClick,
-                    userId = "124",
+                    userId = "12",
                     friendName = "Kartik",
                     recentMsg = "Sent a photo",
                     msgTime = "2 days ago",

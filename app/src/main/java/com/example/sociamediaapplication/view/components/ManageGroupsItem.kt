@@ -17,6 +17,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,15 +59,19 @@ import com.example.sociamediaapplication.ui.theme.White
 @Composable
 fun ManageGroupsItem(
     isPublic: Boolean = true,
+    groupId: String = "1",
     onPrivacyToggle: ()-> Unit = {},
     isPostApproval: Boolean = true,
     onPostApprovalToggle: ()-> Unit = {},
-    onDelete: ()-> Unit = {}
+    onDelete: ()-> Unit = {},
+    onGroupClick:(String) -> Unit = {}
 ) {
 
     val sheetState = rememberModalBottomSheetState()
     var showSheet by remember { mutableStateOf(false) }
     var sheetType by remember { mutableStateOf("join") }
+
+    var showDropDownMenu by remember { mutableStateOf(false) }
 
 
     if (showSheet) {
@@ -284,16 +290,113 @@ fun ManageGroupsItem(
                             }
                         }
 
-                        IconButton(
-                            onClick = {},
-                            Modifier.size(30.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.menu_dots_svgrepo_com),
-                                contentDescription = "",
-                                Modifier.size(20.dp)
-                            )
+                        Column() {
+                            IconButton(
+                                onClick = {
+                                    showDropDownMenu = true
+                                },
+                                Modifier.size(30.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.menu_dots_svgrepo_com),
+                                    contentDescription = "",
+                                    Modifier.size(20.dp)
+                                )
+                            }
+
+                            DropdownMenu(
+                                expanded = showDropDownMenu,
+                                onDismissRequest = {
+                                    showDropDownMenu = false
+                                },
+                                shape = RoundedCornerShape(16.dp),
+                                containerColor = White
+                            ) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            "View Group",
+                                            fontSize = 16.sp)
+                                    },
+                                    onClick = {
+                                        onGroupClick(groupId)
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            painter = painterResource(R.drawable.eye_outlined_svgrepo_com),
+                                            contentDescription = "",
+                                            Modifier.size(24.dp)
+                                        )
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            "Group Settings",
+                                            fontSize = 16.sp)
+                                    },
+                                    onClick = {
+                                        sheetType = "join"
+                                        showSheet = true
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            painter = painterResource(R.drawable.settings_logo),
+                                            contentDescription = "",
+                                            Modifier.size(20.dp)
+                                        )
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            "Manage Members",
+                                            fontSize = 16.sp)
+                                    },
+                                    onClick = {},
+                                    leadingIcon = {
+                                        Icon(
+                                            painter = painterResource(R.drawable.team_3),
+                                            contentDescription = "",
+                                            Modifier.size(24.dp)
+                                        )
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            "Mute",
+                                            fontSize = 16.sp)
+                                    },
+                                    onClick = {},
+                                    leadingIcon = {
+                                        Icon(
+                                            painter = painterResource(R.drawable.notification_slient_svgrepo_com),
+                                            contentDescription = "",
+                                            Modifier.size(24.dp)
+                                        )
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            "Delete Group",
+                                            fontSize = 16.sp,
+                                            color = Red)
+                                    },
+                                    onClick = {},
+                                    leadingIcon = {
+                                        Icon(
+                                            painter = painterResource(R.drawable.delete_svgrepo_com),
+                                            contentDescription = "",
+                                            Modifier.size(24.dp),
+                                            tint = Red
+                                        )
+                                    }
+                                )
+                            }
                         }
+
 
                     }
 
