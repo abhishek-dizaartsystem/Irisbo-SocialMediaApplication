@@ -7,11 +7,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -54,6 +56,8 @@ import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.Red
 import com.example.sociamediaapplication.ui.theme.White
+import com.example.sociamediaapplication.view.screens.AllGroupMemberItem
+import com.example.sociamediaapplication.view.screens.GroupMemberRequestItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,6 +74,7 @@ fun ManageGroupsItem(
     val sheetState = rememberModalBottomSheetState()
     var showSheet by remember { mutableStateOf(false) }
     var sheetType by remember { mutableStateOf("join") }
+    var isPendingRequests by remember { mutableStateOf(true) }
 
     var showDropDownMenu by remember { mutableStateOf(false) }
 
@@ -86,6 +91,87 @@ fun ManageGroupsItem(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
+                }
+
+                "manage members" -> {
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Text(
+                            text = "Members of GroupID-$groupId",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                        Row(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .background(
+                                    color = LGrey,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                        ) {
+                            Button(
+                                onClick = {
+                                    isPendingRequests = true
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if(!isPendingRequests) LGrey else White
+                                ),
+                                contentPadding = PaddingValues(0.dp),
+                                modifier = Modifier.fillMaxWidth(0.5f),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(
+                                    text = "Pending",
+                                    color = if(!isPendingRequests) GreyTxt else Black,
+                                    fontSize = 16.sp
+                                )
+                            }
+                            Button(
+                                onClick = {
+                                    isPendingRequests = false
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if(isPendingRequests) LGrey else White
+                                ),
+                                contentPadding = PaddingValues(0.dp),
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(
+                                    text = "All",
+                                    color = if(isPendingRequests) GreyTxt else Black,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                        if(isPendingRequests){
+                            LazyColumn (
+                                Modifier
+                                    .padding(vertical = 12.dp, horizontal = 4.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                items(3){
+                                    GroupMemberRequestItem()
+                                }
+                            }
+                        }
+                        else{
+                            LazyColumn (
+                                Modifier
+                                    .padding(vertical = 12.dp, horizontal = 4.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                items(5){
+                                    AllGroupMemberItem()
+                                }
+                            }
+                        }
+
+                    }
                 }
 
                 "join" -> {
@@ -353,7 +439,10 @@ fun ManageGroupsItem(
                                             "Manage Members",
                                             fontSize = 16.sp)
                                     },
-                                    onClick = {},
+                                    onClick = {
+                                        sheetType = "manage members"
+                                        showSheet = true
+                                    },
                                     leadingIcon = {
                                         Icon(
                                             painter = painterResource(R.drawable.team_3),

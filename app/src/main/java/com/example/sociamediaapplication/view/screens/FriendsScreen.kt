@@ -60,7 +60,7 @@ fun FriendsScreen(
 
     var searchTxt by remember { mutableStateOf("") }
 
-    var optionSelected by remember { mutableStateOf("Suggestions") }
+    var optionSelected by remember { mutableStateOf("Requests") }
 
     Scaffold(
         topBar = {
