@@ -72,11 +72,12 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.CustomTextField
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
+import com.example.sociamediaapplication.viewmodel.PageViewModel
 
 @Composable
-fun CreateGroupScreen(
+fun CreatePageScreen(
     navController: NavController = rememberNavController(),
-    viewModel: GroupViewModel = viewModel()
+    viewModel: PageViewModel = viewModel()
 ){
 
 
@@ -94,7 +95,7 @@ fun CreateGroupScreen(
     var isApprovalRequired by remember { mutableStateOf(false) }
 
     val coverPhoto by viewModel.coverPhoto.collectAsState()
-    val groupProfile by viewModel.groupProfile.collectAsState()
+    val pageProfile by viewModel.pageProfile.collectAsState()
 
     val coverImagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -109,7 +110,7 @@ fun CreateGroupScreen(
         contract = ActivityResultContracts.GetContent()
     ) {uri: Uri?->
         uri?.let{
-            viewModel.updateGroupProfile(uri)
+            viewModel.updatePageProfile(uri)
         }
     }
 
@@ -229,10 +230,10 @@ fun CreateGroupScreen(
                                 ,
                                 shape = RoundedCornerShape(0.dp)
                             ){
-                                when(groupProfile){
+                                when(pageProfile){
                                     is Int->{
                                         Image(
-                                            painter = painterResource(groupProfile as Int),
+                                            painter = painterResource(pageProfile as Int),
                                             contentDescription = "",
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -243,7 +244,7 @@ fun CreateGroupScreen(
                                     }
                                     is Uri->{
                                         AsyncImage(
-                                            model = groupProfile as Uri,
+                                            model = pageProfile as Uri,
                                             contentDescription = "",
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -360,147 +361,35 @@ fun CreateGroupScreen(
                             containerColor = White
                         )
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
+                        Column(
+                            Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    painter = painterResource(
-                                        if(isPrivate) R.drawable.lock_svgrepo_com
-                                        else R.drawable.global_svgrepo_com
-                                    ),
-                                    contentDescription = "",
-                                    modifier = Modifier.size(30.dp),
-                                    tint = GreyTxt
-                                )
-
-
-                                Column(
-                                    modifier = Modifier
-                                        .padding(start = 12.dp)
-                                ) {
-                                    Text(
-                                        text = "Private Group",
-                                        color = Black,
-                                        fontSize = 16.sp
-                                    )
-                                    Text(
-                                        text = if(isPrivate) "Only members can see posts"
-                                        else "Anyone can see posts",
-                                        color = GreyTxt
-                                    )
-                                }
-                            }
-                            Switch(
-                                checked = isPrivate,
-                                onCheckedChange = {
-                                    isPrivate = it
-                                },
-                                colors = SwitchDefaults.colors(
-                                    checkedThumbColor = White,
-                                    checkedTrackColor = Blue,
-                                    uncheckedThumbColor = White,
-                                    uncheckedTrackColor = Grey,
-                                    uncheckedBorderColor = Grey,
-                                )
+                            Text(
+                                "Contact Information",
+                                fontSize = 18.sp
                             )
-                        }
-                        Spacer(
-                            modifier = Modifier
-                                .height(1.dp)
-                                .fillMaxWidth()
-                                .background(color = Grey)
-                        )
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                ) {
-                                    Text(
-                                        text = "Require Approval",
-                                        color = Black,
-                                        fontSize = 16.sp
-                                    )
-                                    Text(
-                                        text = "Review member requests before admitting",
-                                        color = GreyTxt
-                                    )
-                                }
-                            }
-                            Switch(
-                                checked = isApprovalRequired,
-                                onCheckedChange = {
-                                    isApprovalRequired = it
-                                },
-                                colors = SwitchDefaults.colors(
-                                    checkedThumbColor = White,
-                                    checkedTrackColor = Blue,
-                                    uncheckedThumbColor = White,
-                                    uncheckedTrackColor = Grey,
-                                    uncheckedBorderColor = Grey,
-                                )
+                            CustomTextField(
+                                "Website",
+                                "https://yourwebsite.com",
+                                onValueChange = {},
                             )
-                        }
-
-                        Spacer(
-                            modifier = Modifier
-                                .height(1.dp)
-                                .fillMaxWidth()
-                                .background(color = Grey)
-                        )
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                ) {
-                                    Text(
-                                        text = "Allow Member Posts",
-                                        color = Black,
-                                        fontSize = 16.sp
-                                    )
-                                    Text(
-                                        text = "Members can create posts in group",
-                                        color = GreyTxt
-                                    )
-                                }
-                            }
-                            Switch(
-                                checked = allowMemberPost,
-                                onCheckedChange = {
-                                    allowMemberPost = it
-                                },
-                                colors = SwitchDefaults.colors(
-                                    checkedThumbColor = White,
-                                    checkedTrackColor = Blue,
-                                    uncheckedThumbColor = White,
-                                    uncheckedTrackColor = Grey,
-                                    uncheckedBorderColor = Grey,
-                                )
+                            CustomTextField(
+                                "Phone",
+                                "+91 1234567890",
+                                onValueChange = {},
                             )
+                            CustomTextField(
+                                "Email",
+                                "contact@yourpage.com",
+                                onValueChange = {},
+                            )
+                            CustomTextField(
+                                "Address",
+                                "NX1 greater noida near gaurs",
+                                onValueChange = {},
+                            )
+
                         }
 
                     }
@@ -529,6 +418,6 @@ fun CreateGroupScreen(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun CreateGroupScreenPreview(){
-    CreateGroupScreen()
+fun CreatePageScreenPreview(){
+    CreatePageScreen()
 }

@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
@@ -47,18 +48,24 @@ import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.DiscoverGroupsItem
 import com.example.sociamediaapplication.view.components.DiscoverPagesItem
 import com.example.sociamediaapplication.view.components.GroupsItem
+import com.example.sociamediaapplication.view.components.ManagePagesItem
 import com.example.sociamediaapplication.view.components.PagesItem
+import com.example.sociamediaapplication.viewmodel.GroupViewModel
+import com.example.sociamediaapplication.viewmodel.PageViewModel
 
 @Composable
 fun PagesScreen(
-    navController: NavController = rememberNavController()
+    bnavController: NavController = rememberNavController(),
+    navController: NavController = rememberNavController(),
+    onPageClick: (String)-> Unit = {},
+    viewModel: PageViewModel = viewModel()
 ){
 
     var searchTxt by remember { mutableStateOf("") }
 
     var isDiscoverSelected by remember { mutableStateOf(true) }
 
-    var optionSelected by remember { mutableStateOf("Discover") }
+    var optionSelected by remember { mutableStateOf("Your Pages") }
 
     Scaffold(
         topBar = {
@@ -77,7 +84,7 @@ fun PagesScreen(
 
                     IconButton(
                         onClick = {
-                            navController.popBackStack()
+                            bnavController.popBackStack()
                         }
                     ) {
                         Icon(
@@ -267,15 +274,20 @@ fun PagesScreen(
                                 )
                         )
                     }
+                    Spacer(Modifier.height(4.dp))
 
                 }
                 items(10){
-                    if(optionSelected=="Your Pages"){
-                        PagesItem()
-                    }else if(optionSelected=="Liked"){
-                        DiscoverPagesItem(isLiked = true)
-                    }else{
-                        DiscoverPagesItem()
+                    when (optionSelected) {
+                        "Your Pages" -> {
+                            ManagePagesItem()
+                        }
+                        "Liked" -> {
+                            PagesItem()
+                        }
+                        else -> {
+                            DiscoverPagesItem()
+                        }
                     }
                 }
             }

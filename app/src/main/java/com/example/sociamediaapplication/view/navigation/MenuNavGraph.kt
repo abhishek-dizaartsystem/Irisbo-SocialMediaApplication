@@ -83,7 +83,7 @@ fun MenuNavGraph(mainNavController: NavController){
             MemoriesScreen(navController)
         }
         composable(MenuRoutes.Pages.route) {
-            PagesScreen(navController)
+            PagesNavGraph(bNavController = navController)
         }
         composable(MenuRoutes.Friends.route) {
             FriendsScreen(navController)

@@ -20,7 +20,7 @@ fun AppNavGraph() {
 
     NavHost(
         navController = navController,
-        startDestination = Routes.Main.route
+        startDestination = Routes.Splash.route
     ) {
 
         composable(Routes.Splash.route) {

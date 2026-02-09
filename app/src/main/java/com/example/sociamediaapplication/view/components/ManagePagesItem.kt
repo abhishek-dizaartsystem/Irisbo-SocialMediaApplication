@@ -3,7 +3,6 @@ package com.example.sociamediaapplication.view.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +23,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -44,16 +42,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.room.Delete
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
-import com.example.sociamediaapplication.ui.theme.DTransparentBlack
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
-import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.Red
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.screens.AllGroupMemberItem
@@ -61,7 +56,7 @@ import com.example.sociamediaapplication.view.screens.GroupMemberRequestItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ManageGroupsItem(
+fun ManagePagesItem(
     isPublic: Boolean = true,
     groupId: String = "1",
     onPrivacyToggle: ()-> Unit = {},
@@ -73,7 +68,7 @@ fun ManageGroupsItem(
 
     val sheetState = rememberModalBottomSheetState()
     var showSheet by remember { mutableStateOf(false) }
-    var sheetType by remember { mutableStateOf("join") }
+    var sheetType by remember { mutableStateOf("insights") }
     var isPendingRequests by remember { mutableStateOf(true) }
 
     var showDropDownMenu by remember { mutableStateOf(false) }
@@ -82,7 +77,9 @@ fun ManageGroupsItem(
     if (showSheet) {
         ModalBottomSheet(
             onDismissRequest = { showSheet = false },
-            sheetState = sheetState
+            sheetState = sheetState,
+            containerColor = White,
+            tonalElevation = 2.dp
         ) {
             when (sheetType) {
                 "requests" -> {
@@ -174,7 +171,7 @@ fun ManageGroupsItem(
                     }
                 }
 
-                "join" -> {
+                "settings" -> {
                     Column(
                         Modifier
                             .fillMaxWidth()
@@ -197,12 +194,12 @@ fun ManageGroupsItem(
                             ) {
                                 Column() {
                                     Text(
-                                        text = "Private Group",
+                                        text = "Published",
                                         color = Black,
                                         fontSize = 18.sp
                                     )
                                     Text(
-                                        text = "Only followers can see post",
+                                        text = "Page is visible to all",
                                         color = GreyTxt,
                                         fontSize = 16.sp
                                     )
@@ -234,12 +231,12 @@ fun ManageGroupsItem(
                             ) {
                                 Column() {
                                     Text(
-                                        text = "Post Approval",
+                                        text = "Enable Messaging",
                                         color = Black,
                                         fontSize = 18.sp
                                     )
                                     Text(
-                                        text = "Members can create post",
+                                        text = "Allow people to message this page",
                                         color = GreyTxt,
                                         fontSize = 16.sp
                                     )
@@ -259,12 +256,56 @@ fun ManageGroupsItem(
                                 )
                             )
                         }
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = LGrey
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(
+                                Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Text(
+                                    "Contact Information",
+                                    fontSize = 18.sp
+                                )
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.global_svgrepo_com),
+                                        contentDescription = "",
+                                        Modifier.size(16.dp)
+                                    )
+                                    Text(
+                                        "  techreviews.com",
+                                        fontSize = 16.sp
+                                    )
+                                }
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.email_svgrepo_com),
+                                        contentDescription = "",
+                                        Modifier.size(16.dp)
+                                    )
+                                    Text(
+                                        "  contact@techreviews.com",
+                                        fontSize = 16.sp
+                                    )
+                                }
+
+                            }
+                        }
                         Button(
                             onClick = onDelete,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Red
                             ),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.delete_svgrepo_com),
@@ -272,13 +313,210 @@ fun ManageGroupsItem(
                                 Modifier.size(20.dp)
                             )
                             Text(
-                                text = " Delete Group",
+                                text = " Delete Page",
                                 color = White,
                                 fontSize = 18.sp
                             )
                         }
                     }
 
+                }
+
+                "insights" -> {
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Insights",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.padding(vertical = 12.dp)
+                        ) {
+                            item {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Card(
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(20.dp),
+                                        elevation = CardDefaults.cardElevation(
+                                            defaultElevation = 8.dp
+                                        ),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = White
+                                        )
+                                    ) {
+                                        Column(
+                                            modifier = Modifier
+                                                .padding(vertical = 24.dp, horizontal = 32.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+
+                                            // Top Icon
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.up_trend_round_svgrepo_com), // replace with your icon
+                                                contentDescription = "Trending Icon",
+                                                tint = Blue,
+                                                modifier = Modifier.size(28.dp)
+                                            )
+
+                                            // Reach Number
+                                            Text(
+                                                text = "45.2K",
+                                                fontSize = 32.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Black
+                                            )
+
+                                            // Label
+                                            Text(
+                                                text = "Total Reach",
+                                                fontSize = 14.sp,
+                                                color = GreyTxt
+                                            )
+                                        }
+                                    }
+                                    Card(
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(20.dp),
+                                        elevation = CardDefaults.cardElevation(
+                                            defaultElevation = 8.dp
+                                        ),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = White
+                                        )
+                                    ) {
+                                        Column(
+                                            modifier = Modifier
+                                                .padding(vertical = 24.dp, horizontal = 32.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+
+                                            // Top Icon
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.heart_svgrepo_com), // replace with your icon
+                                                contentDescription = "Trending Icon",
+                                                tint = Blue,
+                                                modifier = Modifier.size(28.dp)
+                                            )
+
+                                            // Reach Number
+                                            Text(
+                                                text = "5.2K",
+                                                fontSize = 32.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Black
+                                            )
+
+                                            // Label
+                                            Text(
+                                                text = "Engagement",
+                                                fontSize = 14.sp,
+                                                color = GreyTxt
+                                            )
+                                        }
+                                    }
+                                }
+
+                            }
+                            item {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Card(
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(20.dp),
+                                        elevation = CardDefaults.cardElevation(
+                                            defaultElevation = 8.dp
+                                        ),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = White
+                                        )
+                                    ) {
+                                        Column(
+                                            modifier = Modifier
+                                                .padding(vertical = 24.dp, horizontal = 32.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+
+                                            // Top Icon
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.team_3), // replace with your icon
+                                                contentDescription = "Trending Icon",
+                                                tint = Blue,
+                                                modifier = Modifier.size(28.dp)
+                                            )
+
+                                            // Reach Number
+                                            Text(
+                                                text = "452",
+                                                fontSize = 32.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Black
+                                            )
+
+                                            // Label
+                                            Text(
+                                                text = "New Followers",
+                                                fontSize = 14.sp,
+                                                color = GreyTxt
+                                            )
+                                        }
+                                    }
+                                    Card(
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(20.dp),
+                                        elevation = CardDefaults.cardElevation(
+                                            defaultElevation = 8.dp
+                                        ),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = White
+                                        )
+                                    ) {
+                                        Column(
+                                            modifier = Modifier
+                                                .padding(vertical = 24.dp, horizontal = 32.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+
+                                            // Top Icon
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.eye_outlined_svgrepo_com), // replace with your icon
+                                                contentDescription = "Trending Icon",
+                                                tint = Blue,
+                                                modifier = Modifier.size(28.dp)
+                                            )
+
+                                            // Reach Number
+                                            Text(
+                                                text = "12.4K",
+                                                fontSize = 32.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Black
+                                            )
+
+                                            // Label
+                                            Text(
+                                                text = "Page Views",
+                                                fontSize = 14.sp,
+                                                color = GreyTxt
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -401,11 +639,10 @@ fun ManageGroupsItem(
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            "View Group",
+                                            "View Page",
                                             fontSize = 16.sp)
                                     },
                                     onClick = {
-                                        onGroupClick(groupId)
                                     },
                                     leadingIcon = {
                                         Icon(
@@ -418,7 +655,7 @@ fun ManageGroupsItem(
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            "Group Settings",
+                                            "Page Settings",
                                             fontSize = 16.sp)
                                     },
                                     onClick = {
@@ -436,7 +673,7 @@ fun ManageGroupsItem(
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            "Manage Members",
+                                            "View Insights",
                                             fontSize = 16.sp)
                                     },
                                     onClick = {
@@ -445,7 +682,7 @@ fun ManageGroupsItem(
                                     },
                                     leadingIcon = {
                                         Icon(
-                                            painter = painterResource(R.drawable.team_3),
+                                            painter = painterResource(R.drawable.up_trend_round_svgrepo_com),
                                             contentDescription = "",
                                             Modifier.size(24.dp)
                                         )
@@ -454,7 +691,7 @@ fun ManageGroupsItem(
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            "Edit",
+                                            "Edit Page",
                                             fontSize = 16.sp)
                                     },
                                     onClick = {},
@@ -484,7 +721,7 @@ fun ManageGroupsItem(
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            "Delete Group",
+                                            "Delete Page",
                                             fontSize = 16.sp,
                                             color = Red)
                                     },
@@ -522,19 +759,19 @@ fun ManageGroupsItem(
                             border = BorderStroke(1.dp, Grey)
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.add_friend_24),
+                                painter = painterResource(R.drawable.add_svgrepo_com),
                                 contentDescription = "",
-                                modifier = Modifier.size(16.dp),
+                                modifier = Modifier.size(20.dp),
                                 tint = Black
                             )
                             Text(
-                                "  Requests",
+                                "  Post",
                                 color = Black
                             )
                         }
                         Button(
                             onClick = {
-                                sheetType = "join"
+                                sheetType = "settings"
                                 showSheet = true
                             },
                             colors = ButtonDefaults.buttonColors(
@@ -563,10 +800,8 @@ fun ManageGroupsItem(
     }
 }
 
-@Preview(showBackground = true)
+@Preview()
 @Composable
-fun ManageGroupsItemPreview(){
-    ManageGroupsItem(
-        onPrivacyToggle = {}
-    )
+fun ManagePagesItemPreview(){
+    ManagePagesItem()
 }
