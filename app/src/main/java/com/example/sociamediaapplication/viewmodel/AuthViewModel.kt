@@ -19,7 +19,7 @@ class AuthViewModel(
     fun signup(name: String, email: String, password: String) {
         viewModelScope.launch {
             try {
-                val response = repository.signup(name, "fghjk", email, password, "dfghjk")
+                val response = repository.signup(name, "fghjk", email, password)
                 _authState.value = response   // 🔴 REQUIRED
             } catch (e: Exception) {
                 _authState.value = AuthResponse(

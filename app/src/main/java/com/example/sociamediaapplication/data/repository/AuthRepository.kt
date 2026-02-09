@@ -14,7 +14,6 @@ class AuthRepository {
         username: String,
         email: String,
         password: String,
-        confirmPassword: String
     ): AuthResponse {
 
         return api.signup(SignupRequest(name, username, email, password))
