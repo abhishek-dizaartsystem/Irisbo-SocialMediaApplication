@@ -6,4 +6,7 @@ sealed class PagesRoutes(val route: String) {
         fun createRoute(pageId: String) = "page/$pageId"
     }
     object CreatePage: PagesRoutes("createPage")
+    object EditPage: PagesRoutes("editPage/{pageId}"){
+        fun createRoute(pageId: String) = "page/$pageId"
+    }
 }

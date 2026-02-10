@@ -59,6 +59,7 @@ fun PagesScreen(
     bnavController: NavController = rememberNavController(),
     navController: NavController = rememberNavController(),
     onPageClick: (String)-> Unit = {},
+    onEditPageClick: (String) -> Unit = {},
     viewModel: PageViewModel = viewModel()
 ){
 
@@ -284,14 +285,19 @@ fun PagesScreen(
                     when (optionSelected) {
                         "Your Pages" -> {
                             ManagePagesItem(
-                                onPageClick = onPageClick
+                                onPageClick = onPageClick,
+                                onEditPageClick = onEditPageClick
                             )
                         }
                         "Liked" -> {
-                            PagesItem()
+                            PagesItem(
+                                onPageClick = onPageClick
+                            )
                         }
                         else -> {
-                            DiscoverPagesItem()
+                            DiscoverPagesItem(
+                                onPageClick = onPageClick
+                            )
                         }
                     }
                 }

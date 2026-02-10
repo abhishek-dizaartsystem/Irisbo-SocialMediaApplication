@@ -58,12 +58,13 @@ import com.example.sociamediaapplication.view.screens.GroupMemberRequestItem
 @Composable
 fun ManagePagesItem(
     isPublic: Boolean = true,
-    groupId: String = "1",
+    pageId: String = "1",
     onPrivacyToggle: ()-> Unit = {},
     isPostApproval: Boolean = true,
     onPostApprovalToggle: ()-> Unit = {},
     onDelete: ()-> Unit = {},
-    onPageClick:(String) -> Unit = {}
+    onPageClick:(String) -> Unit = {},
+    onEditPageClick:(String) -> Unit = {}
 ) {
 
     val sheetState = rememberModalBottomSheetState()
@@ -97,7 +98,7 @@ fun ManagePagesItem(
                             .padding(horizontal = 16.dp)
                     ) {
                         Text(
-                            text = "Members of GroupID-$groupId",
+                            text = "Members of GroupID-$pageId",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 12.dp)
@@ -695,7 +696,9 @@ fun ManagePagesItem(
                                             "Edit Page",
                                             fontSize = 16.sp)
                                     },
-                                    onClick = {},
+                                    onClick = {
+                                        onEditPageClick(pageId)
+                                    },
                                     leadingIcon = {
                                         Icon(
                                             painter = painterResource(R.drawable.edit_1_svgrepo_com),

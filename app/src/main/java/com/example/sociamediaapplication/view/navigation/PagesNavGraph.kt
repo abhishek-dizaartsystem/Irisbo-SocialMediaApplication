@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.sociamediaapplication.view.screens.CreatePageScreen
+import com.example.sociamediaapplication.view.screens.EditPageScreen
 import com.example.sociamediaapplication.view.screens.GroupScreen
 import com.example.sociamediaapplication.view.screens.PageScreen
 import com.example.sociamediaapplication.view.screens.PagesScreen
@@ -50,6 +51,22 @@ fun PagesNavGraph(
 
         composable(PagesRoutes.CreatePage.route) {
             CreatePageScreen()
+        }
+
+        composable(
+            route = PagesRoutes.EditPage.route,
+            arguments = listOf(
+                navArgument("pageId"){
+                    type = NavType.StringType
+                }
+            )) { backStackEntry->
+
+            val pageId = backStackEntry.arguments?.getString("pageId")
+
+            EditPageScreen(
+                pageId = pageId?:"",
+                navController = navController
+            )
         }
     }
 }

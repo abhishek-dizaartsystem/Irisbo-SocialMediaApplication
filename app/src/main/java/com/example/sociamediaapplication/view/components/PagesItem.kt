@@ -36,7 +36,7 @@ fun PagesItem(
     name: String = "Tech Reviews Hub",
     memberCount: String = "14K members",
     category: String = "Technology",
-    onPageClick: (String) -> Unit = {}
+    onPageClick: (String) -> Unit = {},
 ){
     Card(
         modifier = Modifier

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -75,12 +76,11 @@ import com.example.sociamediaapplication.viewmodel.GroupViewModel
 import com.example.sociamediaapplication.viewmodel.PageViewModel
 
 @Composable
-fun CreatePageScreen(
+fun EditPageScreen(
     navController: NavController = rememberNavController(),
+    pageId: String = "1",
     viewModel: PageViewModel = viewModel()
 ){
-
-
 
     val categories = listOf(
         "Technology", "Art and Photography", "Health and Fitness", "Travel",
@@ -136,7 +136,7 @@ fun CreatePageScreen(
                     )
                 }
                 Text(
-                    text = "Create Group",
+                    text = "Edit Page-$pageId",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
@@ -262,7 +262,7 @@ fun CreatePageScreen(
                 item {
                     CustomTextField(
                         "Page name",
-                        "travel group",
+                        "travel page",
                         onValueChange = {},
                     )
 
@@ -396,20 +396,41 @@ fun CreatePageScreen(
                 }
 
                 item {
-                    Button(
-                        onClick = {},
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Blue
-                        ),
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+                    Row(
+                        Modifier.fillMaxWidth()
                     ) {
-                        Text(
-                            text = "Create Group",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
+                        Button(
+                            onClick = {},
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Blue
+                            ),
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "Save",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                        }
+                        Spacer(Modifier.width(12.dp))
+                        Button(
+                            onClick = {},
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Grey
+                            ),
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "Discard",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                color = Black
+                            )
+                        }
                     }
+
                 }
             }
         }
@@ -418,6 +439,6 @@ fun CreatePageScreen(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun CreatePageScreenPreview(){
-    CreatePageScreen()
+fun EditPageScreenPreview(){
+    EditPageScreen()
 }
