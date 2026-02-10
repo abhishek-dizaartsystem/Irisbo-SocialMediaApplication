@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,10 +35,16 @@ fun PagesItem(
     painter: Painter = painterResource(R.drawable.react_laptop),
     name: String = "Tech Reviews Hub",
     memberCount: String = "14K members",
-    category: String = "Technology"
+    category: String = "Technology",
+    onPageClick: (String) -> Unit = {}
 ){
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clickable{
+                onPageClick("2")
+            },
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(
             containerColor = White

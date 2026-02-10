@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -42,10 +43,16 @@ fun DiscoverPagesItem(
     name: String = "Tech Reviews Hub",
     memberCount: String = "14K members",
     category: String = "Technology",
-    isLiked: Boolean = false
+    isLiked: Boolean = false,
+    onPageClick: (String)-> Unit = {}
 ){
     Card(
-        modifier = Modifier.fillMaxWidth().padding(4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+            .clickable{
+                onPageClick("3")
+            },
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(
             containerColor = White

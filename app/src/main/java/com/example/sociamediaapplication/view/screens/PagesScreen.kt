@@ -50,6 +50,7 @@ import com.example.sociamediaapplication.view.components.DiscoverPagesItem
 import com.example.sociamediaapplication.view.components.GroupsItem
 import com.example.sociamediaapplication.view.components.ManagePagesItem
 import com.example.sociamediaapplication.view.components.PagesItem
+import com.example.sociamediaapplication.view.navigation.PagesRoutes
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
 import com.example.sociamediaapplication.viewmodel.PageViewModel
 
@@ -100,7 +101,9 @@ fun PagesScreen(
                     )
                     Row() {
                         Button(
-                            onClick = {},
+                            onClick = {
+                                navController.navigate(PagesRoutes.CreatePage.route)
+                            },
                             contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
                             modifier = Modifier.height(34.dp).padding(end = 8.dp),
                             shape = RoundedCornerShape(8.dp),
@@ -280,7 +283,9 @@ fun PagesScreen(
                 items(10){
                     when (optionSelected) {
                         "Your Pages" -> {
-                            ManagePagesItem()
+                            ManagePagesItem(
+                                onPageClick = onPageClick
+                            )
                         }
                         "Liked" -> {
                             PagesItem()

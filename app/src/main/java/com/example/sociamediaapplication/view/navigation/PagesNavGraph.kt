@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.sociamediaapplication.view.screens.CreatePageScreen
 import com.example.sociamediaapplication.view.screens.GroupScreen
 import com.example.sociamediaapplication.view.screens.PageScreen
 import com.example.sociamediaapplication.view.screens.PagesScreen
@@ -27,7 +28,7 @@ fun PagesNavGraph(
                 navController,
                 onPageClick = {pageId->
                     navController.navigate(
-                        GroupsRoutes.Group.createRoute(pageId)
+                        PagesRoutes.Page.createRoute(pageId)
                     )
                 }
             )
@@ -45,6 +46,10 @@ fun PagesNavGraph(
                 pageId = pageId ?: "",
                 navController = navController
             )
+        }
+
+        composable(PagesRoutes.CreatePage.route) {
+            CreatePageScreen()
         }
     }
 }

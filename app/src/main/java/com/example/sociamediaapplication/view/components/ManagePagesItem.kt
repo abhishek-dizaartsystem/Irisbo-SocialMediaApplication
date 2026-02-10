@@ -63,7 +63,7 @@ fun ManagePagesItem(
     isPostApproval: Boolean = true,
     onPostApprovalToggle: ()-> Unit = {},
     onDelete: ()-> Unit = {},
-    onGroupClick:(String) -> Unit = {}
+    onPageClick:(String) -> Unit = {}
 ) {
 
     val sheetState = rememberModalBottomSheetState()
@@ -84,7 +84,7 @@ fun ManagePagesItem(
             when (sheetType) {
                 "requests" -> {
                     Text(
-                        text = "Group Requests",
+                        text = "Add Post",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -643,6 +643,7 @@ fun ManagePagesItem(
                                             fontSize = 16.sp)
                                     },
                                     onClick = {
+                                        onPageClick("1")
                                     },
                                     leadingIcon = {
                                         Icon(
