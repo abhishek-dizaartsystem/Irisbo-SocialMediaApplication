@@ -6,4 +6,8 @@ sealed class GroupsRoutes(val route: String) {
         fun createRoute(groupId: String) = "group/$groupId"
     }
     object CreateGroup: GroupsRoutes("createGroup")
+
+    object EditGroup: GroupsRoutes("editGroup/{groupId}"){
+        fun createRoute(groupId: String) = "editGroup/$groupId"
+    }
 }

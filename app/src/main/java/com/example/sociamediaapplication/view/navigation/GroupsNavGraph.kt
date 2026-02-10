@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.sociamediaapplication.view.screens.CreateGroupScreen
+import com.example.sociamediaapplication.view.screens.EditGroupScreen
 import com.example.sociamediaapplication.view.screens.GroupScreen
 import com.example.sociamediaapplication.view.screens.GroupsScreen
 
@@ -29,6 +30,11 @@ fun GroupsNavGraph(
                     navController.navigate(
                         GroupsRoutes.Group.createRoute(groupId)
                     )
+                },
+                onEditClick = {groupId->
+                    navController.navigate(
+                        GroupsRoutes.EditGroup.createRoute(groupId)
+                    )
                 }
             )
         }
@@ -47,8 +53,19 @@ fun GroupsNavGraph(
             )
         }
 
-        composable("createGroup") {
+        composable(GroupsRoutes.CreateGroup.route) {
             CreateGroupScreen(navController = navController)
+        }
+
+        composable(
+            route = GroupsRoutes.EditGroup.route,
+            arguments = listOf(
+                navArgument("groupId"){ type = NavType.StringType }
+            )
+        ){backStackEntry->
+            val groupId = backStackEntry.arguments?.getString("groupId")
+
+            EditGroupScreen(navController = navController, groupId = groupId?:"")
         }
     }
 }

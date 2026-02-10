@@ -68,7 +68,8 @@ fun ManageGroupsItem(
     isPostApproval: Boolean = true,
     onPostApprovalToggle: ()-> Unit = {},
     onDelete: ()-> Unit = {},
-    onGroupClick:(String) -> Unit = {}
+    onGroupClick:(String) -> Unit = {},
+    onEditClick: (String) -> Unit = {}
 ) {
 
     val sheetState = rememberModalBottomSheetState()
@@ -457,7 +458,9 @@ fun ManageGroupsItem(
                                             "Edit",
                                             fontSize = 16.sp)
                                     },
-                                    onClick = {},
+                                    onClick = {
+                                        onEditClick(groupId)
+                                    },
                                     leadingIcon = {
                                         Icon(
                                             painter = painterResource(R.drawable.edit_1_svgrepo_com),

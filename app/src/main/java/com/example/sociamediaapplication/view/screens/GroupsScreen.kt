@@ -69,6 +69,7 @@ fun GroupsScreen(
     bnavController: NavController = rememberNavController(),
     navController: NavController = rememberNavController(),
     onGroupClick: (String)-> Unit = {},
+    onEditClick:(String)-> Unit = {},
     viewModel: GroupViewModel = viewModel()
 ){
 
@@ -318,7 +319,8 @@ fun GroupsScreen(
                                     },
                                     isPostApproval = group.isPostApproval,
                                     onPostApprovalToggle = { viewModel.togglePostApproval(group.id) },
-                                    onGroupClick = onGroupClick
+                                    onGroupClick = onGroupClick,
+                                    onEditClick = onEditClick
                                 )
                             }
 

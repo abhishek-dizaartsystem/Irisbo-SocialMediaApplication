@@ -48,6 +48,7 @@ import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.TransparentBlack
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.Post
+import com.example.sociamediaapplication.view.navigation.GroupsRoutes
 
 @Composable
 fun GroupScreen(
@@ -205,6 +206,21 @@ fun GroupScreen(
                                         .fillMaxWidth()
                                 ) {
                                     Text("Join Group")
+                                }
+                                Button(
+                                    onClick = {
+                                        navController.navigate(
+                                            route = GroupsRoutes.EditGroup.createRoute(groupId)
+                                        )
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Blue
+                                    ),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth()
+                                ) {
+                                    Text("Edit Group")
                                 }
                             }
                         }
