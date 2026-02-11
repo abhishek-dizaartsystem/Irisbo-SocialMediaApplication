@@ -4,6 +4,7 @@ import com.example.sociamediaapplication.model.AuthResponse
 import com.example.sociamediaapplication.model.LoginRequest
 import com.example.sociamediaapplication.model.SignupRequest
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface AuthApi {
@@ -16,5 +17,10 @@ interface AuthApi {
     @POST("api/auth/login")
     suspend fun login(
         @Body request: LoginRequest
+    ): AuthResponse
+
+    @POST("api/auth/logout")
+    suspend fun logout(
+        @Header("Authorization") token: String
     ): AuthResponse
 }

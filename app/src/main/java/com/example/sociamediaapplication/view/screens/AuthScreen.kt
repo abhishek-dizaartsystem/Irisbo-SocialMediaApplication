@@ -40,9 +40,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.trace
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.repository.AuthRepository
+import com.example.sociamediaapplication.model.AuthResponse
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.GreyBtn
@@ -56,11 +58,12 @@ import kotlin.math.sign
 
 @Composable
 fun AuthScreen(
-    authViewModel: AuthViewModel,
-    onAuthSuccess: ()-> Unit
+    authState: AuthResponse?,
+    onLogin:(String, String) ->Unit = {email, password->},
+    onSignup: (String, String, String, String)-> Unit = {name, email, password, confirmPassword->},
+    onAuthSuccess: ()-> Unit = {}
 ){
     val context = LocalContext.current
-    val authState by authViewModel.authState.collectAsState()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -88,8 +91,6 @@ fun AuthScreen(
                     if (signinSelected) "Sign in successful 🎉" else "Sign up successful 🎉",
                     Toast.LENGTH_SHORT
                 ).show()
-
-                TokenManager(context).saveToken(response.token)
                 onAuthSuccess()
             }
         }
@@ -277,21 +278,10 @@ fun AuthScreen(
                 Button(
                     onClick = {
                         if (signinSelected) {
-                            authViewModel.login(
-                                email = email,
-                                password = password
-                            )
-                            email = ""
-                            password = ""
+                            onLogin(email, password)
                         }
                         else {
-                            authViewModel.signup(
-                                name = name,
-                                email = email,
-                                password = password
-                            )
-                            email = ""
-                            password = ""
+                            onSignup(name, userName, email, password)
                         }
                     },
                     modifier = Modifier
@@ -359,8 +349,8 @@ fun AuthScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun AuthScreenPreview(){
+
     AuthScreen(
-        authViewModel = AuthViewModel(AuthRepository()),
-        onAuthSuccess = {}
+        authState = null
     )
 }

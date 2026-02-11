@@ -16,10 +16,10 @@ class AuthViewModel(
     private val _authState = MutableStateFlow<AuthResponse?>(null)
     val authState: StateFlow<AuthResponse?> = _authState
 
-    fun signup(name: String, email: String, password: String) {
+    fun signup(name: String, username: String, email: String, password: String) {
         viewModelScope.launch {
             try {
-                val response = repository.signup(name, "fghjk", email, password)
+                val response = repository.signup(name, username, email, password)
                 _authState.value = response   // 🔴 REQUIRED
             } catch (e: Exception) {
                 _authState.value = AuthResponse(
@@ -35,6 +35,20 @@ class AuthViewModel(
             try {
                 val response = repository.login(email, password)
                 _authState.value = response   // 🔴 REQUIRED
+            } catch (e: Exception) {
+                _authState.value = AuthResponse(
+                    message = e.message ?: "Error",
+                    token = null
+                )
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                val response = repository.logout()
+                _authState.value = response
             } catch (e: Exception) {
                 _authState.value = AuthResponse(
                     message = e.message ?: "Error",

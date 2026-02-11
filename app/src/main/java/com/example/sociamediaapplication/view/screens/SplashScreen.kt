@@ -48,6 +48,7 @@ import kotlinx.coroutines.time.delay
 
 @Composable
 fun SplashScreen(
+    isLoggedIn: Boolean,
     onNavigateToAuth: () -> Unit,
     onNavigateToMain: () -> Unit
 ) {
@@ -57,11 +58,10 @@ fun SplashScreen(
     LaunchedEffect(Unit) {
         delay(1500)
 
-        val token = TokenManager(context).getToken()
-        if (token.isNullOrEmpty()) {
-            onNavigateToAuth()
-        } else {
+        if (isLoggedIn) {
             onNavigateToMain()
+        } else {
+            onNavigateToAuth()
         }
     }
 
@@ -183,6 +183,7 @@ fun GlowingLogo() {
 @Composable
 fun SplashScreenPreview(){
     SplashScreen(
+        isLoggedIn = true,
         onNavigateToAuth = {},
         onNavigateToMain = {}
     )

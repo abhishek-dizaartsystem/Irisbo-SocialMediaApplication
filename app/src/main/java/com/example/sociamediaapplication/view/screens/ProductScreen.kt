@@ -762,7 +762,7 @@ fun ProductScreen(
                                     item = CartItem(
                                         productId = productId,
                                         painter = painter,
-                                        price = "${originalPrice-(originalPrice*discount)/100}",
+                                        price = originalPrice-(originalPrice*discount)/100,
                                         productName = name,
                                         productCount = 1
                                     )
