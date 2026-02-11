@@ -23,13 +23,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.view.components.WishlistItem
 
 @Composable
-fun WishlistScreen(){
+fun WishlistScreen(
+    navController: NavController = rememberNavController()
+) {
     Scaffold(
         topBar = {
             Column() {
@@ -40,7 +45,7 @@ fun WishlistScreen(){
                 ) {
                     IconButton(
                         onClick = {
-                            //navController.popBackStack()
+                            navController.popBackStack()
                         }
                     ) {
                         Icon(

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -21,6 +22,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -29,17 +32,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.model.CartItem
+import com.example.sociamediaapplication.model.MarketplaceItem
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.view.components.CartItem
-import com.example.sociamediaapplication.view.components.WishlistItem
+import com.example.sociamediaapplication.viewmodel.MarketplaceViewModel
 
 @Composable
-fun CartScreen(){
+fun CartScreen(
+    navController: NavController = rememberNavController(),
+    onCheckout: ()-> Unit = {},
+    viewModel: MarketplaceViewModel = viewModel()
+) {
+
+    val cartItems by viewModel.cartItems.collectAsState()
+
     Scaffold(
         topBar = {
             Column() {
@@ -50,7 +65,7 @@ fun CartScreen(){
                 ) {
                     IconButton(
                         onClick = {
-                            //navController.popBackStack()
+                            navController.popBackStack()
                         }
                     ) {
                         Icon(
@@ -103,21 +118,48 @@ fun CartScreen(){
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.BottomStart
             ) {
-                LazyColumn(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                Column(
+                    modifier = Modifier.fillMaxSize(),
                 ) {
-                    items(7){
-                        CartItem(
-                            productImage = R.drawable.iphone,
-                            productName = "iPhone 14 Pro Max",
-                            sellerName = "John Smith",
-                            price = "$899",
-                            onAddToCart = {},
-                            onDelete = {}
+                    if(cartItems != emptyList<CartItem>()){
+                        LazyColumn(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+
+                            items(cartItems){item->
+                                CartItem(
+                                    productId = item.productId,
+                                    productImage = R.drawable.iphone,
+                                    productName = "iPhone 14 Pro Max",
+                                    sellerName = "John Smith",
+                                    price = "$899",
+                                    quantity = item.productCount,
+                                    onIncreaseQuantity = {
+                                        viewModel.increaseQuantity(item.productId)
+                                    },
+                                    onDecreaseQuantity = {
+                                        viewModel.decreaseQuantity(item.productId)
+                                    },
+                                    onDelete = {
+                                        viewModel.removeFromCart(item.productId)
+                                    }
+                                )
+                            }
+
+
+
+                        }
+                    }
+                    else{
+                        Text(
+                            text = "Cart is Empty",
+                            fontSize = 20.sp
                         )
                     }
+
                 }
+
                 Column(
                     modifier = Modifier.padding(12.dp).background(BackgroundColor)
                 ) {
@@ -177,7 +219,9 @@ fun CartScreen(){
                         )
                     }
                     Button(
-                        onClick = {},
+                        onClick = {
+                            onCheckout()
+                        },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Blue
                         ),

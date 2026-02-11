@@ -56,10 +56,13 @@ import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.MarketPlaceItem
+import com.example.sociamediaapplication.view.navigation.MarketRoutes
 
 @Composable
 fun MarketplaceScreen(
-    navController: NavController = rememberNavController()
+    bNavController: NavController = rememberNavController(),
+    navController: NavController = rememberNavController(),
+    onProductClick: (String)-> Unit = {}
 ){
 
     var searchTxt by remember { mutableStateOf("") }
@@ -67,31 +70,37 @@ fun MarketplaceScreen(
     var productList = remember {
         mutableStateListOf(
             MarketplaceItem(
+                "1",
                 R.drawable.gaming_chair,
                 "$199",
                 "Gaming Chair"
             ),
             MarketplaceItem(
+                "2",
                 R.drawable.iphone,
                 "$899",
                 "Iphone"
             ),
             MarketplaceItem(
+                "3",
                 R.drawable.sofa,
                 "$499",
                 "Modern Sofa set"
             ),
             MarketplaceItem(
+                "4",
                 R.drawable.shoe,
                 "$199",
                 "Nike Jordan"
             ),
             MarketplaceItem(
+                "5",
                 R.drawable.dslr_camera,
                 "$199",
                 "$350"
             ),
             MarketplaceItem(
+                "6",
                 R.drawable.gaming_chair,
                 "$199",
                 "Gaming Chair"
@@ -126,7 +135,7 @@ fun MarketplaceScreen(
 
                     IconButton(
                         onClick = {
-                            navController.popBackStack()
+                            bNavController.popBackStack()
                         }
                     ) {
                         Icon(
@@ -141,11 +150,37 @@ fun MarketplaceScreen(
                         fontSize = 18.sp
                     )
 
-                    Text(
-                        text = "Save",
-                        fontSize = 18.sp,
-                        color = White
-                    )
+                    Row(
+                        Modifier.padding(end = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+
+                    ) {
+                        IconButton(
+                            onClick = {
+                                navController.navigate(MarketRoutes.Cart.route)
+                            },
+                            Modifier.size(30.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.cart_shopping_svgrepo_com),
+                                contentDescription = null,
+                                Modifier.size(24.dp)
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                navController.navigate(MarketRoutes.Wishlist.route)
+                            },
+                            Modifier.size(30.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.heart_filled_svgrepo_com),
+                                contentDescription = null,
+                                Modifier.size(24.dp)
+                            )
+                        }
+                    }
+
 
 
                 }
@@ -282,9 +317,11 @@ fun MarketplaceScreen(
 
                 items(productList){product->
                     MarketPlaceItem(
+                        productId = product.productId,
                         painter = painterResource(product.painter),
                         productName = product.productName,
-                        price = product.price
+                        price = product.price,
+                        onClick = onProductClick
                     )
                 }
 

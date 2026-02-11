@@ -71,7 +71,7 @@ fun MenuNavGraph(mainNavController: NavController){
             )
         }
         composable(MenuRoutes.Marketplace.route) {
-            MarketplaceScreen(navController)
+            MarketNavGraph(bNavController = navController)
         }
         composable(MenuRoutes.Groups.route) {
             GroupsNavGraph(navController)

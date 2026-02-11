@@ -36,14 +36,17 @@ import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
 fun MarketPlaceItem(
+    productId: String = "1",
     painter: Painter = painterResource(R.drawable.gaming_chair),
     price: String = "$180",
     productName: String = "Nike Air Jordan 1",
-    onClick: ()-> Unit = {},
+    onClick: (String)-> Unit = {},
     onIconClick: ()-> Unit = {}
 ){
     Card(
-        onClick = onClick,
+        onClick = {
+            onClick(productId)
+        },
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(
             containerColor = White
@@ -69,7 +72,9 @@ fun MarketPlaceItem(
 
                 )
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
                     horizontalAlignment = Alignment.End
                 ) {
                     IconButton(

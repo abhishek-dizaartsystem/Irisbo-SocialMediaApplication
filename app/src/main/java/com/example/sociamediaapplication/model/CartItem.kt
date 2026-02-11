@@ -1,10 +1,9 @@
 package com.example.sociamediaapplication.model
 
-import androidx.compose.ui.graphics.painter.Painter
-
-data class MarketplaceItem(
+data class CartItem(
     val productId: String,
     val painter: Int,
     val price: String,
-    val productName: String
+    val productName: String,
+    val productCount: Int
 )

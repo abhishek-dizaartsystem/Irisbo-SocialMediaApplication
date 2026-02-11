@@ -1,6 +1,6 @@
 package com.example.sociamediaapplication.view.screens
 
-import androidx.compose.foundation.BorderStroke
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -36,21 +35,30 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImagePainter
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.model.CartItem
 import com.example.sociamediaapplication.model.Specification
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -59,23 +67,28 @@ import com.example.sociamediaapplication.ui.theme.Gold
 import com.example.sociamediaapplication.ui.theme.Green
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
-import com.example.sociamediaapplication.ui.theme.LGreen
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.LLGreen
-import com.example.sociamediaapplication.ui.theme.TTransparentWhite
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.CustomProgressBar2
 import com.example.sociamediaapplication.view.components.ReviewItem
+import com.example.sociamediaapplication.viewmodel.MarketplaceViewModel
 
 @Composable
 fun ProductScreen(
+    productId: String = "1",
     discount: Float = 18f,
     originalPrice: Float = 120f,
     name: String = "iPhone 14 Pro Max",
+    painter: Int = R.drawable.iphone,
     rating: Float = 4.3f,
-    reviews: Int = 24
+    reviews: Int = 24,
+    navController: NavController = rememberNavController(),
+    viewModel: MarketplaceViewModel = viewModel()
 ){
+
+    val cartItems by viewModel.cartItems.collectAsState()
 
     val productImages = listOf(
         (R.drawable.iphone),
@@ -91,7 +104,9 @@ fun ProductScreen(
         Specification("Carrier", "Unlocked"),
     )
 
-    val pagerState = rememberPagerState(pageCount = { productImages.size })
+    val pagerState = rememberPagerState(
+        pageCount = { productImages.size }
+    )
 
     val s5 = 18
     val s4 = 4
@@ -100,6 +115,8 @@ fun ProductScreen(
     val s1 = 0
 
     val max = s5+s4+s3+s2+s1
+    val context = LocalContext.current
+
 
 
     Scaffold(
@@ -111,7 +128,7 @@ fun ProductScreen(
                 ) {
                     IconButton(
                         onClick = {
-                            //navController.popBackStack()
+                            navController.popBackStack()
                         }
                     ) {
                         Icon(
@@ -154,7 +171,9 @@ fun ProductScreen(
                             Icon(
                                 painter = painterResource(R.drawable.menu_dots_svgrepo_com),
                                 contentDescription = "",
-                                modifier = Modifier.size(30.dp).rotate(90f)
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .rotate(90f)
                             )
                         }
                     }
@@ -386,7 +405,7 @@ fun ProductScreen(
                 item {
                     Column() {
                         Text(
-                            text = "Description",
+                            text = "Description $productId",
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
                             modifier = Modifier.padding(horizontal = 16.dp)
@@ -737,7 +756,27 @@ fun ProductScreen(
                 HorizontalDivider()
                 Row() {
                     Button(
-                        onClick = {},
+                        onClick = {
+                            try {
+                                viewModel.addToCart(
+                                    item = CartItem(
+                                        productId = productId,
+                                        painter = painter,
+                                        price = "${originalPrice-(originalPrice*discount)/100}",
+                                        productName = name,
+                                        productCount = 1
+                                    )
+                                )
+                                Toast.makeText(context, "Added to cart", Toast.LENGTH_SHORT).show()
+                            }
+                            catch (error: Exception){
+                                Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                            }
+
+
+
+
+                        },
                         contentPadding = PaddingValues(0.dp),
                         modifier = Modifier
                             .height(40.dp)

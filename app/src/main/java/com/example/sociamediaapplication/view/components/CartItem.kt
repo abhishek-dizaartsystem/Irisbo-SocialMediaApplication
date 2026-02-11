@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -40,11 +41,14 @@ import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
 fun CartItem(
+    productId:String = "1",
     productImage: Int,
     productName: String,
     sellerName: String,
     price: String,
-    onAddToCart: () -> Unit,
+    quantity: Int = 1,
+    onIncreaseQuantity: () -> Unit = {},
+    onDecreaseQuantity: () -> Unit = {},
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -81,7 +85,7 @@ fun CartItem(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = productName,
+                    text = "$productName $productId",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -101,42 +105,38 @@ fun CartItem(
                     color = Black
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Button(
-                        onClick = onAddToCart,
-                        shape = RoundedCornerShape(50),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = LGrey
-                        ),
-                        border = BorderStroke(1.dp, LGrey),
-                        contentPadding = PaddingValues(0.dp)
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-
-
                         IconButton(
-                            onClick = {}
+                            onClick = {onDecreaseQuantity()},
+                            Modifier.size(24.dp)
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.subtract_svgrepo_com),
                                 contentDescription = null,
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(16.dp),
                                 tint = Black
                             )
                         }
 
                         Text(
-                            text = "1",
+                            text = quantity.toString(),
                             fontSize = 16.sp,
-                            color = Black
+                            color = Black,
+                            modifier = Modifier.padding(horizontal = 8.dp)
                         )
 
                         IconButton(
-                            onClick = {}
+                            onClick = {onIncreaseQuantity()},
+                            Modifier.size(24.dp)
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.add_svgrepo_com),
@@ -144,12 +144,17 @@ fun CartItem(
                                 modifier = Modifier.size(20.dp),
                                 tint = Black
                             )
+
                         }
-                        
+
+
                     }
 
+
+
                     IconButton(
-                        onClick = onDelete
+                        onClick = onDelete,
+                        Modifier.size(24.dp)
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.delete_svgrepo_com),
@@ -176,7 +181,6 @@ fun CartItemPreview() {
         productName = "iPhone 14 Pro Max",
         sellerName = "John Smith",
         price = "$899",
-        onAddToCart = {},
         onDelete = {}
     )
 }
