@@ -39,6 +39,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -49,7 +51,9 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
-fun SecurityScreen(){
+fun SecurityScreen(
+    navController: NavController = rememberNavController()
+){
 
     var currPass by remember { mutableStateOf("") }
     var newPass by remember { mutableStateOf("") }
@@ -76,7 +80,9 @@ fun SecurityScreen(){
                 ) {
 
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            navController.popBackStack()
+                        }
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.back_svgrepo_com),

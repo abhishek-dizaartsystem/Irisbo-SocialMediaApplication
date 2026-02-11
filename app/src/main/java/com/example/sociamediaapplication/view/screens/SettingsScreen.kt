@@ -37,6 +37,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -51,9 +54,22 @@ import com.example.sociamediaapplication.ui.theme.Red
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.ReelDetailComponent
+import com.example.sociamediaapplication.viewmodel.AuthViewModel
 
 @Composable
-fun SettingsScreen(){
+fun SettingsScreen(
+    bNavController: NavController = rememberNavController(),
+    onEditProfile: ()-> Unit = {},
+    onSecurity: ()-> Unit = {},
+    onPrivacy: ()-> Unit = {},
+    onNotification: ()-> Unit = {},
+    onAppearance: ()-> Unit = {},
+    onLanguage: ()-> Unit = {},
+    onHelpCenter: ()-> Unit = {},
+    onLogout: ()-> Unit = {}
+){
+
+
     Scaffold(
         topBar = {
             Column(
@@ -67,14 +83,25 @@ fun SettingsScreen(){
                         .fillMaxWidth()
                         .background(White)
                         .height(36.dp),
-                    horizontalArrangement = Arrangement.Center,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    IconButton(
+                        onClick = {
+                            bNavController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.back_svgrepo_com),
+                            contentDescription = ""
+                        )
+                    }
                     Text(
                         text = "Settings",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
+                    IconButton(onClick = {}) { }
 
 
                 }
@@ -168,7 +195,7 @@ fun SettingsScreen(){
                             modifier = Modifier.fillMaxWidth().padding(12.dp)
                         ) {
                             Button(
-                                onClick = {},
+                                onClick = onEditProfile,
                                 contentPadding = PaddingValues(0.dp),
                                 shape = RoundedCornerShape(0.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Transparent)
@@ -226,7 +253,7 @@ fun SettingsScreen(){
                             Spacer(modifier = Modifier.height(6.dp))
 
                             Button(
-                                onClick = {},
+                                onClick = onSecurity,
                                 contentPadding = PaddingValues(0.dp),
                                 shape = RoundedCornerShape(0.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Transparent)
@@ -284,7 +311,7 @@ fun SettingsScreen(){
                             Spacer(modifier = Modifier.height(6.dp))
 
                             Button(
-                                onClick = {},
+                                onClick = onPrivacy,
                                 contentPadding = PaddingValues(0.dp),
                                 shape = RoundedCornerShape(0.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Transparent)
@@ -357,7 +384,7 @@ fun SettingsScreen(){
                             modifier = Modifier.fillMaxWidth().padding(12.dp)
                         ) {
                             Button(
-                                onClick = {},
+                                onClick = onNotification,
                                 contentPadding = PaddingValues(0.dp),
                                 shape = RoundedCornerShape(0.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Transparent)
@@ -415,7 +442,7 @@ fun SettingsScreen(){
                             Spacer(modifier = Modifier.height(6.dp))
 
                             Button(
-                                onClick = {},
+                                onClick = onAppearance,
                                 contentPadding = PaddingValues(0.dp),
                                 shape = RoundedCornerShape(0.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Transparent)
@@ -472,7 +499,7 @@ fun SettingsScreen(){
                             )
                             Spacer(modifier = Modifier.height(6.dp))
                             Button(
-                                onClick = {},
+                                onClick = onLanguage,
                                 contentPadding = PaddingValues(0.dp),
                                 shape = RoundedCornerShape(0.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Transparent)
@@ -545,7 +572,7 @@ fun SettingsScreen(){
                             modifier = Modifier.fillMaxWidth().padding(12.dp)
                         ) {
                             Button(
-                                onClick = {},
+                                onClick = onHelpCenter,
                                 contentPadding = PaddingValues(0.dp),
                                 shape = RoundedCornerShape(0.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Transparent)
@@ -609,7 +636,7 @@ fun SettingsScreen(){
                     ) {
 
                         Button(
-                            onClick = {},
+                            onClick = onLogout,
                             contentPadding = PaddingValues(0.dp),
                             shape = RoundedCornerShape(0.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = LRed)

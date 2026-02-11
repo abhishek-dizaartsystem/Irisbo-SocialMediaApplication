@@ -63,6 +63,7 @@ fun MenuScreen(
     onVideoAnalytics:()-> Unit,
     onAdvancedSettings:()-> Unit,
     onVideoMonetization:()-> Unit,
+    onSettings:() -> Unit
     
 ){
     LazyColumn(
@@ -80,14 +81,14 @@ fun MenuScreen(
             ) {
                 IconButton(
                     onClick = { },
-                    modifier = Modifier.size(90.dp)
+                    modifier = Modifier.size(80.dp)
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.rectangle_5),
                         contentDescription = "Profile Image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(90.dp)
+                            .size(80.dp)
                             .clip(CircleShape)
                     )
 
@@ -113,6 +114,24 @@ fun MenuScreen(
                         )
                     }
 
+                }
+                Column(
+                    Modifier.fillMaxSize().height(70.dp),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.End
+                ) {
+                    IconButton(
+                        onClick = {
+                            onSettings()
+                        },
+                        Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.settings_logo),
+                            contentDescription = "",
+                            Modifier.size(24.dp)
+                        )
+                    }
                 }
             }
         }
@@ -322,6 +341,7 @@ fun MenuScreenPreview(){
         onGaming = {},
         onVideoAnalytics = {},
         onAdvancedSettings = {},
-        onVideoMonetization = {}
+        onVideoMonetization = {},
+        onSettings = {}
     )
 }

@@ -16,6 +16,7 @@ import com.example.sociamediaapplication.view.screens.MemoriesScreen
 import com.example.sociamediaapplication.view.screens.MenuScreen
 import com.example.sociamediaapplication.view.screens.MonetizationScreen
 import com.example.sociamediaapplication.view.screens.PagesScreen
+import com.example.sociamediaapplication.view.screens.SettingsScreen
 import com.example.sociamediaapplication.view.screens.UserVideosScreen
 import com.example.sociamediaapplication.view.screens.VideoAnalyticsScreen
 
@@ -67,6 +68,9 @@ fun MenuNavGraph(mainNavController: NavController){
                 },
                 onVideoMonetization = {
                     navController.navigate(MenuRoutes.VideoMonetization.route)
+                },
+                onSettings = {
+                    navController.navigate(MenuRoutes.Settings.route)
                 }
             )
         }
@@ -108,6 +112,10 @@ fun MenuNavGraph(mainNavController: NavController){
         }
         composable(MenuRoutes.Profile.route) {
             ProfileNavGraph(mainNavController)
+        }
+
+        composable(MenuRoutes.Settings.route) {
+            SettingsNavGraph(navController)
         }
 
     }

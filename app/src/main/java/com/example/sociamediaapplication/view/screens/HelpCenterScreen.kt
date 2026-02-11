@@ -36,6 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -48,7 +50,9 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
-fun HelpCenterScreen(){
+fun HelpCenterScreen(
+    navController: NavController = rememberNavController()
+){
 
     val faqList = listOf(
         "How do I reset my password?" to
@@ -84,7 +88,9 @@ fun HelpCenterScreen(){
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }) {
                         Icon(
                             painter = painterResource(R.drawable.back_svgrepo_com),
                             contentDescription = ""

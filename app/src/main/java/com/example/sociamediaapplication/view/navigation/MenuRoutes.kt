@@ -14,4 +14,6 @@ sealed class MenuRoutes(val route: String) {
     object AdvancedSettings: MenuRoutes("advancedSettings")
     object VideoMonetization: MenuRoutes("videoMonetization")
     object Profile: MenuRoutes("profile")
+    object Settings: MenuRoutes("settings")
+
 }
