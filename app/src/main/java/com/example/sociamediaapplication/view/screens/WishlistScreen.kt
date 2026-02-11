@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -23,18 +26,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.model.CartItem
+import com.example.sociamediaapplication.model.WishlistItem
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.view.components.WishlistItem
+import com.example.sociamediaapplication.viewmodel.MarketplaceViewModel
 
 @Composable
 fun WishlistScreen(
-    navController: NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
+    viewModel: MarketplaceViewModel = viewModel()
 ) {
+
+    val wishlistItems by viewModel.wishListItems.collectAsState()
+
     Scaffold(
         topBar = {
             Column() {
@@ -93,21 +104,42 @@ fun WishlistScreen(
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
-            LazyColumn(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(7){
-                    WishlistItem(
-                        productImage = R.drawable.iphone,
-                        productName = "iPhone 14 Pro Max",
-                        sellerName = "John Smith",
-                        price = "$899",
-                        onAddToCart = {},
-                        onDelete = {}
-                    )
+            if(wishlistItems != emptyList<WishlistItem>()){
+                LazyColumn(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(wishlistItems){item->
+                        WishlistItem(
+                            productId = item.productId,
+                            productImage = item.productImage,
+                            productName = item.productName,
+                            sellerName = item.sellerName,
+                            price = item.price,
+                            onAddToCart = {
+                                viewModel.addToCart(
+                                    CartItem(
+                                        productId = item.productId,
+                                        productName = item.productName,
+                                        painter = item.productImage,
+                                        price = item.price,
+                                        productCount = 1
+                                    )
+                                )
+                            },
+                            onDelete = {
+                                viewModel.removeFromWishlist(productId = item.productId)
+                            }
+                        )
+                    }
                 }
             }
+            else{
+                Text(
+                    "Wishlist is empty"
+                )
+            }
+
         }
     }
 }

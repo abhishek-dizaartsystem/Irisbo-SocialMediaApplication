@@ -37,11 +37,11 @@ import com.example.sociamediaapplication.ui.theme.White
 @Composable
 fun MarketPlaceItem(
     productId: String = "1",
-    painter: Painter = painterResource(R.drawable.gaming_chair),
-    price: String = "$180",
+    painter: Int = R.drawable.gaming_chair,
+    price: Float = 180f,
     productName: String = "Nike Air Jordan 1",
     onClick: (String)-> Unit = {},
-    onIconClick: ()-> Unit = {}
+    onIconClick: (String)-> Unit = {}
 ){
     Card(
         onClick = {
@@ -64,7 +64,7 @@ fun MarketPlaceItem(
                     .aspectRatio(1f)
             ) {
                 Image(
-                    painter = painter,
+                    painter = painterResource(painter),
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -78,7 +78,7 @@ fun MarketPlaceItem(
                     horizontalAlignment = Alignment.End
                 ) {
                     IconButton(
-                        onClick = onIconClick,
+                        onClick = { onIconClick(productId) },
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = TransparentWhite
                         ),
@@ -98,7 +98,7 @@ fun MarketPlaceItem(
             }
             Spacer(Modifier.height(12.dp))
             Text(
-                text = price,
+                text = price.toString(),
                 fontSize = 16.sp,
                 modifier = Modifier.padding(horizontal =12.dp),
                 fontWeight = FontWeight.Bold

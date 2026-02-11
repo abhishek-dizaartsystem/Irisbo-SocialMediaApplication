@@ -1,9 +1,10 @@
 package com.example.sociamediaapplication.model
 
-data class CartItem(
+data class WishlistItem(
     val productId: String,
-    val painter: Int,
-    val price: Float,
+    val productImage: Int,
     val productName: String,
-    val productCount: Int
+    val sellerName: String,
+    val price: Float,
+
 )

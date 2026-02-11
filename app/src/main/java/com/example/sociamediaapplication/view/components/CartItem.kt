@@ -45,7 +45,7 @@ fun CartItem(
     productImage: Int,
     productName: String,
     sellerName: String,
-    price: String,
+    price: Float = 899f,
     quantity: Int = 1,
     onIncreaseQuantity: () -> Unit = {},
     onDecreaseQuantity: () -> Unit = {},
@@ -99,7 +99,7 @@ fun CartItem(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = price,
+                    text = "$$price",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Black
@@ -180,7 +180,6 @@ fun CartItemPreview() {
         productImage = R.drawable.iphone,
         productName = "iPhone 14 Pro Max",
         sellerName = "John Smith",
-        price = "$899",
         onDelete = {}
     )
 }

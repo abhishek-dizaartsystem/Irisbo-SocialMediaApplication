@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
@@ -39,10 +40,11 @@ import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
 fun WishlistItem(
+    productId: String = "1",
     productImage: Int,
     productName: String,
     sellerName: String,
-    price: String,
+    price: Float,
     onAddToCart: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
@@ -80,7 +82,7 @@ fun WishlistItem(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = productName,
+                    text = productName + productId,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -94,7 +96,7 @@ fun WishlistItem(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = price,
+                    text = price.toString(),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Black
@@ -107,7 +109,7 @@ fun WishlistItem(
                         onClick = onAddToCart,
                         shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = LGrey
+                            containerColor = BackgroundColor
                         ),
                         border = BorderStroke(1.dp, LGrey),
                         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
@@ -152,7 +154,7 @@ fun WishlistItemPreview() {
         productImage = R.drawable.iphone,
         productName = "iPhone 14 Pro Max",
         sellerName = "John Smith",
-        price = "$899",
+        price = 899f,
         onAddToCart = {},
         onDelete = {}
     )

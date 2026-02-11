@@ -34,7 +34,8 @@ fun MarketNavGraph(
                     navController.navigate(
                         MarketRoutes.Product.createRoute(productId)
                     )
-                }
+                },
+                viewModel = viewModel
             )
         }
         composable(MarketRoutes.Cart.route) {
@@ -48,7 +49,8 @@ fun MarketNavGraph(
         }
         composable(MarketRoutes.Wishlist.route) {
             WishlistScreen(
-                navController = navController
+                navController = navController,
+                viewModel = viewModel
             )
         }
         composable(

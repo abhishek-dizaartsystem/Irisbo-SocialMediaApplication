@@ -55,6 +55,8 @@ fun CartScreen(
 
     val cartItems by viewModel.cartItems.collectAsState()
 
+    val cartSum by viewModel.cartSum.collectAsState()
+
     Scaffold(
         topBar = {
             Column() {
@@ -93,7 +95,9 @@ fun CartScreen(
                             Icon(
                                 painter = painterResource(R.drawable.menu_dots_svgrepo_com),
                                 contentDescription = "",
-                                modifier = Modifier.size(30.dp).rotate(90f)
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .rotate(90f)
                             )
                         }
                     }
@@ -133,7 +137,7 @@ fun CartScreen(
                                     productImage = R.drawable.iphone,
                                     productName = "iPhone 14 Pro Max",
                                     sellerName = "John Smith",
-                                    price = "$899",
+                                    price = item.price,
                                     quantity = item.productCount,
                                     onIncreaseQuantity = {
                                         viewModel.increaseQuantity(item.productId)
@@ -161,7 +165,9 @@ fun CartScreen(
                 }
 
                 Column(
-                    modifier = Modifier.padding(12.dp).background(BackgroundColor)
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .background(BackgroundColor)
                 ) {
                     HorizontalDivider()
                     Row(
@@ -176,7 +182,7 @@ fun CartScreen(
                             fontSize = 16.sp
                         )
                         Text(
-                            text = "$2588.0",
+                            text = String.format("%.2f", cartSum),
                             color = GreyTxt,
                             fontSize = 16.sp
                         )
@@ -212,7 +218,7 @@ fun CartScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "$2558.0",
+                            text = String.format("%.2f", cartSum),
                             color = Black,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold

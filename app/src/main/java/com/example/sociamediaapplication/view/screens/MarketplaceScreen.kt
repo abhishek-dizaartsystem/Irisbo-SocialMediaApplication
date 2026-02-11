@@ -44,11 +44,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.model.CategoriesMarketplace
 import com.example.sociamediaapplication.model.MarketplaceItem
+import com.example.sociamediaapplication.model.WishlistItem
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
@@ -57,52 +59,56 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.MarketPlaceItem
 import com.example.sociamediaapplication.view.navigation.MarketRoutes
+import com.example.sociamediaapplication.viewmodel.MarketplaceViewModel
 
 @Composable
 fun MarketplaceScreen(
     bNavController: NavController = rememberNavController(),
     navController: NavController = rememberNavController(),
-    onProductClick: (String)-> Unit = {}
+    onProductClick: (String)-> Unit = {},
+    viewModel: MarketplaceViewModel = viewModel()
 ){
 
     var searchTxt by remember { mutableStateOf("") }
+
+
 
     var productList = remember {
         mutableStateListOf(
             MarketplaceItem(
                 "1",
                 R.drawable.gaming_chair,
-                "$199",
+                199f,
                 "Gaming Chair"
             ),
             MarketplaceItem(
                 "2",
                 R.drawable.iphone,
-                "$899",
+                899f,
                 "Iphone"
             ),
             MarketplaceItem(
                 "3",
                 R.drawable.sofa,
-                "$499",
+                499f,
                 "Modern Sofa set"
             ),
             MarketplaceItem(
                 "4",
                 R.drawable.shoe,
-                "$199",
+                299f,
                 "Nike Jordan"
             ),
             MarketplaceItem(
                 "5",
                 R.drawable.dslr_camera,
-                "$199",
+                199f,
                 "$350"
             ),
             MarketplaceItem(
                 "6",
                 R.drawable.gaming_chair,
-                "$199",
+                699f,
                 "Gaming Chair"
             )
         )
@@ -318,10 +324,21 @@ fun MarketplaceScreen(
                 items(productList){product->
                     MarketPlaceItem(
                         productId = product.productId,
-                        painter = painterResource(product.painter),
+                        painter = product.painter,
                         productName = product.productName,
                         price = product.price,
-                        onClick = onProductClick
+                        onClick = onProductClick,
+                        onIconClick = {
+                            viewModel.addToWishlist(
+                                item = WishlistItem(
+                                    product.productId,
+                                    productImage = product.painter,
+                                    productName = product.productName,
+                                    price = product.price,
+                                    sellerName = "XYZ"
+                                )
+                            )
+                        }
                     )
                 }
 

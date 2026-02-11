@@ -5,6 +5,6 @@ import androidx.compose.ui.graphics.painter.Painter
 data class MarketplaceItem(
     val productId: String,
     val painter: Int,
-    val price: String,
+    val price: Float,
     val productName: String
 )
