@@ -123,7 +123,9 @@ fun SettingsScreen(
                 .background(Color(0xFFF8FAFC))
         ) {
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(16.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
                 item{
                     Card(
@@ -135,7 +137,9 @@ fun SettingsScreen(
                         )
                     ) {
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             IconButton(
@@ -192,7 +196,9 @@ fun SettingsScreen(
                         )
                     ) {
                         Column(
-                            modifier = Modifier.fillMaxWidth().padding(12.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp)
                         ) {
                             Button(
                                 onClick = onEditProfile,
@@ -381,7 +387,9 @@ fun SettingsScreen(
                         )
                     ) {
                         Column(
-                            modifier = Modifier.fillMaxWidth().padding(12.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp)
                         ) {
                             Button(
                                 onClick = onNotification,
@@ -466,7 +474,9 @@ fun SettingsScreen(
                                             Icon(
                                                 painter = painterResource(R.drawable.paint_palette_art_svgrepo_com),
                                                 contentDescription = "",
-                                                modifier = Modifier.size(20.dp).rotate(90f),
+                                                modifier = Modifier
+                                                    .size(20.dp)
+                                                    .rotate(90f),
                                                 tint = Blue
                                             )
 
@@ -569,7 +579,9 @@ fun SettingsScreen(
                         )
                     ) {
                         Column(
-                            modifier = Modifier.fillMaxWidth().padding(12.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp)
                         ) {
                             Button(
                                 onClick = onHelpCenter,
@@ -636,7 +648,10 @@ fun SettingsScreen(
                     ) {
 
                         Button(
-                            onClick = onLogout,
+                            onClick = {
+                                println("Logout Clicked")
+                                onLogout()
+                            },
                             contentPadding = PaddingValues(0.dp),
                             shape = RoundedCornerShape(0.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = LRed)
@@ -651,7 +666,9 @@ fun SettingsScreen(
                                 Icon(
                                     painter = painterResource(R.drawable.logout_svgrepo_com),
                                     contentDescription = "",
-                                    modifier = Modifier.size(30.dp).rotate(180f),
+                                    modifier = Modifier
+                                        .size(30.dp)
+                                        .rotate(180f),
                                     tint = Red
                                 )
 

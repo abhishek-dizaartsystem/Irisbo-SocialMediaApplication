@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -18,6 +19,7 @@ import com.example.sociamediaapplication.view.screens.MainScreen
 import com.example.sociamediaapplication.view.screens.ReelsScreen
 import com.example.sociamediaapplication.view.screens.SplashScreen
 import com.example.sociamediaapplication.view.screens.StatusEditorScreen
+import com.example.sociamediaapplication.viewmodel.AuthUiState
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import com.example.sociamediaapplication.viewmodel.factory.AuthViewModelFactory
 
@@ -32,10 +34,19 @@ fun AppNavGraph() {
     val repository = remember { AuthRepository(tokenManager) }
     val factory = remember { AuthViewModelFactory(repository) }
 
+    val authViewModel: AuthViewModel = viewModel(factory = factory)
+    val authState by authViewModel.authState.collectAsState()
+
+    LaunchedEffect(authState) {
+        if (authState is AuthUiState.LoggedOut) {
+            navController.navigate(Routes.Auth.route)
+            authViewModel.resetState()
+        }
+    }
 
     NavHost(
         navController = navController,
-        startDestination = Routes.Main.route
+        startDestination = Routes.Splash.route
     ) {
 
         composable(Routes.Splash.route) {
@@ -55,10 +66,6 @@ fun AppNavGraph() {
         }
 
         composable(Routes.Auth.route) {
-
-            val authViewModel: AuthViewModel = viewModel(factory = factory)
-
-            val authState by authViewModel.authState.collectAsState()
 
             AuthScreen(
                 authState = authState,
@@ -81,7 +88,8 @@ fun AppNavGraph() {
 
         composable(Routes.Main.route) {
             MainScreen(
-                navController
+                mainNavController = navController,
+                authViewModel = authViewModel   // ✅ pass it
             )
         }
 

@@ -13,12 +13,14 @@ import com.example.sociamediaapplication.data.repository.ProfileRepository
 import com.example.sociamediaapplication.view.screens.EditProfileScreen
 import com.example.sociamediaapplication.view.screens.MenuScreen
 import com.example.sociamediaapplication.view.screens.ProfileScreen
+import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import com.example.sociamediaapplication.viewmodel.PageViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.factory.ProfileViewModelFactory
 
 @Composable
 fun ProfileNavGraph(
+    authViewModel: AuthViewModel,
     mainNavController: NavController
 ){
     val navController = rememberNavController()
@@ -54,7 +56,10 @@ fun ProfileNavGraph(
             )
         }
         composable(ProfileRoutes.Menu.route) {
-            MenuNavGraph(mainNavController)
+            MenuNavGraph(
+                mainNavController = mainNavController,
+                authViewModel = authViewModel
+            )
         }
     }
 }

@@ -19,9 +19,13 @@ import com.example.sociamediaapplication.view.screens.PagesScreen
 import com.example.sociamediaapplication.view.screens.SettingsScreen
 import com.example.sociamediaapplication.view.screens.UserVideosScreen
 import com.example.sociamediaapplication.view.screens.VideoAnalyticsScreen
+import com.example.sociamediaapplication.viewmodel.AuthViewModel
 
 @Composable
-fun MenuNavGraph(mainNavController: NavController){
+fun MenuNavGraph(
+    mainNavController: NavController,
+    authViewModel: AuthViewModel
+){
     val navController = rememberNavController()
 
     NavHost(
@@ -111,11 +115,17 @@ fun MenuNavGraph(mainNavController: NavController){
             MonetizationScreen(navController)
         }
         composable(MenuRoutes.Profile.route) {
-            ProfileNavGraph(mainNavController)
+            ProfileNavGraph(
+                mainNavController = mainNavController,
+                authViewModel = authViewModel
+            )
         }
 
         composable(MenuRoutes.Settings.route) {
-            SettingsNavGraph(navController)
+            SettingsNavGraph(
+                mainNavController = mainNavController,
+                bNavController = navController,
+                authViewModel = authViewModel)
         }
 
     }

@@ -37,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -52,11 +53,13 @@ import com.example.sociamediaapplication.view.navigation.MainRoutes
 import com.example.sociamediaapplication.view.navigation.MenuNavGraph
 import com.example.sociamediaapplication.view.navigation.ProfileNavGraph
 import com.example.sociamediaapplication.view.navigation.Routes
+import com.example.sociamediaapplication.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    mainNavController: NavController
+    mainNavController: NavController,
+    authViewModel: AuthViewModel = viewModel()
 ){
 
 
@@ -293,7 +296,9 @@ fun MainScreen(
             }
 
             composable(MainRoutes.Menu.route){
-                MenuNavGraph(mainNavController)
+                MenuNavGraph(
+                    mainNavController,
+                    authViewModel = authViewModel)
             }
 
             composable(MainRoutes.Notifications.route){

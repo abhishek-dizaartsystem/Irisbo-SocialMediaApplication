@@ -27,15 +27,13 @@ import com.example.sociamediaapplication.viewmodel.factory.AuthViewModelFactory
 
 @Composable
 fun SettingsNavGraph(
-    bNavController: NavController
+    mainNavController: NavController,
+    bNavController: NavController,
+    authViewModel: AuthViewModel
 ){
     val navController = rememberNavController()
 
-    val context = LocalContext.current
-
-    val tokenManager = remember { TokenManager(context) }
-    val repository = remember { AuthRepository(tokenManager) }
-    val factory = remember { AuthViewModelFactory(repository) }
+    val authState by authViewModel.authState.collectAsState()
 
     NavHost(
         navController = navController,
@@ -43,15 +41,11 @@ fun SettingsNavGraph(
     ){
         composable("settings") {
 
-            val authViewModel: AuthViewModel = viewModel(factory = factory)
-
-            val authState by authViewModel.authState.collectAsState()
-
             LaunchedEffect(authState) {
                 if (authState is AuthUiState.Success) {
 
                     // Navigate to Auth screen
-                    bNavController.navigate(Routes.Auth.route) {
+                    mainNavController.navigate(Routes.Auth.route) {
                         popUpTo(Routes.Main.route) { inclusive = true }
                     }
 
