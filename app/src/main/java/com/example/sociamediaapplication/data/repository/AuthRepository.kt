@@ -2,15 +2,15 @@ package com.example.sociamediaapplication.data.repository
 
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
-import com.example.sociamediaapplication.model.AuthResponse
-import com.example.sociamediaapplication.model.LoginRequest
-import com.example.sociamediaapplication.model.SignupRequest
+import com.example.sociamediaapplication.model.response.AuthResponse
+import com.example.sociamediaapplication.model.request.LoginRequest
+import com.example.sociamediaapplication.model.request.SignupRequest
 
 class AuthRepository(
     private val tokenManager: TokenManager
 ) {
 
-    private val api = RetrofitClient.api
+    private val api = RetrofitClient.authApi
 
     suspend fun signup(
         name: String,

@@ -13,49 +13,43 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.trace
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sociamediaapplication.R
-import com.example.sociamediaapplication.data.preferences.TokenManager
-import com.example.sociamediaapplication.data.repository.AuthRepository
-import com.example.sociamediaapplication.model.AuthResponse
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
-import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.viewmodel.AuthUiState
-import com.example.sociamediaapplication.viewmodel.AuthViewModel
-import kotlin.math.sign
 
 @Composable
 fun AuthScreen(
@@ -72,7 +66,9 @@ fun AuthScreen(
     var name by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
 
-    var signinSelected by remember { mutableStateOf(false) }
+    var signinSelected by remember { mutableStateOf(true) }
+
+    var passwordVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(authState) {
         when (authState) {
@@ -201,8 +197,22 @@ fun AuthScreen(
                                 modifier = Modifier.height(20.dp)
                             )
                         },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text
+                        ),
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Transparent,
+                            unfocusedIndicatorColor = Transparent,
+                            disabledIndicatorColor = Transparent,
+                            focusedContainerColor = LGrey,
+                            unfocusedContainerColor = LGrey
+                        ),
+                        shape = RoundedCornerShape(16.dp),
                         modifier = Modifier
-                            .padding(top = 30.dp).fillMaxWidth(),
+                            .fillMaxWidth()
+                            .padding(top = 30.dp)
+                            .height(56.dp),
                         label = {
                             Text(
                                 text = "Name"
@@ -221,8 +231,22 @@ fun AuthScreen(
                                 modifier = Modifier.height(20.dp)
                             )
                         },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text
+                        ),
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Transparent,
+                            unfocusedIndicatorColor = Transparent,
+                            disabledIndicatorColor = Transparent,
+                            focusedContainerColor = LGrey,
+                            unfocusedContainerColor = LGrey
+                        ),
+                        shape = RoundedCornerShape(16.dp),
                         modifier = Modifier
-                            .padding(top = 30.dp).fillMaxWidth(),
+                            .fillMaxWidth()
+                            .padding(top = 30.dp)
+                            .height(56.dp),
                         label = {
                             Text(
                                 text = "Userame"
@@ -245,8 +269,22 @@ fun AuthScreen(
                             modifier = Modifier.height(20.dp)
                         )
                     },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text
+                    ),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Transparent,
+                        unfocusedIndicatorColor = Transparent,
+                        disabledIndicatorColor = Transparent,
+                        focusedContainerColor = LGrey,
+                        unfocusedContainerColor = LGrey
+                    ),
+                    shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
-                        .padding(top = 30.dp).fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(top = 30.dp)
+                        .height(56.dp),
                     label = {
                         Text(
                             text = "Email/Phone"
@@ -266,14 +304,40 @@ fun AuthScreen(
                         )
                     },
                     trailingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.chatreadhidden_svgrepo_com),
-                            contentDescription = "",
-                            modifier = Modifier.height(20.dp)
-                        )
+                        IconButton(
+                            onClick = { passwordVisible = !passwordVisible }
+                        ) {
+                            Icon(
+                                painter = painterResource(
+                                    if (passwordVisible)
+                                        R.drawable.eye_outlined_svgrepo_com
+                                    else
+                                        R.drawable.chatreadhidden_svgrepo_com
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier.height(20.dp)
+                            )
+                        }
                     },
+                    visualTransformation =
+                        if(passwordVisible) VisualTransformation.None
+                        else PasswordVisualTransformation(),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text
+                    ),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Transparent,
+                        unfocusedIndicatorColor = Transparent,
+                        disabledIndicatorColor = Transparent,
+                        focusedContainerColor = LGrey,
+                        unfocusedContainerColor = LGrey
+                    ),
+                    shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
-                        .padding(top = 30.dp).fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(top = 30.dp)
+                        .height(56.dp),
                     label = {
                         Text(
                             text = "Password"

@@ -1,4 +1,4 @@
-package com.example.sociamediaapplication.model
+package com.example.sociamediaapplication.model.request
 
 data class SignupRequest(
     val name: String,

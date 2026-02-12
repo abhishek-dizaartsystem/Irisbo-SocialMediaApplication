@@ -1,8 +1,8 @@
 package com.example.sociamediaapplication.data.remote
 
-import com.example.sociamediaapplication.model.AuthResponse
-import com.example.sociamediaapplication.model.LoginRequest
-import com.example.sociamediaapplication.model.SignupRequest
+import com.example.sociamediaapplication.model.response.AuthResponse
+import com.example.sociamediaapplication.model.request.LoginRequest
+import com.example.sociamediaapplication.model.request.SignupRequest
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST
