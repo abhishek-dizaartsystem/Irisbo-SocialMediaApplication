@@ -19,7 +19,7 @@ import com.example.sociamediaapplication.view.screens.ReelsScreen
 import com.example.sociamediaapplication.view.screens.SplashScreen
 import com.example.sociamediaapplication.view.screens.StatusEditorScreen
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
-import com.example.sociamediaapplication.viewmodel.AuthViewModelFactory
+import com.example.sociamediaapplication.viewmodel.factory.AuthViewModelFactory
 
 @Composable
 fun AppNavGraph() {

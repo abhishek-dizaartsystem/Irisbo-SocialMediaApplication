@@ -23,7 +23,7 @@ import com.example.sociamediaapplication.view.screens.SecurityScreen
 import com.example.sociamediaapplication.view.screens.SettingsScreen
 import com.example.sociamediaapplication.viewmodel.AuthUiState
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
-import com.example.sociamediaapplication.viewmodel.AuthViewModelFactory
+import com.example.sociamediaapplication.viewmodel.factory.AuthViewModelFactory
 
 @Composable
 fun SettingsNavGraph(
@@ -73,7 +73,9 @@ fun SettingsNavGraph(
             )
         }
         composable(SettingsRoutes.EditProfile.route) {
-            EditProfileScreen(navController)
+            EditProfileScreen(
+                navController = navController
+            )
         }
         composable(SettingsRoutes.Security.route) {
             SecurityScreen(navController)

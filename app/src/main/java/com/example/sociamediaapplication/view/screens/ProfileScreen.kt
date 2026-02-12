@@ -1,5 +1,8 @@
 package com.example.sociamediaapplication.view.screens
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,6 +34,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,8 +52,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -59,17 +66,38 @@ import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.White
+import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 
 @Composable
 fun ProfileScreen(
-    navController: NavController,
+    viewModel: ProfileViewModel = viewModel(),
     onEditProfile: ()-> Unit,
     onMenu: ()-> Unit,
-    onEditStatus: ()-> Unit
+    onEditStatus: ()-> Unit,
+
 ){
 
     var postSelected by remember { mutableStateOf(true) }
     val userPosts = remember { List(15) { R.drawable.rectangle_24 } }
+
+    val profile by viewModel.profile.collectAsState()
+
+
+    val userProfileImagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) {uri: Uri?->
+        uri?.let { uri->
+            viewModel.updateUserProfileImage(uri)
+        }
+    }
+
+    val userCoverImagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) {uri: Uri?->
+        uri?.let { uri->
+            viewModel.updateUserCoverImage(uri)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -84,8 +112,8 @@ fun ProfileScreen(
             contentAlignment = Alignment.BottomStart
         ) {
             Column(modifier = Modifier.height(220.dp)) {
-                Image(
-                    painter = painterResource(R.drawable.rectangle_24),
+                AsyncImage(
+                    model = profile?.coverImageUrl ?: R.drawable.rectangle_24,
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -110,8 +138,8 @@ fun ProfileScreen(
                                 containerColor = White
                             )
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.rectangle_5),
+                            AsyncImage(
+                                model = profile?.profileImageUrl ?: R.drawable.rectangle_5,
                                 contentDescription = "Profile Image",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -121,7 +149,9 @@ fun ProfileScreen(
 
                         }
                         IconButton(
-                            onClick = { },
+                            onClick = {
+                                userProfileImagePicker.launch("image/*")
+                            },
                             modifier = Modifier.size(40.dp),
                             colors = IconButtonDefaults.iconButtonColors(
                                 containerColor = GreyBtn
@@ -144,7 +174,9 @@ fun ProfileScreen(
                             modifier = Modifier.height(8.dp)
                         )
                         IconButton(
-                            onClick = { },
+                            onClick = {
+                                userCoverImagePicker.launch("image/*")
+                            },
                             modifier = Modifier.size(40.dp),
                             colors = IconButtonDefaults.iconButtonColors(
                                 containerColor = GreyBtn
@@ -163,12 +195,12 @@ fun ProfileScreen(
             }
         }
         Text(
-            text = "John Doe",
+            text = profile?.name?:"",
             fontSize = 25.sp,
             modifier = Modifier.padding(start = 16.dp)
         )
         Text(
-            text = "Bio",
+            text = profile?.bio?:"",
             fontSize = 15.sp,
             modifier = Modifier.padding(start = 16.dp)
         )
@@ -401,7 +433,7 @@ fun ProfileScreen(
 @Composable
 fun ProfileScreenPreview(){
     ProfileScreen(
-        navController = rememberNavController(),
+        viewModel(),
         onEditStatus = {},
         onEditProfile = {},
         onMenu = {}
