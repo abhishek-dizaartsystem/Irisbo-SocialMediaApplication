@@ -1,10 +1,8 @@
 package com.example.sociamediaapplication.viewmodel
 
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.AuthRepository
-import com.example.sociamediaapplication.model.AuthResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -13,48 +11,85 @@ class AuthViewModel(
     private val repository: AuthRepository
 ) : ViewModel() {
 
-    private val _authState = MutableStateFlow<AuthResponse?>(null)
-    val authState: StateFlow<AuthResponse?> = _authState
+    private val _authState =
+        MutableStateFlow<AuthUiState>(AuthUiState.Idle)
 
-    fun signup(name: String, username: String, email: String, password: String) {
+    val authState: StateFlow<AuthUiState> = _authState
+
+
+    // -----------------------------
+    // SIGNUP
+    // -----------------------------
+    fun signup(
+        name: String,
+        username: String,
+        email: String,
+        password: String
+    ) {
         viewModelScope.launch {
             try {
-                val response = repository.signup(name, username, email, password)
-                _authState.value = response   // 🔴 REQUIRED
+                _authState.value = AuthUiState.Loading
+
+                val response =
+                    repository.signup(name, username, email, password)
+
+                _authState.value =
+                    AuthUiState.Success(response.message?:"")
+
             } catch (e: Exception) {
-                _authState.value = AuthResponse(
-                    message = e.message ?: "Error",
-                    token = null
-                )
+                _authState.value =
+                    AuthUiState.Error(e.message ?: "Signup failed")
             }
         }
     }
 
-    fun login(email: String, password: String) {
+
+    // -----------------------------
+    // LOGIN
+    // -----------------------------
+    fun login(
+        email: String,
+        password: String
+    ) {
         viewModelScope.launch {
             try {
-                val response = repository.login(email, password)
-                _authState.value = response   // 🔴 REQUIRED
+                _authState.value = AuthUiState.Loading
+
+                val response =
+                    repository.login(email, password)
+
+                _authState.value =
+                    AuthUiState.Success(response.message?:"")
+
             } catch (e: Exception) {
-                _authState.value = AuthResponse(
-                    message = e.message ?: "Error",
-                    token = null
-                )
+                _authState.value =
+                    AuthUiState.Error(e.message ?: "Login failed")
             }
         }
     }
 
+
+    // -----------------------------
+    // LOGOUT
+    // -----------------------------
     fun logout() {
         viewModelScope.launch {
             try {
+                _authState.value = AuthUiState.Loading
+
                 val response = repository.logout()
-                _authState.value = response
+
+                _authState.value =
+                    AuthUiState.Success(response.message?:"")
+
             } catch (e: Exception) {
-                _authState.value = AuthResponse(
-                    message = e.message ?: "Error",
-                    token = null
-                )
+                _authState.value =
+                    AuthUiState.Error(e.message ?: "Logout failed")
             }
         }
+    }
+
+    fun resetState() {
+        _authState.value = AuthUiState.Idle
     }
 }

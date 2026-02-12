@@ -19,7 +19,13 @@ class AuthRepository(
         password: String,
     ): AuthResponse {
 
-        return api.signup(SignupRequest(name, username, email, password))
+        val response = api.signup(SignupRequest(name, username, email, password))
+
+        response.token?.let {
+            tokenManager.saveToken(it)
+        }
+
+        return response
     }
 
     suspend fun login(
@@ -39,12 +45,14 @@ class AuthRepository(
 
     suspend fun logout(): AuthResponse {
         val token = tokenManager.getToken()
-            ?: throw IllegalStateException("No token found")
+
+        if (token == null) {
+            tokenManager.clearToken()
+            return AuthResponse("Already logged out", null)
+        }
 
         val response = api.logout("Bearer $token")
-
         tokenManager.clearToken()
-
         return response
     }
 

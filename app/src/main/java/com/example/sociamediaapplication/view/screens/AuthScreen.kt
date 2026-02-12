@@ -53,15 +53,17 @@ import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
+import com.example.sociamediaapplication.viewmodel.AuthUiState
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import kotlin.math.sign
 
 @Composable
 fun AuthScreen(
-    authState: AuthResponse?,
+    authState: AuthUiState,
     onLogin:(String, String) ->Unit = {email, password->},
     onSignup: (String, String, String, String)-> Unit = {name, email, password, confirmPassword->},
-    onAuthSuccess: ()-> Unit = {}
+    onAuthSuccess: ()-> Unit = {},
+    onResetState:()-> Unit = {}
 ){
     val context = LocalContext.current
 
@@ -73,26 +75,30 @@ fun AuthScreen(
     var signinSelected by remember { mutableStateOf(false) }
 
     LaunchedEffect(authState) {
-        authState?.let { response ->
+        when (authState) {
 
-            // ❌ Error case (no token)
-            if (response.token == null) {
+            is AuthUiState.Success -> {
                 Toast.makeText(
                     context,
-                    response.message,
+                    authState.message,
                     Toast.LENGTH_SHORT
                 ).show()
-            }
 
-            // ✅ Success case
-            if (response.token != null) {
-                Toast.makeText(
-                    context,
-                    if (signinSelected) "Sign in successful 🎉" else "Sign up successful 🎉",
-                    Toast.LENGTH_SHORT
-                ).show()
                 onAuthSuccess()
+                onResetState()
             }
+
+            is AuthUiState.Error -> {
+                Toast.makeText(
+                    context,
+                    authState.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                onResetState()
+            }
+
+            else -> {}
         }
     }
 
@@ -351,6 +357,6 @@ fun AuthScreen(
 fun AuthScreenPreview(){
 
     AuthScreen(
-        authState = null
+        authState = AuthUiState.Idle
     )
 }

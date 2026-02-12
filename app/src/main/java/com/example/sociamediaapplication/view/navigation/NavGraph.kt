@@ -72,6 +72,9 @@ fun AppNavGraph() {
                     navController.navigate(Routes.Splash.route) {
                         popUpTo(Routes.Auth.route) { inclusive = true }
                     }
+                },
+                onResetState = {
+                    authViewModel.resetState()
                 }
             )
         }
