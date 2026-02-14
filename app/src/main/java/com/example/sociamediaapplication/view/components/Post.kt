@@ -73,14 +73,11 @@ fun Post(
     onLiked: () -> Unit = {},
     onFollow: () -> Unit = {},
     isLiked: Boolean = false,
-    onPostProfileClick: ()-> Unit = {}
+    onPostProfileClick: ()-> Unit = {},
 ){
     val size = mediaList?.size
 
-
-
     val pagerState = rememberPagerState(pageCount = { mediaList?.size ?: 0 })
-
 
     var showCommentSection by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
