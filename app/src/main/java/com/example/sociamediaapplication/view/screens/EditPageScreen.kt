@@ -261,8 +261,8 @@ fun EditPageScreen(
 
                 item {
                     CustomTextField(
-                        "Page name",
-                        "travel page",
+                        label = "Page name",
+                        value = "travel page",
                         onValueChange = {},
                     )
 
@@ -270,8 +270,8 @@ fun EditPageScreen(
 
                 item {
                     CustomTextField(
-                        "Description",
-                        "What is this page about?",
+                        label = "Description",
+                        value = "What is this page about?",
                         onValueChange = {},
                     )
 
@@ -370,23 +370,23 @@ fun EditPageScreen(
                                 fontSize = 18.sp
                             )
                             CustomTextField(
-                                "Website",
-                                "https://yourwebsite.com",
+                                label = "Website",
+                                value = "https://yourwebsite.com",
                                 onValueChange = {},
                             )
                             CustomTextField(
-                                "Phone",
-                                "+91 1234567890",
+                                label = "Phone",
+                                value = "+91 1234567890",
                                 onValueChange = {},
                             )
                             CustomTextField(
-                                "Email",
-                                "contact@yourpage.com",
+                                label = "Email",
+                                value = "contact@yourpage.com",
                                 onValueChange = {},
                             )
                             CustomTextField(
-                                "Address",
-                                "NX1 greater noida near gaurs",
+                                label = "Address",
+                                value = "NX1 greater noida near gaurs",
                                 onValueChange = {},
                             )
 
