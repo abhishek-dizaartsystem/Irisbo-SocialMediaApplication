@@ -260,8 +260,8 @@ fun CreateGroupScreen(
 
                 item {
                     CustomTextField(
-                        "Group name",
-                        "travel group",
+                        label ="Group name",
+                        value = "travel group",
                         onValueChange = {},
                     )
 
@@ -269,8 +269,8 @@ fun CreateGroupScreen(
 
                 item {
                     CustomTextField(
-                        "Description",
-                        "What is this group about?",
+                        label = "Description",
+                        value = "What is this group about?",
                         onValueChange = {},
                     )
 

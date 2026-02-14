@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,8 +28,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +43,9 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -72,12 +79,12 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.CustomTextField
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
-import com.example.sociamediaapplication.viewmodel.PageViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreatePageScreen(
+fun CreateEventScreen(
     navController: NavController = rememberNavController(),
-    viewModel: PageViewModel = viewModel()
+    viewModel: GroupViewModel = viewModel()
 ){
 
 
@@ -93,9 +100,17 @@ fun CreatePageScreen(
     var isPrivate by remember { mutableStateOf(true) }
     var allowMemberPost by remember { mutableStateOf(false) }
     var isApprovalRequired by remember { mutableStateOf(false) }
+    var isVirtualEvent by remember { mutableStateOf(false) }
+
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    var selectedDate by remember { mutableStateOf("") }
+    var selectedTime by remember { mutableStateOf("") }
+
 
     val coverPhoto by viewModel.coverPhoto.collectAsState()
-    val pageProfile by viewModel.pageProfile.collectAsState()
+    val eventProfile by viewModel.groupProfile.collectAsState()
 
     val coverImagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -106,11 +121,11 @@ fun CreatePageScreen(
 
     }
 
-    val groupProfilePicker = rememberLauncherForActivityResult(
+    val eventProfilePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) {uri: Uri?->
         uri?.let{
-            viewModel.updatePageProfile(uri)
+            viewModel.updateGroupProfile(uri)
         }
     }
 
@@ -136,7 +151,7 @@ fun CreatePageScreen(
                     )
                 }
                 Text(
-                    text = "Create Group",
+                    text = "Create Event",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
@@ -214,7 +229,7 @@ fun CreatePageScreen(
                         ) {
                             IconButton(
                                 onClick = {
-                                    groupProfilePicker.launch("image/*")
+                                    eventProfilePicker.launch("image/*")
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth(0.25f)
@@ -230,10 +245,10 @@ fun CreatePageScreen(
                                 ,
                                 shape = RoundedCornerShape(0.dp)
                             ){
-                                when(pageProfile){
+                                when(eventProfile){
                                     is Int->{
                                         Image(
-                                            painter = painterResource(pageProfile as Int),
+                                            painter = painterResource(eventProfile as Int),
                                             contentDescription = "",
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -244,7 +259,7 @@ fun CreatePageScreen(
                                     }
                                     is Uri->{
                                         AsyncImage(
-                                            model = pageProfile as Uri,
+                                            model = eventProfile as Uri,
                                             contentDescription = "",
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -261,21 +276,112 @@ fun CreatePageScreen(
 
                 item {
                     CustomTextField(
-                        label = "Page name",
-                        value = "travel group",
+                        label = "Event name",
+                        value = "",
+                        placeHolder = "Event Name",
                         onValueChange = {},
                     )
 
                 }
 
                 item {
-                    CustomTextField(
-                        label = "Description",
-                        value = "What is this page about?",
-                        onValueChange = {},
-                    )
-
+                    Row() {
+                        CustomTextField(
+                            label = "Date",
+                            value = selectedDate,
+                            placeHolder = "dd-mm-yyyy",
+                            onValueChange = {},
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { showDatePicker = true },
+                            enabled = false
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        CustomTextField(
+                            label = "Starts at",
+                            value = selectedTime,
+                            onValueChange = {},
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { showTimePicker = true },
+                            enabled = false
+                        )
+                    }
                 }
+
+                item {
+                    Card(
+                        onClick = {},
+                        elevation = CardDefaults.cardElevation(2.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = White
+                        )
+                    ) {
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                ) {
+                                    Text(
+                                        text = "Virtual Event",
+                                        color = Black,
+                                        fontSize = 16.sp
+                                    )
+                                    Text(
+                                        text = "This event will be held virtually",
+                                        color = GreyTxt
+                                    )
+                                }
+                            }
+                            Switch(
+                                checked = isVirtualEvent,
+                                onCheckedChange = {
+                                    isVirtualEvent = it
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = White,
+                                    checkedTrackColor = Blue,
+                                    uncheckedThumbColor = White,
+                                    uncheckedTrackColor = Grey,
+                                    uncheckedBorderColor = Grey,
+                                )
+                            )
+                        }
+
+                        Spacer(
+                            modifier = Modifier
+                                .height(1.dp)
+                                .fillMaxWidth()
+                                .background(color = Grey)
+                        )
+
+
+                    }
+                }
+
+                if(!isVirtualEvent){
+                    item {
+                        CustomTextField(
+                            label = "Location",
+                            value = "Add address",
+                            onValueChange = {},
+                        )
+
+                    }
+                }
+
+
+
 
                 item {
 
@@ -300,7 +406,7 @@ fun CreatePageScreen(
                                     shape = RoundedCornerShape(16.dp)
                                 )
                                 .height(50.dp)
-                                .clickable{
+                                .clickable {
                                     showDropDownMenu = true
                                 },
                             verticalArrangement = Arrangement.Center
@@ -353,47 +459,14 @@ fun CreatePageScreen(
                 }
 
                 item {
-                    Card(
-                        onClick = {},
-                        elevation = CardDefaults.cardElevation(2.dp),
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = White
-                        )
-                    ) {
-                        Column(
-                            Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Text(
-                                "Contact Information",
-                                fontSize = 18.sp
-                            )
-                            CustomTextField(
-                                label = "Website",
-                                value = "https://yourwebsite.com",
-                                onValueChange = {},
-                            )
-                            CustomTextField(
-                                label = "Phone",
-                                value = "+91 1234567890",
-                                onValueChange = {},
-                            )
-                            CustomTextField(
-                                label = "Email",
-                                value = "contact@yourpage.com",
-                                onValueChange = {},
-                            )
-                            CustomTextField(
-                                label = "Address",
-                                value = "NX1 greater noida near gaurs",
-                                onValueChange = {},
-                            )
+                    CustomTextField(
+                        label = "Description",
+                        value = "What is this event about?",
+                        onValueChange = {},
+                    )
 
-                        }
-
-                    }
                 }
+
 
                 item {
                     Button(
@@ -405,19 +478,77 @@ fun CreatePageScreen(
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
-                            text = "Create Group",
+                            text = "Create Event",
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
                     }
                 }
             }
+            if (showDatePicker) {
+
+                val datePickerState = rememberDatePickerState()
+
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        Button(onClick = {
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val sdf = java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.getDefault())
+                                selectedDate = sdf.format(java.util.Date(millis))
+                            }
+                            showDatePicker = false
+                        }) {
+                            Text("OK")
+                        }
+                    },
+                    dismissButton = {
+                        Button(onClick = { showDatePicker = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                ) {
+                    DatePicker(state = datePickerState)
+                }
+            }
+            if (showTimePicker) {
+
+                val timeState = rememberTimePickerState(
+                    initialHour = 12,
+                    initialMinute = 0,
+                    is24Hour = false
+                )
+
+                androidx.compose.material3.AlertDialog(
+                    onDismissRequest = { showTimePicker = false },
+                    confirmButton = {
+                        Button(onClick = {
+                            val hour = timeState.hour
+                            val minute = timeState.minute
+                            selectedTime = String.format("%02d:%02d", hour, minute)
+                            showTimePicker = false
+                        }) {
+                            Text("OK")
+                        }
+                    },
+                    dismissButton = {
+                        Button(onClick = { showTimePicker = false }) {
+                            Text("Cancel")
+                        }
+                    },
+                    text = {
+                        TimePicker(state = timeState)
+                    }
+                )
+            }
+
+
         }
     }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun CreatePageScreenPreview(){
-    CreatePageScreen()
+fun CreateEventScreenPreview(){
+    CreateEventScreen()
 }

@@ -15,13 +15,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 
 @Composable
 fun CustomTextField(
+    enabled: Boolean = true,
     label: String,
     value: String,
+    placeHolder: String = "placeholder",
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     keyboardType: KeyboardType = KeyboardType.Text
@@ -41,6 +44,9 @@ fun CustomTextField(
             value = value,
             onValueChange = onValueChange,
             singleLine = true,
+            placeholder = {
+                Text(placeHolder)
+            },
             keyboardOptions = KeyboardOptions(
                 keyboardType = keyboardType
             ),
@@ -49,12 +55,15 @@ fun CustomTextField(
                 unfocusedIndicatorColor = Transparent,
                 disabledIndicatorColor = Transparent,
                 focusedContainerColor = LGrey,
-                unfocusedContainerColor = LGrey
+                unfocusedContainerColor = LGrey,
+                disabledContainerColor = LGrey,
+                disabledTextColor = Black,
             ),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp)
+                .height(56.dp),
+            enabled = enabled
         )
     }
 }
