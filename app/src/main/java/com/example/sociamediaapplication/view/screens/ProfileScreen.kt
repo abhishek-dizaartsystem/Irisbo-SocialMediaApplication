@@ -77,27 +77,28 @@ fun ProfileScreen(
 
 ){
 
+
     var postSelected by remember { mutableStateOf(true) }
     val userPosts = remember { List(15) { R.drawable.rectangle_24 } }
 
     val profile by viewModel.profile.collectAsState()
 
 
-    val userProfileImagePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) {uri: Uri?->
-        uri?.let { uri->
-            viewModel.updateUserProfileImage(uri)
-        }
-    }
-
-    val userCoverImagePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) {uri: Uri?->
-        uri?.let { uri->
-            viewModel.updateUserCoverImage(uri)
-        }
-    }
+//    val userProfileImagePicker = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.GetContent()
+//    ) {uri: Uri?->
+//        uri?.let { uri->
+//            viewModel.updateUserProfileImage(uri)
+//        }
+//    }
+//
+//    val userCoverImagePicker = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.GetContent()
+//    ) {uri: Uri?->
+//        uri?.let { uri->
+//            viewModel.updateUserCoverImage(uri)
+//        }
+//    }
 
     Column(
         modifier = Modifier
@@ -113,7 +114,7 @@ fun ProfileScreen(
         ) {
             Column(modifier = Modifier.height(220.dp)) {
                 AsyncImage(
-                    model = profile?.coverImageUrl ?: R.drawable.rectangle_24,
+                    model = profile?.cover_img ?: R.drawable.rectangle_24,
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -139,7 +140,7 @@ fun ProfileScreen(
                             )
                         ) {
                             AsyncImage(
-                                model = profile?.profileImageUrl ?: R.drawable.rectangle_5,
+                                model = profile?.profile_img ?: R.drawable.rectangle_5,
                                 contentDescription = "Profile Image",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -150,7 +151,7 @@ fun ProfileScreen(
                         }
                         IconButton(
                             onClick = {
-                                userProfileImagePicker.launch("image/*")
+                                //userProfileImagePicker.launch("image/*")
                             },
                             modifier = Modifier.size(40.dp),
                             colors = IconButtonDefaults.iconButtonColors(
@@ -175,7 +176,7 @@ fun ProfileScreen(
                         )
                         IconButton(
                             onClick = {
-                                userCoverImagePicker.launch("image/*")
+                                //userCoverImagePicker.launch("image/*")
                             },
                             modifier = Modifier.size(40.dp),
                             colors = IconButtonDefaults.iconButtonColors(

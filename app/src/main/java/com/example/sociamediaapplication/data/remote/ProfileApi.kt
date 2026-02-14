@@ -5,7 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 
 interface ProfileApi {
-    @GET("api/profile/me")
+    @GET("api/profile/profile")
     suspend fun getProfile(
         @Header("Authorization") token: String
     ): ProfileResponse

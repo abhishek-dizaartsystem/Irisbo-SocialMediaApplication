@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,6 +38,9 @@ fun ProfileNavGraph(
         startDestination = "profileMain"
     ){
         composable("profileMain"){
+            LaunchedEffect(Unit) {
+                viewModel.loadProfile()
+            }
             ProfileScreen(
                 viewModel = viewModel,
                 onEditStatus = {
