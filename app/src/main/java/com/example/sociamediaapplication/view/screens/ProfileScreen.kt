@@ -61,6 +61,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.isVideo
+import com.example.sociamediaapplication.model.response.PostResponse
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -76,18 +78,19 @@ import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel(),
+    posts: List<PostResponse> = emptyList(),
     onEditProfile: ()-> Unit,
     onMenu: ()-> Unit,
     onEditStatus: ()-> Unit,
 
-){
+    ){
 
 
     //option
     var postSelected by remember { mutableStateOf(true) }
-    val userPosts = remember { List(15) { R.drawable.rectangle_24 } }
     //which post is selected
-    var selectedPost by remember { mutableStateOf<Int?>(null) }
+    var selectedPost by remember { mutableStateOf<PostResponse?>(null) }
+
 
 
     val profile by viewModel.profile.collectAsState()
@@ -403,25 +406,50 @@ fun ProfileScreen(
                     }
                 }
 
-                items(userPosts) { postImage ->
+                items(posts) { post ->
+
+                    val thumbnail = post.media_urls.firstOrNull()
+
                     Box(
                         modifier = Modifier
                             .aspectRatio(1f)
                             .fillMaxWidth()
-                            .clickable {
-                                selectedPost = postImage
-                            }
+                            .clickable { selectedPost = post }
                     ) {
-                        Image(
-                            painter = painterResource(id = postImage),
-                            contentDescription = "Post",
-                            modifier = Modifier
-                                .aspectRatio(1f) // Makes it a perfect square
-                                .fillMaxWidth(),
-                            contentScale = ContentScale.Crop
-                        )
+
+                        if (thumbnail != null) {
+
+                            AsyncImage(
+                                model = thumbnail,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+
+                            // 🔥 Show play icon if video
+                            if (isVideo(thumbnail)) {
+                                Icon(
+                                    painter = painterResource(R.drawable.play_svgrepo_com),
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .size(28.dp)
+                                )
+                            }
+
+                        } else {
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.LightGray)
+                            )
+                        }
                     }
                 }
+
+
             }
         } else {
             // Placeholder for Reels
@@ -430,25 +458,25 @@ fun ProfileScreen(
             }
         }
     }
-    selectedPost?.let { postImage ->
+    selectedPost?.let { post ->
 
         Dialog(
             onDismissRequest = { selectedPost = null }
         ) {
             Post(
-                uName = profile?.name ?: "",
-                caption = "Post from profile",
-                mediaList = listOf(postImage, postImage, postImage),
+                uName = post.username ?: "",
+                caption = post.caption ?: "",
+                mediaList = post.media_urls,
+                postLikes = post.likes_count ?: 0,
+                profileImageUrl = post.profile_image_url,
                 isLiked = false,
-                postLikes = 24,
                 onLiked = {},
                 onFollow = {},
                 onPostProfileClick = {}
             )
         }
-
-
     }
+
 
 
 

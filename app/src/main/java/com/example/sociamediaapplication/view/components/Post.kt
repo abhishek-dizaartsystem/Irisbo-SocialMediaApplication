@@ -50,7 +50,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.isVideo
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.TTransparentWhite
@@ -63,7 +65,7 @@ fun Post(
     sincePosted: String = "1m",
     isVerified: Boolean = false,
     caption: String = "",
-    mediaList: List<Int>? = listOf(
+    mediaList: List<Any>? = listOf(
         (R.drawable.rectangle_6),
         (R.drawable.rectangle_5),
         (R.drawable.rectangle_24)
@@ -74,6 +76,7 @@ fun Post(
     onFollow: () -> Unit = {},
     isLiked: Boolean = false,
     onPostProfileClick: ()-> Unit = {},
+    profileImageUrl: String? = null
 ){
     val size = mediaList?.size
 
@@ -114,15 +117,15 @@ fun Post(
                                 shape = HexagonShape
                             )
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.rectangle_5),
-                            contentDescription = "Profile Image",
-                            // This crops the image into a square before clipping to a circle
+                        AsyncImage(
+                            model = profileImageUrl,
+                            contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                .size(50.dp) // Ensure the image fills the button
-                                .clip(HexagonShape) // Makes it perfectly circular
+                                .size(50.dp)
+                                .clip(HexagonShape)
                         )
+
                     }
                     Column(
                         modifier = Modifier
@@ -230,14 +233,46 @@ fun Post(
                             .aspectRatio(1f)
                     ) { page ->
 
-                        Image(
-                            painter = painterResource(mediaList[page]),
-                            contentDescription = "",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(1f)
-                        )
+                        val media = mediaList[page]
+
+                        when (media) {
+
+                            is Int -> {
+                                Image(
+                                    painter = painterResource(media),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .aspectRatio(1f)
+                                )
+                            }
+
+                            is String -> {
+
+                                if (isVideo(media)) {
+
+                                    AutoVideo(
+                                        url = media,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .aspectRatio(1f)
+                                    )
+
+                                } else {
+
+                                    AsyncImage(
+                                        model = media,
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .aspectRatio(1f)
+                                    )
+                                }
+                            }
+                        }
+
                     }
 
 
