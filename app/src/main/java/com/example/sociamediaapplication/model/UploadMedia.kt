@@ -11,3 +11,8 @@ enum class MediaType{
     IMAGE,
     VIDEO
 }
+
+enum class UploadType {
+    POST,
+    REEL
+}

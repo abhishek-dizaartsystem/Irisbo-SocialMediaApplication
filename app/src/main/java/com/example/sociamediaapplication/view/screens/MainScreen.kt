@@ -27,12 +27,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,6 +45,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.preferences.TokenManager
+import com.example.sociamediaapplication.data.repository.PostRepository
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -54,6 +58,8 @@ import com.example.sociamediaapplication.view.navigation.MenuNavGraph
 import com.example.sociamediaapplication.view.navigation.ProfileNavGraph
 import com.example.sociamediaapplication.view.navigation.Routes
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
+import com.example.sociamediaapplication.viewmodel.UploadViewModel
+import com.example.sociamediaapplication.viewmodel.factory.UploadViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,6 +74,15 @@ fun MainScreen(
     val navController = rememberNavController()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val isScrollingUp = scrollBehavior.state.collapsedFraction == 0f
+
+
+    val context = LocalContext.current.applicationContext
+    val tokenManager = remember { TokenManager(context) }
+    val repository = remember { PostRepository(tokenManager) }
+    val factory = remember { UploadViewModelFactory(repository) }
+
+    val uploadViewModel: UploadViewModel = viewModel(factory = factory)
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -280,7 +295,10 @@ fun MainScreen(
             }
 
             composable(MainRoutes.Add.route){
-                UploadScreen()
+                UploadScreen(
+                    navController = navController,
+                    viewModel = uploadViewModel
+                )
             }
 
             composable(MainRoutes.Chats.route) {

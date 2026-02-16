@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -28,14 +31,23 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.model.UploadType
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
+import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.DBlue
 import com.example.sociamediaapplication.ui.theme.Grey
@@ -48,12 +60,21 @@ import com.example.sociamediaapplication.viewmodel.UploadViewModel
 
 @Composable
 fun UploadScreen(
-    viewModel: UploadViewModel = viewModel()
+    viewModel: UploadViewModel = viewModel(),
+    navController: NavController = rememberNavController()
 ){
 
+    val context = LocalContext.current.applicationContext
     val caption by viewModel.caption.collectAsState()
 
     val mediaList by viewModel.mediaList.collectAsState()
+
+    val uploadType by viewModel.uploadType.collectAsState()
+    var expanded by remember { mutableStateOf(false) }
+
+    val reelHasMedia = uploadType == UploadType.REEL && mediaList.isNotEmpty()
+
+
 
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -79,6 +100,51 @@ fun UploadScreen(
                 color = BackgroundColor
             )
     ) {
+
+        Box {
+            Button(
+                onClick = { expanded = true },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Transparent
+                )
+            ) {
+                Text(
+                    text = if (uploadType == UploadType.POST) "Post" else "Reel",
+                    color = Black,
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+                Icon(
+                    painter = painterResource(R.drawable.back_svgrepo_com),
+                    contentDescription = "",
+                    tint = Black,
+                    modifier = Modifier.size(12.dp).rotate(-90f)
+                )
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Post") },
+                    onClick = {
+                        viewModel.setUploadType(UploadType.POST)
+                        expanded = false
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Reel") },
+                    onClick = {
+                        viewModel.setUploadType(UploadType.REEL)
+                        expanded = false
+                    }
+                )
+            }
+        }
+
+
         Column(
             modifier = Modifier.height(220.dp)
         ) {
@@ -118,30 +184,33 @@ fun UploadScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row() {
-                Button(
-                    onClick = {
-                        imagePicker.launch("image/*")
-                    },
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .height(40.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(vertical = 0.dp, horizontal = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = LLBlue)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.photo_svgrepo_com),
-                        contentDescription = "",
-                        modifier = Modifier.size(26.dp),
-                        tint = DBlue
-                    )
-                    Text(
-                        text = "Photo",
-                        fontSize = 16.sp,
-                        color = DBlue,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
+                if (uploadType == UploadType.POST){
+                    Button(
+                        onClick = {
+                            imagePicker.launch("image/*")
+                        },
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .height(40.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(vertical = 0.dp, horizontal = 16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = LLBlue)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.photo_svgrepo_com),
+                            contentDescription = "",
+                            modifier = Modifier.size(26.dp),
+                            tint = DBlue
+                        )
+                        Text(
+                            text = "Photo",
+                            fontSize = 16.sp,
+                            color = DBlue,
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
                 }
+
                 Button(
                     onClick = {
                         videoPicker.launch("video/*")
@@ -151,7 +220,8 @@ fun UploadScreen(
                         .height(40.dp),
                     shape = RoundedCornerShape(8.dp),
                     contentPadding = PaddingValues(vertical = 0.dp, horizontal = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = LLBlue)
+                    colors = ButtonDefaults.buttonColors(containerColor = LLBlue),
+                    enabled = !reelHasMedia,
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.video_svgrepo_com),
@@ -168,7 +238,10 @@ fun UploadScreen(
                 }
             }
             Button(
-                onClick = {},
+                onClick = {
+                    viewModel.uploadPost(context)
+                    navController.popBackStack()
+                },
                 modifier = Modifier
                     .padding(end = 8.dp)
                     .height(40.dp),
@@ -177,7 +250,7 @@ fun UploadScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = Blue)
             ) {
                 Text(
-                    text = "Post",
+                    text = if (uploadType == UploadType.POST) "Post" else "Upload Reel",
                     fontSize = 16.sp,
                     color = White,
                     modifier = Modifier.padding(start = 4.dp)

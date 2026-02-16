@@ -20,6 +20,12 @@ class PostViewModel(
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
+    private val _isUploading = MutableStateFlow(false)
+    val isUploading: StateFlow<Boolean> = _isUploading
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
+
     init {
         loadPosts()
     }
@@ -37,18 +43,33 @@ class PostViewModel(
         }
     }
 
-    fun createPost(caption: String, uris: List<Uri>, context: Context) {
+    fun createPost(
+        caption: String,
+        mediaUris: List<Uri>?,
+        context: Context,
+        onSuccess: () -> Unit
+    ) {
         viewModelScope.launch {
+            _isUploading.value = true
             try {
-                repository.createPost(caption, uris, context)
 
-                // 🔥 refresh feed
-                loadPosts()
+                repository.createPost(
+                    captionText = caption,
+                    uris = mediaUris,
+                    context = context
+                )
+
+                // 🔥 reload feed after upload
+                repository.getPosts()
+
+                onSuccess()
 
             } catch (e: Exception) {
-                println("POST ERROR: ${e.message}")
+                _error.value = e.message
+            } finally {
+                _isUploading.value = false
             }
         }
     }
-
 }
+
