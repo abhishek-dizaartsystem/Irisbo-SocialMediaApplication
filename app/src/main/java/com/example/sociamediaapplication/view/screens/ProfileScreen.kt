@@ -7,6 +7,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,15 +44,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -66,6 +70,7 @@ import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.White
+import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 
 @Composable
@@ -78,27 +83,32 @@ fun ProfileScreen(
 ){
 
 
+    //option
     var postSelected by remember { mutableStateOf(true) }
     val userPosts = remember { List(15) { R.drawable.rectangle_24 } }
+    //which post is selected
+    var selectedPost by remember { mutableStateOf<Int?>(null) }
+
 
     val profile by viewModel.profile.collectAsState()
+    val context = LocalContext.current
 
 
-//    val userProfileImagePicker = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.GetContent()
-//    ) {uri: Uri?->
-//        uri?.let { uri->
-//            viewModel.updateUserProfileImage(uri)
-//        }
-//    }
-//
-//    val userCoverImagePicker = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.GetContent()
-//    ) {uri: Uri?->
-//        uri?.let { uri->
-//            viewModel.updateUserCoverImage(uri)
-//        }
-//    }
+    val userProfileImagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) {uri: Uri?->
+        uri?.let { uri->
+            viewModel.uploadProfileImage(uri, context)
+        }
+    }
+
+    val userCoverImagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) {uri: Uri?->
+        uri?.let { uri->
+            viewModel.uploadCoverImage(uri, context)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -114,7 +124,7 @@ fun ProfileScreen(
         ) {
             Column(modifier = Modifier.height(220.dp)) {
                 AsyncImage(
-                    model = profile?.cover_img ?: R.drawable.rectangle_24,
+                    model = profile?.cover_img,
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -140,7 +150,7 @@ fun ProfileScreen(
                             )
                         ) {
                             AsyncImage(
-                                model = profile?.profile_img ?: R.drawable.rectangle_5,
+                                model = profile?.profile_img,
                                 contentDescription = "Profile Image",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -151,7 +161,7 @@ fun ProfileScreen(
                         }
                         IconButton(
                             onClick = {
-                                //userProfileImagePicker.launch("image/*")
+                                userProfileImagePicker.launch("image/*")
                             },
                             modifier = Modifier.size(40.dp),
                             colors = IconButtonDefaults.iconButtonColors(
@@ -176,7 +186,7 @@ fun ProfileScreen(
                         )
                         IconButton(
                             onClick = {
-                                //userCoverImagePicker.launch("image/*")
+                                userCoverImagePicker.launch("image/*")
                             },
                             modifier = Modifier.size(40.dp),
                             colors = IconButtonDefaults.iconButtonColors(
@@ -367,7 +377,7 @@ fun ProfileScreen(
                                 tint = GreyTxt
                             )
                             Text(
-                                text = "Works at Dizaart",
+                                text = "Works at ${profile?.work}",
                                 modifier = Modifier
                                     .padding(start = 6.dp),
                                 color = GreyTxt
@@ -384,24 +394,7 @@ fun ProfileScreen(
                                 tint = GreyTxt
                             )
                             Text(
-                                text = "Studied at AKTU",
-                                modifier = Modifier
-                                    .padding(start = 6.dp),
-                                color = GreyTxt
-                            )
-                        }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(bottom = 6.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.location_pin_svgrepo_com),
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp),
-                                tint = GreyTxt
-                            )
-                            Text(
-                                text = "Lives in India",
+                                text = "Studied at ${profile?.education}",
                                 modifier = Modifier
                                     .padding(start = 6.dp),
                                 color = GreyTxt
@@ -411,14 +404,23 @@ fun ProfileScreen(
                 }
 
                 items(userPosts) { postImage ->
-                    Image(
-                        painter = painterResource(id = postImage),
-                        contentDescription = "Post",
+                    Box(
                         modifier = Modifier
-                            .aspectRatio(1f) // Makes it a perfect square
-                            .fillMaxWidth(),
-                        contentScale = ContentScale.Crop
-                    )
+                            .aspectRatio(1f)
+                            .fillMaxWidth()
+                            .clickable {
+                                selectedPost = postImage
+                            }
+                    ) {
+                        Image(
+                            painter = painterResource(id = postImage),
+                            contentDescription = "Post",
+                            modifier = Modifier
+                                .aspectRatio(1f) // Makes it a perfect square
+                                .fillMaxWidth(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
             }
         } else {
@@ -428,6 +430,28 @@ fun ProfileScreen(
             }
         }
     }
+    selectedPost?.let { postImage ->
+
+        Dialog(
+            onDismissRequest = { selectedPost = null }
+        ) {
+            Post(
+                uName = profile?.name ?: "",
+                caption = "Post from profile",
+                mediaList = listOf(postImage, postImage, postImage),
+                isLiked = false,
+                postLikes = 24,
+                onLiked = {},
+                onFollow = {},
+                onPostProfileClick = {}
+            )
+        }
+
+
+    }
+
+
+
 }
 
 @Preview

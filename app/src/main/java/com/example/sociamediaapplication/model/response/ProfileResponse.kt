@@ -5,6 +5,8 @@ data class ProfileResponse(
     val username: String,
     val bio: String,
     val email: String,
-    val profile_img: String,
-    val cover_img: String
+    val education: String,
+    val work: String,
+    val profile_img: String?,
+    val cover_img: String?
 )

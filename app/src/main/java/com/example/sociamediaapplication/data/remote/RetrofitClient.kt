@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    private const val BASE_URL = "https://gerry-unsturdy-wickedly.ngrok-free.dev/" // for emulator
+    const val BASE_URL = "http://192.168.1.33:3000/" // for emulator
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()

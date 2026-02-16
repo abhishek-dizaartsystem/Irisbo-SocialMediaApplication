@@ -38,9 +38,6 @@ fun ProfileNavGraph(
         startDestination = "profileMain"
     ){
         composable("profileMain"){
-            LaunchedEffect(Unit) {
-                viewModel.loadProfile()
-            }
             ProfileScreen(
                 viewModel = viewModel,
                 onEditStatus = {
