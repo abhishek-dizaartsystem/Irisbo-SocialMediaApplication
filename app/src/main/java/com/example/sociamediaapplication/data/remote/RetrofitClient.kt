@@ -27,4 +27,8 @@ object RetrofitClient {
     val postApi: PostApi by lazy{
         retrofit.create(PostApi::class.java)
     }
+
+    val reelApi: ReelApi by lazy{
+        retrofit.create(ReelApi::class.java)
+    }
 }

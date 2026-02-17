@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.repository.PostRepository
 import com.example.sociamediaapplication.data.repository.ProfileRepository
+import com.example.sociamediaapplication.data.repository.ReelRepository
 import com.example.sociamediaapplication.view.screens.EditProfileScreen
 import com.example.sociamediaapplication.view.screens.MenuScreen
 import com.example.sociamediaapplication.view.screens.ProfileScreen
@@ -21,8 +22,10 @@ import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import com.example.sociamediaapplication.viewmodel.PageViewModel
 import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
+import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ProfileViewModelFactory
+import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 
 @Composable
 fun ProfileNavGraph(
@@ -44,6 +47,13 @@ fun ProfileNavGraph(
 
     val posts by postViewModel.posts.collectAsState()
 
+    val reelRepository = remember { ReelRepository(tokenManager) }
+    val reelFactory = remember { ReelsViewModelFactory(reelRepository) }
+    val reelViewModel: ReelsViewModel = viewModel(factory = reelFactory)
+
+    val reels by reelViewModel.reels.collectAsState()
+
+
     NavHost(
         navController = navController,
         startDestination = "profileMain"
@@ -51,11 +61,13 @@ fun ProfileNavGraph(
         composable("profileMain"){
             LaunchedEffect(Unit) {
                 postViewModel.loadPosts()
+                reelViewModel.loadReels()
             }
 
             ProfileScreen(
                 viewModel = viewModel,
                 posts = posts,
+                reels = reels,
                 onEditStatus = {
                     mainNavController.navigate(Routes.EditStatus.route)
                 },

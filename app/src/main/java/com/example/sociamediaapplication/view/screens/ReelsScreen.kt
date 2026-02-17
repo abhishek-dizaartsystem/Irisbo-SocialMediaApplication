@@ -20,11 +20,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,22 +34,31 @@ import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.model.Reel
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.DTransparentBlack
-import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.ReelDetailComponent
 import com.example.sociamediaapplication.view.components.ReelItem
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 
 @Composable
-fun ReelsScreen() {
+fun ReelsScreen(
+    loading: Boolean = false,
+    reels: List<Reel> = emptyList(),
+    startIndex: Int = 0
+) {
 
-    val viewModel: ReelsViewModel = viewModel()
-    val reels by viewModel.reelsList.collectAsState()
-    val isMuted by viewModel.isMuted.collectAsState()
+    var isMuted by remember { mutableStateOf(false) }
 
+    if (loading && reels.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Loading...", color = White)
+        }
+        return
+    }
 
-
-    val pagerState = rememberPagerState(pageCount =  { reels.size })
+    val pagerState = rememberPagerState(initialPage = startIndex, pageCount =  { reels.size })
 
     VerticalPager(
         state = pagerState,
@@ -64,7 +73,7 @@ fun ReelsScreen() {
             val isVisible = pagerState.currentPage == page
 
             ReelItem(
-                videoUrl = reels[page].videoUrl,
+                videoUrl = reel.video_url,
                 isVisible = isVisible,
                 isMuted = isMuted
             )
@@ -78,7 +87,7 @@ fun ReelsScreen() {
                 ) {
                     IconButton(
                         onClick = {
-                            viewModel.toggleMuteVideo()
+                            isMuted = !isMuted
                         },
                         colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
                         modifier = Modifier.size(45.dp)
@@ -98,27 +107,27 @@ fun ReelsScreen() {
                             .padding(end = 6.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        IconButton(
-                            onClick = {
-                                viewModel.toggleLike(page)
-
-                            },
-                            colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
-                            modifier = Modifier.size(45.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(
-                                    if(reels[page].isLiked) R.drawable.like_svgrepo_com__1_ else R.drawable.like_svgrepo_com),
-                                contentDescription = "",
-                                modifier = Modifier.size(30.dp),
-                                tint = White
-                            )
-                        }
-                        Text(
-                            text = reel.likeCount.toString(),
-                            color = White,
-                            fontSize = 16.sp
-                        )
+//                        IconButton(
+//                            onClick = {
+//                                viewModel.toggleLike(page)
+//
+//                            },
+//                            colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
+//                            modifier = Modifier.size(45.dp)
+//                        ) {
+//                            Icon(
+//                                painter = painterResource(
+//                                    if(reels[page].isLiked) R.drawable.like_svgrepo_com__1_ else R.drawable.like_svgrepo_com),
+//                                contentDescription = "",
+//                                modifier = Modifier.size(30.dp),
+//                                tint = White
+//                            )
+//                        }
+//                        Text(
+//                            text = reel.likeCount.toString(),
+//                            color = White,
+//                            fontSize = 16.sp
+//                        )
                         IconButton(
                             onClick = {},
                             colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
@@ -143,21 +152,21 @@ fun ReelsScreen() {
                                 tint = White
                             )
                         }
-                        IconButton(
-                            onClick = {
-                                viewModel.toggleSave(page)
-                            },
-                            colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
-                            modifier = Modifier.size(45.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(
-                                    if(reel.isSaved) R.drawable.save_filled else R.drawable.save_icon),
-                                contentDescription = "",
-                                modifier = Modifier.size(30.dp),
-                                tint = White
-                            )
-                        }
+//                        IconButton(
+//                            onClick = {
+//                               // viewModel.toggleSave(page)
+//                            },
+//                            colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
+//                            modifier = Modifier.size(45.dp)
+//                        ) {
+//                            Icon(
+//                                painter = painterResource(
+//                                    if(reel.isSaved) R.drawable.save_filled else R.drawable.save_icon),
+//                                contentDescription = "",
+//                                modifier = Modifier.size(30.dp),
+//                                tint = White
+//                            )
+//                        }
                     }
                 }
 
@@ -176,5 +185,5 @@ fun ReelsScreen() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ReelsScreenPreview(){
-    ReelsScreen()
+    //ReelsScreen()
 }
