@@ -42,6 +42,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.repository.PostRepository
+import com.example.sociamediaapplication.data.repository.ReelRepository
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -52,7 +53,9 @@ import com.example.sociamediaapplication.view.navigation.MainRoutes
 import com.example.sociamediaapplication.view.navigation.MenuNavGraph
 import com.example.sociamediaapplication.view.navigation.Routes
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
+import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
+import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.UploadViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,9 +76,15 @@ fun MainScreen(
     val context = LocalContext.current.applicationContext
     val tokenManager = remember { TokenManager(context) }
     val repository = remember { PostRepository(tokenManager) }
-    val factory = remember { UploadViewModelFactory(repository) }
+
+    val reelRepository = remember { ReelRepository(tokenManager) }
+
+    val factory = remember { UploadViewModelFactory(repository, reelRepository) }
 
     val uploadViewModel: UploadViewModel = viewModel(factory = factory)
+
+
+
 
     Scaffold(
         topBar = {
@@ -292,6 +301,7 @@ fun MainScreen(
                 UploadScreen(
                     navController = navController,
                     viewModel = uploadViewModel
+
                 )
             }
 

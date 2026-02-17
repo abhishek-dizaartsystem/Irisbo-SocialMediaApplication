@@ -6,6 +6,7 @@ import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.uriToFile
 import com.example.sociamediaapplication.model.Reel
+import com.example.sociamediaapplication.model.response.LikeResponse
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -20,7 +21,7 @@ class ReelRepository(
 
     // ✅ fetch reels
     suspend fun getReels(): List<Reel> {
-        return api.getAllReels().reels
+        return api.getAllReels(token = "Bearer ${tokenManager.getToken()}").reels
     }
 
     // ✅ upload reel (single video)
@@ -58,4 +59,16 @@ class ReelRepository(
             caption = caption
         )
     }
+
+    suspend fun toggleLike(reelId: Int): LikeResponse {
+
+        val token = tokenManager.getToken()
+            ?: throw IllegalStateException("No token")
+
+        return api.toggleLikeReel(
+            id = reelId,
+            token = "Bearer $token"
+        )
+    }
+
 }

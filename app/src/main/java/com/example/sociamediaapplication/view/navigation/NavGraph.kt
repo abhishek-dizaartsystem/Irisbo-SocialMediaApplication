@@ -110,8 +110,11 @@ fun AppNavGraph() {
                 reelViewModel.loadReels()
             }
             ReelsScreen(
+                loading = loading,
                 reels = reels,
-                loading = loading
+                onLike = {
+                    reelViewModel.toggleLike(it)
+                }
             )
         }
 

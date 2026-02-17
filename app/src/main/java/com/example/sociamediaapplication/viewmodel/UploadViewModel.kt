@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.PostRepository
+import com.example.sociamediaapplication.data.repository.ReelRepository
 import com.example.sociamediaapplication.model.MediaType
 import com.example.sociamediaapplication.model.UploadMedia
 import com.example.sociamediaapplication.model.UploadType
@@ -14,7 +15,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class UploadViewModel(
-    private val repository: PostRepository
+    private val repository: PostRepository,
+    private val reelRepository: ReelRepository
 ): ViewModel() {
     private val _caption = MutableStateFlow("")
     val caption: StateFlow<String> = _caption
@@ -24,6 +26,12 @@ class UploadViewModel(
 
     private val _uploadType = MutableStateFlow(UploadType.POST)
     val uploadType: StateFlow<UploadType> = _uploadType
+
+    private val _isUploading = MutableStateFlow(false)
+    val isUploading: StateFlow<Boolean> = _isUploading
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
 
     fun updateCaption(newCaption:String){
         _caption.value = newCaption
@@ -48,6 +56,29 @@ class UploadViewModel(
 
             } catch (e: Exception) {
                 e.printStackTrace()
+            }
+        }
+    }
+
+    fun uploadReel(
+        caption: String?,
+        videoUri: Uri?,
+        context: Context
+    ) {
+        viewModelScope.launch {
+            _isUploading.value = true
+            try {
+
+                reelRepository.uploadReel(
+                    captionText = caption,
+                    uri = videoUri,
+                    context = context
+                )
+
+            } catch (e: Exception) {
+                _error.value = e.message
+            } finally {
+                _isUploading.value = false
             }
         }
     }

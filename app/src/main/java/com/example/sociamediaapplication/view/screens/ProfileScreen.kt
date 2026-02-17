@@ -4,9 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,13 +28,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,11 +41,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -58,14 +51,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.utils.isVideo
 import com.example.sociamediaapplication.model.Reel
 import com.example.sociamediaapplication.model.response.PostResponse
-import com.example.sociamediaapplication.model.response.ReelListResponse
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -83,9 +73,10 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel(),
     posts: List<PostResponse> = emptyList(),
     reels: List<Reel> = emptyList(),
-    onEditProfile: ()-> Unit,
-    onMenu: ()-> Unit,
-    onEditStatus: ()-> Unit,
+    onEditProfile: () -> Unit,
+    onMenu: () -> Unit,
+    onEditStatus: () -> Unit,
+    onReelLike: (Reel)-> Unit = {},
 
     ){
 
@@ -518,7 +509,8 @@ fun ProfileScreen(
             ReelsScreen(
                 reels = reels,
                 loading = false,
-                startIndex = startIndex   // 🔥 NEW PARAM
+                startIndex = startIndex,   // 🔥 NEW PARAM
+                onLike = onReelLike
             )
         }
     }
@@ -533,9 +525,8 @@ fun ProfileScreen(
 @Composable
 fun ProfileScreenPreview(){
     ProfileScreen(
-        viewModel(),
-        onEditStatus = {},
         onEditProfile = {},
-        onMenu = {}
+        onMenu = {},
+        onEditStatus = {},
     )
 }

@@ -16,10 +16,8 @@ import com.example.sociamediaapplication.data.repository.PostRepository
 import com.example.sociamediaapplication.data.repository.ProfileRepository
 import com.example.sociamediaapplication.data.repository.ReelRepository
 import com.example.sociamediaapplication.view.screens.EditProfileScreen
-import com.example.sociamediaapplication.view.screens.MenuScreen
 import com.example.sociamediaapplication.view.screens.ProfileScreen
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
-import com.example.sociamediaapplication.viewmodel.PageViewModel
 import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
@@ -68,6 +66,9 @@ fun ProfileNavGraph(
                 viewModel = viewModel,
                 posts = posts,
                 reels = reels,
+                onReelLike = {
+                    reelViewModel.toggleLike(it)
+                },
                 onEditStatus = {
                     mainNavController.navigate(Routes.EditStatus.route)
                 },

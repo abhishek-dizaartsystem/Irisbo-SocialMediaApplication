@@ -1,5 +1,7 @@
 package com.example.sociamediaapplication.viewmodel
 
+import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -102,5 +104,41 @@ class ReelsViewModel(
             }
         }
     }
+
+    fun toggleLike(reel: Reel) {
+
+        // 🔥 optimistic update
+        _reels.value = _reels.value.map {
+            if (it.id == reel.id) {
+                it.copy(
+                    is_liked = !it.is_liked,
+                    likes_count =
+                        if (it.is_liked) it.likes_count - 1
+                        else it.likes_count + 1
+                )
+            } else it
+        }
+
+        viewModelScope.launch {
+            try {
+                val response = repository.toggleLike(reel.id)
+
+                // 🔥 sync with backend truth
+                _reels.value = _reels.value.map {
+                    if (it.id == reel.id) {
+                        it.copy(
+                            is_liked = response.liked,
+                            likes_count = response.likes_count
+                        )
+                    } else it
+                }
+
+            } catch (e: Exception) {
+                // 🔥 rollback on failure
+                loadReels()
+            }
+        }
+    }
+
 }
 

@@ -56,6 +56,7 @@ import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.UploadItem
+import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
 
 @Composable
@@ -71,6 +72,8 @@ fun UploadScreen(
 
     val uploadType by viewModel.uploadType.collectAsState()
     var expanded by remember { mutableStateOf(false) }
+
+
 
     val reelHasMedia = uploadType == UploadType.REEL && mediaList.isNotEmpty()
 
@@ -239,7 +242,17 @@ fun UploadScreen(
             }
             Button(
                 onClick = {
-                    viewModel.uploadPost(context)
+                    if(uploadType == UploadType.REEL){
+                        viewModel.uploadReel(
+                            caption,
+                            videoUri = mediaList.firstOrNull()?.uri,
+                            context
+                        )
+                    }else{
+                        viewModel.uploadPost(context)
+                    }
+
+
                     navController.popBackStack()
                 },
                 modifier = Modifier

@@ -18,7 +18,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,8 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.model.Reel
 import com.example.sociamediaapplication.ui.theme.Black
@@ -37,13 +34,13 @@ import com.example.sociamediaapplication.ui.theme.DTransparentBlack
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.ReelDetailComponent
 import com.example.sociamediaapplication.view.components.ReelItem
-import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 
 @Composable
 fun ReelsScreen(
     loading: Boolean = false,
     reels: List<Reel> = emptyList(),
-    startIndex: Int = 0
+    startIndex: Int = 0,
+    onLike: (Reel) -> Unit = {}
 ) {
 
     var isMuted by remember { mutableStateOf(false) }
@@ -107,22 +104,22 @@ fun ReelsScreen(
                             .padding(end = 6.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-//                        IconButton(
-//                            onClick = {
-//                                viewModel.toggleLike(page)
-//
-//                            },
-//                            colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
-//                            modifier = Modifier.size(45.dp)
-//                        ) {
-//                            Icon(
-//                                painter = painterResource(
-//                                    if(reels[page].isLiked) R.drawable.like_svgrepo_com__1_ else R.drawable.like_svgrepo_com),
-//                                contentDescription = "",
-//                                modifier = Modifier.size(30.dp),
-//                                tint = White
-//                            )
-//                        }
+                        IconButton(
+                            onClick = {
+                                onLike(reel)
+
+                            },
+                            colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
+                            modifier = Modifier.size(45.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(
+                                    if(reels[page].is_liked) R.drawable.like_svgrepo_com__1_ else R.drawable.like_svgrepo_com),
+                                contentDescription = "",
+                                modifier = Modifier.size(30.dp),
+                                tint = White
+                            )
+                        }
 //                        Text(
 //                            text = reel.likeCount.toString(),
 //                            color = White,
