@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.model.Reel
 import com.example.sociamediaapplication.ui.theme.Black
@@ -120,11 +121,11 @@ fun ReelsScreen(
                                 tint = White
                             )
                         }
-//                        Text(
-//                            text = reel.likeCount.toString(),
-//                            color = White,
-//                            fontSize = 16.sp
-//                        )
+                        Text(
+                            text = reel.likes_count.toString(),
+                            color = White,
+                            fontSize = 16.sp
+                        )
                         IconButton(
                             onClick = {},
                             colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
@@ -182,5 +183,5 @@ fun ReelsScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ReelsScreenPreview(){
-    //ReelsScreen()
+    ReelsScreen()
 }

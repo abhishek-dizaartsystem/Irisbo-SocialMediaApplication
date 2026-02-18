@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.screens
 
+import android.R.attr.thumbnail
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -67,6 +68,13 @@ import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
+import android.graphics.Bitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import android.media.MediaMetadataRetriever
+import androidx.compose.foundation.Image
+import com.example.sociamediaapplication.data.utils.getFrameFromUrl
+import com.example.sociamediaapplication.data.utils.getVideoFrameAtXSecond
+
 
 @Composable
 fun ProfileScreen(
@@ -451,6 +459,14 @@ fun ProfileScreen(
             else{
                 itemsIndexed(reels){ index, reel ->
 
+                    val context = LocalContext.current
+
+                    val thumbnail: Bitmap? = remember(reel.video_url) {
+                        if (isVideo(reel.video_url))
+                            getFrameFromUrl(context, reel.video_url)
+                        else null
+                    }
+
                     Box(
                         modifier = Modifier
                             .aspectRatio(0.5f)
@@ -464,6 +480,25 @@ fun ProfileScreen(
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
+
+                        if (thumbnail != null) {
+
+                            Image(
+                                bitmap = thumbnail.asImageBitmap(),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+
+                        } else {
+
+                            // fallback if frame fails
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.DarkGray)
+                            )
+                        }
 
                         Icon(
                             painter = painterResource(R.drawable.play_svgrepo_com),

@@ -23,11 +23,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.getVideoFrameAtXSecond
+import com.example.sociamediaapplication.data.utils.isVideo
 import com.example.sociamediaapplication.model.MediaType
 import com.example.sociamediaapplication.model.UploadMedia
 import com.example.sociamediaapplication.ui.theme.DTransparentBlack
@@ -38,6 +41,14 @@ fun UploadItem(
     item: UploadMedia,
     onDelete: ()-> Unit
 ){
+    val context = LocalContext.current
+    val isVideo = isVideo(item.toString())
+
+
+    val thumbnail = remember(item) {
+        if (isVideo) getVideoFrameAtXSecond(context, item.uri, 2) else null
+    }
+
     Box(
         modifier = Modifier.clip(RoundedCornerShape(16.dp))
     ) {
