@@ -23,6 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,9 +41,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.repository.PostRepository
+import com.example.sociamediaapplication.data.repository.ProfileRepository
 import com.example.sociamediaapplication.data.repository.ReelRepository
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -53,7 +57,9 @@ import com.example.sociamediaapplication.view.navigation.MainRoutes
 import com.example.sociamediaapplication.view.navigation.MenuNavGraph
 import com.example.sociamediaapplication.view.navigation.Routes
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
+import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
+import com.example.sociamediaapplication.viewmodel.factory.ProfileViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.UploadViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,7 +87,11 @@ fun MainScreen(
 
     val uploadViewModel: UploadViewModel = viewModel(factory = factory)
 
+    val profileRepository = remember { ProfileRepository(tokenManager) }
+    val profileFactory = remember { ProfileViewModelFactory(profileRepository) }
+    val profileViewModel: ProfileViewModel = viewModel(factory = profileFactory)
 
+    val profile by profileViewModel.profile.collectAsState()
 
 
     Scaffold(
@@ -190,8 +200,8 @@ fun MainScreen(
                                 .size(40.dp)
                             // Set the size of the clickable area
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.rectangle_5),
+                            AsyncImage(
+                                model = profile?.profile_img,
                                 contentDescription = "Profile Image",
                                 // This crops the image into a square before clipping to a circle
 
@@ -318,7 +328,9 @@ fun MainScreen(
             composable(MainRoutes.Menu.route){
                 MenuNavGraph(
                     mainNavController,
-                    authViewModel = authViewModel)
+                    authViewModel = authViewModel,
+                    profileViewModel = profileViewModel
+                )
             }
 
             composable(MainRoutes.Notifications.route){

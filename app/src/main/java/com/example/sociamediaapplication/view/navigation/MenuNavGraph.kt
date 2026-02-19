@@ -1,6 +1,8 @@
 package com.example.sociamediaapplication.view.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,24 +11,24 @@ import com.example.sociamediaapplication.view.screens.AdvancedSettingsScreen
 import com.example.sociamediaapplication.view.screens.EventsScreen
 import com.example.sociamediaapplication.view.screens.FriendsScreen
 import com.example.sociamediaapplication.view.screens.GamesScreen
-import com.example.sociamediaapplication.view.screens.GroupsScreen
 import com.example.sociamediaapplication.view.screens.JobsScreen
-import com.example.sociamediaapplication.view.screens.MarketplaceScreen
 import com.example.sociamediaapplication.view.screens.MemoriesScreen
 import com.example.sociamediaapplication.view.screens.MenuScreen
 import com.example.sociamediaapplication.view.screens.MonetizationScreen
-import com.example.sociamediaapplication.view.screens.PagesScreen
-import com.example.sociamediaapplication.view.screens.SettingsScreen
 import com.example.sociamediaapplication.view.screens.UserVideosScreen
 import com.example.sociamediaapplication.view.screens.VideoAnalyticsScreen
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
+import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 
 @Composable
 fun MenuNavGraph(
     mainNavController: NavController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    profileViewModel: ProfileViewModel
 ){
     val navController = rememberNavController()
+
+    val profile by profileViewModel.profile.collectAsState()
 
     NavHost(
         navController = navController,
@@ -75,7 +77,8 @@ fun MenuNavGraph(
                 },
                 onSettings = {
                     navController.navigate(MenuRoutes.Settings.route)
-                }
+                },
+                profileImg = profile?.profile_img
             )
         }
         composable(MenuRoutes.Marketplace.route) {
@@ -117,7 +120,8 @@ fun MenuNavGraph(
         composable(MenuRoutes.Profile.route) {
             ProfileNavGraph(
                 mainNavController = mainNavController,
-                authViewModel = authViewModel
+                authViewModel = authViewModel,
+                profileViewModel = profileViewModel
             )
         }
 

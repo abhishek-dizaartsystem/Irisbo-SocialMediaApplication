@@ -2,7 +2,6 @@ package com.example.sociamediaapplication.view.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,35 +35,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
-import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.GreyTxt
-import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.CustomCard
 
 @Composable
 fun MenuScreen(
-    onProfile:()-> Unit,
-    onMarketplace:()-> Unit,
-    onGroups:()-> Unit,
-    onUserVideos:()-> Unit,
-    onMemories:()-> Unit,
-    onPages:()-> Unit,
-    onFriends:()-> Unit,
-    onEvents:()-> Unit,
-    onJobs:()-> Unit,
-    onGaming:()-> Unit,
-    onVideoAnalytics:()-> Unit,
-    onAdvancedSettings:()-> Unit,
-    onVideoMonetization:()-> Unit,
-    onSettings:() -> Unit
-    
+    onProfile: () -> Unit,
+    onMarketplace: () -> Unit,
+    onGroups: () -> Unit,
+    onUserVideos: () -> Unit,
+    onMemories: () -> Unit,
+    onPages: () -> Unit,
+    onFriends: () -> Unit,
+    onEvents: () -> Unit,
+    onJobs: () -> Unit,
+    onGaming: () -> Unit,
+    onVideoAnalytics: () -> Unit,
+    onAdvancedSettings: () -> Unit,
+    onVideoMonetization: () -> Unit,
+    onSettings: () -> Unit,
+    profileImg: String?
+
 ){
     LazyColumn(
         modifier = Modifier
@@ -83,8 +80,8 @@ fun MenuScreen(
                     onClick = { },
                     modifier = Modifier.size(80.dp)
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.rectangle_5),
+                    AsyncImage(
+                        model = profileImg,
                         contentDescription = "Profile Image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -342,6 +339,7 @@ fun MenuScreenPreview(){
         onVideoAnalytics = {},
         onAdvancedSettings = {},
         onVideoMonetization = {},
-        onSettings = {}
+        onSettings = {},
+        profileImg = "R.drawable.rectangle_5"
     )
 }

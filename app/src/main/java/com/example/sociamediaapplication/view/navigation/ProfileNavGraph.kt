@@ -28,16 +28,13 @@ import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 @Composable
 fun ProfileNavGraph(
     authViewModel: AuthViewModel,
-    mainNavController: NavController
+    mainNavController: NavController,
+    profileViewModel: ProfileViewModel
 ){
     val navController = rememberNavController()
 
     val context = LocalContext.current.applicationContext
     val tokenManager = remember { TokenManager(context) }
-    val repository = remember { ProfileRepository(tokenManager) }
-    val factory = remember { ProfileViewModelFactory(repository) }
-
-    val viewModel: ProfileViewModel = viewModel(factory = factory)
 
     val postRepository = remember { PostRepository(tokenManager) }
     val postFactory = remember { PostViewModelFactory(postRepository) }
@@ -63,7 +60,7 @@ fun ProfileNavGraph(
             }
 
             ProfileScreen(
-                viewModel = viewModel,
+                viewModel = profileViewModel,
                 posts = posts,
                 reels = reels,
                 onReelLike = {
@@ -91,7 +88,8 @@ fun ProfileNavGraph(
         composable(ProfileRoutes.Menu.route) {
             MenuNavGraph(
                 mainNavController = mainNavController,
-                authViewModel = authViewModel
+                authViewModel = authViewModel,
+                profileViewModel = profileViewModel
             )
         }
     }
