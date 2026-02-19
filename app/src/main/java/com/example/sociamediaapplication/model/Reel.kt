@@ -15,6 +15,7 @@ data class Reel(
     val likes_count: Int,
     val username: String,
     val profile_image_url: String?,
-    val is_liked: Boolean
+    val is_liked: Boolean,
+    val is_saved: Boolean
 )
 

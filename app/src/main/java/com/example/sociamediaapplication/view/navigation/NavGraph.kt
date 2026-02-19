@@ -114,6 +114,9 @@ fun AppNavGraph() {
                 reels = reels,
                 onLike = {
                     reelViewModel.toggleLike(it)
+                },
+                onSave = {
+                    reelViewModel.toggleSave(it)
                 }
             )
         }

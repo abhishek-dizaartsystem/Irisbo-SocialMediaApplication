@@ -1,6 +1,5 @@
 package com.example.sociamediaapplication.view.screens
 
-import android.R.attr.thumbnail
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -70,10 +69,8 @@ import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import android.graphics.Bitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import android.media.MediaMetadataRetriever
 import androidx.compose.foundation.Image
 import com.example.sociamediaapplication.data.utils.getFrameFromUrl
-import com.example.sociamediaapplication.data.utils.getVideoFrameAtXSecond
 
 
 @Composable
@@ -85,7 +82,7 @@ fun ProfileScreen(
     onMenu: () -> Unit,
     onEditStatus: () -> Unit,
     onReelLike: (Reel)-> Unit = {},
-
+    onReelSave: (Reel)-> Unit = {}
     ){
 
 
@@ -545,7 +542,8 @@ fun ProfileScreen(
                 reels = reels,
                 loading = false,
                 startIndex = startIndex,   // 🔥 NEW PARAM
-                onLike = onReelLike
+                onLike = onReelLike,
+                onSave = onReelSave
             )
         }
     }

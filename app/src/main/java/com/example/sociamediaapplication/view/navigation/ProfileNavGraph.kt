@@ -77,6 +77,9 @@ fun ProfileNavGraph(
                 },
                 onMenu = {
                     navController.navigate(ProfileRoutes.Menu.route)
+                },
+                onReelSave = {
+                    reelViewModel.toggleSave(it)
                 }
             )
         }

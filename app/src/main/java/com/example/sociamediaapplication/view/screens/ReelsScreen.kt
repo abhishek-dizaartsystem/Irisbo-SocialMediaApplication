@@ -41,7 +41,8 @@ fun ReelsScreen(
     loading: Boolean = false,
     reels: List<Reel> = emptyList(),
     startIndex: Int = 0,
-    onLike: (Reel) -> Unit = {}
+    onLike: (Reel) -> Unit = {},
+    onSave: (Reel) -> Unit = {}
 ) {
 
     var isMuted by remember { mutableStateOf(false) }
@@ -150,21 +151,21 @@ fun ReelsScreen(
                                 tint = White
                             )
                         }
-//                        IconButton(
-//                            onClick = {
-//                               // viewModel.toggleSave(page)
-//                            },
-//                            colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
-//                            modifier = Modifier.size(45.dp)
-//                        ) {
-//                            Icon(
-//                                painter = painterResource(
-//                                    if(reel.isSaved) R.drawable.save_filled else R.drawable.save_icon),
-//                                contentDescription = "",
-//                                modifier = Modifier.size(30.dp),
-//                                tint = White
-//                            )
-//                        }
+                        IconButton(
+                            onClick = {
+                                onSave(reel)
+                            },
+                            colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
+                            modifier = Modifier.size(45.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(
+                                    if(reel.is_saved) R.drawable.save_filled else R.drawable.save_icon),
+                                contentDescription = "",
+                                modifier = Modifier.size(30.dp),
+                                tint = White
+                            )
+                        }
                     }
                 }
 

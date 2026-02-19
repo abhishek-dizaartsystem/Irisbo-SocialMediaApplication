@@ -53,9 +53,7 @@ import com.example.sociamediaapplication.view.navigation.MainRoutes
 import com.example.sociamediaapplication.view.navigation.MenuNavGraph
 import com.example.sociamediaapplication.view.navigation.Routes
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
-import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
-import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.UploadViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)

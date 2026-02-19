@@ -7,6 +7,7 @@ import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.uriToFile
 import com.example.sociamediaapplication.model.Reel
 import com.example.sociamediaapplication.model.response.LikeResponse
+import com.example.sociamediaapplication.model.response.SaveResponse
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -71,4 +72,13 @@ class ReelRepository(
         )
     }
 
+    suspend fun toggleSave(reelId:Int): SaveResponse{
+        val token = tokenManager.getToken()
+            ?: throw IllegalStateException("No token")
+
+        return api.toggleSaveReel(
+            id = reelId,
+            token = "Bearer $token"
+        )
+    }
 }

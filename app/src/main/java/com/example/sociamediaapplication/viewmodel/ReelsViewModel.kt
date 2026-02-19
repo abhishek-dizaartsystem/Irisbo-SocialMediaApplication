@@ -140,5 +140,30 @@ class ReelsViewModel(
         }
     }
 
+    fun toggleSave(reel: Reel){
+        _reels.value = _reels.value.map {
+            if(it.id == reel.id){
+                it.copy(
+                    is_saved = !it.is_saved
+                )
+            }else it
+        }
+        viewModelScope.launch {
+            try {
+                val response = repository.toggleSave(reel.id)
+
+                _reels.value = _reels.value.map {
+                    if(it.id == reel.id){
+                        it.copy(
+                            is_saved = response.saved
+                        )
+                    }else it
+                }
+            }catch (e:Exception){
+                loadReels()
+            }
+        }
+    }
+
 }
 
