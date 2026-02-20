@@ -54,7 +54,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.utils.isVideo
-import com.example.sociamediaapplication.model.Reel
+import com.example.sociamediaapplication.model.response.Reel
 import com.example.sociamediaapplication.model.response.PostResponse
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -78,22 +78,22 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel(),
     posts: List<PostResponse> = emptyList(),
     reels: List<Reel> = emptyList(),
-    onEditProfile: () -> Unit,
-    onMenu: () -> Unit,
-    onEditStatus: () -> Unit,
-    onReelLike: (Reel)-> Unit = {},
-    onReelSave: (Reel)-> Unit = {}
-    ){
+    onEditProfile: () -> Unit = {},
+    onMenu: () -> Unit = {},
+    onEditStatus: () -> Unit = {},
+    onReelLike: (Reel) -> Unit = {},
+    onReelSave: (Reel) -> Unit = {},
+    onPostLike: (PostResponse) -> Unit = {},
+    onPostSave: (PostResponse) -> Unit = {}
+){
 
 
     //option
     var postSelected by remember { mutableStateOf(true) }
-    //which post is selected
-    var selectedPost by remember { mutableStateOf<PostResponse?>(null) }
 
     var selectedReelIndex by remember { mutableStateOf<Int?>(null) }
 
-
+    var selectedPostId by remember { mutableStateOf<Int?>(null) }
 
 
     val profile by viewModel.profile.collectAsState()
@@ -418,7 +418,7 @@ fun ProfileScreen(
                         modifier = Modifier
                             .aspectRatio(1f)
                             .fillMaxWidth()
-                            .clickable { selectedPost = post }
+                            .clickable { selectedPostId = post.id }
                     ) {
 
                         if (thumbnail != null) {
@@ -514,10 +514,11 @@ fun ProfileScreen(
         }
 
     }
-    selectedPost?.let { post ->
+    selectedPostId?.let { id ->
 
+        val post = posts.firstOrNull(){it.id == id}?:return@let
         Dialog(
-            onDismissRequest = { selectedPost = null }
+            onDismissRequest = { selectedPostId = null }
         ) {
             Post(
                 uName = post.username ?: "",
@@ -525,10 +526,12 @@ fun ProfileScreen(
                 mediaList = post.media_urls,
                 postLikes = post.likes_count ?: 0,
                 profileImageUrl = post.profile_image_url,
-                isLiked = false,
-                onLiked = {},
+                isLiked = post.is_liked,
+                onLiked = { onPostLike(post) },
                 onFollow = {},
-                onPostProfileClick = {}
+                onPostProfileClick = {},
+                onSaved = { onPostSave(post) },
+                isSaved = post.is_saved
             )
         }
     }
@@ -557,9 +560,5 @@ fun ProfileScreen(
 @Preview
 @Composable
 fun ProfileScreenPreview(){
-    ProfileScreen(
-        onEditProfile = {},
-        onMenu = {},
-        onEditStatus = {},
-    )
+    ProfileScreen()
 }

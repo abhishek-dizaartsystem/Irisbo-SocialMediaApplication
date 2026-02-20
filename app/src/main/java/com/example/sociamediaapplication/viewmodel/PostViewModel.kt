@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavBackStackEntry
 import com.example.sociamediaapplication.data.repository.PostRepository
 import com.example.sociamediaapplication.model.response.PostResponse
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,6 +44,63 @@ class PostViewModel(
         }
     }
 
+    fun toggleSave(post: PostResponse){
+        _posts.value = _posts.value.map {
+            if(it.id == post.id) {
+                it.copy(
+                    is_saved = !it.is_saved
+                )
+            }else it
+        }
+        viewModelScope.launch {
+            try {
+                val reposnse = repository.toggleSave(post.id)
+
+                _posts.value = _posts.value.map {
+                    if(it.id == post.id) {
+                        it.copy(
+                            is_saved = reposnse.saved
+                        )
+                    }else it
+                }
+            }catch (e: Exception){
+                loadPosts()
+            }
+        }
+    }
+
+    fun toggleLike(post: PostResponse){
+        _posts.value = _posts.value.map{
+            if(it.id == post.id){
+                it.copy(
+                    is_liked = !it.is_liked,
+                    likes_count =
+                        if (it.is_liked) it.likes_count - 1
+                        else it.likes_count + 1
+                )
+            }else it
+        }
+        viewModelScope.launch {
+            try {
+                val response = repository.toggleLike(post.id)
+
+                // 🔥 sync with backend truth
+                _posts.value = _posts.value.map {
+                    if (it.id == post.id) {
+                        it.copy(
+                            is_liked = response.liked,
+                            likes_count = response.likes_count
+                        )
+                    } else it
+                }
+
+            } catch (e: Exception) {
+                // 🔥 rollback on failure
+                loadPosts()
+            }
+        }
+    }
+
     fun createPost(
         caption: String,
         mediaUris: List<Uri>?,
@@ -71,5 +129,7 @@ class PostViewModel(
             }
         }
     }
+
+
 }
 

@@ -5,7 +5,9 @@ import android.net.Uri
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.uriToFile
+import com.example.sociamediaapplication.model.response.LikeResponse
 import com.example.sociamediaapplication.model.response.PostResponse
+import com.example.sociamediaapplication.model.response.SaveResponse
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -18,7 +20,38 @@ class PostRepository(
     private val api = RetrofitClient.postApi
 
     suspend fun getPosts(): List<PostResponse> {
-        return api.getAllPosts().posts
+        val token = tokenManager.getToken()
+        println("TOKEN DEBUG: $token")
+
+        val response = api.getAllPosts(
+            token = "Bearer $token"
+        )
+
+        println("POSTS DEBUG: ${response.posts.size}")
+
+        return response.posts
+    }
+
+    suspend fun toggleLike(postId: Int): LikeResponse {
+
+        val token = tokenManager.getToken()
+            ?: throw IllegalStateException("No token")
+
+        return api.toggleLikePost(
+            id = postId,
+            token = "Bearer $token"
+        )
+    }
+
+    suspend fun toggleSave(postId: Int): SaveResponse {
+
+        val token = tokenManager.getToken()
+            ?: throw IllegalStateException("No token")
+
+        return api.toggleSavePost(
+            id = postId,
+            token = "Bearer $token"
+        )
     }
 
     suspend fun createPost(

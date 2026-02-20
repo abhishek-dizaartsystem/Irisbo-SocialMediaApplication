@@ -74,6 +74,8 @@ fun Post(
     postLikes: Int = 20,
     onLiked: () -> Unit = {},
     onFollow: () -> Unit = {},
+    onSaved: () -> Unit = {},
+    isSaved: Boolean = false,
     isLiked: Boolean = false,
     onPostProfileClick: ()-> Unit = {},
     profileImageUrl: String? = null
@@ -209,6 +211,19 @@ fun Post(
                                 Text("Report")
                             },
                             onClick = {showDropDownMenu = false},
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = if(isSaved) "Unsave" else "Save"
+                                )
+                            },
+                            onClick = {
+
+                                onSaved()
+                                showDropDownMenu = false
+
+                            },
                         )
                     }
                 }

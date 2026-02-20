@@ -1,15 +1,9 @@
 package com.example.sociamediaapplication.viewmodel
 
-import android.content.Context
-import android.net.Uri
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.ViewModelInitializer
 import com.example.sociamediaapplication.data.repository.ReelRepository
-import com.example.sociamediaapplication.model.Reel
+import com.example.sociamediaapplication.model.response.Reel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

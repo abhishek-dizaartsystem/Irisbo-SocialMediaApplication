@@ -5,7 +5,7 @@ import android.net.Uri
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.uriToFile
-import com.example.sociamediaapplication.model.Reel
+import com.example.sociamediaapplication.model.response.Reel
 import com.example.sociamediaapplication.model.response.LikeResponse
 import com.example.sociamediaapplication.model.response.SaveResponse
 import okhttp3.MediaType.Companion.toMediaType

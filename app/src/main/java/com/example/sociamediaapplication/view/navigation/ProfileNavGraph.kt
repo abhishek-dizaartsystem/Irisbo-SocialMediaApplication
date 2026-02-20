@@ -13,7 +13,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.repository.PostRepository
-import com.example.sociamediaapplication.data.repository.ProfileRepository
 import com.example.sociamediaapplication.data.repository.ReelRepository
 import com.example.sociamediaapplication.view.screens.EditProfileScreen
 import com.example.sociamediaapplication.view.screens.ProfileScreen
@@ -22,7 +21,6 @@ import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
-import com.example.sociamediaapplication.viewmodel.factory.ProfileViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 
 @Composable
@@ -77,6 +75,12 @@ fun ProfileNavGraph(
                 },
                 onReelSave = {
                     reelViewModel.toggleSave(it)
+                },
+                onPostLike = {
+                    postViewModel.toggleLike(it)
+                },
+                onPostSave = {
+                    postViewModel.toggleSave(it)
                 }
             )
         }
