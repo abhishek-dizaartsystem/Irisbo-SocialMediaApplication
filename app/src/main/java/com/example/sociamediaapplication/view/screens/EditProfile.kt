@@ -1,414 +1,264 @@
 package com.example.sociamediaapplication.view.screens
 
-import android.widget.Space
-import androidx.compose.foundation.Image
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.DialogNavigator
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
-import com.example.sociamediaapplication.ui.theme.BackgroundColor
-import com.example.sociamediaapplication.ui.theme.Blue
-import com.example.sociamediaapplication.ui.theme.DBlue
-import com.example.sociamediaapplication.ui.theme.Grey
-import com.example.sociamediaapplication.ui.theme.GreyBtn
-import com.example.sociamediaapplication.ui.theme.LBlue
-import com.example.sociamediaapplication.ui.theme.Transparent
-import com.example.sociamediaapplication.ui.theme.White
+import com.example.sociamediaapplication.model.request.EditProfileRequest
+import com.example.sociamediaapplication.ui.theme.*
+import com.example.sociamediaapplication.view.components.ProfileTextField
+import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 
 @Composable
 fun EditProfileScreen(
-    navController: NavController
+    navController: NavController,
+    onSave: (EditProfileRequest) -> Unit = {},
+    profileViewModel: ProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ){
-    var name by remember { mutableStateOf("John Doe") }
-    var username by remember { mutableStateOf("johndoe") }
-    var bio by remember { mutableStateOf("I have my own spaces") }
-    var work by remember { mutableStateOf("Dizaart") }
-    var education by remember { mutableStateOf("AKTU") }
-    var location by remember { mutableStateOf("Ghaziabad") }
+
+    val profile by profileViewModel.profile.collectAsState()
+
+    /* ------------------ FORM STATES ------------------ */
+
+    var name by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var bio by remember { mutableStateOf("") }
+    var work by remember { mutableStateOf("") }
+    var education by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+
+    var profileUri by remember { mutableStateOf<Uri?>(null) }
+    var coverUri by remember { mutableStateOf<Uri?>(null) }
+
+    /* 🔥 Auto-fill when profile loads */
+    LaunchedEffect(profile) {
+        profile?.let {
+            name = it.name
+            username = it.username
+            bio = it.bio
+            work = it.work
+            education = it.education
+            phone = it.phone
+        }
+    }
+
+    /* ------------------ IMAGE PICKERS ------------------ */
+
+    val profilePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        profileUri = uri
+    }
+
+    val coverPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        coverUri = uri
+    }
+
+    /* ------------------ UI ------------------ */
+
     Scaffold(
         topBar = {
-            Column(
-                modifier = Modifier
-                    .background(BackgroundColor)
-            ) {
+            Column(modifier = Modifier.background(BackgroundColor)) {
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(Modifier.height(6.dp))
+
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    IconButton(
-                        onClick = {
-                            navController.popBackStack()
-                        }
-                    ) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             painter = painterResource(R.drawable.back_svgrepo_com),
-                            contentDescription = ""
+                            contentDescription = null
                         )
                     }
+
                     Text(
                         text = "Edit Profile",
-                        fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
+
                     Button(
-                        onClick = {},
-                        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
-                        modifier = Modifier.height(34.dp),
+                        onClick = {
+                            val request = EditProfileRequest(
+                                name = name,
+                                username = username,
+                                bio = bio,
+                                work = work,
+                                education = education,
+                                profileUri = profileUri,
+                                coverUri = coverUri,
+                                phone = phone
+                            )
+                            onSave(request)
+                        },
+                        contentPadding = PaddingValues(4.dp),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Blue)
                     ) {
-                        Text(
-                            text = "Save",
-                            fontSize = 18.sp
-                        )
+                        Text("Save", fontSize = 18.sp)
                     }
-
                 }
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(Modifier.height(6.dp))
                 Spacer(
-                    modifier = Modifier
-                        .background(color = Grey)
-                        .height(1.dp)
+                    Modifier
                         .fillMaxWidth()
+                        .height(1.dp)
+                        .background(Grey)
                 )
             }
         }
-    ) {innerPadding->
-        LazyColumn (
+    ) { innerPadding ->
+
+        LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
                 .background(BackgroundColor),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            item { Spacer(Modifier.height(12.dp)) }
+
+            /* ------------------ PROFILE IMAGE ------------------ */
+
             item {
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-            item{
-                Box(
-                    contentAlignment = Alignment.BottomEnd
-                ){
+
+                Box(contentAlignment = Alignment.BottomEnd) {
+
                     IconButton(
-                        onClick = { },
+                        onClick = {},
                         modifier = Modifier.size(138.dp),
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = LBlue
                         )
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.rectangle_5),
-                            contentDescription = "Profile Image",
+                        AsyncImage(
+                            model = profileUri ?: profile?.profile_img,
+                            contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .size(130.dp)
                                 .clip(CircleShape)
                         )
-
                     }
+
                     IconButton(
-                        onClick = { },
+                        onClick = { profilePicker.launch("image/*") },
                         modifier = Modifier.size(40.dp),
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = Blue
-                        )
+                        colors = IconButtonDefaults.iconButtonColors(containerColor = Blue)
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.camera_svgrepo_com),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(24.dp),
+                            contentDescription = null,
                             tint = White
                         )
                     }
                 }
+
                 Text(
                     text = "Change Profile Photo",
                     modifier = Modifier.padding(vertical = 6.dp),
-                    fontSize = 16.sp,
                     color = Blue
                 )
             }
+
+            /* ------------------ COVER IMAGE ------------------ */
+
             item {
-                Spacer(
-                    modifier = Modifier.height(16.dp)
-                )
+
+                Spacer(Modifier.height(16.dp))
+
                 Column(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(horizontal = 8.dp)
                 ) {
-                    Text(
-                        text = "Cover Photo",
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        fontSize = 14.sp
-                    )
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
+
+                    Text("Cover Photo")
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentAlignment = Alignment.BottomEnd
                     ) {
-                        Image(
-                            painter = painterResource(R.drawable.rectangle_24),
-                            contentDescription = "",
+
+                        AsyncImage(
+                            model = coverUri ?: profile?.cover_img,
+                            contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .aspectRatio(2f)
                         )
+
+                        IconButton(
+                            onClick = { coverPicker.launch("image/*") },
+                            colors = IconButtonDefaults.iconButtonColors(containerColor = Blue)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.camera_svgrepo_com),
+                                contentDescription = null,
+                                tint = White
+                            )
+                        }
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
 
+                    Spacer(Modifier.height(12.dp))
                 }
-
-
             }
+
+            /* ------------------ FORM FIELDS ------------------ */
+
             item {
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
-                    horizontalAlignment = Alignment.Start
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
                 ) {
-                    Text(
-                        text = "Name",
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        fontSize = 14.sp
-                    )
-                    TextField(
-                        value = name,
-                        onValueChange = {newName->
-                            name = newName
-                        },
-                        placeholder = {
-                            Text("Enter new Name")
-                        },
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Transparent,
-                            unfocusedIndicatorColor = Transparent,
-                            disabledIndicatorColor = Transparent,
-                            unfocusedContainerColor = Transparent,
-                            focusedContainerColor = Transparent
-                        ),
-                        shape = RoundedCornerShape(50.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(
-                                width = 1.dp,
-                                color = Grey,
-                                shape = RoundedCornerShape(50.dp)
-                            )
-                            .height(50.dp),
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
 
-                    Text(
-                        text = "Username",
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        fontSize = 14.sp
-                    )
-                    TextField(
-                        value = username,
-                        onValueChange = {newName->
-                            username = newName
-                        },
-                        placeholder = {
-                            Text("Enter new Userame")
-                        },
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Transparent,
-                            unfocusedIndicatorColor = Transparent,
-                            disabledIndicatorColor = Transparent,
-                            unfocusedContainerColor = Transparent,
-                            focusedContainerColor = Transparent
-                        ),
-                        shape = RoundedCornerShape(50.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(
-                                width = 1.dp,
-                                color = Grey,
-                                shape = RoundedCornerShape(50.dp)
-                            )
-                            .height(50.dp),
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    ProfileTextField("Name", name) { name = it }
+                    ProfileTextField("Username", username) { username = it }
+                    ProfileTextField("Bio", bio) { bio = it }
+                    ProfileTextField("Work", work) { work = it }
+                    ProfileTextField("Education", education) { education = it }
+                    ProfileTextField("Phone", phone) { phone = it}
 
-                    Text(
-                        text = "Bio",
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        fontSize = 14.sp
-                    )
-                    TextField(
-                        value = bio,
-                        onValueChange = {newBio->
-                            bio = newBio
-                        },
-                        placeholder = {
-                            Text("Define yourself...")
-                        },
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Transparent,
-                            unfocusedIndicatorColor = Transparent,
-                            disabledIndicatorColor = Transparent,
-                            unfocusedContainerColor = Transparent,
-                            focusedContainerColor = Transparent
-                        ),
-                        shape = RoundedCornerShape(50.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(
-                                width = 1.dp,
-                                color = Grey,
-                                shape = RoundedCornerShape(50.dp)
-                            )
-                            .height(50.dp),
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "Work",
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        fontSize = 14.sp
-                    )
-                    TextField(
-                        value = work,
-                        onValueChange = {newWork->
-                            work = newWork
-                        },
-                        placeholder = {
-                            Text("Enter company name")
-                        },
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Transparent,
-                            unfocusedIndicatorColor = Transparent,
-                            disabledIndicatorColor = Transparent,
-                            unfocusedContainerColor = Transparent,
-                            focusedContainerColor = Transparent
-                        ),
-                        shape = RoundedCornerShape(50.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(
-                                width = 1.dp,
-                                color = Grey,
-                                shape = RoundedCornerShape(50.dp)
-                            )
-                            .height(50.dp),
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "Education",
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        fontSize = 14.sp
-                    )
-                    TextField(
-                        value = education,
-                        onValueChange = {newEducation->
-                            education = newEducation
-                        },
-                        placeholder = {
-                            Text("Enter latest College name")
-                        },
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Transparent,
-                            unfocusedIndicatorColor = Transparent,
-                            disabledIndicatorColor = Transparent,
-                            unfocusedContainerColor = Transparent,
-                            focusedContainerColor = Transparent
-                        ),
-                        shape = RoundedCornerShape(50.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(
-                                width = 1.dp,
-                                color = Grey,
-                                shape = RoundedCornerShape(50.dp)
-                            )
-                            .height(50.dp),
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "Name",
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        fontSize = 14.sp
-                    )
-                    TextField(
-                        value = location,
-                        onValueChange = {newLocation->
-                            location = newLocation
-                        },
-                        placeholder = {
-                            Text("Enter your Location")
-                        },
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Transparent,
-                            unfocusedIndicatorColor = Transparent,
-                            disabledIndicatorColor = Transparent,
-                            unfocusedContainerColor = Transparent,
-                            focusedContainerColor = Transparent
-                        ),
-                        shape = RoundedCornerShape(50.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(
-                                width = 1.dp,
-                                color = Grey,
-                                shape = RoundedCornerShape(50.dp)
-                            )
-                            .height(50.dp),
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(Modifier.height(20.dp))
                 }
-
             }
         }
     }
 }
+
+/* ---------- SMALL HELPER (UI ONLY) ---------- */
+
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

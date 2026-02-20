@@ -3,6 +3,7 @@ package com.example.sociamediaapplication.data.remote
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.ProfileResponse
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
@@ -28,5 +29,20 @@ interface ProfileApi {
     suspend fun getProfile(
         @Header("Authorization") token: String
     ): ProfileResponse
+
+    @Multipart
+    @PUT("api/profile/edit")
+    suspend fun editProfile(
+        @Header("Authorization") token: String,
+
+        @Part("name") name: RequestBody?,
+        @Part("username") username: RequestBody?,
+        @Part("bio") bio: RequestBody?,
+        @Part("work") work: RequestBody?,
+        @Part("education") education: RequestBody?,
+
+        @Part profile_img: MultipartBody.Part?,
+        @Part cover_img: MultipartBody.Part?
+    ): BasicResponse
 
 }

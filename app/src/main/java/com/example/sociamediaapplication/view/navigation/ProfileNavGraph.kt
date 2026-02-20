@@ -46,6 +46,7 @@ fun ProfileNavGraph(
 
     val reels by reelViewModel.reels.collectAsState()
 
+    val profile by profileViewModel.profile.collectAsState()
 
     NavHost(
         navController = navController,
@@ -86,7 +87,17 @@ fun ProfileNavGraph(
         }
         composable(ProfileRoutes.EditProfile.route){
             EditProfileScreen(
-                navController = navController
+                navController = navController,
+                onSave = { request ->
+
+                    profileViewModel.editProfile(
+                        request = request,
+                        context = context
+                    ){
+                        navController.popBackStack()   // go back after save
+                    }
+                },
+                profileViewModel = profileViewModel
             )
         }
         composable(ProfileRoutes.Menu.route) {

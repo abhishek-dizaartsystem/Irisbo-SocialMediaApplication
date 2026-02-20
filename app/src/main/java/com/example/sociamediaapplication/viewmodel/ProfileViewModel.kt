@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.repository.ProfileRepository
+import com.example.sociamediaapplication.model.request.EditProfileRequest
 import com.example.sociamediaapplication.model.response.ProfileResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -68,6 +69,25 @@ class ProfileViewModel(
                 _error.value = e.message ?: "Failed to load profile"
             } finally {
                 _isLoading.value = false
+            }
+        }
+    }
+
+    fun editProfile(
+        request: EditProfileRequest,
+        context: Context,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+
+                repository.editProfile(request, context)
+
+                loadProfile()   // refresh profile
+                onSuccess()
+
+            } catch (e: Exception) {
+                _error.value = e.message
             }
         }
     }

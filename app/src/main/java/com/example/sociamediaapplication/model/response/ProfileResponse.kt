@@ -7,6 +7,7 @@ data class ProfileResponse(
     val email: String,
     val education: String,
     val work: String,
+    val phone: String,
     val profile_img: String?,
     val cover_img: String?
 )
