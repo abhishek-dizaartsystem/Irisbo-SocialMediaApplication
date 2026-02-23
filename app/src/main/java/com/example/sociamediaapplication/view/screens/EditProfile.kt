@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -44,7 +43,7 @@ fun EditProfileScreen(
     var bio by remember { mutableStateOf("") }
     var work by remember { mutableStateOf("") }
     var education by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
+    var phone: String? by remember { mutableStateOf("") }
 
     var profileUri by remember { mutableStateOf<Uri?>(null) }
     var coverUri by remember { mutableStateOf<Uri?>(null) }

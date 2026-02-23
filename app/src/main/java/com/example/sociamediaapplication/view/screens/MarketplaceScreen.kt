@@ -1,8 +1,10 @@
 package com.example.sociamediaapplication.view.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,16 +23,22 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -52,12 +60,16 @@ import com.example.sociamediaapplication.model.CategoriesMarketplace
 import com.example.sociamediaapplication.model.MarketplaceItem
 import com.example.sociamediaapplication.model.WishlistItem
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
+import com.example.sociamediaapplication.ui.theme.Black
+import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.MarketPlaceItem
+import com.example.sociamediaapplication.view.components.VendorDashboardCard
+import com.example.sociamediaapplication.view.components.VendorProductCard
 import com.example.sociamediaapplication.view.navigation.MarketRoutes
 import com.example.sociamediaapplication.viewmodel.MarketplaceViewModel
 
@@ -71,8 +83,17 @@ fun MarketplaceScreen(
 
     var searchTxt by remember { mutableStateOf("") }
 
+    var isVendor by remember { mutableStateOf(true) }
 
+    var isAnalyticsSelected by remember { mutableStateOf(false) }
 
+    val vendorProducts by viewModel.vendorProducts.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadProducts()
+    }
     var productList = remember {
         mutableStateListOf(
             MarketplaceItem(
@@ -272,75 +293,226 @@ fun MarketplaceScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 item(span = { GridItemSpan(2) }){
-                    Text(
-                        text = "Categories",
-                        modifier = Modifier
-                            .padding(vertical = 12.dp),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
-                }
-                item(span = { GridItemSpan(2) }) {
-
-                    LazyRow() {
-                        items(categories){category->
-                            Card(
-                                onClick = {},
-                                colors = CardDefaults.cardColors(
-                                    containerColor = White
-                                ),
-                                elevation = CardDefaults.cardElevation(2.dp)
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .padding(8.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Image(
-                                        painter = painterResource(category.painter),
-                                        contentDescription = "",
-                                        modifier = Modifier.size(30.dp)
-                                    )
-                                    Text(
-                                        text = category.text
-                                    )
-                                }
-
-                            }
-                            Spacer(Modifier.width(12.dp))
-                        }
-                    }
-                }
-                item(span = {GridItemSpan(2)}) {
-                    Text(
-                        text = "Today's Picks",
-                        modifier = Modifier
-                            .padding(vertical = 12.dp),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
-                }
-
-                items(productList){product->
-                    MarketPlaceItem(
-                        productId = product.productId,
-                        painter = product.painter,
-                        productName = product.productName,
-                        price = product.price,
-                        onClick = onProductClick,
-                        onIconClick = {
-                            viewModel.addToWishlist(
-                                item = WishlistItem(
-                                    product.productId,
-                                    productImage = product.painter,
-                                    productName = product.productName,
-                                    price = product.price,
-                                    sellerName = "XYZ"
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = if (isVendor)"Dashboard" else "Categories",
+                            modifier = Modifier
+                                .padding(vertical = 12.dp),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                        Row (
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            Text(
+                                text = if (isVendor)"Vendor" else "User",
+                                modifier = Modifier.padding(horizontal = 4.dp),
+                                fontSize = 14.sp
+                            )
+                            Switch(
+                                checked = isVendor,
+                                onCheckedChange = {
+                                    isVendor = it
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = White,
+                                    checkedTrackColor = Blue,
+                                    uncheckedThumbColor = White,
+                                    uncheckedTrackColor = Grey,
+                                    uncheckedBorderColor = Grey,
                                 )
                             )
+
                         }
-                    )
+
+                    }
+
                 }
+
+                if(isVendor){
+                    item {
+                        VendorDashboardCard()
+                    }
+                    item {
+                        VendorDashboardCard()
+                    }
+                    item {
+                        VendorDashboardCard()
+                    }
+                    item {
+                        VendorDashboardCard()
+                    }
+                    item(span = { GridItemSpan(2) }){
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    color = LGrey,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(4.dp)
+                            ) {
+                                Button(
+                                    onClick = {},
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if(isAnalyticsSelected) LGrey else White
+                                    ),
+                                    contentPadding = PaddingValues(0.dp),
+                                    modifier = Modifier.fillMaxWidth(0.5f),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Text(
+                                        text = "Products",
+                                        color = if(isAnalyticsSelected) GreyTxt else Black,
+                                        fontSize = 16.sp
+                                    )
+                                }
+                                Button(
+                                    onClick = {},
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if(!isAnalyticsSelected) LGrey else White
+                                    ),
+                                    contentPadding = PaddingValues(0.dp),
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Text(
+                                        text = "Analytics",
+                                        color = if(!isAnalyticsSelected) GreyTxt else Black,
+                                        fontSize = 16.sp
+                                    )
+                                }
+                            }
+                        }
+
+
+                    }
+                    if(isAnalyticsSelected){
+
+                    }else{
+                        item(span = { GridItemSpan(2) }){
+                            Button(
+                                onClick = {
+                                    navController.navigate(MarketRoutes.AddProduct.route)
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Blue
+                                ),
+                                contentPadding = PaddingValues(0.dp),
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.add_svgrepo_com),
+                                    contentDescription = "",
+                                    modifier = Modifier.size(20.dp),
+                                    tint = White
+                                )
+                                Text(
+                                    text = "Add Product",
+                                    color = White,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                        items(
+                            vendorProducts,
+                            span = { GridItemSpan(2) }
+                        ){ product ->
+
+                            VendorProductCard(
+                                productName = product.name,
+                                price = "₹${product.price}",
+                                stock = product.stock,
+                                sold = 0,
+                                revenue = "₹${product.price.toDoubleOrNull()?.times(product.stock) ?: 0}",
+                                isActive = true,
+                                imageUrl = product.product_image?.let {
+                                    "http://192.168.1.33:3000/uploads/$it"
+                                } ?: "https://picsum.photos/200"
+                            )
+                        }
+                    }
+
+                }
+                else{
+                    item(span = { GridItemSpan(2) }) {
+
+                        LazyRow() {
+                            items(categories){category->
+                                Card(
+                                    onClick = {},
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = White
+                                    ),
+                                    elevation = CardDefaults.cardElevation(2.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Image(
+                                            painter = painterResource(category.painter),
+                                            contentDescription = "",
+                                            modifier = Modifier.size(30.dp)
+                                        )
+                                        Text(
+                                            text = category.text
+                                        )
+                                    }
+
+                                }
+                                Spacer(Modifier.width(12.dp))
+                            }
+                        }
+                    }
+                    item(span = {GridItemSpan(2)}) {
+                        Text(
+                            text = "Today's Picks",
+                            modifier = Modifier
+                                .padding(vertical = 12.dp),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                    }
+
+                    items(vendorProducts){product->
+
+                        val url = product.product_image?.let {
+                            "http://192.168.1.33:3000/uploads/$it"
+                        }
+                        Log.d("IMG_DEBUG", "URL = $url")
+
+                        MarketPlaceItem(
+                            productId = product.id.toString(),
+                            imageUrl = product.product_image?.let {
+                                "http://192.168.1.33:3000/uploads/$it"
+                            },
+                            productName = product.name,
+                            price = product.price.toFloatOrNull()?:0f,
+                            onClick = onProductClick,
+                            onIconClick = {
+                                viewModel.addToWishlist(
+                                    WishlistItem(
+                                        product.id.toString(),
+                                        productImage = R.drawable.gaming_chair,
+                                        productName = product.name,
+                                        price = product.price.toFloatOrNull() ?: 0f,
+                                        sellerName = product.username
+                                    )
+                                )
+                            }
+                        )
+                    }
+                }
+
 
 
 
