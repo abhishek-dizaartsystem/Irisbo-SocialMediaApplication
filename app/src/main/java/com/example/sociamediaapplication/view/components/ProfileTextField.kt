@@ -17,28 +17,30 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 @Composable
 fun ProfileTextField(
     label: String,
-    value: String,
+    value: String?,
     onChange: (String) -> Unit
 ) {
     Text(label)
 
-    TextField(
-        value = value,
-        onValueChange = onChange,
-        placeholder = { Text("Enter $label") },
-        colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = Transparent,
-            unfocusedIndicatorColor = Transparent,
-            disabledIndicatorColor = Transparent,
-            focusedContainerColor = Transparent,
-            unfocusedContainerColor = Transparent
-        ),
-        shape = RoundedCornerShape(50.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(1.dp, Grey, RoundedCornerShape(50.dp))
-            .height(50.dp)
-    )
+    if (value != null) {
+        TextField(
+            value = value,
+            onValueChange = onChange,
+            placeholder = { Text("Enter $label") },
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Transparent,
+                unfocusedIndicatorColor = Transparent,
+                disabledIndicatorColor = Transparent,
+                focusedContainerColor = Transparent,
+                unfocusedContainerColor = Transparent
+            ),
+            shape = RoundedCornerShape(50.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, Grey, RoundedCornerShape(50.dp))
+                .height(50.dp)
+        )
+    }
 
     Spacer(Modifier.height(8.dp))
 }

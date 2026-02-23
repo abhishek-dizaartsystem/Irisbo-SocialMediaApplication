@@ -2,6 +2,11 @@ package com.example.sociamediaapplication.data.utils
 
 import android.content.Context
 import android.net.Uri
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 fun uriToFile(uri: Uri, context: Context): File {
@@ -30,6 +35,14 @@ fun uriToFile(uri: Uri, context: Context): File {
 
     return file
 }
+
+fun fileToMultipart(name: String, file: File, mime: String): MultipartBody.Part {
+    val requestBody = file.asRequestBody(mime.toMediaTypeOrNull())
+    return MultipartBody.Part.createFormData(name, file.name, requestBody)
+}
+
+fun String.toPart(): RequestBody =
+    this.toRequestBody("text/plain".toMediaTypeOrNull())
 
 
 fun getMimeType(context: Context, uri: Uri): String {

@@ -412,7 +412,14 @@ fun ProfileScreen(
             if(postSelected){
                 items(posts) { post ->
 
-                    val thumbnail = post.media_urls.firstOrNull()
+                    val thumbnailUrl = post.media_urls.firstOrNull()
+                    val context = LocalContext.current
+
+                    val videoFrame: Bitmap? = remember(thumbnailUrl) {
+                        if (thumbnailUrl != null && isVideo(thumbnailUrl))
+                            getFrameFromUrl(context, thumbnailUrl)
+                        else null
+                    }
 
                     Box(
                         modifier = Modifier
@@ -421,35 +428,43 @@ fun ProfileScreen(
                             .clickable { selectedPostId = post.id }
                     ) {
 
-                        if (thumbnail != null) {
+                        when{
+                            videoFrame != null -> {
+                                Image(
+                                    bitmap = videoFrame.asImageBitmap(),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+                                )
 
-                            AsyncImage(
-                                model = thumbnail,
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize()
-                            )
-
-                            // 🔥 Show play icon if video
-                            if (isVideo(thumbnail)) {
                                 Icon(
                                     painter = painterResource(R.drawable.play_svgrepo_com),
                                     contentDescription = null,
                                     tint = Color.White,
                                     modifier = Modifier
                                         .align(Alignment.Center)
-                                        .size(28.dp)
+                                        .size(26.dp)
+                                )
+                            }
+                            thumbnailUrl != null -> {
+                                AsyncImage(
+                                    model = thumbnailUrl,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
                                 )
                             }
 
-                        } else {
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color.LightGray)
-                            )
+                            // 🔥 fallback
+                            else -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.LightGray)
+                                )
+                            }
                         }
+
                     }
                 }
             }

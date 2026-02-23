@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.DTransparentBlack
@@ -38,6 +39,7 @@ import com.example.sociamediaapplication.ui.theme.White
 fun MarketPlaceItem(
     productId: String = "1",
     painter: Int = R.drawable.gaming_chair,
+    imageUrl: String? = null,
     price: Float = 180f,
     productName: String = "Nike Air Jordan 1",
     onClick: (String)-> Unit = {},
@@ -63,14 +65,24 @@ fun MarketPlaceItem(
                     )
                     .aspectRatio(1f)
             ) {
-                Image(
-                    painter = painterResource(painter),
-                    contentDescription = "",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .aspectRatio(1f),
 
-                )
+                // 🔥 NETWORK IMAGE OR FALLBACK
+                if (imageUrl != null) {
+                    AsyncImage(
+                        model = imageUrl,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.aspectRatio(1f)
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(painter),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.aspectRatio(1f)
+                    )
+                }
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()

@@ -7,6 +7,7 @@ object RetrofitClient {
 
     const val BASE_URL = "http://192.168.1.33:3000/" // for emulator
 
+
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -30,5 +31,9 @@ object RetrofitClient {
 
     val reelApi: ReelApi by lazy{
         retrofit.create(ReelApi::class.java)
+    }
+
+    val productApi: ProductApi by lazy{
+        retrofit.create(ProductApi::class.java)
     }
 }
