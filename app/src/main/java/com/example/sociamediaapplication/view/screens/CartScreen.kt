@@ -36,8 +36,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
-import com.example.sociamediaapplication.model.CartItem
-import com.example.sociamediaapplication.model.MarketplaceItem
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -56,6 +54,8 @@ fun CartScreen(
     val cartItems by viewModel.cartItems.collectAsState()
 
     val cartSum by viewModel.cartSum.collectAsState()
+
+
 
     Scaffold(
         topBar = {
@@ -125,28 +125,34 @@ fun CartScreen(
                 Column(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    if(cartItems != emptyList<CartItem>()){
+                    if(cartItems.isNotEmpty()){
                         LazyColumn(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(16.dp).fillMaxSize(),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
 
                             items(cartItems){item->
                                 CartItem(
-                                    productId = item.productId,
+                                    productId = item.id,
                                     productImage = R.drawable.iphone,
-                                    productName = "iPhone 14 Pro Max",
-                                    sellerName = "John Smith",
-                                    price = item.price,
-                                    quantity = item.productCount,
+                                    productName = item.name,
+                                    sellerName = item.username?:"Seller",
+                                    price = item.price.toFloatOrNull()?:0f,
+                                    quantity = item.quantity,
                                     onIncreaseQuantity = {
-                                        viewModel.increaseQuantity(item.productId)
+                                        viewModel.increaseProductQuantity(
+                                            item.id,
+                                            onError = {}
+                                        )
                                     },
                                     onDecreaseQuantity = {
-                                        viewModel.decreaseQuantity(item.productId)
+                                        viewModel.decreaseProductQuantity(
+                                            item.id,
+                                            onError = {}
+                                        )
                                     },
                                     onDelete = {
-                                        viewModel.removeFromCart(item.productId)
+                                        viewModel.deleteCartProduct(item.id, onError = {})
                                     }
                                 )
                             }

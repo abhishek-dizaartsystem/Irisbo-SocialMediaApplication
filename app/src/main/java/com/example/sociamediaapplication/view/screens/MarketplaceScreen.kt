@@ -499,15 +499,15 @@ fun MarketplaceScreen(
                             price = product.price.toFloatOrNull()?:0f,
                             onClick = onProductClick,
                             onIconClick = {
-                                viewModel.addToWishlist(
-                                    WishlistItem(
-                                        product.id.toString(),
-                                        productImage = R.drawable.gaming_chair,
-                                        productName = product.name,
-                                        price = product.price.toFloatOrNull() ?: 0f,
-                                        sellerName = product.username
-                                    )
-                                )
+//                                viewModel.addToWishlist(
+//                                    WishlistItem(
+//                                        product.id.toString(),
+//                                        productImage = R.drawable.gaming_chair,
+//                                        productName = product.name,
+//                                        price = product.price.toFloatOrNull() ?: 0f,
+//                                        sellerName = product.username
+//                                    )
+//                                )
                             }
                         )
                     }

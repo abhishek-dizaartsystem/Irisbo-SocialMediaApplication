@@ -1,6 +1,5 @@
 package com.example.sociamediaapplication.view.components
 
-import android.graphics.Color
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -30,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -40,8 +40,8 @@ import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
 fun WishlistItem(
-    productId: String = "1",
-    productImage: Int,
+    productId: Int = 1,
+    productImage: String?,
     productName: String,
     sellerName: String,
     price: Float,
@@ -66,8 +66,8 @@ fun WishlistItem(
         ) {
 
             // Product Image
-            Image(
-                painter = painterResource(productImage),
+            AsyncImage(
+                model = productImage,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -151,7 +151,7 @@ fun WishlistItem(
 @Composable
 fun WishlistItemPreview() {
     WishlistItem(
-        productImage = R.drawable.iphone,
+        productImage = "R.drawable.iphone",
         productName = "iPhone 14 Pro Max",
         sellerName = "John Smith",
         price = 899f,

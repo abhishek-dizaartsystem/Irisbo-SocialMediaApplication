@@ -759,13 +759,10 @@ fun ProductScreen(
                         onClick = {
                             try {
                                 viewModel.addToCart(
-                                    item = CartItem(
-                                        productId = productId,
-                                        painter = painter,
-                                        price = originalPrice-(originalPrice*discount)/100,
-                                        productName = name,
-                                        productCount = 1
-                                    )
+                                    productId = productId,
+                                    onError = {error->
+                                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                                    }
                                 )
                                 Toast.makeText(context, "Added to cart", Toast.LENGTH_SHORT).show()
                             }

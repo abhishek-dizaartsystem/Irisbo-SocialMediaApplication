@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.model.CartItem
@@ -105,30 +106,28 @@ fun WishlistScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
             if(wishlistItems != emptyList<WishlistItem>()){
+                val context = LocalContext.current
                 LazyColumn(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(wishlistItems){item->
                         WishlistItem(
-                            productId = item.productId,
-                            productImage = item.productImage,
-                            productName = item.productName,
-                            sellerName = item.sellerName,
-                            price = item.price,
+                            productId = item.id,
+                            productImage = item.product_image,
+                            productName = item.name,
+                            sellerName = item.username,
+                            price = item.price.toFloat(),
                             onAddToCart = {
                                 viewModel.addToCart(
-                                    CartItem(
-                                        productId = item.productId,
-                                        productName = item.productName,
-                                        painter = item.productImage,
-                                        price = item.price,
-                                        productCount = 1
-                                    )
+                                    productId = item.id.toString(),
+                                    onError = {error->
+                                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                                    }
                                 )
                             },
                             onDelete = {
-                                viewModel.removeFromWishlist(productId = item.productId)
+                                //viewModel.removeFromWishlist(productId = item.productId)
                             }
                         )
                     }

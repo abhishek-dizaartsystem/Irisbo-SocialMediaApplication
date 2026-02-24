@@ -3,7 +3,6 @@ package com.example.sociamediaapplication.viewmodel
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.compose.runtime.currentComposer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.MarketplaceRepository
@@ -11,14 +10,12 @@ import com.example.sociamediaapplication.data.utils.fileToMultipart
 import com.example.sociamediaapplication.data.utils.getMimeType
 import com.example.sociamediaapplication.data.utils.toPart
 import com.example.sociamediaapplication.data.utils.uriToFile
-import com.example.sociamediaapplication.model.CartItem
 import com.example.sociamediaapplication.model.Specification
-import com.example.sociamediaapplication.model.WishlistItem
+import com.example.sociamediaapplication.model.request.AddToCartRequest
+import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.forEach
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.collections.map
 
@@ -86,81 +83,121 @@ class MarketplaceViewModel(
         }
     }
 
-    // -------------------------------
-    // CART
-    // -------------------------------
-    private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
-    val cartItems: StateFlow<List<CartItem>> = _cartItems
+    private val _cartItems = MutableStateFlow<List<CartResponse>>(emptyList())
+    val cartItems: StateFlow<List<CartResponse>> = _cartItems
 
     private val _cartSum = MutableStateFlow<Double>(0.0)
     val cartSum: StateFlow<Double> = _cartSum
 
-    fun addToCart(item: CartItem) {
-        _cartItems.update { current ->
-            val existing = current.find { it.productId == item.productId }
-            if (existing != null) {
-                current.map {
-                    if (it.productId == item.productId)
-                        it.copy(productCount = it.productCount + 1)
-                    else it
+    fun loadCart(){
+        viewModelScope.launch {
+            _isLoading.value = true
+            try{
+                val cart = repository.getCartProducts()
+                _cartItems.value = cart
+
+                _cartSum.value = cart.sumOf {
+                    (it.price.toDoubleOrNull() ?: 0.0) * it.quantity
                 }
-            } else current + item
-        }
-        totalPrice()
-    }
 
-    fun increaseQuantity(productId: String) {
-        _cartItems.update { current ->
-            current.map {
-                if (it.productId == productId)
-                    it.copy(productCount = it.productCount + 1)
-                else it
+            }catch (e: Exception){
+                Log.e("API_DEBUG", "CART LOAD FAILED: ${e.message}", e)
+                _error.value = e.message ?: "Failed to load cart"
+            } finally {
+                _isLoading.value = false
             }
         }
-        totalPrice()
     }
 
-    fun decreaseQuantity(productId: String) {
-        _cartItems.update { current ->
-            current.mapNotNull {
-                if (it.productId == productId) {
-                    if (it.productCount > 1)
-                        it.copy(productCount = it.productCount - 1)
-                    else null
-                } else it
+    fun addToCart(
+        productId: String,
+        onError: (String) -> Unit
+    ){
+        viewModelScope.launch {
+            try{
+                repository.addToCart(AddToCartRequest(productId, 1))
+                loadCart()
+            } catch (e: Exception) {
+                onError(e.message ?: "Add to cart failed")
             }
         }
-        totalPrice()
     }
 
-    fun removeFromCart(productId: String) {
-        _cartItems.update { current ->
-            current.filterNot { it.productId == productId }
+    fun increaseProductQuantity(
+        productId: Int,
+        onError: (String) -> Unit
+    ){
+        viewModelScope.launch {
+            try {
+
+                val currentItem = _cartItems.value.find { it.id == productId }
+                val newQty = (currentItem?.quantity ?: 0) + 1
+
+                repository.addToCart(
+                    AddToCartRequest(productId.toString(), newQty)
+                )
+
+                loadCart()
+
+            } catch (e: Exception) {
+                onError(e.message ?: "Failed to update quantity")
+            }
         }
-        totalPrice()
     }
 
-    private fun totalPrice() {
-        _cartSum.value = _cartItems.value.sumOf {
-            it.price.toDouble() * it.productCount
+    fun decreaseProductQuantity(
+        productId: Int,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+
+                val currentItem = _cartItems.value.find { it.id == productId }
+                    ?: return@launch
+
+                val newQty = currentItem.quantity - 1
+
+                if (newQty <= 0) {
+                    repository.deleteCartProduct(productId.toString())
+                } else {
+                    repository.addToCart(
+                        AddToCartRequest(productId.toString(), newQty)
+                    )
+                }
+
+                loadCart()
+
+            } catch (e: Exception) {
+                onError(e.message ?: "Failed to update quantity")
+            }
         }
     }
+
+    fun deleteCartProduct(
+        productId: Int,
+        onError: (String) -> Unit
+    ){
+        viewModelScope.launch {
+            try{
+                repository.deleteCartProduct(productId.toString())
+                loadCart()
+            } catch (e: Exception) {
+                onError(e.message ?: "Delete from cart failed")
+            }
+        }
+    }
+
 
     // -------------------------------
     // WISHLIST
     // -------------------------------
-    private val _wishListItems = MutableStateFlow<List<WishlistItem>>(emptyList())
-    val wishListItems: StateFlow<List<WishlistItem>> = _wishListItems
+    private val _wishListItems = MutableStateFlow<List<ProductResponse>>(emptyList())
+    val wishListItems: StateFlow<List<ProductResponse>> = _wishListItems
 
-    fun addToWishlist(item: WishlistItem) {
-        _wishListItems.update { current -> current + item }
-    }
 
-    fun removeFromWishlist(productId: String) {
-        _wishListItems.update { current ->
-            current.filterNot { it.productId == productId }
-        }
-    }
+
+
+
 
     fun addProduct(
         context: Context,
@@ -198,7 +235,7 @@ class MarketplaceViewModel(
                     Log.d("UPLOAD_DEBUG", "IMAGE PART = ${it.headers}")
                 }
 
-                val response = repository.addProduct(
+                repository.addProduct(
                     name = title.toPart(),
                     category = category.toPart(),
                     price = price.toPart(),
@@ -215,4 +252,6 @@ class MarketplaceViewModel(
             }
         }
     }
+
+
 }
