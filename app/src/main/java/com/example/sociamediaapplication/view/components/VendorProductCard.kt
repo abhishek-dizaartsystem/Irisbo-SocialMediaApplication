@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -55,22 +56,14 @@ fun VendorProductCard(
             Box(
                 modifier = Modifier
                     .size(72.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                Color(0xFFFFD54F),
-                                Color(0xFFFFC107)
-                            )
-                        )
-                    ),
+                    .clip(RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
                     model = imageUrl,
                     contentDescription = "product image",
-                    modifier = Modifier.size(48.dp),
-                    contentScale = ContentScale.Fit
+                    modifier = Modifier.size(72.dp).aspectRatio(1f),
+                    contentScale = ContentScale.Crop
                 )
             }
 
