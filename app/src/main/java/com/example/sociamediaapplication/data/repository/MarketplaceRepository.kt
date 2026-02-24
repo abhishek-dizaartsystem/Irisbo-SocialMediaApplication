@@ -4,10 +4,12 @@ import android.util.Log
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.model.request.AddToCartRequest
+import com.example.sociamediaapplication.model.request.AddToWishlistRequest
 import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
+import com.example.sociamediaapplication.model.response.WishlistResponse
 import okhttp3.MultipartBody
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -21,22 +23,6 @@ class MarketplaceRepository(
     suspend fun getProducts(): List<ProductResponse> {
         return api.getAllProducts()
     }
-
-    suspend fun addToCart(request: AddToCartRequest): BasicResponse {
-        val token = "Bearer ${tokenManager.getToken()}"
-        return api.addToCart(token, request)
-    }
-
-    suspend fun getCartProducts(): List<CartResponse> {
-        val token = "Bearer ${tokenManager.getToken()}"
-        return api.fetchCart(token)
-    }
-
-    suspend fun deleteCartProduct(productId: String): BasicResponse {
-        val token = "Bearer ${tokenManager.getToken()}"
-        return api.deleteCartProduct(token, productId)
-    }
-
 
     suspend fun addProduct(
         name: RequestBody,
@@ -74,4 +60,36 @@ class MarketplaceRepository(
             throw e
         }
     }
+
+    suspend fun addToCart(request: AddToCartRequest): BasicResponse {
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.addToCart(token, request)
+    }
+
+    suspend fun getCartProducts(): List<CartResponse> {
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.fetchCart(token)
+    }
+
+    suspend fun deleteCartProduct(productId: String): BasicResponse {
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.deleteCartProduct(token, productId)
+    }
+
+    suspend fun getWishlistProducts(): List<WishlistResponse> {
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.fetchWishlist(token)
+    }
+
+    suspend fun addToWishlist(request: AddToWishlistRequest): BasicResponse{
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.addToWishlist(token, request)
+    }
+
+    suspend fun removeFromWishlist(productId: Int): BasicResponse{
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.removeFromWishlist(token, productId.toString())
+    }
+
+
 }

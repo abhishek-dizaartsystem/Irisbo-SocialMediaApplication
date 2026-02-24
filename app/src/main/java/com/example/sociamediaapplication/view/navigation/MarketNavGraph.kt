@@ -64,6 +64,9 @@ fun MarketNavGraph(
             )
         }
         composable(MarketRoutes.Wishlist.route) {
+            LaunchedEffect(Unit) {
+                viewModel.loadWishlist()
+            }
             WishlistScreen(
                 navController = navController,
                 viewModel = viewModel

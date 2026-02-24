@@ -56,7 +56,6 @@ fun CartScreen(
     val cartSum by viewModel.cartSum.collectAsState()
 
 
-
     Scaffold(
         topBar = {
             Column() {
@@ -134,7 +133,7 @@ fun CartScreen(
                             items(cartItems){item->
                                 CartItem(
                                     productId = item.id,
-                                    productImage = R.drawable.iphone,
+                                    productImage = item.product_image,
                                     productName = item.name,
                                     sellerName = item.username?:"Seller",
                                     price = item.price.toFloatOrNull()?:0f,

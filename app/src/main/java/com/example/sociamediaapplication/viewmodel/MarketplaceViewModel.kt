@@ -12,8 +12,10 @@ import com.example.sociamediaapplication.data.utils.toPart
 import com.example.sociamediaapplication.data.utils.uriToFile
 import com.example.sociamediaapplication.model.Specification
 import com.example.sociamediaapplication.model.request.AddToCartRequest
+import com.example.sociamediaapplication.model.request.AddToWishlistRequest
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
+import com.example.sociamediaapplication.model.response.WishlistResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -191,10 +193,50 @@ class MarketplaceViewModel(
     // -------------------------------
     // WISHLIST
     // -------------------------------
-    private val _wishListItems = MutableStateFlow<List<ProductResponse>>(emptyList())
-    val wishListItems: StateFlow<List<ProductResponse>> = _wishListItems
+    private val _wishListItems = MutableStateFlow<List<WishlistResponse>>(emptyList())
+    val wishListItems: StateFlow<List<WishlistResponse>> = _wishListItems
 
+    fun loadWishlist(){
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val wishList = repository.getWishlistProducts()
+                _wishListItems.value = wishList
+            }catch (e: Exception){
+                Log.e("API_DEBUG", "WISHLIST LOAD FAILED: ${e.message}", e)
+            }finally {
+                _isLoading.value = false
+            }
+        }
+    }
 
+    fun addToWishlist(
+        productId: Int,
+        onError: (String)-> Unit
+    ){
+        viewModelScope.launch {
+            try {
+                repository.addToWishlist(AddToWishlistRequest(productId))
+                loadWishlist()
+            }catch (e: Exception){
+                onError(e.message ?: "Add to wishlist failed")
+            }
+        }
+    }
+
+    fun deleteWishlistProduct(
+        productId: Int,
+        onError: (String)-> Unit
+    ){
+        viewModelScope.launch {
+            try {
+                repository.removeFromWishlist(productId)
+                loadWishlist()
+            }catch (e: Exception){
+                onError(e.message ?: "Delete from wishlist failed")
+            }
+        }
+    }
 
 
 

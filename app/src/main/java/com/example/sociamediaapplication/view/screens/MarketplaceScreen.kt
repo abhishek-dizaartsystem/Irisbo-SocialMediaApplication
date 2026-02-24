@@ -56,6 +56,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.model.CategoriesMarketplace
 import com.example.sociamediaapplication.model.MarketplaceItem
 import com.example.sociamediaapplication.model.WishlistItem
@@ -434,7 +435,7 @@ fun MarketplaceScreen(
                                 revenue = "₹${product.price.toDoubleOrNull()?.times(product.stock) ?: 0}",
                                 isActive = true,
                                 imageUrl = product.product_image?.let {
-                                    "http://192.168.1.33:3000/uploads/$it"
+                                    "${RetrofitClient.BASE_URL}uploads/$it"
                                 } ?: "https://picsum.photos/200"
                             )
                         }
@@ -486,28 +487,25 @@ fun MarketplaceScreen(
                     items(vendorProducts){product->
 
                         val url = product.product_image?.let {
-                            "http://192.168.1.33:3000/uploads/$it"
+                            "${RetrofitClient.BASE_URL}uploads/$it"
                         }
                         Log.d("IMG_DEBUG", "URL = $url")
 
                         MarketPlaceItem(
                             productId = product.id.toString(),
                             imageUrl = product.product_image?.let {
-                                "http://192.168.1.33:3000/uploads/$it"
+                                "${RetrofitClient.BASE_URL}uploads/$it"
                             },
                             productName = product.name,
                             price = product.price.toFloatOrNull()?:0f,
                             onClick = onProductClick,
                             onIconClick = {
-//                                viewModel.addToWishlist(
-//                                    WishlistItem(
-//                                        product.id.toString(),
-//                                        productImage = R.drawable.gaming_chair,
-//                                        productName = product.name,
-//                                        price = product.price.toFloatOrNull() ?: 0f,
-//                                        sellerName = product.username
-//                                    )
-//                                )
+                                viewModel.addToWishlist(
+                                    product.id,
+                                    onError = {error->
+                                        Log.e("WISHLIST_DEBUG", error)
+                                    }
+                                )
                             }
                         )
                     }

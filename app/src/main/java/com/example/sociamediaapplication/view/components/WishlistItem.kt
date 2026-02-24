@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.GreyTxt
@@ -67,7 +68,7 @@ fun WishlistItem(
 
             // Product Image
             AsyncImage(
-                model = productImage,
+                model = "${RetrofitClient.BASE_URL}uploads/$productImage",
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

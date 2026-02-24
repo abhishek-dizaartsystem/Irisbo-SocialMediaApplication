@@ -26,7 +26,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.Red
@@ -35,7 +37,7 @@ import com.example.sociamediaapplication.ui.theme.White
 @Composable
 fun CartItem(
     productId: Int = 1,
-    productImage: Int,
+    productImage: String?,
     productName: String,
     sellerName: String,
     price: Float = 899f,
@@ -62,8 +64,8 @@ fun CartItem(
         ) {
 
             // Product Image
-            Image(
-                painter = painterResource(productImage),
+            AsyncImage(
+                model = "${RetrofitClient.BASE_URL}uploads/$productImage",
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -170,7 +172,7 @@ fun CartItem(
 @Composable
 fun CartItemPreview() {
     CartItem(
-        productImage = R.drawable.iphone,
+        productImage = "https://picsum.photos/200/300",
         productName = "iPhone 14 Pro Max",
         sellerName = "John Smith",
         onDelete = {}

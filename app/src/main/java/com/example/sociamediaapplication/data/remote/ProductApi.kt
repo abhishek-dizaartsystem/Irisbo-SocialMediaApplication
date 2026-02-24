@@ -2,10 +2,12 @@ package com.example.sociamediaapplication.data.remote
 
 import androidx.room.Delete
 import com.example.sociamediaapplication.model.request.AddToCartRequest
+import com.example.sociamediaapplication.model.request.AddToWishlistRequest
 import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
+import com.example.sociamediaapplication.model.response.WishlistResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -52,17 +54,20 @@ interface ProductApi {
     ): BasicResponse
 
 
+    @GET("api/wishlist/all")
+    suspend fun fetchWishlist(
+        @Header("Authorization") token: String
+    ): List<WishlistResponse>
 
+    @POST("api/wishlist/add")
+    suspend fun addToWishlist(
+        @Header("Authorization") token: String,
+        @Body request: AddToWishlistRequest
+    ): BasicResponse
 
-//    @POST("api/wishlist/add")
-//    suspend fun addToWishlist(
-//        @Header("Authorization") token: String,
-//        @Body request: AddToCartRequest
-//    ): BasicResponse
-//
-//    @POST("api/wishlist/remove/{product_id}")
-//    suspend fun removeFromWishlist(
-//        @Header("Authorization") token: String,
-//        @Path("product_id") productId: String
-//    ): BasicResponse
+    @DELETE("api/wishlist/remove/{product_id}")
+    suspend fun removeFromWishlist(
+        @Header("Authorization") token: String,
+        @Path("product_id") productId: String
+    ): BasicResponse
 }

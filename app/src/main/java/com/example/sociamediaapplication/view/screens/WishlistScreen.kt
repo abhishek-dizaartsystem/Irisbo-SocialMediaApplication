@@ -105,7 +105,7 @@ fun WishlistScreen(
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
-            if(wishlistItems != emptyList<WishlistItem>()){
+            if(wishlistItems.isNotEmpty()){
                 val context = LocalContext.current
                 LazyColumn(
                     modifier = Modifier.padding(16.dp),
@@ -127,7 +127,12 @@ fun WishlistScreen(
                                 )
                             },
                             onDelete = {
-                                //viewModel.removeFromWishlist(productId = item.productId)
+                                viewModel.deleteWishlistProduct(
+                                    productId = item.id,
+                                    onError = {error->
+                                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                                    }
+                                )
                             }
                         )
                     }
