@@ -84,56 +84,14 @@ fun MarketplaceScreen(
 
     var searchTxt by remember { mutableStateOf("") }
 
-    var isVendor by remember { mutableStateOf(true) }
+    var isVendor by remember { mutableStateOf(false) }
 
     var isAnalyticsSelected by remember { mutableStateOf(false) }
 
     val vendorProducts by viewModel.vendorProducts.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadProducts()
-    }
-    var productList = remember {
-        mutableStateListOf(
-            MarketplaceItem(
-                "1",
-                R.drawable.gaming_chair,
-                199f,
-                "Gaming Chair"
-            ),
-            MarketplaceItem(
-                "2",
-                R.drawable.iphone,
-                899f,
-                "Iphone"
-            ),
-            MarketplaceItem(
-                "3",
-                R.drawable.sofa,
-                499f,
-                "Modern Sofa set"
-            ),
-            MarketplaceItem(
-                "4",
-                R.drawable.shoe,
-                299f,
-                "Nike Jordan"
-            ),
-            MarketplaceItem(
-                "5",
-                R.drawable.dslr_camera,
-                199f,
-                "$350"
-            ),
-            MarketplaceItem(
-                "6",
-                R.drawable.gaming_chair,
-                699f,
-                "Gaming Chair"
-            )
-        )
     }
 
     var categories = remember { listOf(
@@ -276,7 +234,8 @@ fun MarketplaceScreen(
                 )
 
             }
-        }
+        },
+        containerColor = BackgroundColor
     ) {innerPadding->
         Column(
             modifier = Modifier

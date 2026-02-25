@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.formatPostTime
 import com.example.sociamediaapplication.data.utils.isVideo
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -62,7 +63,6 @@ import com.example.sociamediaapplication.ui.theme.White
 @Composable
 fun Post(
     uName: String = "John Doe",
-    sincePosted: String = "1m",
     isVerified: Boolean = false,
     caption: String = "",
     mediaList: List<Any>? = listOf(
@@ -78,8 +78,14 @@ fun Post(
     isSaved: Boolean = false,
     isLiked: Boolean = false,
     onPostProfileClick: ()-> Unit = {},
-    profileImageUrl: String? = null
+    profileImageUrl: String? = null,
+    createdAt: String = ""
 ){
+
+    val sincePosted = remember(createdAt) {
+        formatPostTime(createdAt)
+    }
+
     val size = mediaList?.size
 
     val pagerState = rememberPagerState(pageCount = { mediaList?.size ?: 0 })

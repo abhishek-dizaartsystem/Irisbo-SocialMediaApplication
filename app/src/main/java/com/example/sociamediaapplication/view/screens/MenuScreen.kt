@@ -60,7 +60,8 @@ fun MenuScreen(
     onAdvancedSettings: () -> Unit,
     onVideoMonetization: () -> Unit,
     onSettings: () -> Unit,
-    profileImg: String?
+    profileImg: String?,
+    name: String = "John Doe"
 
 ){
     LazyColumn(
@@ -92,7 +93,7 @@ fun MenuScreen(
                 }
                 Column(modifier = Modifier.padding(start = 12.dp)) {
                     Text(
-                        text = "John Doe",
+                        text = name,
                         fontSize = 20.sp
                     )
                     Button(

@@ -336,37 +336,37 @@ fun ProductScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "$${originalPrice-(originalPrice*discount)/100}",
+                                text = "$${originalPrice}",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp
                             )
 
-                            Text(
-                                text = "$$originalPrice",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp,
-                                style = TextStyle(
-                                    textDecoration = TextDecoration.LineThrough
-                                ),
-                                color = GreyTxt
-                            )
-
-                            Column(
-                                modifier = Modifier
-                                    .background(
-                                        LLGreen,
-                                        RoundedCornerShape(8.dp)
-                                    )
-                            ) {
-                                Text(
-                                    text = "$discount% OFF",
-                                    color = Green,
-                                    fontSize = 14.sp,
-                                    modifier = Modifier.padding(
-                                        vertical = 4.dp,
-                                        horizontal = 8.dp)
-                                )
-                            }
+//                            Text(
+//                                text = "$$originalPrice",
+//                                fontWeight = FontWeight.Bold,
+//                                fontSize = 18.sp,
+//                                style = TextStyle(
+//                                    textDecoration = TextDecoration.LineThrough
+//                                ),
+//                                color = GreyTxt
+//                            )
+//
+//                            Column(
+//                                modifier = Modifier
+//                                    .background(
+//                                        LLGreen,
+//                                        RoundedCornerShape(8.dp)
+//                                    )
+//                            ) {
+//                                Text(
+//                                    text = "$discount% OFF",
+//                                    color = Green,
+//                                    fontSize = 14.sp,
+//                                    modifier = Modifier.padding(
+//                                        vertical = 4.dp,
+//                                        horizontal = 8.dp)
+//                                )
+//                            }
 
 
                         }
@@ -439,7 +439,7 @@ fun ProductScreen(
                                 .padding(20.dp)
                         ) {
                             Text(
-                                text = "Description",
+                                text = "Specifications",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp
                             )

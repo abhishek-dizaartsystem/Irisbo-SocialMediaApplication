@@ -72,7 +72,7 @@ fun WishlistItem(
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(110.dp)
+                    .size(70.dp)
                     .clip(RoundedCornerShape(16.dp))
             )
 

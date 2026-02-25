@@ -546,7 +546,8 @@ fun ProfileScreen(
                 onFollow = {},
                 onPostProfileClick = {},
                 onSaved = { onPostSave(post) },
-                isSaved = post.is_saved
+                isSaved = post.is_saved,
+                createdAt = post.created_at
             )
         }
     }

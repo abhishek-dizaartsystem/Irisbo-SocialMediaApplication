@@ -78,7 +78,8 @@ fun MenuNavGraph(
                 onSettings = {
                     navController.navigate(MenuRoutes.Settings.route)
                 },
-                profileImg = profile?.profile_img
+                profileImg = profile?.profile_img,
+                name = profile?.name ?: "John Doe"
             )
         }
         composable(MenuRoutes.Marketplace.route) {
