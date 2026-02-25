@@ -6,6 +6,7 @@ import com.example.sociamediaapplication.model.request.AddToWishlistRequest
 import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.CartResponse
+import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
 import okhttp3.MultipartBody
@@ -70,4 +71,9 @@ interface ProductApi {
         @Header("Authorization") token: String,
         @Path("product_id") productId: String
     ): BasicResponse
+
+    @GET("api/checkout/details")
+    suspend fun fetchCheckoutDetails(
+        @Header("Authorization") token: String
+    ): CheckoutDetailsResponse
 }

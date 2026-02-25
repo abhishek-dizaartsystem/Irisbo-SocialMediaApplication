@@ -10,6 +10,7 @@ import com.example.sociamediaapplication.data.utils.fileToMultipart
 import com.example.sociamediaapplication.data.utils.getMimeType
 import com.example.sociamediaapplication.data.utils.toPart
 import com.example.sociamediaapplication.data.utils.uriToFile
+import com.example.sociamediaapplication.model.ShippingPrice
 import com.example.sociamediaapplication.model.Specification
 import com.example.sociamediaapplication.model.request.AddToCartRequest
 import com.example.sociamediaapplication.model.request.AddToWishlistRequest
@@ -25,17 +26,66 @@ class MarketplaceViewModel(
     private val repository: MarketplaceRepository
 ) : ViewModel() {
 
-    // -------------------------------
-    // PRODUCTS FROM API
-    // -------------------------------
+
+
+    //STATE
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
+
+
+    //PRODUCTS
     private val _vendorProducts = MutableStateFlow<List<ProductResponse>>(emptyList())
     val vendorProducts: StateFlow<List<ProductResponse>> = _vendorProducts
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    private val _wishListItems = MutableStateFlow<List<WishlistResponse>>(emptyList())
+    val wishListItems: StateFlow<List<WishlistResponse>> = _wishListItems
 
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error
+    private val _cartItems = MutableStateFlow<List<CartResponse>>(emptyList())
+    val cartItems: StateFlow<List<CartResponse>> = _cartItems
+
+    private val _cartSum = MutableStateFlow<Double>(0.0)
+    val cartSum: StateFlow<Double> = _cartSum
+
+    //BACKEND MUTABLE VALUES
+    private val _tax = MutableStateFlow<Double>(12.0)
+    val tax: StateFlow<Double> = _tax
+
+    private val _shippingType = MutableStateFlow<List<ShippingPrice>>(
+        listOf(
+            ShippingPrice(
+                type = "Standard",
+                price = 0.0,
+                time = "5-7"
+            ),
+            ShippingPrice(
+                type = "Express",
+                price = 15.0,
+                time = "3-4"
+            ),
+            ShippingPrice(
+                type = "Premium",
+                price = 25.0,
+                time = "1-2"
+            )
+        )
+    )
+    val shippingType: StateFlow<List<ShippingPrice>> = _shippingType
+
+
+
+
+
+    fun loadCheckoutDetails(){
+        viewModelScope.launch {
+            val checkoutDetails = repository.fetchCheckoutDetails()
+
+            _tax.value = checkoutDetails.tax
+            _shippingType.value = checkoutDetails.shipping
+
+        }
+    }
 
     fun loadProducts() {
         Log.d("API_DEBUG", "loadProducts() called")
@@ -85,11 +135,7 @@ class MarketplaceViewModel(
         }
     }
 
-    private val _cartItems = MutableStateFlow<List<CartResponse>>(emptyList())
-    val cartItems: StateFlow<List<CartResponse>> = _cartItems
 
-    private val _cartSum = MutableStateFlow<Double>(0.0)
-    val cartSum: StateFlow<Double> = _cartSum
 
     fun loadCart(){
         viewModelScope.launch {
@@ -193,8 +239,7 @@ class MarketplaceViewModel(
     // -------------------------------
     // WISHLIST
     // -------------------------------
-    private val _wishListItems = MutableStateFlow<List<WishlistResponse>>(emptyList())
-    val wishListItems: StateFlow<List<WishlistResponse>> = _wishListItems
+
 
     fun loadWishlist(){
         viewModelScope.launch {

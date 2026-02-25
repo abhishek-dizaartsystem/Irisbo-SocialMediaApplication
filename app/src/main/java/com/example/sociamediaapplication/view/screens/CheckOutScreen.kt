@@ -1,5 +1,8 @@
 package com.example.sociamediaapplication.view.screens
 
+import android.app.Activity
+import android.widget.Toast
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +25,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,11 +35,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -44,6 +53,8 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.AddressStep
 import com.example.sociamediaapplication.view.components.PaymentStep
+import com.example.sociamediaapplication.viewmodel.MarketplaceViewModel
+import com.example.sociamediaapplication.viewmodel.PaymentViewModel
 
 enum class CheckOutStep {
     ADDRESS,
@@ -51,9 +62,17 @@ enum class CheckOutStep {
 }
 
 @Composable
-fun CheckOutScreen(){
+fun CheckOutScreen(
+    viewModel: MarketplaceViewModel = viewModel(),
+    paymentViewModel: PaymentViewModel = viewModel(),
+    navController: NavController = rememberNavController()
+){
 
     var currentStep by remember { mutableStateOf(CheckOutStep.ADDRESS) }
+    val cartSum by viewModel.cartSum.collectAsState()
+    val tax by viewModel.tax.collectAsState()
+    val shippingType by viewModel.shippingType.collectAsState()
+
 
     Scaffold(
         topBar = {
@@ -65,7 +84,7 @@ fun CheckOutScreen(){
                 ) {
                     IconButton(
                         onClick = {
-                            //navController.popBackStack()
+                            navController.popBackStack()
                         }
                     ) {
                         Icon(
@@ -93,7 +112,9 @@ fun CheckOutScreen(){
                             Icon(
                                 painter = painterResource(R.drawable.menu_dots_svgrepo_com),
                                 contentDescription = "",
-                                modifier = Modifier.size(30.dp).rotate(90f)
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .rotate(90f)
                             )
                         }
                     }
@@ -105,10 +126,11 @@ fun CheckOutScreen(){
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(
-                        modifier = Modifier.background(
-                            Blue,
-                            CircleShape
-                        )
+                        modifier = Modifier
+                            .background(
+                                Blue,
+                                CircleShape
+                            )
                             .size(30.dp),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -135,14 +157,15 @@ fun CheckOutScreen(){
                             .height(4.dp)
                             .width(90.dp)
                             .background(
-                                color = if(currentStep == CheckOutStep.ADDRESS) Grey else Blue
+                                color = if (currentStep == CheckOutStep.ADDRESS) Grey else Blue
                             )
                     )
                     Column(
-                        modifier = Modifier.background(
-                            color = if(currentStep == CheckOutStep.ADDRESS) Grey else Blue,
-                            CircleShape
-                        )
+                        modifier = Modifier
+                            .background(
+                                color = if (currentStep == CheckOutStep.ADDRESS) Grey else Blue,
+                                CircleShape
+                            )
                             .size(30.dp),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -195,10 +218,22 @@ fun CheckOutScreen(){
                         }
                     }
 
+                    val activity = LocalActivity.current
                     Button(
+
                         onClick = {
+                            if(activity == null) return@Button
+
                             if(currentStep == CheckOutStep.ADDRESS){
                                 currentStep = CheckOutStep.PAYMENT
+                            }else{
+                                paymentViewModel.startPayment(
+                                    activity = activity,
+                                    amount = cartSum,
+                                    onError = { msg ->
+                                        Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show()
+                                    }
+                                )
                             }
 
                         },
@@ -211,7 +246,7 @@ fun CheckOutScreen(){
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
-                            text = if(currentStep == CheckOutStep.PAYMENT) "Place Order" else "Continue"
+                            text = if(currentStep == CheckOutStep.ADDRESS) "Continue" else "Place Order"
                         )
                     }
                 }
@@ -229,7 +264,12 @@ fun CheckOutScreen(){
         ) {
             when (currentStep) {
                 CheckOutStep.ADDRESS -> AddressStep()
-                CheckOutStep.PAYMENT -> PaymentStep()
+                CheckOutStep.PAYMENT -> {
+//                    LaunchedEffect(Unit) {
+//                        viewModel.loadCheckoutDetails()
+//                    }
+                    PaymentStep(viewModel)
+                }
             }
         }
 

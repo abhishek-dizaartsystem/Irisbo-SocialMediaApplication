@@ -9,7 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.sociamediaapplication.view.screens.CreateGroupScreen
 import com.example.sociamediaapplication.view.screens.EditGroupScreen
-import com.example.sociamediaapplication.view.screens.GroupScreen
+import com.example.sociamediaapplication.view.screens.GroupDetailsScreen
 import com.example.sociamediaapplication.view.screens.GroupsScreen
 
 @Composable
@@ -47,7 +47,7 @@ fun GroupsNavGraph(
 
             val groupId = backStackEntry.arguments?.getString("groupId")
 
-            GroupScreen(
+            GroupDetailsScreen(
                 groupId = groupId ?: "",
                 navController = navController
             )

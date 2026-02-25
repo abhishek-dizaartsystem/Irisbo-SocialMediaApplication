@@ -2,7 +2,6 @@ package com.example.sociamediaapplication.view.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,14 +43,12 @@ import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.DTransparentBlack
 import com.example.sociamediaapplication.ui.theme.GreyTxt
-import com.example.sociamediaapplication.ui.theme.LLBlue
-import com.example.sociamediaapplication.ui.theme.TransparentBlack
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.view.navigation.GroupsRoutes
 
 @Composable
-fun GroupScreen(
+fun GroupDetailsScreen(
     painter: Painter = painterResource(R.drawable.travel),
     groupId: String = "1",
     navController: NavController = rememberNavController()
@@ -268,6 +265,6 @@ fun GroupScreen(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun GroupScreenPreview(){
-    GroupScreen()
+fun GroupDetailsScreenPreview(){
+    GroupDetailsScreen()
 }

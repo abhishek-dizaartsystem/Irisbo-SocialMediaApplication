@@ -13,13 +13,17 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.repository.MarketplaceRepository
+import com.example.sociamediaapplication.data.repository.PaymentRepository
 import com.example.sociamediaapplication.view.screens.AddProductScreen
 import com.example.sociamediaapplication.view.screens.CartScreen
+import com.example.sociamediaapplication.view.screens.CheckOutScreen
 import com.example.sociamediaapplication.view.screens.MarketplaceScreen
 import com.example.sociamediaapplication.view.screens.ProductScreen
 import com.example.sociamediaapplication.view.screens.WishlistScreen
 import com.example.sociamediaapplication.viewmodel.MarketplaceViewModel
+import com.example.sociamediaapplication.viewmodel.PaymentViewModel
 import com.example.sociamediaapplication.viewmodel.factory.MarketplaceViewModelFactory
+import com.example.sociamediaapplication.viewmodel.factory.PaymentViewModelFactory
 
 @Composable
 fun MarketNavGraph(
@@ -31,6 +35,11 @@ fun MarketNavGraph(
     val tokenManager = remember { TokenManager(context) }
     val repository = remember { MarketplaceRepository(tokenManager) }
     val factory = remember { MarketplaceViewModelFactory(repository) }
+
+    val paymentRepository = remember { PaymentRepository() }
+    val paymentFactory = remember { PaymentViewModelFactory(paymentRepository) }
+    val paymentViewModel: PaymentViewModel = viewModel(factory = paymentFactory)
+
 
     val viewModel: MarketplaceViewModel = viewModel(factory = factory)
 
@@ -61,6 +70,16 @@ fun MarketNavGraph(
                     navController.navigate(MarketRoutes.CheckOut.route)
                 },
                 viewModel = viewModel
+            )
+        }
+        composable(MarketRoutes.CheckOut.route){
+            LaunchedEffect(Unit) {
+
+            }
+            CheckOutScreen(
+                viewModel = viewModel,
+                paymentViewModel = paymentViewModel,
+                navController = navController
             )
         }
         composable(MarketRoutes.Wishlist.route) {

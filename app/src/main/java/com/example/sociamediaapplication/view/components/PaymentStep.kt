@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -19,6 +20,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,27 +34,56 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.model.ShippingPrice
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.White
+import com.example.sociamediaapplication.viewmodel.MarketplaceViewModel
 
 @Composable
 fun PaymentStep(
+    viewModel: MarketplaceViewModel = viewModel(),
     onBack: ()-> Unit = {}
 ){
-    val subtotal: String = "2558.0"
-    val shipping: String = "0.00"
-    val tax: String = "204.64"
-    val total = subtotal.toFloat() + tax.toFloat() + shipping.toFloat()
+
+    val shippingPrice by viewModel.shippingType.collectAsState()
+
+    val subTotal by viewModel.cartSum.collectAsState()
+
+    val tax by viewModel.tax.collectAsState()
+
+
+
+    var total by remember {
+        mutableStateOf(subTotal)
+    }
+
+    var taxValue by remember {
+        mutableStateOf(tax)
+    }
+
+    taxValue = (subTotal*tax)/100
+
+
 
 
     val shippingOptions = listOf("Standard","Express","Premium")
 
-    var selectedShippingOption by remember { mutableStateOf("Standard") }
+    var selectedShippingOption by remember { mutableStateOf<ShippingPrice>(
+        ShippingPrice(
+            type = "Standard",
+            price = 0.0,
+            time = "5-7"
+            )
+        )
+    }
+
+    total = subTotal + taxValue + selectedShippingOption.price
 
     val paymentOptions = listOf("Credit", "UPI", "COD")
 
@@ -81,33 +112,15 @@ fun PaymentStep(
                 }
             }
 
-            item {
+            items(shippingPrice){item->
                 ShippingMethodCard(
-                    selected = selectedShippingOption == shippingOptions[0],
+                    selected = selectedShippingOption == item,
                     onClick = {
-                        selectedShippingOption = shippingOptions[0]
+                        selectedShippingOption = item
                     },
-                    name = "Standard Shipping",
-                    estimatedDays = "5-7",
-                    price = 0
-                )
-                ShippingMethodCard(
-                    selected = selectedShippingOption == shippingOptions[1],
-                    onClick = {
-                        selectedShippingOption = shippingOptions[1]
-                    },
-                    name = "Express Shipping",
-                    estimatedDays = "3-4",
-                    price = 15
-                )
-                ShippingMethodCard(
-                    selected = selectedShippingOption == shippingOptions[2],
-                    onClick = {
-                        selectedShippingOption = shippingOptions[2]
-                    },
-                    name = "Overnight Shipping",
-                    estimatedDays = "1-2",
-                    price = 25
+                    name = "${item.type} Shipping",
+                    estimatedDays = "${item.time} business days",
+                    price = item.price.toInt()
                 )
             }
 
@@ -220,9 +233,19 @@ fun PaymentStep(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        SummaryRow("Subtotal", subtotal.toFloat())
-                        SummaryRow("Shipping", shipping.toFloat(), isFree = shipping.toDouble() == 0.0)
-                        SummaryRow("Tax", tax.toFloat())
+                        SummaryRow(
+                            "Subtotal",
+                            subTotal.toFloat()
+                        )
+                        SummaryRow(
+                            "Shipping",
+                            selectedShippingOption.price.toFloat(),
+                            isFree = selectedShippingOption.price.toDouble() == 0.0
+                        )
+                        SummaryRow(
+                            "Tax",
+                            taxValue.toFloat()
+                        )
 
                         Spacer(modifier = Modifier.height(12.dp))
 

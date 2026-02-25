@@ -36,4 +36,8 @@ object RetrofitClient {
     val productApi: ProductApi by lazy{
         retrofit.create(ProductApi::class.java)
     }
+
+    val paymentApi: PaymentApi by lazy {
+        retrofit.create(PaymentApi::class.java)
+    }
 }

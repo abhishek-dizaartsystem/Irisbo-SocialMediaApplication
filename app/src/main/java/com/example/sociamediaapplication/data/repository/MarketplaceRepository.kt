@@ -8,6 +8,7 @@ import com.example.sociamediaapplication.model.request.AddToWishlistRequest
 import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.CartResponse
+import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
 import okhttp3.MultipartBody
@@ -91,5 +92,8 @@ class MarketplaceRepository(
         return api.removeFromWishlist(token, productId.toString())
     }
 
-
+    suspend fun fetchCheckoutDetails(): CheckoutDetailsResponse{
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.fetchCheckoutDetails(token)
+    }
 }

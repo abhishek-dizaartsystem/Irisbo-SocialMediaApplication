@@ -9,7 +9,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.sociamediaapplication.view.screens.CreatePageScreen
 import com.example.sociamediaapplication.view.screens.EditPageScreen
-import com.example.sociamediaapplication.view.screens.GroupScreen
 import com.example.sociamediaapplication.view.screens.PageScreen
 import com.example.sociamediaapplication.view.screens.PagesScreen
 
