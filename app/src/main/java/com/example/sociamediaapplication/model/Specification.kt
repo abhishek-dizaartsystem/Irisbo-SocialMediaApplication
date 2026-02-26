@@ -1,6 +1,6 @@
 package com.example.sociamediaapplication.model
 
 data class Specification(
-    val parameter: String,
+    val key: String,
     val value: String
 )

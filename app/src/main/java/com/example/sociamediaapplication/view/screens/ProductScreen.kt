@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.screens
 
+import android.graphics.Bitmap
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,6 +62,8 @@ import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.utils.getFrameFromUrl
+import com.example.sociamediaapplication.data.utils.isVideo
 import com.example.sociamediaapplication.model.CartItem
 import com.example.sociamediaapplication.model.Specification
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
@@ -73,6 +77,7 @@ import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.LLGreen
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
+import com.example.sociamediaapplication.view.components.AutoVideo
 import com.example.sociamediaapplication.view.components.CustomProgressBar2
 import com.example.sociamediaapplication.view.components.ReviewItem
 import com.example.sociamediaapplication.viewmodel.MarketplaceViewModel
@@ -98,15 +103,10 @@ fun ProductScreen(
         (productDetails?.product?.product_image),
     )
 
-    val specificationsList = listOf<Specification>(
-        Specification("Storage", "256gb"),
-        Specification("Color", "Deep Purple"),
-        Specification("Battery health", "98%"),
-        Specification("Carrier", "Unlocked"),
-    )
+
 
     val pagerState = rememberPagerState(
-        pageCount = { 1 }
+        pageCount = { productDetails?.product?.product_images?.size ?: 0 }
     )
 
     val s5 = 18
@@ -208,16 +208,31 @@ fun ProductScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .aspectRatio(1f)
-                        ) {image->
+                        ) {page->
 
-                            AsyncImage(
-                                model = "${RetrofitClient.BASE_URL}uploads/${productImages[image]}",
-                                contentDescription = "",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .aspectRatio(1f)
-                            )
+                            val mediaUrl = "${RetrofitClient.BASE_URL}uploads/${productDetails?.product?.product_images?.getOrNull(page)}"
+
+                            when{
+                                mediaUrl == null -> {}
+
+                                mediaUrl.endsWith(".mp4", true)->{
+                                    AutoVideo(
+                                        url = mediaUrl,
+                                    )
+                                }
+
+                                else->{
+                                    AsyncImage(
+                                        model = mediaUrl,
+                                        contentDescription = "",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .aspectRatio(1f)
+                                    )
+                                }
+                            }
+
                         }
                         Row(
                             modifier = Modifier
@@ -235,57 +250,58 @@ fun ProductScreen(
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 // 🔥 Smart Dots Indicator
-                                if (productImages.size > 1) {
-
-                                    val totalDots = productImages.size
-                                    val currentPage = pagerState.currentPage
-                                    val maxVisibleDots = 5
-
-                                    val startIndex = when {
-                                        totalDots <= maxVisibleDots -> 0
-                                        currentPage <= 2 -> 0
-                                        currentPage >= totalDots - 3 -> totalDots - maxVisibleDots
-                                        else -> currentPage - 2
-                                    }
-
-                                    val endIndex = minOf(startIndex + maxVisibleDots, totalDots)
 
 
+                                val totalDots = productDetails?.product?.product_images?.size ?: 0
+                                val currentPage = pagerState.currentPage
+                                val maxVisibleDots = 5
 
-                                    Row(
-                                        modifier = Modifier
-                                            .padding(bottom = 8.dp),
-                                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
+                                val startIndex = when {
+                                    totalDots <= maxVisibleDots -> 0
+                                    currentPage <= 2 -> 0
+                                    currentPage >= totalDots - 3 -> totalDots - maxVisibleDots
+                                    else -> currentPage - 2
+                                }
 
-                                        val hasPrevious = startIndex > 0
-                                        val hasNext = endIndex < totalDots
+                                val endIndex = minOf(startIndex + maxVisibleDots, totalDots)
 
-                                        for (i in startIndex until endIndex) {
 
-                                            val dotSize = when {
-                                                i == currentPage -> 10.dp
-                                                i == startIndex && hasPrevious -> 4.dp
-                                                i == endIndex - 1 && hasNext -> 4.dp
-                                                else -> 7.dp
-                                            }
 
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(dotSize)
-                                                    .clip(CircleShape)
-                                                    .background(
-                                                        if (i == currentPage)
-                                                            Blue
-                                                        else
-                                                            White.copy(alpha = 0.5f)
-                                                    )
-                                            )
+                                Row(
+                                    modifier = Modifier
+                                        .padding(bottom = 8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+
+                                    val hasPrevious = startIndex > 0
+                                    val hasNext = endIndex < totalDots
+
+                                    for (i in startIndex until endIndex) {
+
+                                        val dotSize = when {
+                                            i == currentPage -> 10.dp
+                                            i == startIndex && hasPrevious -> 4.dp
+                                            i == endIndex - 1 && hasNext -> 4.dp
+                                            else -> 7.dp
                                         }
 
+                                        Box(
+                                            modifier = Modifier
+                                                .size(dotSize)
+                                                .clip(CircleShape)
+                                                .background(
+                                                    if (i == currentPage)
+                                                        Blue
+                                                    else
+                                                        White.copy(alpha = 0.5f)
+                                                )
+                                        )
                                     }
+
                                 }
+
+
 
                             }
                             Column(
@@ -307,22 +323,33 @@ fun ProductScreen(
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(productImages){image->
-                            AsyncImage(
-                                model = "${RetrofitClient.BASE_URL}uploads/$image",
-                                contentDescription = "",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .height(100.dp)
-                                    .aspectRatio(1f)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .border(
-                                        1.dp,
-                                        Transparent,
-                                        RoundedCornerShape(12.dp)
-                                    )
-                            )
+                        productDetails?.product?.product_images?.let { images ->
+                            items(images){image->
+                                val mediaUrl = "${RetrofitClient.BASE_URL}uploads/$image"
+
+                                val thumbnail: Bitmap? = remember(mediaUrl) {
+                                    if (isVideo(mediaUrl))
+                                        getFrameFromUrl(context, mediaUrl)
+                                    else null
+                                }
+
+                                AsyncImage(
+                                    model = thumbnail ?: mediaUrl,
+                                    contentDescription = "",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .height(100.dp)
+                                        .aspectRatio(1f)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .border(
+                                            1.dp,
+                                            Transparent,
+                                            RoundedCornerShape(12.dp)
+                                        )
+                                )
+                            }
                         }
+
                     }
 
                     HorizontalDivider()
@@ -336,37 +363,37 @@ fun ProductScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "$${productDetails?.product?.price}",
+                                text = "$${productDetails?.product?.discounted_price}",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp
                             )
 
-//                            Text(
-//                                text = "$${productDetails?.product?.price}",
-//                                fontWeight = FontWeight.Bold,
-//                                fontSize = 18.sp,
-//                                style = TextStyle(
-//                                    textDecoration = TextDecoration.LineThrough
-//                                ),
-//                                color = GreyTxt
-//                            )
-//
-//                            Column(
-//                                modifier = Modifier
-//                                    .background(
-//                                        LLGreen,
-//                                        RoundedCornerShape(8.dp)
-//                                    )
-//                            ) {
-//                                Text(
-//                                    text = "$discount% OFF",
-//                                    color = Green,
-//                                    fontSize = 14.sp,
-//                                    modifier = Modifier.padding(
-//                                        vertical = 4.dp,
-//                                        horizontal = 8.dp)
-//                                )
-//                            }
+                            Text(
+                                text = "$${productDetails?.product?.price}",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                style = TextStyle(
+                                    textDecoration = TextDecoration.LineThrough
+                                ),
+                                color = GreyTxt
+                            )
+
+                            Column(
+                                modifier = Modifier
+                                    .background(
+                                        LLGreen,
+                                        RoundedCornerShape(8.dp)
+                                    )
+                            ) {
+                                Text(
+                                    text = "${productDetails?.product?.discount}% OFF",
+                                    color = Green,
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.padding(
+                                        vertical = 4.dp,
+                                        horizontal = 8.dp)
+                                )
+                            }
 
 
                         }
@@ -443,7 +470,7 @@ fun ProductScreen(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp
                             )
-                            specificationsList.forEach {specification->
+                            productDetails?.product?.specifications?.forEach {specification->
                                 Row(
                                     modifier = Modifier
                                         .padding(top = 12.dp)
@@ -451,7 +478,7 @@ fun ProductScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "${specification.parameter}: ",
+                                        text = "${specification.key}: ",
                                         color = Black,
                                         fontSize = 16.sp
                                     )

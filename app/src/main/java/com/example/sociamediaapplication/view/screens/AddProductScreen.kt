@@ -308,10 +308,10 @@ fun AddProductScreen(
                         CustomTextField(
                             modifier = Modifier.weight(1f),
                             label = "Field",
-                            value = item.parameter,
+                            value = item.key,
                             placeHolder = "e.g. Storage",
                             onValueChange = { newKey ->
-                                specs[index] = item.copy(parameter = newKey)
+                                specs[index] = item.copy(key = newKey)
 
                                 if (index == specs.lastIndex &&
                                     (newKey.isNotBlank() || item.value.isNotBlank())
@@ -330,7 +330,7 @@ fun AddProductScreen(
                                 specs[index] = item.copy(value = newValue)
 
                                 if (index == specs.lastIndex &&
-                                    (item.parameter.isNotBlank() || newValue.isNotBlank())
+                                    (item.key.isNotBlank() || newValue.isNotBlank())
                                 ) {
                                     specs.add(Specification("", ""))
                                 }
@@ -351,7 +351,7 @@ fun AddProductScreen(
                         price = priceState,
                         stock = stockState,
                         description = descriptionState,
-                        specs = specs.filter { it.parameter.isNotBlank() },
+                        specs = specs.filter { it.key.isNotBlank() },
                         images = images,
                         onSuccess = { navBack() },
                         onError = { Log.e("UPLOAD", it) }
