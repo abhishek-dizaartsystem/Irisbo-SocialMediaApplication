@@ -113,6 +113,9 @@ fun MarketNavGraph(
         }
 
         composable(route = MarketRoutes.AddProduct.route) {
+            LaunchedEffect(Unit) {
+                viewModel.loadProductCategoryTypes()
+            }
             AddProductScreen(
                 viewModel = viewModel,
                 navBack = { navController.popBackStack() }

@@ -15,6 +15,7 @@ import com.example.sociamediaapplication.model.Specification
 import com.example.sociamediaapplication.model.request.AddToCartRequest
 import com.example.sociamediaapplication.model.request.AddToWishlistRequest
 import com.example.sociamediaapplication.model.response.CartResponse
+import com.example.sociamediaapplication.model.response.ProductCategoriesType
 import com.example.sociamediaapplication.model.response.ProductDetailsResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
 import com.example.sociamediaapplication.model.response.UserProductsResponse
@@ -87,6 +88,9 @@ class MarketplaceViewModel(
     )
     val shippingType: StateFlow<List<ShippingPrice>> = _shippingType
 
+    private val _categoryTypes = MutableStateFlow<ProductCategoriesType?>(null)
+    val categoryTypes: StateFlow<ProductCategoriesType?> = _categoryTypes
+
 
 
 
@@ -106,6 +110,13 @@ class MarketplaceViewModel(
             val details = repository.getProductDetails(productId)
 
             _productDetails.value = details
+        }
+    }
+
+    fun loadProductCategoryTypes(){
+        viewModelScope.launch {
+            val categories = repository.getProductCategoryTypes()
+            _categoryTypes.value = categories
         }
     }
 

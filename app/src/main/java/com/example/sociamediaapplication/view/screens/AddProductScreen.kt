@@ -48,6 +48,8 @@ fun AddProductScreen(
 
     val scroll = rememberScrollState()
 
+    val categoryTypes by viewModel.categoryTypes.collectAsState()
+
     val specs = rememberSaveable {
         mutableStateListOf(Specification("", ""))
     }
@@ -68,9 +70,10 @@ fun AddProductScreen(
     var titleState by remember { mutableStateOf("") }
     var priceState by remember { mutableStateOf("") }
     var originalPriceState by remember { mutableStateOf("") }
-    var categoryState by remember { mutableStateOf("") }
+    var categoryState by remember { mutableStateOf("Category") }
     var stockState by remember { mutableStateOf("") }
     var descriptionState by remember { mutableStateOf("") }
+    var showDropdown by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -228,12 +231,16 @@ fun AddProductScreen(
                     .padding(16.dp)
             ) {
                 Row(
-                    Modifier.fillMaxWidth(),
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable{
+                            showDropdown = true
+                        },
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = if (category.isEmpty()) "Select a category" else category,
-                        color = if (category.isEmpty()) Color.Gray else Color.Black
+                        text = categoryState,
+                        color = if (categoryState == "Category") Color.Gray else Color.Black
                     )
 
                     Icon(
@@ -243,6 +250,25 @@ fun AddProductScreen(
                             .size(20.dp)
                             .rotate(-90f)
                     )
+                }
+                DropdownMenu(
+                    expanded = showDropdown,
+                    onDismissRequest = {
+                        showDropdown = false
+                    }
+                ) {
+                    categoryTypes?.categories?.forEach { category->
+                        DropdownMenuItem(
+                            text = {
+                                Text(category.name)
+                            },
+                            onClick = {
+                                categoryState = category.name
+                                showDropdown = false
+                            }
+                        )
+                    }
+
                 }
             }
 

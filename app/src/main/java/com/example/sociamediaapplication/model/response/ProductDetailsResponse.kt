@@ -25,6 +25,8 @@ data class ProductDetails(
     val username: String,
 
     val specifications: List<Specification>,
+    val average_rating: String,
+    val total_reviews: Int,
     val product_images: List<String>
 )
 

@@ -2,12 +2,15 @@ package com.example.sociamediaapplication.data.remote
 
 import androidx.room.Delete
 import com.example.sociamediaapplication.data.preferences.TokenManager
+import com.example.sociamediaapplication.model.request.AddReviewRequest
 import com.example.sociamediaapplication.model.request.AddToCartRequest
 import com.example.sociamediaapplication.model.request.AddToWishlistRequest
 import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
+import com.example.sociamediaapplication.model.response.FetchReviewsResponse
+import com.example.sociamediaapplication.model.response.ProductCategoriesType
 import com.example.sociamediaapplication.model.response.ProductDetailsResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
 import com.example.sociamediaapplication.model.response.UserProductsResponse
@@ -26,6 +29,19 @@ import retrofit2.http.Path
 
 interface ProductApi {
 
+
+    @GET("api/products/{id}/reviews")
+    suspend fun fetchReviews(): FetchReviewsResponse
+
+    @POST("api/products/{id}/review")
+    suspend fun addReview(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: AddReviewRequest
+    )
+
+    @GET("api/products/categories")
+    suspend fun getProductCategoryTypes(): ProductCategoriesType
     @GET("api/products/{id}")
     suspend fun getProductDetails(
         @Header("Authorization") token: String,
