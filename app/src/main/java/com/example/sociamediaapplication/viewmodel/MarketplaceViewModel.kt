@@ -18,6 +18,7 @@ import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
 import com.example.sociamediaapplication.model.response.ProductDetailsResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
+import com.example.sociamediaapplication.model.response.ReviewsResponse
 import com.example.sociamediaapplication.model.response.UserProductsResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,6 +64,12 @@ class MarketplaceViewModel(
     private val _cartSum = MutableStateFlow<Double>(0.0)
     val cartSum: StateFlow<Double> = _cartSum
 
+    // List/Nestedlist values
+
+    private val _productReviews = MutableStateFlow<ReviewsResponse?>(null)
+    val productReviews: StateFlow<ReviewsResponse?> = _productReviews
+
+
     //BACKEND MUTABLE VALUES
     private val _tax = MutableStateFlow<Double>(12.0)
     val tax: StateFlow<Double> = _tax
@@ -91,6 +98,24 @@ class MarketplaceViewModel(
     private val _categoryTypes = MutableStateFlow<ProductCategoriesType?>(null)
     val categoryTypes: StateFlow<ProductCategoriesType?> = _categoryTypes
 
+
+    fun loadProductReviews(productId: Int){
+        viewModelScope.launch {
+            val reviews = repository.getReviews(productId)
+
+            _productReviews.value = reviews
+        }
+    }
+
+    fun addProductReview(
+        productId: Int,
+        rating: Int,
+        comment: String
+    ){
+        viewModelScope.launch {
+            repository.addReview(productId, rating, comment)
+        }
+    }
 
 
 

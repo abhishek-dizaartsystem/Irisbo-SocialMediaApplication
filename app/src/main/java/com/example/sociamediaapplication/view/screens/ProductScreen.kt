@@ -62,6 +62,7 @@ import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.utils.formatPostTime
 import com.example.sociamediaapplication.data.utils.getFrameFromUrl
 import com.example.sociamediaapplication.data.utils.isVideo
 import com.example.sociamediaapplication.model.CartItem
@@ -95,27 +96,25 @@ fun ProductScreen(
     viewModel: MarketplaceViewModel = viewModel(),
 ){
 
-    val cartItems by viewModel.cartItems.collectAsState()
 
     val productDetails by viewModel.productDetails.collectAsState()
 
-    val productImages = listOf(
-        (productDetails?.product?.product_image),
-    )
-
-
+    val productReviews by viewModel.productReviews.collectAsState()
 
     val pagerState = rememberPagerState(
         pageCount = { productDetails?.product?.product_images?.size ?: 0 }
     )
 
-    val s5 = 18
-    val s4 = 4
-    val s3 = 1
-    val s2 = 1
-    val s1 = 0
+    val reviewsList = productReviews?.reviews ?: emptyList()
 
-    val max = s5+s4+s3+s2+s1
+    val s5 = reviewsList.count { it.rating == 5 }
+    val s4 = reviewsList.count { it.rating == 4 }
+    val s3 = reviewsList.count { it.rating == 3 }
+    val s2 = reviewsList.count { it.rating == 2 }
+    val s1 = reviewsList.count { it.rating == 1 }
+
+    val max = reviewsList.size
+
     val context = LocalContext.current
 
 
@@ -417,7 +416,7 @@ fun ProductScreen(
                                 modifier = Modifier.size(20.dp)
                             )
                             Text(
-                                text = "$rating ($reviews reviews)",
+                                text = "${productReviews?.total_reviews} reviews)",
                                 fontSize = 18.sp,
                                 color = GreyTxt
                             )
@@ -502,7 +501,7 @@ fun ProductScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Reviews ($reviews)",
+                                text = "Reviews (${productReviews?.total_reviews})",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp,
                                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -543,7 +542,7 @@ fun ProductScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Text(
-                                        text = rating.toString(),
+                                        text = "${productDetails?.product?.average_rating}",
                                         fontSize = 28.sp,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -582,7 +581,7 @@ fun ProductScreen(
                                     }
 
                                     Text(
-                                        text = "$reviews reviews",
+                                        text = "${productReviews?.total_reviews} reviews",
                                         fontSize = 16.sp,
                                         color = GreyTxt
                                     )
@@ -615,7 +614,7 @@ fun ProductScreen(
 
                                         CustomProgressBar2(
                                             value = s5.toFloat(),
-                                            maxValue = max.toFloat(),
+                                            maxValue = productReviews?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)   // 🔥 THIS IS THE KEY
                                         )
 
@@ -649,7 +648,7 @@ fun ProductScreen(
                                         Spacer(Modifier.width(8.dp))
                                         CustomProgressBar2(
                                             value = s4.toFloat(),
-                                            maxValue = max.toFloat(),
+                                            maxValue = productReviews?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Spacer(Modifier.width(8.dp))
@@ -680,7 +679,7 @@ fun ProductScreen(
                                         Spacer(Modifier.width(8.dp))
                                         CustomProgressBar2(
                                             value = s3.toFloat(),
-                                            maxValue = max.toFloat(),
+                                            maxValue = productReviews?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Spacer(Modifier.width(8.dp))
@@ -711,7 +710,7 @@ fun ProductScreen(
                                         Spacer(Modifier.width(8.dp))
                                         CustomProgressBar2(
                                             value = s2.toFloat(),
-                                            maxValue = max.toFloat(),
+                                            maxValue = productReviews?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Spacer(Modifier.width(8.dp))
@@ -742,7 +741,7 @@ fun ProductScreen(
                                         Spacer(Modifier.width(8.dp))
                                         CustomProgressBar2(
                                             value = s1.toFloat(),
-                                            maxValue = max.toFloat(),
+                                            maxValue = productReviews?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Spacer(Modifier.width(8.dp))
@@ -759,15 +758,18 @@ fun ProductScreen(
                     }
                 }
 
-                items(4){
+                items(productReviews?.reviews?.size ?: 0){review->
                     ReviewItem(
-                        name = "David Lee",
-                        timeAgo = "1 month ago",
-                        rating = 4,
-                        reviewText = "Great condition as described. Minor scuff on the back that wasn't mentioned but overall very happy with the purchase. Would buy from this seller again.",
+                        name = productReviews?.reviews?.get(review)?.username ?: "",
+                        timeAgo = formatPostTime(productReviews?.reviews?.get(review)?.created_at?: ""),
+                        rating = productReviews?.reviews?.get(review)?.rating ?: 3,
+                        reviewText = productReviews?.reviews?.get(review)?.comment ?: "",
                         helpfulCount = 8,
                         profileImage = R.drawable.rectangle_36__2_
                     )
+                }
+                item {
+                    Column(Modifier.height(90.dp)) { }
                 }
 
             }
@@ -776,7 +778,6 @@ fun ProductScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(90.dp)
-                    .padding(bottom = 20.dp)
                     .background(BackgroundColor),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {

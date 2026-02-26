@@ -3,12 +3,14 @@ package com.example.sociamediaapplication.data.repository
 import android.util.Log
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.model.request.AddReviewRequest
 import com.example.sociamediaapplication.model.request.AddToCartRequest
 import com.example.sociamediaapplication.model.request.AddToWishlistRequest
 import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
+import com.example.sociamediaapplication.model.response.ReviewsResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
 import com.example.sociamediaapplication.model.response.ProductDetailsResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
@@ -43,6 +45,14 @@ class MarketplaceRepository(
         return api.getProductCategoryTypes()
     }
 
+    suspend fun getReviews(productId: Int): ReviewsResponse {
+        return api.fetchReviews(productId)
+    }
+
+    suspend fun addReview(productId: Int, rating: Int, comment: String) {
+        val token = "Bearer ${tokenManager.getToken()}"
+        api.addReview(token, productId, AddReviewRequest(rating, comment))
+    }
 
     suspend fun addProduct(
         name: RequestBody,

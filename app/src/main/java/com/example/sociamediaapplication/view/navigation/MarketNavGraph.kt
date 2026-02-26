@@ -102,6 +102,7 @@ fun MarketNavGraph(
 
             LaunchedEffect(Unit) {
                 viewModel.loadProductDetails(productId?.toInt() ?: 0)
+                viewModel.loadProductReviews(productId?.toInt()?:0)
             }
 
 

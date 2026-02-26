@@ -1,6 +1,6 @@
 package com.example.sociamediaapplication.model.response
 
-data class FetchReviewsResponse(
+data class ReviewsResponse(
     val success: Boolean,
     val total_reviews: Int,
     val reviews: List<Review>

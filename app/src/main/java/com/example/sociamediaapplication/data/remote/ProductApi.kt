@@ -9,10 +9,10 @@ import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
-import com.example.sociamediaapplication.model.response.FetchReviewsResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
 import com.example.sociamediaapplication.model.response.ProductDetailsResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
+import com.example.sociamediaapplication.model.response.ReviewsResponse
 import com.example.sociamediaapplication.model.response.UserProductsResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
 import okhttp3.MultipartBody
@@ -31,7 +31,9 @@ interface ProductApi {
 
 
     @GET("api/products/{id}/reviews")
-    suspend fun fetchReviews(): FetchReviewsResponse
+    suspend fun fetchReviews(
+        @Path("id") id: Int
+    ): ReviewsResponse
 
     @POST("api/products/{id}/review")
     suspend fun addReview(
