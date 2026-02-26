@@ -9,6 +9,7 @@ import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
+import com.example.sociamediaapplication.model.response.ProductDetailsResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
 import com.example.sociamediaapplication.model.response.UserProductsResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
@@ -30,6 +31,11 @@ class MarketplaceRepository(
     suspend fun getUserProducts(): UserProductsResponse {
         val token = "Bearer ${tokenManager.getToken()}"
         return api.getAllUserProducts(token)
+    }
+
+    suspend fun getProductDetails(productId: Int): ProductDetailsResponse {
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.getProductDetails(token, productId)
     }
 
 

@@ -56,8 +56,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.model.CartItem
 import com.example.sociamediaapplication.model.Specification
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
@@ -85,16 +87,15 @@ fun ProductScreen(
     rating: Float = 4.3f,
     reviews: Int = 24,
     navController: NavController = rememberNavController(),
-    viewModel: MarketplaceViewModel = viewModel()
+    viewModel: MarketplaceViewModel = viewModel(),
 ){
 
     val cartItems by viewModel.cartItems.collectAsState()
 
+    val productDetails by viewModel.productDetails.collectAsState()
+
     val productImages = listOf(
-        (R.drawable.iphone),
-        (R.drawable.iphone2),
-        (R.drawable.iphone3),
-        (R.drawable.iphone),
+        (productDetails?.product?.product_image),
     )
 
     val specificationsList = listOf<Specification>(
@@ -105,7 +106,7 @@ fun ProductScreen(
     )
 
     val pagerState = rememberPagerState(
-        pageCount = { productImages.size }
+        pageCount = { 1 }
     )
 
     val s5 = 18
@@ -209,8 +210,8 @@ fun ProductScreen(
                                 .aspectRatio(1f)
                         ) {image->
 
-                            Image(
-                                painter = painterResource(productImages[image]),
+                            AsyncImage(
+                                model = "${RetrofitClient.BASE_URL}uploads/${productImages[image]}",
                                 contentDescription = "",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -304,12 +305,11 @@ fun ProductScreen(
                         modifier = Modifier
                             .padding(12.dp)
                             .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp
-                        )
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(productImages){image->
-                            Image(
-                                painter = painterResource(image),
+                            AsyncImage(
+                                model = "${RetrofitClient.BASE_URL}uploads/$image",
                                 contentDescription = "",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -336,13 +336,13 @@ fun ProductScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "$${originalPrice}",
+                                text = "$${productDetails?.product?.price}",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp
                             )
 
 //                            Text(
-//                                text = "$$originalPrice",
+//                                text = "$${productDetails?.product?.price}",
 //                                fontWeight = FontWeight.Bold,
 //                                fontSize = 18.sp,
 //                                style = TextStyle(
@@ -372,7 +372,7 @@ fun ProductScreen(
                         }
 
                         Text(
-                            text = "$name",
+                            text = "${productDetails?.product?.name}",
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
                             modifier = Modifier.padding(horizontal = 16.dp)
@@ -411,7 +411,7 @@ fun ProductScreen(
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
                         Text(
-                            text = stringResource(R.string.demoDescription),
+                            text = "${productDetails?.product?.description}",
                             fontSize = 16.sp,
                             color = GreyTxt,
                             modifier = Modifier

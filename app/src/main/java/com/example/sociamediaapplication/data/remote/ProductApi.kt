@@ -8,6 +8,7 @@ import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
+import com.example.sociamediaapplication.model.response.ProductDetailsResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
 import com.example.sociamediaapplication.model.response.UserProductsResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
@@ -24,6 +25,13 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ProductApi {
+
+    @GET("api/products/{id}")
+    suspend fun getProductDetails(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): ProductDetailsResponse
+
     @GET("api/products/vendor/all")
     suspend fun getAllVendorProducts(
         @Header("Authorization") token: String

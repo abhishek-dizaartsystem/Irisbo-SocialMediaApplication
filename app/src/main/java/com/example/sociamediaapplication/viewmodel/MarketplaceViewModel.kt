@@ -15,6 +15,7 @@ import com.example.sociamediaapplication.model.Specification
 import com.example.sociamediaapplication.model.request.AddToCartRequest
 import com.example.sociamediaapplication.model.request.AddToWishlistRequest
 import com.example.sociamediaapplication.model.response.CartResponse
+import com.example.sociamediaapplication.model.response.ProductDetailsResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
 import com.example.sociamediaapplication.model.response.UserProductsResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
@@ -37,6 +38,10 @@ class MarketplaceViewModel(
 
 
     //PRODUCTS
+
+    private val _productDetails = MutableStateFlow<ProductDetailsResponse?>(null)
+    val productDetails: StateFlow<ProductDetailsResponse?> = _productDetails
+
     private val _vendorProducts = MutableStateFlow<List<ProductResponse>>(emptyList())
     val vendorProducts: StateFlow<List<ProductResponse>> = _vendorProducts
 
@@ -93,6 +98,14 @@ class MarketplaceViewModel(
             _tax.value = checkoutDetails.tax
             _shippingType.value = checkoutDetails.shipping
 
+        }
+    }
+
+    fun loadProductDetails(productId: Int){
+        viewModelScope.launch {
+            val details = repository.getProductDetails(productId)
+
+            _productDetails.value = details
         }
     }
 

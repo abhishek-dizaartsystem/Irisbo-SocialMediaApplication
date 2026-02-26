@@ -100,6 +100,11 @@ fun MarketNavGraph(
 
             val productId = backStackEntry.arguments?.getString("productId")
 
+            LaunchedEffect(Unit) {
+                viewModel.loadProductDetails(productId?.toInt() ?: 0)
+            }
+
+
             ProductScreen(
                 navController = navController,
                 productId = productId?:"",
