@@ -16,6 +16,7 @@ import com.example.sociamediaapplication.model.request.AddToCartRequest
 import com.example.sociamediaapplication.model.request.AddToWishlistRequest
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
+import com.example.sociamediaapplication.model.response.UserProductsResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,6 +39,14 @@ class MarketplaceViewModel(
     //PRODUCTS
     private val _vendorProducts = MutableStateFlow<List<ProductResponse>>(emptyList())
     val vendorProducts: StateFlow<List<ProductResponse>> = _vendorProducts
+
+    private val _userProducts = MutableStateFlow<UserProductsResponse>(UserProductsResponse(
+        success = false,
+        total_products = 0,
+        products = emptyList()
+    ))
+    val userProducts: StateFlow<UserProductsResponse> = _userProducts
+
 
     private val _wishListItems = MutableStateFlow<List<WishlistResponse>>(emptyList())
     val wishListItems: StateFlow<List<WishlistResponse>> = _wishListItems
@@ -87,8 +96,8 @@ class MarketplaceViewModel(
         }
     }
 
-    fun loadProducts() {
-        Log.d("API_DEBUG", "loadProducts() called")
+    fun loadVendorProducts() {
+        Log.d("API_DEBUG", "loadVendorProducts() called")
 
         viewModelScope.launch {
             _isLoading.value = true
@@ -97,7 +106,7 @@ class MarketplaceViewModel(
 
                 Log.d("API_DEBUG", "Calling repository.getProducts()")
 
-                val products = repository.getProducts()
+                val products = repository.getVendorProducts()
 
                 Log.d("API_DEBUG", "Raw product list size = ${products.size}")
 
@@ -135,7 +144,33 @@ class MarketplaceViewModel(
         }
     }
 
+    fun loadUserProducts() {
+        Log.d("API_DEBUG", "loadUserProducts() called")
 
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            try {
+
+                Log.d("API_DEBUG", "Calling repository.getProducts()")
+
+                val products = repository.getUserProducts()
+                _userProducts.value = products
+                Log.d("API_DEBUG", "StateFlow updated with products")
+            }catch (e: Exception) {
+
+                Log.e("API_DEBUG", "API FAILED: ${e.message}", e)
+
+                _error.value = e.message ?: "Failed to load products"
+
+            } finally {
+
+                _isLoading.value = false
+                Log.d("API_DEBUG", "Loading finished")
+
+            }
+        }
+    }
 
     fun loadCart(){
         viewModelScope.launch {
@@ -331,7 +366,7 @@ class MarketplaceViewModel(
                     description = description.toPart()
                 )
 
-                loadProducts()
+                loadVendorProducts()
                 onSuccess()
 
             } catch (e: Exception) {

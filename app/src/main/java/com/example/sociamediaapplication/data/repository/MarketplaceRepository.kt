@@ -10,6 +10,7 @@ import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
 import com.example.sociamediaapplication.model.response.ProductResponse
+import com.example.sociamediaapplication.model.response.UserProductsResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
 import okhttp3.MultipartBody
 import okhttp3.Request
@@ -21,9 +22,16 @@ class MarketplaceRepository(
 
     private val api = RetrofitClient.productApi
 
-    suspend fun getProducts(): List<ProductResponse> {
-        return api.getAllProducts()
+    suspend fun getVendorProducts(): List<ProductResponse> {
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.getAllVendorProducts(token)
     }
+
+    suspend fun getUserProducts(): UserProductsResponse {
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.getAllUserProducts(token)
+    }
+
 
     suspend fun addProduct(
         name: RequestBody,

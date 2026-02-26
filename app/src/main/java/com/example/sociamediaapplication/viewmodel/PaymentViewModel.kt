@@ -29,7 +29,7 @@ class PaymentViewModel(
                 checkout.setKeyID("rzp_test_SAOQiZzVCq4nYw")
 
                 val options = JSONObject().apply {
-                    put("name", "Your App Name")
+                    put("name", "Irisbo")
                     put("description", "Order Payment")
                     put("currency", order.currency)
                     put("amount", order.amount)

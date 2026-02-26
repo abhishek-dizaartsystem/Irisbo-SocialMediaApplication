@@ -90,8 +90,11 @@ fun MarketplaceScreen(
 
     val vendorProducts by viewModel.vendorProducts.collectAsState()
 
+    val userProducts by viewModel.userProducts.collectAsState()
+
     LaunchedEffect(Unit) {
-        viewModel.loadProducts()
+        viewModel.loadVendorProducts()
+        viewModel.loadUserProducts()
     }
 
     var categories = remember { listOf(
@@ -443,7 +446,7 @@ fun MarketplaceScreen(
                         )
                     }
 
-                    items(vendorProducts){product->
+                    items(userProducts.products){product->
 
                         val url = product.product_image?.let {
                             "${RetrofitClient.BASE_URL}uploads/$it"
