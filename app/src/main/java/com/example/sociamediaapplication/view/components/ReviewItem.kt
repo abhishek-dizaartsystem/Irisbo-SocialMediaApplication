@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -62,7 +63,8 @@ fun ReviewItem(
     onReviewLiked: () -> Unit ={},
     onReviewDisliked: () -> Unit = {},
     onReplyLiked: () -> Unit = {},
-    onReplyDisliked: () -> Unit = {}
+    onReplyDisliked: () -> Unit = {},
+    isVendor: Boolean = false
 ) {
 
     var showReply by remember { mutableStateOf(false) }
@@ -95,7 +97,8 @@ fun ReviewItem(
                         contentDescription = null,
                         modifier = Modifier
                             .size(48.dp)
-                            .clip(CircleShape),
+                            .clip(HexagonShape)
+                            .border(1.dp, Black),
                         contentScale = ContentScale.Crop
                     )
 
@@ -143,52 +146,55 @@ fun ReviewItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Button(
-                    onClick = onReviewLiked,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Transparent
-                    ),
-                    contentPadding = PaddingValues(0.dp)
-                ) {
-                    Icon(
-                        painter = if(user_review_reaction == "like")
-                                      painterResource(R.drawable.like_svgrepo_com__1_)
-                                  else
-                                      painterResource(R.drawable.like_svgrepo_com),
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                        tint = GreyTxt
-                    )
 
-                    Spacer(modifier = Modifier.width(6.dp))
+                if(!isVendor){
+                    Button(
+                        onClick = onReviewLiked,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Transparent
+                        ),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Icon(
+                            painter = if(user_review_reaction == "like")
+                                painterResource(R.drawable.like_svgrepo_com__1_)
+                            else
+                                painterResource(R.drawable.like_svgrepo_com),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                            tint = GreyTxt
+                        )
 
-                    Text(
-                        text = "Helpful ($review_likes)",
-                        fontSize = 14.sp,
-                        color = GreyTxt
-                    )
-                }
-                Button(
-                    onClick = onReviewDisliked,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Transparent
-                    ),
-                    contentPadding = PaddingValues(0.dp)
-                ) {
-                    Icon(
-                        painter = if(user_review_reaction == "dislike")
-                            painterResource(R.drawable.like_svgrepo_com__1_)
-                        else
-                            painterResource(R.drawable.like_svgrepo_com),
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp).rotate(180f),
-                        tint = GreyTxt
-                    )
-                    Text(
-                        text = "($review_dislikes)",
-                        fontSize = 14.sp,
-                        color = GreyTxt
-                    )
+                        Spacer(modifier = Modifier.width(6.dp))
+
+                        Text(
+                            text = "Helpful ($review_likes)",
+                            fontSize = 14.sp,
+                            color = GreyTxt
+                        )
+                    }
+                    Button(
+                        onClick = onReviewDisliked,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Transparent
+                        ),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Icon(
+                            painter = if(user_review_reaction == "dislike")
+                                painterResource(R.drawable.like_svgrepo_com__1_)
+                            else
+                                painterResource(R.drawable.like_svgrepo_com),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp).rotate(180f),
+                            tint = GreyTxt
+                        )
+                        Text(
+                            text = "($review_dislikes)",
+                            fontSize = 14.sp,
+                            color = GreyTxt
+                        )
+                    }
                 }
                 Button(
                     onClick = {
@@ -202,7 +208,7 @@ fun ReviewItem(
                     contentPadding = PaddingValues(0.dp)
                 ) {
                     Text(
-                        text = if (showReply) "Hide reply" else "Reply",
+                        text = if (showReply) "Hide replies" else "Replies",
                         fontSize = 14.sp,
                         color = GreyTxt,
                         modifier = Modifier.padding(end = 4.dp)

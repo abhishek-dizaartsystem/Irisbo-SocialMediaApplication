@@ -153,6 +153,21 @@ class MarketplaceViewModel(
         }
     }
 
+    fun addReviewReply(
+        context: Context,
+        reviewId: Int,
+        reply: String
+    ){
+        viewModelScope.launch {
+            try {
+                repository.addReviewReply(reviewId, reply)
+            }catch (e: Exception) {
+                Toast.makeText(context, e.message, Toast.LENGTH_SHORT)
+                Log.e("ADD_REVIEW_REPLY_DEBUG", e.message.toString())
+            }
+        }
+    }
+
 
 
 

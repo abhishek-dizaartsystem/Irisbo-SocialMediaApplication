@@ -5,6 +5,7 @@ import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.model.request.AddReviewRequest
 import com.example.sociamediaapplication.model.request.AddToCartRequest
 import com.example.sociamediaapplication.model.request.AddToWishlistRequest
+import com.example.sociamediaapplication.model.request.ReplyReviewRequest
 import com.example.sociamediaapplication.model.request.ReviewReactionTypeRequest
 import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.AddReviewResponse
@@ -52,6 +53,13 @@ interface ProductApi {
         @Header("Authorization") token: String,
         @Path("id") id: Int,
         @Body request: ReviewReactionTypeRequest
+    ): BasicResponse2
+
+    @POST("api/products/{id}/reply")
+    suspend fun addReviewReply(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: ReplyReviewRequest
     ): BasicResponse2
 
     @POST("api/products/{id}/review")

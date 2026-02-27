@@ -6,6 +6,7 @@ import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.model.request.AddReviewRequest
 import com.example.sociamediaapplication.model.request.AddToCartRequest
 import com.example.sociamediaapplication.model.request.AddToWishlistRequest
+import com.example.sociamediaapplication.model.request.ReplyReviewRequest
 import com.example.sociamediaapplication.model.request.ReviewReactionTypeRequest
 import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.AddReviewResponse
@@ -76,6 +77,17 @@ class MarketplaceRepository(
 
         return response
     }
+
+    suspend fun addReviewReply(
+        reviewId: Int,
+        reply: String
+    ): BasicResponse2 {
+        val token = "Bearer ${tokenManager.getToken()}"
+        val response = api.addReviewReply(token, reviewId, ReplyReviewRequest(reply))
+
+        return response
+    }
+
 
     suspend fun addProduct(
         name: RequestBody,
