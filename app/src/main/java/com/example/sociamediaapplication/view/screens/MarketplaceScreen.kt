@@ -414,6 +414,9 @@ fun MarketplaceScreen(
                                 onReplyClick = {
                                     selectedProductId = product.id
                                     showReviewSheet = true
+                                },
+                                onDelete = {
+                                    viewModel.deleteProduct(product.id)
                                 }
                             )
                         }

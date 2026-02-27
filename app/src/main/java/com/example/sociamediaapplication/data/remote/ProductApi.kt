@@ -155,4 +155,11 @@ interface ProductApi {
     suspend fun fetchCheckoutDetails(
         @Header("Authorization") token: String
     ): CheckoutDetailsResponse
+
+    @DELETE("api/products/{id}")
+    suspend fun deleteProduct(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): BasicResponse2
+
 }

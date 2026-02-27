@@ -207,4 +207,9 @@ class MarketplaceRepository(
         val token = "Bearer ${tokenManager.getToken()}"
         return api.fetchCheckoutDetails(token)
     }
+
+    suspend fun deleteProdcut(productId: Int): BasicResponse2 {
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.deleteProduct(token, productId)
+    }
 }

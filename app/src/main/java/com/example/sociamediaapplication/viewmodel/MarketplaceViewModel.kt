@@ -181,6 +181,13 @@ class MarketplaceViewModel(
         }
     }
 
+    fun deleteProduct(productId: Int){
+        viewModelScope.launch {
+            repository.deleteProdcut(productId)
+            loadVendorProducts()
+        }
+    }
+
     fun loadProductDetails(productId: Int){
         viewModelScope.launch {
             val details = repository.getProductDetails(productId)

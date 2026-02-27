@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Black
+import com.example.sociamediaapplication.ui.theme.Red
 
 @Composable
 fun VendorProductCard(
@@ -52,7 +53,8 @@ fun VendorProductCard(
     onEditClick: () -> Unit = {},
     onReplyClick: () -> Unit = {},
     modifier: Modifier = Modifier,
-    product_id: Int = 0
+    product_id: Int = 0,
+    onDelete: () -> Unit = {}
 ) {
 
     var showDropDownMenu by remember { mutableStateOf(false) }
@@ -185,6 +187,18 @@ fun VendorProductCard(
                         onClick = {
                             showDropDownMenu = false
                             onReplyClick()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                "Delete Product",
+                                color = Red
+                            )
+                        },
+                        onClick = {
+                            showDropDownMenu = false
+                            onDelete()
                         }
                     )
                 }
