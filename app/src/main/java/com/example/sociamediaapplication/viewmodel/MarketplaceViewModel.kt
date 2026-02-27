@@ -17,13 +17,14 @@ import com.example.sociamediaapplication.model.request.AddToWishlistRequest
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
 import com.example.sociamediaapplication.model.response.ProductDetailsResponse
-import com.example.sociamediaapplication.model.response.ProductResponse
 import com.example.sociamediaapplication.model.response.ReviewsResponse
 import com.example.sociamediaapplication.model.response.UserProductsResponse
+import com.example.sociamediaapplication.model.response.VendorProductsResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlin.collections.emptyList
 import kotlin.collections.map
 
 class MarketplaceViewModel(
@@ -44,15 +45,11 @@ class MarketplaceViewModel(
     private val _productDetails = MutableStateFlow<ProductDetailsResponse?>(null)
     val productDetails: StateFlow<ProductDetailsResponse?> = _productDetails
 
-    private val _vendorProducts = MutableStateFlow<List<ProductResponse>>(emptyList())
-    val vendorProducts: StateFlow<List<ProductResponse>> = _vendorProducts
+    private val _vendorProducts = MutableStateFlow<VendorProductsResponse?>(null)
+    val vendorProducts: StateFlow<VendorProductsResponse?> = _vendorProducts
 
-    private val _userProducts = MutableStateFlow<UserProductsResponse>(UserProductsResponse(
-        success = false,
-        total_products = 0,
-        products = emptyList()
-    ))
-    val userProducts: StateFlow<UserProductsResponse> = _userProducts
+    private val _userProducts = MutableStateFlow<UserProductsResponse?>(null)
+    val userProducts: StateFlow<UserProductsResponse?> = _userProducts
 
 
     private val _wishListItems = MutableStateFlow<List<WishlistResponse>>(emptyList())
@@ -157,16 +154,15 @@ class MarketplaceViewModel(
 
                 val products = repository.getVendorProducts()
 
-                Log.d("API_DEBUG", "Raw product list size = ${products.size}")
+                Log.d("API_DEBUG", "Raw product list size = ${products.products.size}")
 
-                products.forEachIndexed { index, product ->
+                products.products.forEachIndexed { index, product ->
                     Log.d(
                         "API_DEBUG",
                         """
                     Product[$index]:
                     id = ${product.id}
                     name = ${product.name}
-                    image = ${product.product_image}
                     price = ${product.price}
                     stock = ${product.stock}
                     user = ${product.username}

@@ -11,9 +11,9 @@ import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
 import com.example.sociamediaapplication.model.response.ProductDetailsResponse
-import com.example.sociamediaapplication.model.response.ProductResponse
 import com.example.sociamediaapplication.model.response.ReviewsResponse
 import com.example.sociamediaapplication.model.response.UserProductsResponse
+import com.example.sociamediaapplication.model.response.VendorProductsResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -53,7 +53,7 @@ interface ProductApi {
     @GET("api/products/vendor/all")
     suspend fun getAllVendorProducts(
         @Header("Authorization") token: String
-    ): List<ProductResponse>
+    ): VendorProductsResponse
 
     @GET("api/products/user/all")
     suspend fun getAllUserProducts(

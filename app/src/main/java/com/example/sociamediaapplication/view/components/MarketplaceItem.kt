@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.DTransparentBlack
+import com.example.sociamediaapplication.ui.theme.Red
 import com.example.sociamediaapplication.ui.theme.TransparentWhite
 import com.example.sociamediaapplication.ui.theme.White
 
@@ -43,7 +45,9 @@ fun MarketPlaceItem(
     price: Float = 180f,
     productName: String = "Nike Air Jordan 1",
     onClick: (String)-> Unit = {},
-    onIconClick: (String)-> Unit = {}
+    onIconClick: (String)-> Unit = {},
+    isLiked: Boolean = false,
+    onLikeToggle: ()-> Unit = {}
 ){
     Card(
         onClick = {
@@ -68,6 +72,7 @@ fun MarketPlaceItem(
 
                 // 🔥 NETWORK IMAGE OR FALLBACK
                 if (imageUrl != null) {
+                    Log.d("MarketPlaceItem Image Debug", "URL = $imageUrl")
                     AsyncImage(
                         model = imageUrl,
                         contentDescription = null,
@@ -98,11 +103,11 @@ fun MarketPlaceItem(
                             .size(30.dp)
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.heart_svgrepo_com),
+                            painter = if(isLiked) painterResource(R.drawable.heart_filled_svgrepo_com) else painterResource(R.drawable.heart_svgrepo_com),
                             contentDescription = "",
                             modifier = Modifier
                                 .padding(6.dp),
-                            tint = Black
+                            tint = if(isLiked) Red else Black
                         )
                     }
                 }

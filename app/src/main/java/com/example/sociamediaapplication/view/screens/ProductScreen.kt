@@ -86,12 +86,6 @@ import com.example.sociamediaapplication.viewmodel.MarketplaceViewModel
 @Composable
 fun ProductScreen(
     productId: String = "1",
-    discount: Float = 18f,
-    originalPrice: Float = 120f,
-    name: String = "iPhone 14 Pro Max",
-    painter: Int = R.drawable.iphone,
-    rating: Float = 4.3f,
-    reviews: Int = 24,
     navController: NavController = rememberNavController(),
     viewModel: MarketplaceViewModel = viewModel(),
 ){

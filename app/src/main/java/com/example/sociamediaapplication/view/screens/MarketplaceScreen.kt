@@ -385,7 +385,7 @@ fun MarketplaceScreen(
                             }
                         }
                         items(
-                            vendorProducts,
+                            vendorProducts?.products ?: emptyList(),
                             span = { GridItemSpan(2) }
                         ){ product ->
 
@@ -396,9 +396,10 @@ fun MarketplaceScreen(
                                 sold = 0,
                                 revenue = "₹${product.price.toDoubleOrNull()?.times(product.stock) ?: 0}",
                                 isActive = true,
-                                imageUrl = product.product_image?.let {
-                                    "${RetrofitClient.BASE_URL}uploads/$it"
-                                } ?: "https://picsum.photos/200"
+                                imageUrl = product.product_images
+                                    ?.firstOrNull()
+                                    ?.let { "${RetrofitClient.BASE_URL}uploads/$it" }
+                                    ?: "https://picsum.photos/200"
                             )
                         }
                     }
@@ -446,7 +447,7 @@ fun MarketplaceScreen(
                         )
                     }
 
-                    items(userProducts.products){product->
+                    items(userProducts?.products ?: emptyList()){ product->
 
                         val url = product.product_image?.let {
                             "${RetrofitClient.BASE_URL}uploads/$it"
@@ -455,9 +456,10 @@ fun MarketplaceScreen(
 
                         MarketPlaceItem(
                             productId = product.id.toString(),
-                            imageUrl = product.product_image?.let {
-                                "${RetrofitClient.BASE_URL}uploads/$it"
-                            },
+                            imageUrl = product.product_images
+                                ?.firstOrNull()
+                                ?.let { "${RetrofitClient.BASE_URL}uploads/$it" }
+                                ?: "https://picsum.photos/200",
                             productName = product.name,
                             price = product.price.toFloatOrNull()?:0f,
                             onClick = onProductClick,
@@ -468,7 +470,8 @@ fun MarketplaceScreen(
                                         Log.e("WISHLIST_DEBUG", error)
                                     }
                                 )
-                            }
+                            },
+                            isLiked = product.is_liked
                         )
                     }
                 }
