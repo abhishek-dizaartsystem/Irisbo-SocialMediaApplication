@@ -114,7 +114,7 @@ fun WishlistScreen(
                     items(wishlistItems){item->
                         WishlistItem(
                             productId = item.id,
-                            productImage = item.product_image,
+                            productImage = item.product_image.firstOrNull(),
                             productName = item.name,
                             sellerName = item.username,
                             price = item.price.toFloat(),

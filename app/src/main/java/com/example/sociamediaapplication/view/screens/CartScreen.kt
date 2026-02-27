@@ -133,7 +133,7 @@ fun CartScreen(
                             items(cartItems){item->
                                 CartItem(
                                     productId = item.id,
-                                    productImage = item.product_image,
+                                    productImage = item.product_image.firstOrNull(),
                                     productName = item.name,
                                     sellerName = item.username?:"Seller",
                                     price = item.price.toFloatOrNull()?:0f,
