@@ -9,6 +9,7 @@ import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
+import com.example.sociamediaapplication.model.response.EditProductResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
 import com.example.sociamediaapplication.model.response.ProductDetailsResponse
 import com.example.sociamediaapplication.model.response.ReviewsResponse
@@ -59,17 +60,35 @@ interface ProductApi {
     suspend fun getAllUserProducts(
         @Header("Authorization") token: String
     ): UserProductsResponse
+
     @Multipart
     @POST("api/products/add")
     suspend fun addProduct(
         @Header("Authorization") token: String,
         @Part("name") name: RequestBody,
-        @Part("category") category: RequestBody,
+        @Part("category_id") category_id: RequestBody,
         @Part("price") price: RequestBody,
+        @Part("discount") discount: RequestBody,
         @Part("stock") stock: RequestBody,
         @Part("description") description: RequestBody,
-        @Part image: MultipartBody.Part?,
+        @Part("specifications") specs: RequestBody,
+        @Part images: List<MultipartBody.Part?>,
     ): AddProductResponse
+
+    @Multipart
+    @PATCH("api/products/edit/{id}")
+    suspend fun editProduct(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Part("name") name: RequestBody,
+        @Part("category_id") category_id: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("discount") discount: RequestBody,
+        @Part("stock") stock: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("specifications") specs: RequestBody,
+        @Part images: List<MultipartBody.Part?>,
+    ): EditProductResponse
 
     @POST("api/cart/add")
     suspend fun addToCart(

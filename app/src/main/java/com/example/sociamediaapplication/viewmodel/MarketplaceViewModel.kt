@@ -21,6 +21,7 @@ import com.example.sociamediaapplication.model.response.ReviewsResponse
 import com.example.sociamediaapplication.model.response.UserProductsResponse
 import com.example.sociamediaapplication.model.response.VendorProductsResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -369,11 +370,12 @@ class MarketplaceViewModel(
     fun addProduct(
         context: Context,
         title: String,
-        category: String,
+        category:String,
         price: String,
         stock: String,
         description: String,
         specs: List<Specification>,
+        discount: String,
         images: List<Uri>,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
@@ -388,15 +390,19 @@ class MarketplaceViewModel(
                     val file = uriToFile(uri, context)
                     val mime = getMimeType(context, uri)
 
-                    fileToMultipart("product_image", file, mime)
+                    fileToMultipart("product_images", file, mime)
                 }
+
+                val specsPart = Gson().toJson(specs).toPart()
 
                 Log.d("UPLOAD_DEBUG", "TITLE = $title")
                 Log.d("UPLOAD_DEBUG", "CATEGORY = $category")
                 Log.d("UPLOAD_DEBUG", "PRICE = $price")
                 Log.d("UPLOAD_DEBUG", "STOCK = $stock")
                 Log.d("UPLOAD_DEBUG", "DESC = $description")
+                Log.d("UPLOAD_DEBUG", "DESC = $discount")
                 Log.d("UPLOAD_DEBUG", "IMAGES COUNT = ${images.size}")
+                Log.d("UPLOAD_DEBUG", "SPECS = ${Gson().toJson(specs)}")
 
                 parts.forEach {
                     Log.d("UPLOAD_DEBUG", "IMAGE PART = ${it.headers}")
@@ -407,8 +413,10 @@ class MarketplaceViewModel(
                     category = category.toPart(),
                     price = price.toPart(),
                     stock = stock.toPart(),
-                    image = parts.firstOrNull(),
-                    description = description.toPart()
+                    description = description.toPart(),
+                    discount = discount.toPart(),
+                    specs = specsPart,
+                    images = parts
                 )
 
                 loadVendorProducts()

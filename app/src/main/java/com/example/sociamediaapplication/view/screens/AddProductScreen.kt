@@ -69,8 +69,9 @@ fun AddProductScreen(
 
     var titleState by remember { mutableStateOf("") }
     var priceState by remember { mutableStateOf("") }
-    var originalPriceState by remember { mutableStateOf("") }
+    var discount by remember { mutableStateOf("") }
     var categoryState by remember { mutableStateOf("Category") }
+    var categoryId by remember { mutableStateOf(0) }
     var stockState by remember { mutableStateOf("") }
     var descriptionState by remember { mutableStateOf("") }
     var showDropdown by remember { mutableStateOf(false) }
@@ -207,9 +208,9 @@ fun AddProductScreen(
 
                 CustomTextField(
                     modifier = Modifier.weight(1f),
-                    label = "Original Price ($)",
-                    value = originalPriceState,
-                    onValueChange = { originalPriceState = it },
+                    label = "Discount (%)",
+                    value = discount,
+                    onValueChange = { discount = it },
                     keyboardType = KeyboardType.Number
                 )
             }
@@ -264,6 +265,7 @@ fun AddProductScreen(
                             },
                             onClick = {
                                 categoryState = category.name
+                                categoryId = category.id
                                 showDropdown = false
                             }
                         )
@@ -373,14 +375,15 @@ fun AddProductScreen(
                     viewModel.addProduct(
                         context = context,
                         title = titleState,
-                        category = "categoryState",
+                        category = categoryId.toString(),
                         price = priceState,
                         stock = stockState,
                         description = descriptionState,
                         specs = specs.filter { it.key.isNotBlank() },
                         images = images,
                         onSuccess = { navBack() },
-                        onError = { Log.e("UPLOAD", it) }
+                        onError = { Log.e("UPLOAD", it) },
+                        discount = discount
                     )
                 },
                 modifier = Modifier

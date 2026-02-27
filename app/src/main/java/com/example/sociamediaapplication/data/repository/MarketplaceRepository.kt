@@ -10,6 +10,7 @@ import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
+import com.example.sociamediaapplication.model.response.EditProductResponse
 import com.example.sociamediaapplication.model.response.ReviewsResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
 import com.example.sociamediaapplication.model.response.ProductDetailsResponse
@@ -20,6 +21,7 @@ import com.example.sociamediaapplication.model.response.WishlistResponse
 import okhttp3.MultipartBody
 import okhttp3.Request
 import okhttp3.RequestBody
+import retrofit2.HttpException
 
 class MarketplaceRepository(
     private val tokenManager: TokenManager
@@ -59,8 +61,10 @@ class MarketplaceRepository(
         name: RequestBody,
         category: RequestBody,
         price: RequestBody,
+        discount: RequestBody,
+        specs: RequestBody,
         stock: RequestBody,
-        image: MultipartBody.Part?,
+        images: List<MultipartBody.Part?>,
         description: RequestBody
     ): AddProductResponse {
 
@@ -71,17 +75,19 @@ class MarketplaceRepository(
             val response = api.addProduct(
                 token = token,
                 name = name,
-                category = category,
+                category_id = category,
                 price = price,
                 stock = stock,
-                image = image,
-                description = description
+                images = images,
+                description = description,
+                discount = discount,
+                specs = specs
             )
 
             Log.d("UPLOAD_DEBUG", "SUCCESS RESPONSE = $response")
             return response
 
-        } catch (e: retrofit2.HttpException) {
+        } catch (e: HttpException) {
 
             val errorBody = e.response()?.errorBody()?.string()
 
@@ -90,6 +96,49 @@ class MarketplaceRepository(
 
             throw e
         }
+    }
+
+    suspend fun editProduct(
+        product_id: Int,
+        name: RequestBody,
+        category: RequestBody,
+        price: RequestBody,
+        discount: RequestBody,
+        stock: RequestBody,
+        images: List<MultipartBody.Part?>,
+        description: RequestBody,
+        specs: RequestBody
+    ): EditProductResponse {
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        try {
+
+            val response = api.editProduct(
+                token = token,
+                name = name,
+                category_id = category,
+                price = price,
+                stock = stock,
+                images = images,
+                description = description,
+                discount = discount,
+                specs = specs,
+                id = product_id
+            )
+
+            Log.d("UPLOAD_DEBUG", "SUCCESS RESPONSE = $response")
+            return response
+
+        } catch (e: HttpException) {
+
+            val errorBody = e.response()?.errorBody()?.string()
+
+            Log.e("UPLOAD_DEBUG", "HTTP ERROR ${e.code()}")
+            Log.e("UPLOAD_DEBUG", "ERROR BODY = $errorBody")
+
+            throw e
+        }
+
     }
 
     suspend fun addToCart(request: AddToCartRequest): BasicResponse {
