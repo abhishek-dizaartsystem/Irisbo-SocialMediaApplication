@@ -2,7 +2,6 @@ package com.example.sociamediaapplication.view.screens
 
 import android.graphics.Bitmap
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -48,11 +47,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -61,17 +58,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.formatPostTime
 import com.example.sociamediaapplication.data.utils.getFrameFromUrl
 import com.example.sociamediaapplication.data.utils.isVideo
-import com.example.sociamediaapplication.model.CartItem
-import com.example.sociamediaapplication.model.Specification
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -85,7 +78,6 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.AddReviewSection
 import com.example.sociamediaapplication.view.components.AutoVideo
-import com.example.sociamediaapplication.view.components.CommentSection
 import com.example.sociamediaapplication.view.components.CustomProgressBar2
 import com.example.sociamediaapplication.view.components.ReviewItem
 import com.example.sociamediaapplication.viewmodel.MarketplaceViewModel
@@ -770,12 +762,35 @@ fun ProductScreen(
                 items(productReviews?.reviews?.size ?: 0){review->
                     ReviewItem(
                         name = productReviews?.reviews?.get(review)?.username ?: "",
-                        timeAgo = formatPostTime(productReviews?.reviews?.get(review)?.created_at?: ""),
+                        timeAgo = formatPostTime(
+                            productReviews?.reviews?.get(review)?.created_at ?: ""
+                        ),
                         rating = productReviews?.reviews?.get(review)?.rating ?: 3,
                         reviewText = productReviews?.reviews?.get(review)?.comment ?: "",
-                        helpfulCount = 8,
-                        profileImage = R.drawable.rectangle_36__2_
+                        profileImage = R.drawable.rectangle_36__2_,
+                        vendor_reply = productReviews?.reviews?.get(review)?.vendor_reply ?: "",
+                        vendor_reply_at = formatPostTime(productReviews?.reviews?.get(review)?.vendor_reply_at ?: ""),
+                        review_likes = productReviews?.reviews?.get(review)?.review_likes ?: 0,
+                        review_dislikes = productReviews?.reviews?.get(review)?.review_dislikes ?: 0,
+                        reply_likes = productReviews?.reviews?.get(review)?.reply_likes ?: 0,
+                        reply_dislikes = productReviews?.reviews?.get(review)?.reply_dislikes ?: 0,
+                        user_review_reaction = productReviews?.reviews?.get(review)?.user_review_reaction?: null,
+                        user_reply_reaction = productReviews?.reviews?.get(review)?.user_reply_reaction?: null,
+                        onReviewLiked = {
+                            viewModel.likeReview(productReviews?.reviews?.get(review)?.id ?: 0)
+                        },
+                        onReviewDisliked = {
+                            viewModel.dislikeReview(productReviews?.reviews?.get(review)?.id ?: 0)
+                        },
+                        onReplyLiked = {
+                            viewModel.likeReviewReply(productReviews?.reviews?.get(review)?.id ?: 0)
+                        },
+                        onReplyDisliked = {
+                            viewModel.dislikeReviewReply(productReviews?.reviews?.get(review)?.id ?: 0)
+                        }
                     )
+
+                    Spacer(Modifier.height(8.dp))
                 }
                 item {
                     Column(Modifier.height(90.dp)) { }

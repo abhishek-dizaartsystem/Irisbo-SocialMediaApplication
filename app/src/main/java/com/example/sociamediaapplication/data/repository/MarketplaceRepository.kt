@@ -6,9 +6,11 @@ import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.model.request.AddReviewRequest
 import com.example.sociamediaapplication.model.request.AddToCartRequest
 import com.example.sociamediaapplication.model.request.AddToWishlistRequest
+import com.example.sociamediaapplication.model.request.ReviewReactionTypeRequest
 import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.AddReviewResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
+import com.example.sociamediaapplication.model.response.BasicResponse2
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
 import com.example.sociamediaapplication.model.response.EditProductResponse
@@ -50,7 +52,18 @@ class MarketplaceRepository(
     }
 
     suspend fun getReviews(productId: Int): ReviewsResponse {
-        return api.fetchReviews(productId)
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.fetchReviews(token, productId)
+    }
+
+    suspend fun reactToReview(reviewId: Int, reactionType: String): BasicResponse2{
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.reactToReview(token, reviewId, ReviewReactionTypeRequest(reactionType))
+    }
+
+    suspend fun reactToReviewReply(reviewId: Int, reactionType: String): BasicResponse2{
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.reactToReviewReply(token, reviewId, ReviewReactionTypeRequest(reactionType))
     }
 
     suspend fun addReview(

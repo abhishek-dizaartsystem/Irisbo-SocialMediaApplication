@@ -106,6 +106,35 @@ class MarketplaceViewModel(
         }
     }
 
+    fun likeReview(reviewId: Int){
+        viewModelScope.launch {
+            repository.reactToReview(reviewId, "like")
+            loadProductReviews(productDetails.value!!.product.id)
+        }
+    }
+
+    fun dislikeReview(reviewId: Int){
+        viewModelScope.launch {
+            repository.reactToReview(reviewId, "dislike")
+            loadProductReviews(productDetails.value!!.product.id)
+        }
+    }
+
+    fun likeReviewReply(reviewId: Int){
+        viewModelScope.launch {
+            repository.reactToReviewReply(reviewId, "like")
+            loadProductReviews(productDetails.value!!.product.id)
+        }
+    }
+
+    fun dislikeReviewReply(reviewId: Int){
+        viewModelScope.launch {
+            repository.reactToReviewReply(reviewId, "dislike")
+            loadProductReviews(productDetails.value!!.product.id)
+        }
+    }
+
+
     fun addProductReview(
         context: Context,
         productId: Int,

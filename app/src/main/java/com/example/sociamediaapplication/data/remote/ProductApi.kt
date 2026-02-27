@@ -5,9 +5,11 @@ import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.model.request.AddReviewRequest
 import com.example.sociamediaapplication.model.request.AddToCartRequest
 import com.example.sociamediaapplication.model.request.AddToWishlistRequest
+import com.example.sociamediaapplication.model.request.ReviewReactionTypeRequest
 import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.AddReviewResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
+import com.example.sociamediaapplication.model.response.BasicResponse2
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
 import com.example.sociamediaapplication.model.response.EditProductResponse
@@ -34,8 +36,23 @@ interface ProductApi {
 
     @GET("api/products/{id}/reviews")
     suspend fun fetchReviews(
+        @Header("Authorization") token: String,
         @Path("id") id: Int
     ): ReviewsResponse
+
+    @POST("api/products/{id}/react")
+    suspend fun reactToReview(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: ReviewReactionTypeRequest
+    ): BasicResponse2
+
+    @POST("api/products/{id}/reply/react")
+    suspend fun reactToReviewReply(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: ReviewReactionTypeRequest
+    ): BasicResponse2
 
     @POST("api/products/{id}/review")
     suspend fun addReview(
