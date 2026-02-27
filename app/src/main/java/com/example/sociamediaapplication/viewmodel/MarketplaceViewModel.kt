@@ -3,6 +3,7 @@ package com.example.sociamediaapplication.viewmodel
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.MarketplaceRepository
@@ -106,12 +107,20 @@ class MarketplaceViewModel(
     }
 
     fun addProductReview(
+        context: Context,
         productId: Int,
         rating: Int,
         comment: String
     ){
         viewModelScope.launch {
-            repository.addReview(productId, rating, comment)
+            try {
+                repository.addReview(productId, rating, comment)
+                loadProductReviews(productId)
+            }catch (e: Exception){
+                Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                Log.e("ADD_REVIEW_DEBUG", e.message.toString())
+            }
+
         }
     }
 

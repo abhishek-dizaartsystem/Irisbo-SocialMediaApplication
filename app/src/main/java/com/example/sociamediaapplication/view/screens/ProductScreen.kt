@@ -30,15 +30,20 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -78,11 +83,14 @@ import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.LLGreen
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
+import com.example.sociamediaapplication.view.components.AddReviewSection
 import com.example.sociamediaapplication.view.components.AutoVideo
+import com.example.sociamediaapplication.view.components.CommentSection
 import com.example.sociamediaapplication.view.components.CustomProgressBar2
 import com.example.sociamediaapplication.view.components.ReviewItem
 import com.example.sociamediaapplication.viewmodel.MarketplaceViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductScreen(
     productId: String = "1",
@@ -97,6 +105,11 @@ fun ProductScreen(
 
     val pagerState = rememberPagerState(
         pageCount = { productDetails?.product?.product_images?.size ?: 0 }
+    )
+
+    var showReviewSection by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
     )
 
     val reviewsList = productReviews?.reviews ?: emptyList()
@@ -410,7 +423,7 @@ fun ProductScreen(
                                 modifier = Modifier.size(20.dp)
                             )
                             Text(
-                                text = "${productReviews?.total_reviews} reviews)",
+                                text = "(${productReviews?.total_reviews} reviews)",
                                 fontSize = 18.sp,
                                 color = GreyTxt
                             )
@@ -501,7 +514,9 @@ fun ProductScreen(
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
                             Button(
-                                onClick = {},
+                                onClick = {
+                                    showReviewSection = true
+                                },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = LGrey
                                 ),
@@ -845,6 +860,28 @@ fun ProductScreen(
 
             }
 
+        }
+    }
+
+    if(showReviewSection){
+        ModalBottomSheet(
+            onDismissRequest = {showReviewSection = false},
+            sheetState = sheetState,
+            containerColor = White
+        ) {
+            AddReviewSection(
+                onSendReview = {review, rating->
+                    Toast.makeText(context, review, Toast.LENGTH_SHORT).show()
+                    showReviewSection = false
+                    viewModel.addProductReview(
+                        productId = productDetails?.product?.id ?: 0,
+                        rating = rating,
+                        comment = review,
+                        context = context
+                    )
+
+                }
+            )
         }
     }
 }

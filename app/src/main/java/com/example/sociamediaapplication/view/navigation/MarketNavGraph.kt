@@ -60,6 +60,13 @@ fun MarketNavGraph(
                 viewModel = viewModel
             )
         }
+//        composable(MarketRoutes.EditProduct.route) {
+//            AddProductScreen(
+//                viewModel = viewModel,
+//                navBack = { navController.popBackStack() },
+//                productId = it.arguments?.getString("productId")?.toInt() ?: 0
+//            )
+//        }
         composable(MarketRoutes.Cart.route) {
             LaunchedEffect(Unit) {
                 viewModel.loadCart()

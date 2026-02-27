@@ -7,6 +7,7 @@ import com.example.sociamediaapplication.model.request.AddReviewRequest
 import com.example.sociamediaapplication.model.request.AddToCartRequest
 import com.example.sociamediaapplication.model.request.AddToWishlistRequest
 import com.example.sociamediaapplication.model.response.AddProductResponse
+import com.example.sociamediaapplication.model.response.AddReviewResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
@@ -52,9 +53,15 @@ class MarketplaceRepository(
         return api.fetchReviews(productId)
     }
 
-    suspend fun addReview(productId: Int, rating: Int, comment: String) {
+    suspend fun addReview(
+        productId: Int,
+        rating: Int,
+        comment: String
+    ): AddReviewResponse {
         val token = "Bearer ${tokenManager.getToken()}"
-        api.addReview(token, productId, AddReviewRequest(rating, comment))
+        val response = api.addReview(token, productId, AddReviewRequest(rating, comment))
+
+        return response
     }
 
     suspend fun addProduct(

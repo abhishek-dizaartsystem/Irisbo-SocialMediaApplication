@@ -6,6 +6,7 @@ import com.example.sociamediaapplication.model.request.AddReviewRequest
 import com.example.sociamediaapplication.model.request.AddToCartRequest
 import com.example.sociamediaapplication.model.request.AddToWishlistRequest
 import com.example.sociamediaapplication.model.response.AddProductResponse
+import com.example.sociamediaapplication.model.response.AddReviewResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
@@ -41,7 +42,7 @@ interface ProductApi {
         @Header("Authorization") token: String,
         @Path("id") id: Int,
         @Body request: AddReviewRequest
-    )
+    ): AddReviewResponse
 
     @GET("api/products/categories")
     suspend fun getProductCategoryTypes(): ProductCategoriesType

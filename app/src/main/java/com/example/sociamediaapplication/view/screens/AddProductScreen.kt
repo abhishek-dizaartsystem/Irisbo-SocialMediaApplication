@@ -43,7 +43,8 @@ fun AddProductScreen(
     viewModel: MarketplaceViewModel = viewModel(),
     category: String = "",
     onCategoryClick: () -> Unit = {},
-    navBack: () -> Unit = {}
+    navBack: () -> Unit = {},
+    productId: Int = 0
 ) {
 
     val scroll = rememberScrollState()
@@ -67,14 +68,26 @@ fun AddProductScreen(
 
     val context = LocalContext.current
 
-    var titleState by remember { mutableStateOf("") }
-    var priceState by remember { mutableStateOf("") }
-    var discount by remember { mutableStateOf("") }
-    var categoryState by remember { mutableStateOf("Category") }
-    var categoryId by remember { mutableStateOf(0) }
-    var stockState by remember { mutableStateOf("") }
-    var descriptionState by remember { mutableStateOf("") }
-    var showDropdown by remember { mutableStateOf(false) }
+//    if(productId==0){
+//        var titleState by remember { mutableStateOf("") }
+//        var priceState by remember { mutableStateOf("") }
+//        var discount by remember { mutableStateOf("") }
+//        var categoryState by remember { mutableStateOf("Category") }
+//        var categoryId by remember { mutableStateOf(0) }
+//        var stockState by remember { mutableStateOf("") }
+//        var descriptionState by remember { mutableStateOf("") }
+//        var showDropdown by remember { mutableStateOf(false) }
+//    }else{
+        var titleState by remember { mutableStateOf("") }
+        var priceState by remember { mutableStateOf("") }
+        var discount by remember { mutableStateOf("") }
+        var categoryState by remember { mutableStateOf("Category") }
+        var categoryId by remember { mutableStateOf(0) }
+        var stockState by remember { mutableStateOf("") }
+        var descriptionState by remember { mutableStateOf("") }
+        var showDropdown by remember { mutableStateOf(false) }
+//    }
+
 
     Column(
         modifier = Modifier

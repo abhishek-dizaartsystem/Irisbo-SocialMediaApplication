@@ -10,5 +10,9 @@ sealed class MarketRoutes(val route: String) {
 
     object AddProduct: MarketRoutes("addProduct")
 
+//    object EditProduct: MarketRoutes("editProduct/{productId}"){
+//        fun createRoute(productId: String) = "editProduct/$productId"
+//    }
+
     object CheckOut: MarketRoutes("checkOut")
 }
