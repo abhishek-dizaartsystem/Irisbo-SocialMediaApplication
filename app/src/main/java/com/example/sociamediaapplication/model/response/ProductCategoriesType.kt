@@ -7,5 +7,6 @@ data class ProductCategoriesType(
 
 data class CategoriesType(
     val id: Int,
-    val name: String
+    val name: String,
+    val image: String
 )

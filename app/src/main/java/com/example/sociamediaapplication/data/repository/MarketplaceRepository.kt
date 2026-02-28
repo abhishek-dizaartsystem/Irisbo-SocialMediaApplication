@@ -13,6 +13,7 @@ import com.example.sociamediaapplication.model.response.AddReviewResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.BasicResponse2
 import com.example.sociamediaapplication.model.response.CartResponse
+import com.example.sociamediaapplication.model.response.CategoryProductsResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
 import com.example.sociamediaapplication.model.response.EditProductResponse
 import com.example.sociamediaapplication.model.response.ReviewsResponse
@@ -55,6 +56,10 @@ class MarketplaceRepository(
     suspend fun getReviews(productId: Int): ReviewsResponse {
         val token = "Bearer ${tokenManager.getToken()}"
         return api.fetchReviews(token, productId)
+    }
+
+    suspend fun getCategoryProducts(categoryId: Int): UserProductsResponse {
+        return api.fetchCategoryProducts(categoryId)
     }
 
     suspend fun reactToReview(reviewId: Int, reactionType: String): BasicResponse2{

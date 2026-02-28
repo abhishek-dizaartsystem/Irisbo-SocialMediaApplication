@@ -106,6 +106,14 @@ class MarketplaceViewModel(
         }
     }
 
+    fun loadCategoryProducts(categoryId: Int) {
+        viewModelScope.launch {
+            val products = repository.getCategoryProducts(categoryId)
+
+            _userProducts.value = products
+        }
+    }
+
     fun likeReview(reviewId: Int){
         viewModelScope.launch {
             repository.reactToReview(reviewId, "like")

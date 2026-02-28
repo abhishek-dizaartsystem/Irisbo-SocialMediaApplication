@@ -56,6 +56,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.model.CategoriesMarketplace
@@ -99,19 +102,15 @@ fun MarketplaceScreen(
     var showReviewSheet by remember { mutableStateOf(false) }
     var selectedProductId by remember { mutableStateOf<Int?>(null) }
 
+    val isLoading by viewModel.isLoading.collectAsState()
+
     LaunchedEffect(Unit) {
+        viewModel.loadProductCategoryTypes()
         viewModel.loadVendorProducts()
         viewModel.loadUserProducts()
     }
 
-    var categories = remember { listOf(
-        CategoriesMarketplace((R.drawable.car_svgrepo_com), "Vehicles"),
-        CategoriesMarketplace((R.drawable.house_svgrepo_com), "Property"),
-        CategoriesMarketplace((R.drawable.laptop_svgrepo_com), "Electronics"),
-        CategoriesMarketplace((R.drawable.cloth_sweater_tshirt_svgrepo_com), "Clothing"),
-        CategoriesMarketplace((R.drawable.sofa_svgrepo_com), "Furniture"),
-        CategoriesMarketplace((R.drawable.basketball_svgrepo_com), "Sports"),
-    ) }
+    val categoryTypes by viewModel.categoryTypes.collectAsState()
 
     Scaffold(
         topBar = {
@@ -427,9 +426,11 @@ fun MarketplaceScreen(
                     item(span = { GridItemSpan(2) }) {
 
                         LazyRow() {
-                            items(categories){category->
+                            item {
                                 Card(
-                                    onClick = {},
+                                    onClick = {
+                                        viewModel.loadUserProducts()
+                                    },
                                     colors = CardDefaults.cardColors(
                                         containerColor = White
                                     ),
@@ -441,12 +442,44 @@ fun MarketplaceScreen(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Image(
-                                            painter = painterResource(category.painter),
+                                            painter = painterResource(R.drawable.all_svgrepo_com),
+                                            contentDescription = "",
+                                            modifier = Modifier.size(30.dp),
+
+                                        )
+                                        Text(
+                                            text = "All"
+                                        )
+                                    }
+
+                                }
+                                Spacer(Modifier.width(12.dp))
+                            }
+                            items(categoryTypes?.categories ?: emptyList()){ category->
+                                Card(
+                                    onClick = {
+                                        viewModel.loadCategoryProducts(category.id)
+                                    },
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = White
+                                    ),
+                                    elevation = CardDefaults.cardElevation(2.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        AsyncImage(
+                                            model = ImageRequest.Builder(context)
+                                                .data("${RetrofitClient.BASE_URL}${category.image}")
+                                                .decoderFactory(SvgDecoder.Factory())
+                                                .build(),
                                             contentDescription = "",
                                             modifier = Modifier.size(30.dp)
                                         )
                                         Text(
-                                            text = category.text
+                                            text = category.name
                                         )
                                     }
 

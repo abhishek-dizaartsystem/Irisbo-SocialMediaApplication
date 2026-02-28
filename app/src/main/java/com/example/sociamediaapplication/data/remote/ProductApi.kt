@@ -12,6 +12,7 @@ import com.example.sociamediaapplication.model.response.AddReviewResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.BasicResponse2
 import com.example.sociamediaapplication.model.response.CartResponse
+import com.example.sociamediaapplication.model.response.CategoryProductsResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
 import com.example.sociamediaapplication.model.response.EditProductResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
@@ -40,6 +41,11 @@ interface ProductApi {
         @Header("Authorization") token: String,
         @Path("id") id: Int
     ): ReviewsResponse
+
+    @GET("api/products/category/{id}")
+    suspend fun fetchCategoryProducts(
+        @Path("id") id: Int
+    ): UserProductsResponse
 
     @POST("api/products/{id}/react")
     suspend fun reactToReview(
