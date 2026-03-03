@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.data.repository
 
 import android.util.Log
+import androidx.room.Query
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.model.request.AddReviewRequest
@@ -19,6 +20,7 @@ import com.example.sociamediaapplication.model.response.EditProductResponse
 import com.example.sociamediaapplication.model.response.ReviewsResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
 import com.example.sociamediaapplication.model.response.ProductDetailsResponse
+import com.example.sociamediaapplication.model.response.SearchProductResponse
 import com.example.sociamediaapplication.model.response.UserProductsResponse
 import com.example.sociamediaapplication.model.response.VendorProductResponse
 import com.example.sociamediaapplication.model.response.VendorProductsResponse
@@ -60,6 +62,14 @@ class MarketplaceRepository(
 
     suspend fun getCategoryProducts(categoryId: Int): UserProductsResponse {
         return api.fetchCategoryProducts(categoryId)
+    }
+
+    suspend fun searchProducts(
+        query: String,
+        page: Int,
+        limit: Int
+    ): SearchProductResponse{
+        return api.searchProducts(query, page, limit)
     }
 
     suspend fun reactToReview(reviewId: Int, reactionType: String): BasicResponse2{

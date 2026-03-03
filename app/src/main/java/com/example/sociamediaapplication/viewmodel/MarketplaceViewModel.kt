@@ -19,6 +19,7 @@ import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
 import com.example.sociamediaapplication.model.response.ProductDetailsResponse
 import com.example.sociamediaapplication.model.response.ReviewsResponse
+import com.example.sociamediaapplication.model.response.SearchProductResponse
 import com.example.sociamediaapplication.model.response.UserProductsResponse
 import com.example.sociamediaapplication.model.response.VendorProductsResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
@@ -113,6 +114,40 @@ class MarketplaceViewModel(
             _userProducts.value = products
         }
     }
+
+    private val _searchResults = MutableStateFlow<SearchProductResponse?>(null)
+    val searchResults: StateFlow<SearchProductResponse?> = _searchResults
+
+    private val _searchLoading = MutableStateFlow(false)
+    val searchLoading: StateFlow<Boolean> = _searchLoading
+
+
+    fun searchProducts(query: String, page: Int = 1, limit: Int = 10) {
+        viewModelScope.launch {
+
+            if (query.isBlank()) {
+                _searchResults.value = null
+                return@launch
+            }
+
+            _searchLoading.value = true
+
+            try {
+                val result = repository.searchProducts(query, page, limit)
+                _userProducts.value = UserProductsResponse(
+                    success = result.success,
+                    total_products = result.total_products,
+                    products = result.products
+                )
+            } catch (e: Exception) {
+                Log.e("SEARCH_DEBUG", e.message.toString())
+            } finally {
+                _searchLoading.value = false
+            }
+        }
+    }
+
+
 
     fun likeReview(reviewId: Int){
         viewModelScope.launch {

@@ -190,6 +190,7 @@ fun MarketplaceScreen(
                         value = searchTxt,
                         onValueChange = {newMessage->
                             searchTxt = newMessage
+                            viewModel.searchProducts(searchTxt)
                         },
                         placeholder = {
                             Text(

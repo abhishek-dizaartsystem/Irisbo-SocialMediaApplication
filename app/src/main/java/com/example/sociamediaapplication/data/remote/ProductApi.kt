@@ -18,6 +18,7 @@ import com.example.sociamediaapplication.model.response.EditProductResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
 import com.example.sociamediaapplication.model.response.ProductDetailsResponse
 import com.example.sociamediaapplication.model.response.ReviewsResponse
+import com.example.sociamediaapplication.model.response.SearchProductResponse
 import com.example.sociamediaapplication.model.response.UserProductsResponse
 import com.example.sociamediaapplication.model.response.VendorProductsResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
@@ -32,6 +33,7 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ProductApi {
 
@@ -46,6 +48,14 @@ interface ProductApi {
     suspend fun fetchCategoryProducts(
         @Path("id") id: Int
     ): UserProductsResponse
+
+    @GET("api/products/search")
+    suspend fun searchProducts(
+        @Query("query") query: String,
+        @Query("page") page: Int,
+        @Query("limit") limit: Int
+    ): SearchProductResponse
+
 
     @POST("api/products/{id}/react")
     suspend fun reactToReview(
