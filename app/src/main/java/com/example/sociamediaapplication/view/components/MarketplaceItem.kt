@@ -115,15 +115,15 @@ fun MarketPlaceItem(
             }
             Spacer(Modifier.height(12.dp))
             Text(
+                text = productName,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(horizontal =12.dp)
+            )
+            Text(
                 text = price.toString(),
                 fontSize = 16.sp,
                 modifier = Modifier.padding(horizontal =12.dp),
                 fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = productName,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(horizontal =12.dp)
             )
             Spacer(Modifier.height(12.dp))
         }

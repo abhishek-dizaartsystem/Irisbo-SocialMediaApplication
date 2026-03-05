@@ -192,6 +192,7 @@ fun MarketplaceScreen(
                             searchTxt = newMessage
                             viewModel.searchProducts(searchTxt)
                         },
+                        singleLine = true,
                         placeholder = {
                             Text(
                                 text = "Search Marketplace",
