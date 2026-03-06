@@ -23,12 +23,17 @@ import com.example.sociamediaapplication.viewmodel.factory.PaymentViewModelFacto
 import com.razorpay.PaymentData
 import com.razorpay.PaymentResultListener
 import com.razorpay.PaymentResultWithDataListener
+import com.example.sociamediaapplication.data.preferences.TokenManager
+
+
 
 class MainActivity : ComponentActivity(), PaymentResultWithDataListener {
 
+    private val tokenManager by lazy { TokenManager(applicationContext) }
+
     private val paymentViewModel: PaymentViewModel by viewModels {
         PaymentViewModelFactory(
-            PaymentRepository()
+            PaymentRepository(tokenManager)
         )
     }
 

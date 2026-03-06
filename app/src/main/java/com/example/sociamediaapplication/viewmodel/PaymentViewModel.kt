@@ -5,9 +5,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.PaymentRepository
+import com.example.sociamediaapplication.model.request.OrderItem
 import com.example.sociamediaapplication.model.request.VerifyPaymentRequest
 import com.razorpay.BuildConfig
 import com.razorpay.Checkout
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -15,15 +18,21 @@ class PaymentViewModel(
     private val repository: PaymentRepository
 ): ViewModel() {
 
+    private val _orderItems = MutableStateFlow<List<OrderItem>>(emptyList())
+    val orderItems: StateFlow<List<OrderItem>> = _orderItems
+
+    fun addOrderItem(order_items: List<OrderItem>){
+        _orderItems.value = order_items
+    }
+
     fun startPayment(
         activity: Activity,
-        amount: Double,
         onError: (String) -> Unit
     ) {
         viewModelScope.launch {
             try {
 
-                val order = repository.createOrder(amount).order
+                val order = repository.createOrder(orderItems.value).order
 
                 val checkout = Checkout()
                 checkout.setKeyID("rzp_test_SAOQiZzVCq4nYw")
@@ -45,7 +54,7 @@ class PaymentViewModel(
 
             } catch (e: Exception) {
                 onError(e.message ?: "Payment failed")
-                Log.e("Payment Debug", e.message ?: e.toString())
+                Log.e("Payment_Debug", e.message ?: e.toString())
             }
         }
     }

@@ -73,6 +73,8 @@ fun CheckOutScreen(
     val tax by viewModel.tax.collectAsState()
     val shippingType by viewModel.shippingType.collectAsState()
 
+    val cartItems by viewModel.cartItems.collectAsState()
+
 
     Scaffold(
         topBar = {
@@ -229,7 +231,6 @@ fun CheckOutScreen(
                             }else{
                                 paymentViewModel.startPayment(
                                     activity = activity,
-                                    amount = cartSum,
                                     onError = { msg ->
                                         Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show()
                                     }

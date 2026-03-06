@@ -25,6 +25,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -98,6 +100,8 @@ fun MarketplaceScreen(
 
     val context = LocalContext.current
 
+    var showDropDownMenu by remember { mutableStateOf(false) }
+
 
     var showReviewSheet by remember { mutableStateOf(false) }
     var selectedProductId by remember { mutableStateOf<Int?>(null) }
@@ -145,39 +149,56 @@ fun MarketplaceScreen(
                         fontSize = 18.sp
                     )
 
-                    Row(
-                        Modifier.padding(end = 4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-
-                    ) {
+                    Row() {
                         IconButton(
                             onClick = {
-                                navController.navigate(MarketRoutes.Cart.route)
+                                showDropDownMenu = true
                             },
                             Modifier.size(30.dp)
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.cart_shopping_svgrepo_com),
+                                painter = painterResource(R.drawable.menu_dots_svgrepo_com),
                                 contentDescription = null,
-                                Modifier.size(24.dp)
+                                Modifier.size(24.dp).rotate(90f)
                             )
                         }
-                        IconButton(
-                            onClick = {
-                                navController.navigate(MarketRoutes.Wishlist.route)
-                            },
-                            Modifier.size(30.dp)
+
+                        DropdownMenu(
+                            expanded = showDropDownMenu,
+                            onDismissRequest = {
+                                showDropDownMenu = false
+                            }
                         ) {
-                            Icon(
-                                painter = painterResource(R.drawable.heart_filled_svgrepo_com),
-                                contentDescription = null,
-                                Modifier.size(24.dp)
+                            DropdownMenuItem(
+                                text = { Text("Cart") },
+                                leadingIcon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.cart_shopping_svgrepo_com),
+                                        contentDescription = null,
+                                        Modifier.size(24.dp)
+                                    )
+                                },
+                                onClick = {
+                                    showDropDownMenu = false
+                                    navController.navigate(MarketRoutes.Cart.route)
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Wishlist") },
+                                leadingIcon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.heart_filled_svgrepo_com),
+                                        contentDescription = null,
+                                        Modifier.size(24.dp)
+                                    )
+                                },
+                                onClick = {
+                                    showDropDownMenu = false
+                                    navController.navigate(MarketRoutes.Wishlist.route)
+                                }
                             )
                         }
                     }
-
-
-
                 }
 
                 Row(
@@ -402,7 +423,7 @@ fun MarketplaceScreen(
                                 productName = product.name,
                                 price = "₹${product.price}",
                                 stock = product.stock,
-                                sold = 0,
+                                sold = product.sold,
                                 revenue = "₹${product.price.toDoubleOrNull()?.times(product.stock) ?: 0}",
                                 isActive = true,
                                 imageUrl = product.product_images

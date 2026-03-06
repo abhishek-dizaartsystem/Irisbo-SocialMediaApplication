@@ -136,7 +136,7 @@ fun CartScreen(
                                     productImage = item.product_image.firstOrNull(),
                                     productName = item.name,
                                     sellerName = item.username?:"Seller",
-                                    price = item.price.toFloatOrNull()?:0f,
+                                    price = item.discounted_price.toFloatOrNull()?:0f,
                                     quantity = item.quantity,
                                     onIncreaseQuantity = {
                                         viewModel.increaseProductQuantity(

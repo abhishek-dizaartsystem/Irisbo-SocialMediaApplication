@@ -15,6 +15,7 @@ import com.example.sociamediaapplication.model.ShippingPrice
 import com.example.sociamediaapplication.model.Specification
 import com.example.sociamediaapplication.model.request.AddToCartRequest
 import com.example.sociamediaapplication.model.request.AddToWishlistRequest
+import com.example.sociamediaapplication.model.request.OrderItem
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
 import com.example.sociamediaapplication.model.response.ProductDetailsResponse
@@ -329,7 +330,7 @@ class MarketplaceViewModel(
                 _cartItems.value = cart
 
                 _cartSum.value = cart.sumOf {
-                    (it.price.toDoubleOrNull() ?: 0.0) * it.quantity
+                    (it.discounted_price.toDoubleOrNull() ?: 0.0) * it.quantity
                 }
 
             }catch (e: Exception){
@@ -528,6 +529,15 @@ class MarketplaceViewModel(
             } catch (e: Exception) {
                 onError(e.message ?: "Upload failed")
             }
+        }
+    }
+
+    fun getOrderItemsFromCart(): List<OrderItem> {
+        return _cartItems.value.map {
+            OrderItem(
+                product_id = it.id,
+                quantity = it.quantity
+            )
         }
     }
 

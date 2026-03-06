@@ -36,7 +36,7 @@ fun MarketNavGraph(
     val repository = remember { MarketplaceRepository(tokenManager) }
     val factory = remember { MarketplaceViewModelFactory(repository) }
 
-    val paymentRepository = remember { PaymentRepository() }
+    val paymentRepository = remember { PaymentRepository(tokenManager) }
     val paymentFactory = remember { PaymentViewModelFactory(paymentRepository) }
     val paymentViewModel: PaymentViewModel = viewModel(factory = paymentFactory)
 
@@ -74,6 +74,11 @@ fun MarketNavGraph(
             CartScreen(
                 navController = navController,
                 onCheckout = {
+
+                    val orderItems = viewModel.getOrderItemsFromCart()
+
+                    paymentViewModel.addOrderItem(orderItems)
+
                     navController.navigate(MarketRoutes.CheckOut.route)
                 },
                 viewModel = viewModel

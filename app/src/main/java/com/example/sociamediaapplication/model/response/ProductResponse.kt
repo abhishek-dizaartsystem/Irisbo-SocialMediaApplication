@@ -16,6 +16,7 @@ data class VendorProductResponse(
     val discount: String,
     val discounted_price: String,
     val stock: Int,
+    val sold: Int,
     val created_at: String,
     val username: String,
     val specifications: List<Specification>,
