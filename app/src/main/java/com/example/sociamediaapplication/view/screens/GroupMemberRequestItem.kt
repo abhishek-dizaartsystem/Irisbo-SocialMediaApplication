@@ -1,6 +1,5 @@
 package com.example.sociamediaapplication.view.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -41,7 +41,12 @@ import com.example.sociamediaapplication.ui.theme.White
 fun GroupMemberRequestItem(
     painter: Painter = painterResource(R.drawable.rectangle_36__2_),
     name: String = "Arjun",
-    requestTime: String = "Requested 2d ago"
+    requestTime: String = "Requested 2d ago",
+    image: String = "https://picsum.photos/200",
+    username: String = "arjun",
+    uid: Int = 1,
+    onApproveRequest: () -> Unit = {},
+    onRejectRequest: () -> Unit = {}
 ){
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -63,8 +68,8 @@ fun GroupMemberRequestItem(
                 Box(
                     contentAlignment = Alignment.BottomEnd
                 ){
-                    Image(
-                        painter = painter,
+                    AsyncImage(
+                        model = image,
                         contentDescription = "",
                         modifier = Modifier
                             .size(50.dp)
@@ -79,14 +84,14 @@ fun GroupMemberRequestItem(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = name,
+                            text = username,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(end = 4.dp)
                         )
                     }
                     Text(
-                        text = requestTime,
+                        text = "Requested $requestTime",
                         fontSize = 14.sp,
                         color = GreyTxt
                     )
@@ -94,7 +99,7 @@ fun GroupMemberRequestItem(
             }
             Row() {
                 IconButton(
-                    onClick = {},
+                    onClick = onApproveRequest,
                     modifier = Modifier
                         .size(44.dp)
                         .padding(end = 8.dp)
@@ -127,7 +132,7 @@ fun GroupMemberRequestItem(
 
                 }
                 IconButton(
-                    onClick = {},
+                    onClick = onRejectRequest,
                     modifier = Modifier
                         .size(44.dp)
                         .padding(end = 8.dp)

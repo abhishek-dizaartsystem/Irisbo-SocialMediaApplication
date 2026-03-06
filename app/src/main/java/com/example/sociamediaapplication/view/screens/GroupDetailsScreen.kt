@@ -23,6 +23,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -34,8 +36,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.model.FeedPost
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
@@ -46,13 +50,17 @@ import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.view.navigation.GroupsRoutes
+import com.example.sociamediaapplication.viewmodel.GroupViewModel
 
 @Composable
 fun GroupDetailsScreen(
-    painter: Painter = painterResource(R.drawable.travel),
-    groupId: String = "1",
-    navController: NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
+    viewModel: GroupViewModel = viewModel()
 ){
+
+    val groupDetails by viewModel.groupDetails.collectAsState()
+    val groupMembers by viewModel.groupMembers.collectAsState()
+
 
     val posts = remember {
         mutableStateListOf(
@@ -68,8 +76,8 @@ fun GroupDetailsScreen(
     ) {
         item {
             Box(){
-                Image(
-                    painter = painter,
+                AsyncImage(
+                    model = groupDetails?.group?.cover_image,
                     contentDescription = "",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -107,7 +115,7 @@ fun GroupDetailsScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
-                                text = groupId,
+                                text = groupDetails?.group?.id.toString(),
                                 color = Black
                             )
                             IconButton(
@@ -154,8 +162,8 @@ fun GroupDetailsScreen(
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-                                Image(
-                                    painter = painter,
+                                AsyncImage(
+                                    model = groupDetails?.group?.cover_image,
                                     contentDescription = "",
                                     modifier = Modifier
                                         .size(60.dp)
@@ -166,18 +174,18 @@ fun GroupDetailsScreen(
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                     Text(
-                                        text = "React Developers",
+                                        text = groupDetails?.group?.name?: "",
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        "Technology",
+                                        text = groupDetails?.group?.slug?: "",
                                         color = GreyTxt,
                                         fontSize = 14.sp
                                     )
 
                                     Text(
-                                        "28K followers",
+                                        text = "${groupDetails?.group?.member_count} Members",
                                         color = GreyTxt,
                                         fontSize = 14.sp
                                     )
@@ -185,7 +193,7 @@ fun GroupDetailsScreen(
                                 }
                             }
                             Text(
-                                text = "Stunning photography, tips & tricks, and gear reviews.",
+                                text = groupDetails?.group?.description?: "",
                                 color = GreyTxt,
                                 fontSize = 16.sp
                             )
@@ -207,7 +215,7 @@ fun GroupDetailsScreen(
                                 Button(
                                     onClick = {
                                         navController.navigate(
-                                            route = GroupsRoutes.EditGroup.createRoute(groupId)
+                                            route = GroupsRoutes.EditGroup.createRoute(groupDetails?.group?.id?: 1)
                                         )
                                     },
                                     colors = ButtonDefaults.buttonColors(

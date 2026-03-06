@@ -1,9 +1,8 @@
 package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,13 +24,13 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,32 +44,39 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.room.Delete
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.utils.formatPostTime
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
-import com.example.sociamediaapplication.ui.theme.DTransparentBlack
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
-import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.Red
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.screens.AllGroupMemberItem
 import com.example.sociamediaapplication.view.screens.GroupMemberRequestItem
+import com.example.sociamediaapplication.viewmodel.GroupViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManageGroupsItem(
-    isPublic: Boolean = true,
-    groupId: String = "1",
+    isPrivate: Boolean = true,
+    name: String = "React Developers",
+    image: String = "https://picsum.photos/200",
+    total_members: Int = 100,
+    category: String = "Technology",
+    viewModel: GroupViewModel = viewModel(),
+    groupId: Int = 1,
     onPrivacyToggle: ()-> Unit = {},
     isPostApproval: Boolean = true,
     onPostApprovalToggle: ()-> Unit = {},
     onDelete: ()-> Unit = {},
-    onGroupClick:(String) -> Unit = {},
-    onEditClick: (String) -> Unit = {}
+    onGroupClick:(Int) -> Unit = {},
+    onEditClick: (Int) -> Unit = {}
 ) {
 
     val sheetState = rememberModalBottomSheetState()
@@ -78,6 +85,8 @@ fun ManageGroupsItem(
     var isPendingRequests by remember { mutableStateOf(true) }
 
     var showDropDownMenu by remember { mutableStateOf(false) }
+
+    val groupMembers by viewModel.groupMembers.collectAsState()
 
 
     if (showSheet) {
@@ -155,8 +164,24 @@ fun ManageGroupsItem(
                                     .padding(vertical = 12.dp, horizontal = 4.dp)
                                     .fillMaxWidth()
                             ) {
-                                items(3){
-                                    GroupMemberRequestItem()
+                                items(groupMembers?.members?: emptyList()){ member->
+                                    if(member.status == "pending"){
+                                        GroupMemberRequestItem(
+                                            uid = member.user_id,
+                                            username = member.username,
+                                            image = member.profile_image,
+                                            requestTime = formatPostTime(member.joined_at),
+                                            onApproveRequest = {
+                                                viewModel.approveMemberRequest(groupId, member.user_id)
+                                                viewModel.loadGroupMembers(groupId)
+                                            },
+                                            onRejectRequest = {
+                                                viewModel.rejectMemberRequest(groupId, member.user_id)
+                                                viewModel.loadGroupMembers(groupId)
+                                            }
+                                        )
+                                    }
+
                                 }
                             }
                         }
@@ -166,8 +191,17 @@ fun ManageGroupsItem(
                                     .padding(vertical = 12.dp, horizontal = 4.dp)
                                     .fillMaxWidth()
                             ) {
-                                items(5){
-                                    AllGroupMemberItem()
+                                items(groupMembers?.members?: emptyList()){member->
+                                    if(member.status == "approved"){
+                                        AllGroupMemberItem(
+                                            uid = member.user_id,
+                                            username = member.username,
+                                            image = member.profile_image,
+                                            joinedOn = formatPostTime((member.joined_at)),
+                                            role = member.role
+                                        )
+                                    }
+
                                 }
                             }
                         }
@@ -210,7 +244,7 @@ fun ManageGroupsItem(
                                 }
                             }
                             Switch(
-                                checked = isPublic,
+                                checked = !isPrivate,
                                 onCheckedChange = {
                                     onPrivacyToggle()
                                 },
@@ -289,9 +323,12 @@ fun ManageGroupsItem(
         Modifier
             .background(White)
             .clip(RoundedCornerShape(12.dp))
+            .clickable{
+                onGroupClick(groupId)
+            }
     ){
-        Image(
-            painter = painterResource(R.drawable.travel),
+        AsyncImage(
+            model = "${RetrofitClient.BASE_URL}$image",
             contentDescription = "",
             modifier = Modifier
                 .fillMaxWidth()
@@ -326,8 +363,8 @@ fun ManageGroupsItem(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            Image(
-                                painter = painterResource(R.drawable.travel),
+                            AsyncImage(
+                                model = "${RetrofitClient.BASE_URL}$image",
                                 contentDescription = "",
                                 modifier = Modifier
                                     .size(50.dp)
@@ -341,13 +378,13 @@ fun ManageGroupsItem(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "React Developers ",
+                                        text = name,
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
                                     )
                                     Icon(
                                         painter = painterResource(
-                                            if(isPublic) R.drawable.global_svgrepo_com
+                                            if(!isPrivate) R.drawable.global_svgrepo_com
                                             else R.drawable.lock_svgrepo_com
                                         ),
                                         contentDescription = "",
@@ -361,12 +398,12 @@ fun ManageGroupsItem(
                                 ) {
 
                                     Text(
-                                        "28K followers",
+                                        "$total_members followers",
                                         color = GreyTxt,
                                         fontSize = 14.sp
                                     )
                                     Text(
-                                        "Technology",
+                                        category,
                                         color = GreyTxt,
                                         fontSize = 14.sp
                                     )
@@ -406,6 +443,7 @@ fun ManageGroupsItem(
                                             fontSize = 16.sp)
                                     },
                                     onClick = {
+                                        showDropDownMenu = false
                                         onGroupClick(groupId)
                                     },
                                     leadingIcon = {
@@ -423,6 +461,7 @@ fun ManageGroupsItem(
                                             fontSize = 16.sp)
                                     },
                                     onClick = {
+                                        showDropDownMenu = false
                                         sheetType = "join"
                                         showSheet = true
                                     },
@@ -441,6 +480,8 @@ fun ManageGroupsItem(
                                             fontSize = 16.sp)
                                     },
                                     onClick = {
+                                        showDropDownMenu = false
+                                        viewModel.loadGroupMembers(groupId)
                                         sheetType = "manage members"
                                         showSheet = true
                                     },
@@ -459,6 +500,7 @@ fun ManageGroupsItem(
                                             fontSize = 16.sp)
                                     },
                                     onClick = {
+                                        showDropDownMenu = false
                                         onEditClick(groupId)
                                     },
                                     leadingIcon = {
@@ -475,7 +517,9 @@ fun ManageGroupsItem(
                                             "Mute",
                                             fontSize = 16.sp)
                                     },
-                                    onClick = {},
+                                    onClick = {
+                                        showDropDownMenu = false
+                                    },
                                     leadingIcon = {
                                         Icon(
                                             painter = painterResource(R.drawable.notification_slient_svgrepo_com),
@@ -491,7 +535,11 @@ fun ManageGroupsItem(
                                             fontSize = 16.sp,
                                             color = Red)
                                     },
-                                    onClick = {},
+                                    onClick = {
+                                        showDropDownMenu = false
+                                        viewModel.deleteGroup(groupId)
+                                        viewModel.loadGroups()
+                                    },
                                     leadingIcon = {
                                         Icon(
                                             painter = painterResource(R.drawable.delete_svgrepo_com),

@@ -1,6 +1,5 @@
 package com.example.sociamediaapplication.view.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,15 +20,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LBlue
@@ -37,17 +36,19 @@ import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
 fun DiscoverGroupsItem(
-    painter: Painter = painterResource(R.drawable.react_laptop),
+    image: String = "https://example.com/covers/tech-news.jpg",
     name: String = "React Developers",
-    memberCount: String = "14K members",
-    groupId: String = "3",
-    onGroupClick: (String)-> Unit = {}
+    memberCount: Int = 14,
+    groupId: Int = 4,
+    onGroupClick: (Int) -> Unit = {},
+    onJoin: () -> Unit = {},
+    isPrivate: Boolean = true
 ){
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable{
+            .clickable {
                 onGroupClick(groupId)
             },
         elevation = CardDefaults.cardElevation(2.dp),
@@ -57,14 +58,16 @@ fun DiscoverGroupsItem(
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painter,
+                AsyncImage(
+                    model = "${RetrofitClient.BASE_URL}$image",
                     contentDescription = "",
                     modifier = Modifier
                         .size(60.dp)
@@ -83,14 +86,18 @@ fun DiscoverGroupsItem(
                             modifier = Modifier.padding(end = 4.dp)
                         )
                         Icon(
-                            painter = painterResource(R.drawable.global_svgrepo_com),
+                            painter =
+                                if(isPrivate)
+                                    painterResource(R.drawable.global_svgrepo_com)
+                                else
+                                    painterResource(R.drawable.lock_svgrepo_com),
                             contentDescription = "",
                             modifier = Modifier.size(10.dp)
                         )
                     }
 
                     Text(
-                        text = memberCount,
+                        text = "$memberCount Members",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = GreyTxt
@@ -98,7 +105,10 @@ fun DiscoverGroupsItem(
                 }
             }
             Button(
-                onClick = {},
+                onClick = {
+
+                    onJoin()
+                },
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = LBlue

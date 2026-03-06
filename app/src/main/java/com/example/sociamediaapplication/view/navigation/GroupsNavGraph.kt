@@ -1,16 +1,24 @@
 package com.example.sociamediaapplication.view.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.sociamediaapplication.data.preferences.TokenManager
+import com.example.sociamediaapplication.data.repository.GroupRepository
 import com.example.sociamediaapplication.view.screens.CreateGroupScreen
 import com.example.sociamediaapplication.view.screens.EditGroupScreen
 import com.example.sociamediaapplication.view.screens.GroupDetailsScreen
 import com.example.sociamediaapplication.view.screens.GroupsScreen
+import com.example.sociamediaapplication.viewmodel.GroupViewModel
+import com.example.sociamediaapplication.viewmodel.factory.GroupViewModelFactory
 
 @Composable
 fun GroupsNavGraph(
@@ -18,11 +26,21 @@ fun GroupsNavGraph(
 ){
     val navController = rememberNavController()
 
+    val context = LocalContext.current.applicationContext
+    val tokenManager = remember { TokenManager(context) }
+    val groupRepository = remember { GroupRepository(tokenManager) }
+    val groupViewModelFactory = remember { GroupViewModelFactory(groupRepository) }
+    val groupViewModel: GroupViewModel = viewModel(factory = groupViewModelFactory)
+
     NavHost(
         navController = navController,
-        startDestination = "groups"
+        startDestination = GroupsRoutes.Groups.route
     ){
-        composable("groups") {
+        composable(GroupsRoutes.Groups.route) {
+            LaunchedEffect(Unit) {
+                groupViewModel.loadGroups()
+                groupViewModel.loadMyGroups()
+            }
             GroupsScreen(
                 bNavController,
                 navController,
@@ -31,30 +49,49 @@ fun GroupsNavGraph(
                         GroupsRoutes.Group.createRoute(groupId)
                     )
                 },
-                onEditClick = {groupId->
-                    navController.navigate(
-                        GroupsRoutes.EditGroup.createRoute(groupId)
-                    )
-                }
+//                onEditClick = {groupId->
+//                    navController.navigate(
+//                        GroupsRoutes.EditGroup.createRoute(groupId)
+//                    )
+//                },
+                viewModel = groupViewModel
             )
         }
         composable(
             route = GroupsRoutes.Group.route,
             arguments = listOf(
-                navArgument("groupId"){ type = NavType.StringType}
+                navArgument("groupId"){ type = NavType.IntType}
             )
         ) {backStackEntry->
 
-            val groupId = backStackEntry.arguments?.getString("groupId")
+            val groupId = backStackEntry.arguments?.getInt("groupId")
+
+            LaunchedEffect(groupId){
+                groupId?.let {
+                    groupViewModel.loadGroupDetails(it)
+                    groupViewModel.loadGroupMembers(it)
+                }
+            }
 
             GroupDetailsScreen(
-                groupId = groupId ?: "",
-                navController = navController
+                navController = navController,
+                viewModel = groupViewModel
             )
         }
 
         composable(GroupsRoutes.CreateGroup.route) {
-            CreateGroupScreen(navController = navController)
+
+            LaunchedEffect(Unit) {
+                groupViewModel.loadGroupCategoryTypes()
+            }
+
+            CreateGroupScreen(
+                viewModel = groupViewModel,
+                navController = navController,
+                onGroupCreate = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         composable(
@@ -65,7 +102,11 @@ fun GroupsNavGraph(
         ){backStackEntry->
             val groupId = backStackEntry.arguments?.getString("groupId")
 
-            EditGroupScreen(navController = navController, groupId = groupId?:"")
+            EditGroupScreen(
+                navController = navController,
+                groupId = groupId?:"",
+                viewModel = groupViewModel
+            )
         }
     }
 }

@@ -40,4 +40,9 @@ object RetrofitClient {
     val paymentApi: PaymentApi by lazy {
         retrofit.create(PaymentApi::class.java)
     }
+
+    val groupApi: GroupApi by lazy {
+        retrofit.create(GroupApi::class.java)
+    }
+
 }

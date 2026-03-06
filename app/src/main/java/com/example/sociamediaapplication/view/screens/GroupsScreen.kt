@@ -1,6 +1,5 @@
 package com.example.sociamediaapplication.view.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,12 +21,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,8 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,7 +49,6 @@ import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
-import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.DiscoverGroupsItem
 import com.example.sociamediaapplication.view.components.GroupsItem
 import com.example.sociamediaapplication.view.components.ManageGroupsItem
@@ -68,19 +61,22 @@ import com.example.sociamediaapplication.viewmodel.GroupViewModel
 fun GroupsScreen(
     bnavController: NavController = rememberNavController(),
     navController: NavController = rememberNavController(),
-    onGroupClick: (String)-> Unit = {},
+    onGroupClick: (Int)-> Unit = {},
     onEditClick:(String)-> Unit = {},
     viewModel: GroupViewModel = viewModel()
 ){
 
     var searchTxt by remember { mutableStateOf("") }
 
-    var isDiscoverSelected by remember { mutableStateOf(false) }
 
     val options = listOf("Your Group", "Following", "Discover")
     var selectedOption by remember { mutableStateOf("Your Group") }
 
-    val groups by viewModel.groups.collectAsState()
+
+    val discoverGroups by viewModel.discoverGroups.collectAsState()
+
+    val myGroups by viewModel.myGroups.collectAsState()
+
 
 
     Scaffold(
@@ -307,21 +303,29 @@ fun GroupsScreen(
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
                         }
-                        items(groups){ group->
+                        items(myGroups?.groups?: emptyList()){ group->
                             Card(
                                 onClick = {},
                                 elevation = CardDefaults.cardElevation(2.dp)
                             ) {
-                                ManageGroupsItem(
-                                    isPublic = group.isPublic,
-                                    onPrivacyToggle = {
-                                        viewModel.toggleMyGroupPrivacy(group.id)
-                                    },
-                                    isPostApproval = group.isPostApproval,
-                                    onPostApprovalToggle = { viewModel.togglePostApproval(group.id) },
-                                    onGroupClick = onGroupClick,
-                                    onEditClick = onEditClick
-                                )
+                                if(group.role == "admin"){
+                                    ManageGroupsItem(
+                                        isPrivate = group.privacy != "public",
+                                        groupId = group.id,
+                                        name = group.name,
+                                        onPrivacyToggle = {
+                                            //viewModel.toggleMyGroupPrivacy(group.id)
+                                        },
+                                        //  isPostApproval = group.isPostApproval,
+                                        // onPostApprovalToggle = { viewModel.togglePostApproval(group.id) },
+                                        onGroupClick = onGroupClick,
+                                        //onEditClick = onEditClick,
+                                        viewModel = viewModel,
+                                        total_members = group.member_count,
+                                        image = group.cover_image
+                                        )
+                                }
+
                             }
 
                             Spacer(Modifier.height(16.dp))
@@ -330,16 +334,35 @@ fun GroupsScreen(
                         }
                     }
                     options[1]->{
-                        items(10){
-                            GroupsItem(
-                                onGroupClick = onGroupClick
-                            )
+                        items(myGroups?.groups?: emptyList()){group->
+                            if(group.role == "member"){
+                                GroupsItem(
+                                    groupId = group.id,
+                                    name = group.name,
+                                    memberCount = group.member_count,
+                                    image = group.cover_image,
+                                    isPrivate = group.privacy != "public",
+                                    onGroupClick = onGroupClick,
+                                    onLeave = {
+                                        viewModel.leaveGroup(group.id)
+                                    }
+                                )
+                            }
+
                         }
                     }
                     options[2]->{
-                        items(10){
+                        items(discoverGroups?.groups?: emptyList()){group->
                             DiscoverGroupsItem(
-                                onGroupClick = onGroupClick
+                                groupId = group.id,
+                                name = group.name,
+                                memberCount = group.member_count,
+                                image = group.cover_image,
+                                onGroupClick = { onGroupClick(group.id) },
+                                onJoin = {
+                                    viewModel.joinGroup(group.id)
+                                },
+                                isPrivate = if(group.privacy == "private") true else false
                             )
                         }
                     }

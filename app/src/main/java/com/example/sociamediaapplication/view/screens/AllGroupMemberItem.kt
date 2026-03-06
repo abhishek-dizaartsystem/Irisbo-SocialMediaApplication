@@ -1,8 +1,6 @@
 package com.example.sociamediaapplication.view.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,11 +17,9 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,12 +33,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
-import com.example.sociamediaapplication.ui.theme.Black
+import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.ui.theme.Blue
-import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
-import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.White
 
@@ -51,7 +46,11 @@ fun AllGroupMemberItem(
     painter: Painter = painterResource(R.drawable.rectangle_36__2_),
     name: String = "Arjun",
     joinedOn: String = "Jan 2023",
-    memberType: String = "Member"
+    memberType: String = "Member",
+    username: String = "arjun",
+    image: String = "https://picsum.photos/200",
+    role: String = "admin",
+    uid: Int = 1
 ){
 
 
@@ -78,8 +77,8 @@ fun AllGroupMemberItem(
                 Box(
                     contentAlignment = Alignment.BottomEnd
                 ){
-                    Image(
-                        painter = painter,
+                    AsyncImage(
+                        model = "${RetrofitClient.BASE_URL}$image",
                         contentDescription = "",
                         modifier = Modifier
                             .size(50.dp)
@@ -94,7 +93,7 @@ fun AllGroupMemberItem(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = name,
+                            text = username,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(end = 4.dp)
@@ -104,7 +103,7 @@ fun AllGroupMemberItem(
                                 .background(LLBlue, RoundedCornerShape(12.dp))
                         ) {
                             Text(
-                                text = memberType,
+                                text = role,
                                 color = Blue,
                                 modifier = Modifier.padding(horizontal = 8.dp)
                             )
