@@ -3,6 +3,7 @@ package com.example.sociamediaapplication.viewmodel
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.compose.ui.unit.Velocity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.R
@@ -12,6 +13,8 @@ import com.example.sociamediaapplication.model.Group
 import com.example.sociamediaapplication.model.response.GroupCategoryTypesResponse
 import com.example.sociamediaapplication.model.response.GroupDetailsResponse
 import com.example.sociamediaapplication.model.response.GroupMembersResponse
+import com.example.sociamediaapplication.model.response.GroupPostDetailsResponse
+import com.example.sociamediaapplication.model.response.GroupPostsResponse
 import com.example.sociamediaapplication.model.response.GroupsResponse
 import com.example.sociamediaapplication.model.response.MyGroupsResponse
 import com.google.gson.Gson
@@ -44,9 +47,27 @@ class GroupViewModel(
     private val _groupMembers = MutableStateFlow<GroupMembersResponse?>(null)
     val groupMembers: StateFlow<GroupMembersResponse?> = _groupMembers
 
+    private val _groupPosts = MutableStateFlow<GroupPostsResponse?>(null)
+    val groupPosts: StateFlow<GroupPostsResponse?> = _groupPosts
+
     private val _groupCategoryTypes = MutableStateFlow<GroupCategoryTypesResponse?>(null)
     val groupCategoryTypes: StateFlow<GroupCategoryTypesResponse?> = _groupCategoryTypes
 
+
+    fun loadGroupPosts(
+        groupId: Int,
+        page: Int,
+        limit: Int
+    ){
+        viewModelScope.launch {
+            try {
+                _groupPosts.value = repository.getGroupPosts(groupId, page, limit)
+                Log.d("GROUP_POSTS_DEBUG", "GROUP POSTS = ${_groupPosts.value}")
+            }catch (e: Exception){
+                Log.e("GroupViewModel", e.message, e)
+            }
+        }
+    }
 
     fun loadGroups(){
         viewModelScope.launch {
@@ -75,11 +96,73 @@ class GroupViewModel(
         viewModelScope.launch {
             try{
                 _groupDetails.value = repository.getGroupDetails(group_id)
+                _coverPhoto.value = _groupDetails.value!!.group.cover_image
             }catch (e: Exception){
                 Log.e("GroupViewModel", e.message, e)
             }
         }
 
+    }
+
+    fun updateGroupDetails(
+        groupId: Int,
+        context: Context,
+        imageUri: Uri,
+        name: String,
+        description: String,
+        privacy: String,
+        approvalRequired: Boolean,
+        onlyAdminPost: Boolean,
+        category: Int
+    ){
+        viewModelScope.launch {
+
+            val approval_Required = if(approvalRequired) 1 else 0
+            val only_Admin_Post = if(onlyAdminPost) 1 else 0
+            try {
+                repository.updateGroupDetails(
+                    groupId,
+                    context,
+                    imageUri,
+                    name.toPlainRequestBody(),
+                    description.toPlainRequestBody(),
+                    privacy.toPlainRequestBody(),
+                    approval_Required.toPlainRequestBody(),
+                    only_Admin_Post.toPlainRequestBody(),
+                    category.toString().toPlainRequestBody()
+                )
+            }catch (e: Exception){
+                Log.e("GroupViewModel", e.message?:"")
+            }
+        }
+    }
+
+    private val _groupPostDetails = MutableStateFlow<GroupPostDetailsResponse?>(null)
+    val groupPostDetails: StateFlow<GroupPostDetailsResponse?> = _groupPostDetails
+
+    fun loadGroupPostDetails(
+        postId: Int
+    ){
+        viewModelScope.launch {
+            try{
+                _groupPostDetails.value = repository.getGroupPostDetails(postId)
+
+            }catch (e: Exception){
+                Log.e("GroupViewModel", e.message, e)
+            }
+        }
+    }
+
+    fun deleteGroupPost(
+        postId: Int
+    ){
+        viewModelScope.launch {
+            try {
+                repository.deleteGroupPost(postId)
+            }catch (e: Exception){
+                Log.e("GroupViewModel", e.message, e)
+            }
+        }
     }
 
     fun loadGroupMembers(
@@ -178,6 +261,19 @@ class GroupViewModel(
         }
     }
 
+    fun removeMember(
+        groupId: Int,
+        userId: Int
+    ){
+        viewModelScope.launch {
+            try {
+                repository.removeMember(groupId, userId)
+            }catch (e: Exception){
+                Log.e("GroupViewModel", e.message, e)
+            }
+        }
+    }
+
     fun leaveGroup(groupId: Int) {
         viewModelScope.launch {
             try {
@@ -228,4 +324,7 @@ class GroupViewModel(
             }
         }
     }
+
+
+
 }

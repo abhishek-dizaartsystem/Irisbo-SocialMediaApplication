@@ -5,6 +5,9 @@ import com.example.sociamediaapplication.model.response.AddGroupResponse
 import com.example.sociamediaapplication.model.response.GroupCategoryTypesResponse
 import com.example.sociamediaapplication.model.response.GroupDetailsResponse
 import com.example.sociamediaapplication.model.response.GroupMembersResponse
+import com.example.sociamediaapplication.model.response.GroupPostDetailsResponse
+import com.example.sociamediaapplication.model.response.GroupPostReponse
+import com.example.sociamediaapplication.model.response.GroupPostsResponse
 import com.example.sociamediaapplication.model.response.GroupsResponse
 import com.example.sociamediaapplication.model.response.MyGroupsResponse
 import okhttp3.MultipartBody
@@ -17,6 +20,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface GroupApi {
 
@@ -49,6 +53,21 @@ interface GroupApi {
         @Path("userId") userId: Int
     )
 
+    @Multipart
+    @PUT("api/groups/{groupId}")
+    suspend fun updateGroup(
+        @Header("Authorization") token: String,
+        @Path("groupId") groupId: Int,
+        @Part image: MultipartBody.Part,
+        @Part("name") name: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("privacy") privacy: RequestBody,
+        @Part("approval_required") approval_required: RequestBody,
+        @Part("only_admin_post") only_admin_post: RequestBody,
+        @Part("category_id") category: RequestBody
+    )
+
+
     @DELETE("api/groups/{groupId}/members/{userId}/reject")
     suspend fun rejectMemberRequest(
         @Header("Authorization") token: String,
@@ -77,6 +96,13 @@ interface GroupApi {
         @Path("groupId") groupId: Int
     )
 
+    @DELETE("api/groups/{groupId}/members/{userId}")
+    suspend fun removeMember(
+        @Header("Authorization") token: String,
+        @Path("groupId") groupId: Int,
+        @Path("userId") userId: Int
+    )
+
 
     @Multipart
     @POST("api/groups/add")
@@ -90,4 +116,29 @@ interface GroupApi {
         @Part("only_admin_post") only_admin_post: RequestBody,
         @Part("category_id") category: RequestBody
     ): AddGroupResponse
+
+    @GET("api/groups/{groupId}/posts")
+    suspend fun getGroupPosts(
+        @Header("Authorization") token: String,
+        @Path("groupId") groupId: Int,
+        @Query("page") page: Int,
+        @Query("limit") limit: Int
+    ): GroupPostsResponse
+
+
+
+    @GET("api/groups/posts/{post_id}")
+    suspend fun getGroupPostDetails(
+        @Header("Authorization") token: String,
+        @Path("post_id") postId: Int
+    ): GroupPostDetailsResponse
+
+
+    @DELETE("api/groups/posts/{post_id}")
+    suspend fun deleteGroupPost(
+        @Header("Authorization") token: String,
+        @Path("post_id") postId: Int
+    )
+
+
 }

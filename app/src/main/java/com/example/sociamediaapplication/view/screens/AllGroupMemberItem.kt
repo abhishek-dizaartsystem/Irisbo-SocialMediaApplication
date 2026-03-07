@@ -50,7 +50,8 @@ fun AllGroupMemberItem(
     username: String = "arjun",
     image: String = "https://picsum.photos/200",
     role: String = "admin",
-    uid: Int = 1
+    uid: Int = 1,
+    onRemoveMember: () -> Unit = {}
 ){
 
 
@@ -161,6 +162,8 @@ fun AllGroupMemberItem(
                         },
                         onClick = {
                             showDropDownMenu = false
+
+                            onRemoveMember()
                         },
                         leadingIcon = {
                             Icon(

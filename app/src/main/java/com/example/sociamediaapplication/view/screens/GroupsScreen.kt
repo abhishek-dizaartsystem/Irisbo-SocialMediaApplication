@@ -61,7 +61,7 @@ import com.example.sociamediaapplication.viewmodel.GroupViewModel
 fun GroupsScreen(
     bnavController: NavController = rememberNavController(),
     navController: NavController = rememberNavController(),
-    onGroupClick: (Int)-> Unit = {},
+    onGroupClick: (Int, Boolean)-> Unit = {groupId, isCreator->},
     onEditClick:(String)-> Unit = {},
     viewModel: GroupViewModel = viewModel()
 ){
@@ -358,7 +358,7 @@ fun GroupsScreen(
                                 name = group.name,
                                 memberCount = group.member_count,
                                 image = group.cover_image,
-                                onGroupClick = { onGroupClick(group.id) },
+                                onGroupClick = onGroupClick ,
                                 onJoin = {
                                     viewModel.joinGroup(group.id)
                                 },

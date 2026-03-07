@@ -41,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +53,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -81,23 +83,48 @@ fun EditGroupScreen(
     viewModel: GroupViewModel = viewModel()
 ){
 
-
-
     val categories = listOf(
         "Technology", "Art and Photography", "Health and Fitness", "Travel",
         "Food and Cooking", "Education", "Music", "Business"
     )
 
-    var selectedCategory by remember { mutableStateOf("Category") }
+
     var showDropDownMenu by remember { mutableStateOf(false) }
 
-    var isPrivate by remember { mutableStateOf(true) }
-    var allowMemberPost by remember { mutableStateOf(false) }
-    var isApprovalRequired by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
 
     val coverPhoto by viewModel.coverPhoto.collectAsState()
     val groupProfile by viewModel.groupProfile.collectAsState()
 
+    val groupDetails by viewModel.groupDetails.collectAsState()
+    var isPrivate by remember { mutableStateOf(true) }
+    val groupCategoryTypes by viewModel.groupCategoryTypes.collectAsState()
+
+    var allowMemberPost by remember { mutableStateOf(false) }
+    var isApprovalRequired by remember { mutableStateOf(false) }
+    var selectedCategory by remember { mutableStateOf("") }
+    var selectedCategoryId by remember { mutableStateOf(0) }
+
+    var groupName by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+
+    LaunchedEffect(groupDetails) {
+
+        viewModel.loadGroupCategoryTypes()
+
+        groupDetails?.group?.let { group ->
+            isPrivate = group.privacy=="private"
+            allowMemberPost = !group.only_admin_post
+            isApprovalRequired = group.approval_required
+
+            selectedCategory = group.category_name
+            selectedCategoryId = group.category_id
+
+            groupName = group.name
+            description = group.description
+        }
+    }
     val coverImagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -209,62 +236,64 @@ fun EditGroupScreen(
                             }
 
                         }
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Bottom
-                        ) {
-                            IconButton(
-                                onClick = {
-                                    groupProfilePicker.launch("image/*")
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth(0.25f)
-                                    .padding(start = 20.dp)
-                                    .border(
-                                        width = 4.dp,
-                                        color = Grey,
-                                        shape = RoundedCornerShape(12.dp)
-                                    )
-                                    .aspectRatio(1f)
-
-
-                                ,
-                                shape = RoundedCornerShape(0.dp)
-                            ){
-                                when(groupProfile){
-                                    is Int->{
-                                        Image(
-                                            painter = painterResource(groupProfile as Int),
-                                            contentDescription = "",
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .aspectRatio(1f)
-                                                .clip(RoundedCornerShape(12.dp)),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                    }
-                                    is Uri->{
-                                        AsyncImage(
-                                            model = groupProfile as Uri,
-                                            contentDescription = "",
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .aspectRatio(1f)
-                                                .clip(RoundedCornerShape(12.dp)),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                    }
-                                }
-                            }
-                        }
+//                        Column(
+//                            modifier = Modifier.fillMaxSize(),
+//                            verticalArrangement = Arrangement.Bottom
+//                        ) {
+//                            IconButton(
+//                                onClick = {
+//                                    groupProfilePicker.launch("image/*")
+//                                },
+//                                modifier = Modifier
+//                                    .fillMaxWidth(0.25f)
+//                                    .padding(start = 20.dp)
+//                                    .border(
+//                                        width = 4.dp,
+//                                        color = Grey,
+//                                        shape = RoundedCornerShape(12.dp)
+//                                    )
+//                                    .aspectRatio(1f)
+//
+//
+//                                ,
+//                                shape = RoundedCornerShape(0.dp)
+//                            ){
+//                                when(groupProfile){
+//                                    is Int->{
+//                                        Image(
+//                                            painter = painterResource(groupProfile as Int),
+//                                            contentDescription = "",
+//                                            modifier = Modifier
+//                                                .fillMaxWidth()
+//                                                .aspectRatio(1f)
+//                                                .clip(RoundedCornerShape(12.dp)),
+//                                            contentScale = ContentScale.Crop
+//                                        )
+//                                    }
+//                                    is Uri->{
+//                                        AsyncImage(
+//                                            model = groupProfile as Uri,
+//                                            contentDescription = "",
+//                                            modifier = Modifier
+//                                                .fillMaxWidth()
+//                                                .aspectRatio(1f)
+//                                                .clip(RoundedCornerShape(12.dp)),
+//                                            contentScale = ContentScale.Crop
+//                                        )
+//                                    }
+//                                }
+//                            }
+//                        }
                     }
                 }
 
                 item {
                     CustomTextField(
                         label = "Group name",
-                        value = "travel group",
-                        onValueChange = {},
+                        value = groupName,
+                        onValueChange = {
+                            groupName = it
+                        },
                     )
 
                 }
@@ -272,8 +301,10 @@ fun EditGroupScreen(
                 item {
                     CustomTextField(
                         label = "Description",
-                        value = "What is this group about?",
-                        onValueChange = {},
+                        value = description,
+                        onValueChange = {
+                            description = it
+                        },
                     )
 
                 }
@@ -313,7 +344,7 @@ fun EditGroupScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = selectedCategory,
+                                    text = selectedCategory?:"",
                                     modifier = Modifier
                                 )
                                 Icon(
@@ -336,13 +367,14 @@ fun EditGroupScreen(
                                 .fillMaxWidth(0.8f),
                             containerColor = White
                         ) {
-                            categories.forEach {category->
+                            groupCategoryTypes?.categories?.forEach {category->
                                 DropdownMenuItem(
                                     text = {
-                                        Text(category)
+                                        Text(category.name)
                                     },
                                     onClick = {
-                                        selectedCategory = category
+                                        selectedCategoryId = category.id
+                                        selectedCategory = category.name
                                         showDropDownMenu = false
                                     }
                                 )
@@ -445,7 +477,7 @@ fun EditGroupScreen(
                                 }
                             }
                             Switch(
-                                checked = isApprovalRequired,
+                                checked = isApprovalRequired == true,
                                 onCheckedChange = {
                                     isApprovalRequired = it
                                 },
@@ -491,7 +523,7 @@ fun EditGroupScreen(
                                 }
                             }
                             Switch(
-                                checked = allowMemberPost,
+                                checked = allowMemberPost == true,
                                 onCheckedChange = {
                                     allowMemberPost = it
                                 },
@@ -513,7 +545,21 @@ fun EditGroupScreen(
                         Modifier.fillMaxWidth()
                     ) {
                         Button(
-                            onClick = {},
+                            onClick = {
+                                val coverUri = coverPhoto as? Uri ?: return@Button
+
+                                viewModel.updateGroupDetails(
+                                    groupDetails?.group?.id?:0,
+                                    context,
+                                    coverUri,
+                                    groupName,
+                                    description,
+                                    if (isPrivate) "private" else "public",
+                                    isApprovalRequired,
+                                    !allowMemberPost,
+                                    selectedCategoryId,
+                                )
+                            },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Blue
                             ),

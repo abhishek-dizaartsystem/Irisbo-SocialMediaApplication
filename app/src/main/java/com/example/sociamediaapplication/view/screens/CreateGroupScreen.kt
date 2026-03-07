@@ -202,54 +202,54 @@ fun CreateGroupScreen(
                             }
 
                         }
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Bottom
-                        ) {
-                            IconButton(
-                                onClick = {
-                                    groupProfilePicker.launch("image/*")
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth(0.25f)
-                                    .padding(start = 20.dp)
-                                    .border(
-                                        width = 4.dp,
-                                        color = Grey,
-                                        shape = RoundedCornerShape(12.dp)
-                                    )
-                                    .aspectRatio(1f)
-
-
-                                ,
-                                shape = RoundedCornerShape(0.dp)
-                            ){
-                                when(groupProfile){
-                                    is Int->{
-                                        Image(
-                                            painter = painterResource(groupProfile as Int),
-                                            contentDescription = "",
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .aspectRatio(1f)
-                                                .clip(RoundedCornerShape(12.dp)),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                    }
-                                    is Uri->{
-                                        AsyncImage(
-                                            model = groupProfile as Uri,
-                                            contentDescription = "",
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .aspectRatio(1f)
-                                                .clip(RoundedCornerShape(12.dp)),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                    }
-                                }
-                            }
-                        }
+//                        Column(
+//                            modifier = Modifier.fillMaxSize(),
+//                            verticalArrangement = Arrangement.Bottom
+//                        ) {
+//                            IconButton(
+//                                onClick = {
+//                                    groupProfilePicker.launch("image/*")
+//                                },
+//                                modifier = Modifier
+//                                    .fillMaxWidth(0.25f)
+//                                    .padding(start = 20.dp)
+//                                    .border(
+//                                        width = 4.dp,
+//                                        color = Grey,
+//                                        shape = RoundedCornerShape(12.dp)
+//                                    )
+//                                    .aspectRatio(1f)
+//
+//
+//                                ,
+//                                shape = RoundedCornerShape(0.dp)
+//                            ){
+//                                when(groupProfile){
+//                                    is Int->{
+//                                        Image(
+//                                            painter = painterResource(groupProfile as Int),
+//                                            contentDescription = "",
+//                                            modifier = Modifier
+//                                                .fillMaxWidth()
+//                                                .aspectRatio(1f)
+//                                                .clip(RoundedCornerShape(12.dp)),
+//                                            contentScale = ContentScale.Crop
+//                                        )
+//                                    }
+//                                    is Uri->{
+//                                        AsyncImage(
+//                                            model = groupProfile as Uri,
+//                                            contentDescription = "",
+//                                            modifier = Modifier
+//                                                .fillMaxWidth()
+//                                                .aspectRatio(1f)
+//                                                .clip(RoundedCornerShape(12.dp)),
+//                                            contentScale = ContentScale.Crop
+//                                        )
+//                                    }
+//                                }
+//                            }
+//                        }
                     }
                 }
 

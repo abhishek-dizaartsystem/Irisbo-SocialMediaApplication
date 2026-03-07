@@ -1,7 +1,6 @@
 package com.example.sociamediaapplication.view.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -57,6 +56,7 @@ import com.example.sociamediaapplication.view.navigation.MainRoutes
 import com.example.sociamediaapplication.view.navigation.MenuNavGraph
 import com.example.sociamediaapplication.view.navigation.Routes
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
+import com.example.sociamediaapplication.viewmodel.GroupViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
 import com.example.sociamediaapplication.viewmodel.factory.ProfileViewModelFactory
@@ -66,7 +66,8 @@ import com.example.sociamediaapplication.viewmodel.factory.UploadViewModelFactor
 @Composable
 fun MainScreen(
     mainNavController: NavController,
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel(),
+    groupViewModel: GroupViewModel = viewModel()
 ){
 
 
@@ -307,9 +308,8 @@ fun MainScreen(
 
             composable(MainRoutes.Add.route){
                 UploadScreen(
+                    viewModel = uploadViewModel,
                     navController = navController,
-                    viewModel = uploadViewModel
-
                 )
             }
 
@@ -329,7 +329,8 @@ fun MainScreen(
                 MenuNavGraph(
                     mainNavController,
                     authViewModel = authViewModel,
-                    profileViewModel = profileViewModel
+                    profileViewModel = profileViewModel,
+                    uploadViewModel = uploadViewModel
                 )
             }
 

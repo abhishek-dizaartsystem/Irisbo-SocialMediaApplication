@@ -1,6 +1,5 @@
 package com.example.sociamediaapplication.view.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,7 +29,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +40,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.model.FeedPost
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -55,12 +55,14 @@ import com.example.sociamediaapplication.viewmodel.GroupViewModel
 @Composable
 fun GroupDetailsScreen(
     navController: NavController = rememberNavController(),
-    viewModel: GroupViewModel = viewModel()
+    viewModel: GroupViewModel = viewModel(),
+    isCreator: Boolean = false,
 ){
 
     val groupDetails by viewModel.groupDetails.collectAsState()
     val groupMembers by viewModel.groupMembers.collectAsState()
 
+    val groupPosts by viewModel.groupPosts.collectAsState()
 
     val posts = remember {
         mutableStateListOf(
@@ -77,7 +79,7 @@ fun GroupDetailsScreen(
         item {
             Box(){
                 AsyncImage(
-                    model = groupDetails?.group?.cover_image,
+                    model = "${RetrofitClient.BASE_URL}${groupDetails?.group?.cover_image}",
                     contentDescription = "",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -163,7 +165,7 @@ fun GroupDetailsScreen(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 AsyncImage(
-                                    model = groupDetails?.group?.cover_image,
+                                    model = "${RetrofitClient.BASE_URL}${groupDetails?.group?.cover_image}",
                                     contentDescription = "",
                                     modifier = Modifier
                                         .size(60.dp)
@@ -202,7 +204,16 @@ fun GroupDetailsScreen(
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 Button(
-                                    onClick = {},
+                                    onClick = {
+                                        if(isCreator){
+                                            groupDetails?.group?.id?.let { groupId ->
+                                                navController.navigate(
+                                                    GroupsRoutes.CreateGroupPost.createRoute(groupId)
+                                                )
+                                            }
+                                        }else{
+                                        }
+                                    },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = Blue
                                     ),
@@ -210,7 +221,9 @@ fun GroupDetailsScreen(
                                         .weight(1f)
                                         .fillMaxWidth()
                                 ) {
-                                    Text("Join Group")
+                                    Text(
+                                        if(isCreator) "Add post" else "Join Group"
+                                    )
                                 }
                                 Button(
                                     onClick = {
@@ -225,7 +238,9 @@ fun GroupDetailsScreen(
                                         .weight(1f)
                                         .fillMaxWidth()
                                 ) {
-                                    Text("Edit Group")
+                                    Text(
+                                        if(isCreator) "Edit Group" else "Leave Group"
+                                    )
                                 }
                             }
                         }
@@ -234,32 +249,25 @@ fun GroupDetailsScreen(
             }
         }
 
-        items(posts.size) {index->
-            val post = posts[index]
+        items(groupPosts?.posts?: emptyList()) {post->
             Column(
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Post(
-                    uName = post.userName,
+                    uName = post.username,
                     caption = post.caption,
-                    isFollowing = post.isFollowing,
-                    postLikes = post.likes,
-                    isLiked = post.isLiked,
-
-                    onLiked = {
-                        posts[index] = post.copy(
-                            isLiked = !post.isLiked,
-                            likes = if (post.isLiked)
-                                post.likes - 1
-                            else
-                                post.likes + 1
-                        )
-                    },
-
-                    onFollow = {
-                        posts[index] = post.copy(
-                            isFollowing = !post.isFollowing
-                        )
+                    postLikes = post.likes_count,
+                    isLiked = post.is_liked,
+                    isSaved = post.is_saved,
+                    profileImageUrl = "${RetrofitClient.BASE_URL}${post.profile_img}",
+                    mediaList = post.media_files,
+                    onSaved = {},
+                    type = "group post",
+                    onLiked = {},
+                    onFollow = {},
+                    createdAt = post.created_at,
+                    onDelete = {
+                        viewModel.deleteGroupPost(post.id)
                     }
                 )
             }

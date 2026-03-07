@@ -75,7 +75,7 @@ fun ManageGroupsItem(
     isPostApproval: Boolean = true,
     onPostApprovalToggle: ()-> Unit = {},
     onDelete: ()-> Unit = {},
-    onGroupClick:(Int) -> Unit = {},
+    onGroupClick:(Int, Boolean) -> Unit = {groupId, isCreator->},
     onEditClick: (Int) -> Unit = {}
 ) {
 
@@ -198,7 +198,11 @@ fun ManageGroupsItem(
                                             username = member.username,
                                             image = member.profile_image,
                                             joinedOn = formatPostTime((member.joined_at)),
-                                            role = member.role
+                                            role = member.role,
+                                            onRemoveMember = {
+                                                viewModel.removeMember(groupId, member.user_id)
+                                                viewModel.loadGroupMembers(groupId)
+                                            }
                                         )
                                     }
 
@@ -324,7 +328,7 @@ fun ManageGroupsItem(
             .background(White)
             .clip(RoundedCornerShape(12.dp))
             .clickable{
-                onGroupClick(groupId)
+                onGroupClick(groupId, true)
             }
     ){
         AsyncImage(
@@ -444,7 +448,7 @@ fun ManageGroupsItem(
                                     },
                                     onClick = {
                                         showDropDownMenu = false
-                                        onGroupClick(groupId)
+                                        onGroupClick(groupId, true)
                                     },
                                     leadingIcon = {
                                         Icon(
@@ -538,7 +542,7 @@ fun ManageGroupsItem(
                                     onClick = {
                                         showDropDownMenu = false
                                         viewModel.deleteGroup(groupId)
-                                        viewModel.loadGroups()
+                                        viewModel.loadMyGroups()
                                     },
                                     leadingIcon = {
                                         Icon(

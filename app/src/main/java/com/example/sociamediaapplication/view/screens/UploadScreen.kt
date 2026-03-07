@@ -56,13 +56,14 @@ import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.UploadItem
-import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
 
 @Composable
 fun UploadScreen(
     viewModel: UploadViewModel = viewModel(),
-    navController: NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
+    type: String = "none",
+    groupId: Int? = 0
 ){
 
     val context = LocalContext.current.applicationContext
@@ -105,25 +106,28 @@ fun UploadScreen(
     ) {
 
         Box {
-            Button(
-                onClick = { expanded = true },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Transparent
-                )
-            ) {
-                Text(
-                    text = if (uploadType == UploadType.POST) "Post" else "Reel",
-                    color = Black,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(end = 4.dp)
-                )
-                Icon(
-                    painter = painterResource(R.drawable.back_svgrepo_com),
-                    contentDescription = "",
-                    tint = Black,
-                    modifier = Modifier.size(12.dp).rotate(-90f)
-                )
+            if(type == "none"){
+                Button(
+                    onClick = { expanded = true },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Transparent
+                    )
+                ) {
+                    Text(
+                        text = if (uploadType == UploadType.POST) "Post" else "Reel",
+                        color = Black,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(end = 4.dp)
+                    )
+                    Icon(
+                        painter = painterResource(R.drawable.back_svgrepo_com),
+                        contentDescription = "",
+                        tint = Black,
+                        modifier = Modifier.size(12.dp).rotate(-90f)
+                    )
+                }
             }
+
 
             DropdownMenu(
                 expanded = expanded,
@@ -132,6 +136,7 @@ fun UploadScreen(
                 DropdownMenuItem(
                     text = { Text("Post") },
                     onClick = {
+
                         viewModel.setUploadType(UploadType.POST)
                         expanded = false
                     }
@@ -249,7 +254,12 @@ fun UploadScreen(
                             context
                         )
                     }else{
-                        viewModel.uploadPost(context)
+                        if(type == "group post"){
+                            viewModel.uploadGroupPost(groupId?: 0, context)
+                        }else{
+                            viewModel.uploadPost(context)
+                        }
+
                     }
 
 

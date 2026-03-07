@@ -41,7 +41,7 @@ fun GroupsItem(
     memberCount: Int = 14,
     groupId: Int = 2,
     isPrivate: Boolean = false,
-    onGroupClick: (Int) -> Unit = {},
+    onGroupClick: (Int, Boolean) -> Unit = {groupId, isCreator->},
     onLeave: () -> Unit = {}
 ){
     Card(
@@ -49,7 +49,7 @@ fun GroupsItem(
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable{
-                onGroupClick(groupId)
+                onGroupClick(groupId, false)
             },
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(

@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.formatPostTime
 import com.example.sociamediaapplication.data.utils.isVideo
 import com.example.sociamediaapplication.ui.theme.Black
@@ -75,11 +76,13 @@ fun Post(
     onLiked: () -> Unit = {},
     onFollow: () -> Unit = {},
     onSaved: () -> Unit = {},
+    onDelete: () -> Unit = {},
     isSaved: Boolean = false,
     isLiked: Boolean = false,
     onPostProfileClick: ()-> Unit = {},
     profileImageUrl: String? = null,
-    createdAt: String = ""
+    createdAt: String = "",
+    type: String = "post"
 ){
 
     val sincePosted = remember(createdAt) {
@@ -157,23 +160,26 @@ fun Post(
                                     tint = Blue
                                 )
                             }
-                            Button(
-                                onClick = {onFollow()},
-                                contentPadding = PaddingValues(
-                                    vertical = 0.dp,
-                                    horizontal = 12.dp
-                                ),
-                                modifier = Modifier
-                                    .padding(horizontal = 12.dp)
-                                    .height(24.dp),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Blue
-                                )
-                            ) {
-                                Text(
-                                    text = if(isFollowing) "Unfollow" else "Follow"
-                                )
+                            if(type != "group post"){
+                                Button(
+                                    onClick = {onFollow()},
+                                    contentPadding = PaddingValues(
+                                        vertical = 0.dp,
+                                        horizontal = 12.dp
+                                    ),
+                                    modifier = Modifier
+                                        .padding(horizontal = 12.dp)
+                                        .height(24.dp),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Blue
+                                    )
+                                ) {
+                                    Text(
+                                        text = if(isFollowing) "Unfollow" else "Follow"
+                                    )
+                                }
+
                             }
 
                         }
@@ -231,6 +237,15 @@ fun Post(
 
                             },
                         )
+                        DropdownMenuItem(
+                            text = {
+                                Text("Delete")
+                            },
+                            onClick = {
+                                showDropDownMenu = false
+                                onDelete()
+                            },
+                        )
                     }
                 }
 
@@ -274,7 +289,11 @@ fun Post(
                                 if (isVideo(media)) {
 
                                     AutoVideo(
-                                        url = media,
+                                        url =
+                                            if(type == "group post")
+                                                "${RetrofitClient.BASE_URL}$media"
+                                            else
+                                                media,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .aspectRatio(1f)
@@ -283,7 +302,11 @@ fun Post(
                                 } else {
 
                                     AsyncImage(
-                                        model = media,
+                                        model =
+                                            if (type == "group post")
+                                                "${RetrofitClient.BASE_URL}$media"
+                                            else
+                                                media,
                                         contentDescription = null,
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier

@@ -17,6 +17,8 @@ data class GroupDetails(
     val created_at: String,
     val creatorId: Int,
     val creator_name: String,
+    val category_id: Int,
+    val category_name: String,
     val member_count: Int,
     val membership_status: String,
     val isMember: Boolean

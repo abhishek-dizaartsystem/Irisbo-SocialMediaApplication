@@ -40,7 +40,7 @@ fun DiscoverGroupsItem(
     name: String = "React Developers",
     memberCount: Int = 14,
     groupId: Int = 4,
-    onGroupClick: (Int) -> Unit = {},
+    onGroupClick: (Int, Boolean) -> Unit = {groupId, isCreator->},
     onJoin: () -> Unit = {},
     isPrivate: Boolean = true
 ){
@@ -49,7 +49,7 @@ fun DiscoverGroupsItem(
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable {
-                onGroupClick(groupId)
+                onGroupClick(groupId, false)
             },
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(

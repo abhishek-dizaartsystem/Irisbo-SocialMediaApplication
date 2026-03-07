@@ -2,9 +2,11 @@ package com.example.sociamediaapplication.data.repository
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.uriToFile
+import com.example.sociamediaapplication.model.response.GroupPostDetailsResponse
 import com.example.sociamediaapplication.model.response.LikeResponse
 import com.example.sociamediaapplication.model.response.PostResponse
 import com.example.sociamediaapplication.model.response.SaveResponse
@@ -18,6 +20,8 @@ class PostRepository(
     private val tokenManager: TokenManager
 ) {
     private val api = RetrofitClient.postApi
+
+
 
     suspend fun getPosts(): List<PostResponse> {
         val token = tokenManager.getToken()
@@ -54,6 +58,52 @@ class PostRepository(
         )
     }
 
+    suspend fun createGroupPost(
+        groupId: Int,
+        captionText: String,
+        uris: List<Uri>? = null,
+        context: Context
+    ){
+        val token = tokenManager.getToken()
+            ?: throw IllegalStateException("No token")
+
+        Log.d("TOKEN_DEBUG", token)
+
+        val caption = captionText.toRequestBody("text/plain".toMediaType())
+
+        val mediaParts = uris?.map { uri ->
+
+            val file = uriToFile(uri, context)
+
+            val mime = context.contentResolver.getType(uri) ?: "image/*"
+
+            val requestFile = file.asRequestBody(
+                mime.toMediaTypeOrNull()
+            )
+
+            MultipartBody.Part.createFormData(
+                name = "media",     // must match backend field
+                filename = file.name,
+                body = requestFile
+            )
+        } ?: emptyList()
+
+        api.createGroupPost(
+            "Bearer $token",
+            groupId,
+            caption,
+            media = mediaParts
+        )
+    }
+
+    suspend fun getGroupPostDetails(
+        postId: Int
+    ): GroupPostDetailsResponse{
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.getGroupPostDetails(token, postId)
+    }
+
     suspend fun createPost(
         captionText: String,
         uris: List<Uri>?,   // 🔥 multiple media supported
@@ -62,6 +112,8 @@ class PostRepository(
 
         val token = tokenManager.getToken()
             ?: throw IllegalStateException("No token")
+
+        Log.d("TOKEN_DEBUG", token)
 
         val caption = captionText.toRequestBody("text/plain".toMediaType())
 

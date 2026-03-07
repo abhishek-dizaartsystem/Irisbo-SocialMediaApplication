@@ -2,6 +2,7 @@ package com.example.sociamediaapplication.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.PostRepository
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class UploadViewModel(
     private val repository: PostRepository,
-    private val reelRepository: ReelRepository
+    private val reelRepository: ReelRepository,
 ): ViewModel() {
     private val _caption = MutableStateFlow("")
     val caption: StateFlow<String> = _caption
@@ -55,6 +56,31 @@ class UploadViewModel(
                 
 
             } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun uploadGroupPost(
+        groupId: Int,
+        context: Context
+    ){
+        viewModelScope.launch {
+            try {
+                val uris = mediaList.value.map{it.uri}
+
+                repository.createGroupPost(
+                    groupId,
+                    caption.value,
+                    uris,
+                    context
+                )
+
+                _caption.value = ""
+                _mediaList.value = emptyList()
+            }catch (e: Exception){
+
+                Log.e("UploadGroupPost_Debug", e.message.toString())
                 e.printStackTrace()
             }
         }

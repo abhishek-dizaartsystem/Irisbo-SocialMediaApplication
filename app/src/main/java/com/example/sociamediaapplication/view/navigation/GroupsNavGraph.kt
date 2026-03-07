@@ -17,20 +17,25 @@ import com.example.sociamediaapplication.view.screens.CreateGroupScreen
 import com.example.sociamediaapplication.view.screens.EditGroupScreen
 import com.example.sociamediaapplication.view.screens.GroupDetailsScreen
 import com.example.sociamediaapplication.view.screens.GroupsScreen
+import com.example.sociamediaapplication.view.screens.UploadScreen
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
+import com.example.sociamediaapplication.viewmodel.UploadViewModel
 import com.example.sociamediaapplication.viewmodel.factory.GroupViewModelFactory
 
 @Composable
 fun GroupsNavGraph(
-    bNavController: NavController = rememberNavController()
+    bNavController: NavController = rememberNavController(),
+    uploadViewModel: UploadViewModel
 ){
     val navController = rememberNavController()
 
     val context = LocalContext.current.applicationContext
     val tokenManager = remember { TokenManager(context) }
+
     val groupRepository = remember { GroupRepository(tokenManager) }
     val groupViewModelFactory = remember { GroupViewModelFactory(groupRepository) }
     val groupViewModel: GroupViewModel = viewModel(factory = groupViewModelFactory)
+
 
     NavHost(
         navController = navController,
@@ -44,9 +49,9 @@ fun GroupsNavGraph(
             GroupsScreen(
                 bNavController,
                 navController,
-                onGroupClick = {groupId->
+                onGroupClick = {groupId, isCreator->
                     navController.navigate(
-                        GroupsRoutes.Group.createRoute(groupId)
+                        GroupsRoutes.Group.createRoute(groupId, isCreator)
                     )
                 },
 //                onEditClick = {groupId->
@@ -60,22 +65,27 @@ fun GroupsNavGraph(
         composable(
             route = GroupsRoutes.Group.route,
             arguments = listOf(
-                navArgument("groupId"){ type = NavType.IntType}
+                navArgument("groupId"){ type = NavType.IntType},
+                navArgument("isCreator"){ type = NavType.BoolType}
             )
         ) {backStackEntry->
 
             val groupId = backStackEntry.arguments?.getInt("groupId")
+            val isCreator = backStackEntry.arguments?.getBoolean("isCreator")
+
 
             LaunchedEffect(groupId){
                 groupId?.let {
                     groupViewModel.loadGroupDetails(it)
                     groupViewModel.loadGroupMembers(it)
+                    groupViewModel.loadGroupPosts(it, 1, 10)
                 }
             }
 
             GroupDetailsScreen(
                 navController = navController,
-                viewModel = groupViewModel
+                viewModel = groupViewModel,
+                isCreator = isCreator == true,
             )
         }
 
@@ -91,6 +101,23 @@ fun GroupsNavGraph(
                 onGroupCreate = {
                     navController.popBackStack()
                 }
+            )
+        }
+
+        composable(
+            route = GroupsRoutes.CreateGroupPost.route,
+            arguments = listOf(
+                navArgument("groupId") { type = NavType.IntType }
+            )
+        ) {backStackEntry->
+
+            val groupId = backStackEntry.arguments?.getInt("groupId")
+
+            UploadScreen(
+                navController = navController,
+                viewModel = uploadViewModel,
+                type = "group post",
+                groupId = groupId
             )
         }
 

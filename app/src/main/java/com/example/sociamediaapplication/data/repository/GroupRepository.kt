@@ -10,6 +10,8 @@ import com.example.sociamediaapplication.model.response.AddGroupResponse
 import com.example.sociamediaapplication.model.response.GroupCategoryTypesResponse
 import com.example.sociamediaapplication.model.response.GroupDetailsResponse
 import com.example.sociamediaapplication.model.response.GroupMembersResponse
+import com.example.sociamediaapplication.model.response.GroupPostDetailsResponse
+import com.example.sociamediaapplication.model.response.GroupPostsResponse
 import com.example.sociamediaapplication.model.response.GroupsResponse
 import com.example.sociamediaapplication.model.response.MyGroupResponse
 import com.example.sociamediaapplication.model.response.MyGroupsResponse
@@ -45,6 +47,46 @@ class GroupRepository(
         val token = "Bearer ${tokenManager.getToken()}"
 
         return api.getGroupDetails(token, group_id)
+    }
+
+    suspend fun updateGroupDetails(
+        groupId: Int,
+        context: Context,
+        imageUri: Uri,
+        name: RequestBody,
+        description: RequestBody,
+        privacy: RequestBody,
+        approvalRequired: RequestBody,
+        onlyAdminPost: RequestBody,
+        category: RequestBody
+    ){
+        val token = tokenManager.getToken()
+
+        val file = uriToFile(imageUri, context)
+
+        val mime = context.contentResolver.getType(imageUri) ?: "image/jpeg"
+
+        val requestFile = file.asRequestBody(
+            mime.toMediaTypeOrNull()
+        )
+
+        val imagePart = MultipartBody.Part.createFormData(
+            "cover_image",
+            file.name,
+            requestFile
+        )
+
+        api.updateGroup(
+            token = "Bearer $token",
+            groupId = groupId,
+            image = imagePart,
+            name = name,
+            description = description,
+            privacy = privacy,
+            approval_required = approvalRequired,
+            only_admin_post = onlyAdminPost,
+            category = category
+        )
     }
 
     suspend fun getGroupMembers(
@@ -96,6 +138,14 @@ class GroupRepository(
         api.joinGroup(token, groupId)
     }
 
+    suspend fun removeMember(
+        groupId: Int,
+        userId: Int
+    ){
+        val token = "Bearer ${tokenManager.getToken()}"
+        api.removeMember(token, groupId, userId)
+    }
+
 
 
     suspend fun addGroup(
@@ -138,4 +188,32 @@ class GroupRepository(
         Log.d("UPLOAD_DEBUG", "SUCCESS RESPONSE = $response")
         return@withContext response
     }
+
+    suspend fun getGroupPosts(
+        groupId: Int,
+        page: Int,
+        limit: Int
+    ): GroupPostsResponse{
+        val token = "Bearer ${tokenManager.getToken()}"
+        val response = api.getGroupPosts(token, groupId, page, limit)
+
+        return response
+    }
+
+    suspend fun getGroupPostDetails(
+        postId: Int
+    ): GroupPostDetailsResponse{
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.getGroupPostDetails(token, postId)
+    }
+
+    suspend fun deleteGroupPost(
+        postId: Int
+    ){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        api.deleteGroupPost(token, postId)
+    }
+
 }

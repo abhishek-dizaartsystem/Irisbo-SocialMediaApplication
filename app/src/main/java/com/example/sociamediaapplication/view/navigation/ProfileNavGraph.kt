@@ -20,6 +20,7 @@ import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
+import com.example.sociamediaapplication.viewmodel.UploadViewModel
 import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 
@@ -27,7 +28,8 @@ import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 fun ProfileNavGraph(
     authViewModel: AuthViewModel,
     mainNavController: NavController,
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    uploadViewModel: UploadViewModel
 ){
     val navController = rememberNavController()
 
@@ -104,7 +106,8 @@ fun ProfileNavGraph(
             MenuNavGraph(
                 mainNavController = mainNavController,
                 authViewModel = authViewModel,
-                profileViewModel = profileViewModel
+                profileViewModel = profileViewModel,
+                uploadViewModel = uploadViewModel
             )
         }
     }
