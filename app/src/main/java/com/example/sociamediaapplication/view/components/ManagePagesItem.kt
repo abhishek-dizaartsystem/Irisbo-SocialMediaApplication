@@ -730,7 +730,7 @@ fun ManagePagesItem(
                                             fontSize = 16.sp)
                                     },
                                     onClick = {
-                                        onPageClick("1")
+                                        onPageClick(pageId.toString())
                                     },
                                     leadingIcon = {
                                         Icon(

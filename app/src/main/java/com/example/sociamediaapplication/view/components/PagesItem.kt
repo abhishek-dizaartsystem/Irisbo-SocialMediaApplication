@@ -1,6 +1,5 @@
 package com.example.sociamediaapplication.view.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,13 +38,14 @@ fun PagesItem(
     memberCount: Int = 14,
     category: String = "Technology",
     onPageClick: (String) -> Unit = {},
+    id: Int = 0,
 ){
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .clickable{
-                onPageClick("2")
+                onPageClick(id.toString())
             },
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(

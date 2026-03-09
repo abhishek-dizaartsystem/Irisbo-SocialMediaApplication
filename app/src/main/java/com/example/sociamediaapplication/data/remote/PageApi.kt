@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.data.remote
 
 import com.example.sociamediaapplication.model.response.PageFollowersResponse
+import com.example.sociamediaapplication.model.response.PagePostsResponse
 import com.example.sociamediaapplication.model.response.PagesResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -23,6 +24,12 @@ interface PageApi {
         @Header("Authorization") token: String,
         @Path("pageId") pageId: Int
     ): PageFollowersResponse
+
+    @GET("api/pages/{pageId}/posts")
+    suspend fun fetchPagePosts(
+        @Header("Authorization") token: String,
+        @Path("pageId") pageId: Int
+    ): PagePostsResponse
 
     @Multipart
     @POST("api/pages")

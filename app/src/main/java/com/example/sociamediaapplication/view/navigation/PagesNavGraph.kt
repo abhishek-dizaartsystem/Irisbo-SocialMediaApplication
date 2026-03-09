@@ -68,7 +68,8 @@ fun PagesNavGraph(
 
             PageScreen(
                 pageId = pageId ?: "",
-                navController = navController
+                navController = navController,
+                viewModel = pageViewModel
             )
         }
 

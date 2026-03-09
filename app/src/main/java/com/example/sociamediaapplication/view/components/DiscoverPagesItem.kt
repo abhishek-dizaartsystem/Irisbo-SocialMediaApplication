@@ -1,18 +1,14 @@
 package com.example.sociamediaapplication.view.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -34,7 +30,6 @@ import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.GreyTxt
-import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.White
 
@@ -46,15 +41,16 @@ fun DiscoverPagesItem(
     memberCount: Int = 14,
     category: String = "Technology",
     isLiked: Boolean = false,
-    onPageClick: (String)-> Unit = {},
-    onFollow: ()-> Unit = {}
+    onPageClick: (String) -> Unit = {},
+    onFollow: () -> Unit = {},
+    id: Int = 0
 ){
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp)
             .clickable{
-                onPageClick("3")
+                onPageClick(id.toString())
             },
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(

@@ -1,11 +1,13 @@
 package com.example.sociamediaapplication.viewmodel
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.repository.PageRepository
 import com.example.sociamediaapplication.model.response.PageFollowersResponse
+import com.example.sociamediaapplication.model.response.PagePostsResponse
 import com.example.sociamediaapplication.model.response.PagesResponse
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +30,9 @@ class PageViewModel(
     private val _pageFollowers = MutableStateFlow<PageFollowersResponse?>(null)
     val pageFollowers: StateFlow<PageFollowersResponse?> = _pageFollowers
 
+    private val _pagePosts = MutableStateFlow<PagePostsResponse?>(null)
+    val pagePosts: StateFlow<PagePostsResponse?> = _pagePosts
+
     fun loadPages(){
         viewModelScope.launch {
             val pages = repository.fetchPages()
@@ -40,6 +45,19 @@ class PageViewModel(
         viewModelScope.launch {
             val response = repository.fetchPageFollowers(pageId)
             _pageFollowers.value = response
+        }
+    }
+
+    fun loadPagePosts(pageId: Int){
+        viewModelScope.launch {
+            try {
+                Log.d("PAGE_POSTS", "Fetching posts for pageId=$pageId")
+                val response = repository.fetchPagePosts(pageId)
+                Log.d("PAGE_POSTS", "Fetched ${response.data.size} posts, success=${response.success}")
+                _pagePosts.value = response
+            } catch (e: Exception) {
+                Log.e("PAGE_POSTS", "Error fetching page posts: ${e.message}", e)
+            }
         }
     }
 

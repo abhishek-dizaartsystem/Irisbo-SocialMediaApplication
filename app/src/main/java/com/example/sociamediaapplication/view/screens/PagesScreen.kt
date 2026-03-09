@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,6 +71,12 @@ fun PagesScreen(
     val pages by viewModel.pages.collectAsState()
 
     val pageFollowersResponse by viewModel.pageFollowers.collectAsState()
+
+    LaunchedEffect(pages) {
+        pages?.data?.forEach { page ->
+            android.util.Log.d("PAGES_DATA", "Page id=${page.id}, name='${page.name}', role=${page.user_role}")
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -306,6 +313,7 @@ fun PagesScreen(
                         "Liked" -> {
                             if(page.is_following == 1){
                                 PagesItem(
+                                    id = page.id,
                                     onPageClick = onPageClick,
                                     image = page.profile_image,
                                     name = page.name,
@@ -316,6 +324,7 @@ fun PagesScreen(
                         }
                         else -> {
                             DiscoverPagesItem(
+                                id = page.id,
                                 onPageClick = onPageClick,
                                 image = page.profile_image,
                                 name = page.name,
