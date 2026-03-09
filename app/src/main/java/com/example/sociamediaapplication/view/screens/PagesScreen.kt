@@ -69,6 +69,8 @@ fun PagesScreen(
 
     val pages by viewModel.pages.collectAsState()
 
+    val pageFollowersResponse by viewModel.pageFollowers.collectAsState()
+
     Scaffold(
         topBar = {
             Column(
@@ -292,7 +294,11 @@ fun PagesScreen(
                                     followers_count = page.followers_count,
                                     pageId = page.id,
                                     onPageClick = onPageClick,
-                                    onEditPageClick = onEditPageClick
+                                    onEditPageClick = onEditPageClick,
+                                    onShowMembers = { pageId ->
+                                        viewModel.loadPageFollowers(pageId)
+                                    },
+                                    pageFollowers = pageFollowersResponse?.data ?: emptyList()
                                 )
                             }
 

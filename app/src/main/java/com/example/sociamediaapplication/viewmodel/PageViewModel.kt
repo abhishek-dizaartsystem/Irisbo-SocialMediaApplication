@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.repository.PageRepository
+import com.example.sociamediaapplication.model.response.PageFollowersResponse
 import com.example.sociamediaapplication.model.response.PagesResponse
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,12 +25,22 @@ class PageViewModel(
     private val _pages = MutableStateFlow<PagesResponse?>(null)
     val pages: StateFlow<PagesResponse?> = _pages
 
+    private val _pageFollowers = MutableStateFlow<PageFollowersResponse?>(null)
+    val pageFollowers: StateFlow<PageFollowersResponse?> = _pageFollowers
+
     fun loadPages(){
         viewModelScope.launch {
             val pages = repository.fetchPages()
             _pages.value = pages
         }
 
+    }
+
+    fun loadPageFollowers(pageId: Int){
+        viewModelScope.launch {
+            val response = repository.fetchPageFollowers(pageId)
+            _pageFollowers.value = response
+        }
     }
 
     fun updateCoverImage(uri: Uri){

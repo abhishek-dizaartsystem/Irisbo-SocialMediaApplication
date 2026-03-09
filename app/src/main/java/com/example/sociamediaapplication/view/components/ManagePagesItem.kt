@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.model.response.PageFollower
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -70,7 +73,9 @@ fun ManagePagesItem(
     onPostApprovalToggle: () -> Unit = {},
     onDelete: () -> Unit = {},
     onPageClick: (String) -> Unit = {},
-    onEditPageClick: (Int) -> Unit = {}
+    onEditPageClick: (Int) -> Unit = {},
+    onShowMembers: (Int) -> Unit = {},
+    pageFollowers: List<PageFollower> = emptyList()
 ) {
 
     val sheetState = rememberModalBottomSheetState()
@@ -175,6 +180,81 @@ fun ManagePagesItem(
                             }
                         }
 
+                    }
+                }
+
+                "show members" -> {
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Text(
+                            text = "Page Members",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                        if (pageFollowers.isEmpty()) {
+                            Text(
+                                text = "No members found",
+                                color = GreyTxt,
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(vertical = 16.dp)
+                            )
+                        } else {
+                            LazyColumn(
+                                Modifier
+                                    .padding(vertical = 12.dp, horizontal = 4.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                items(pageFollowers) { follower ->
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 4.dp),
+                                        elevation = CardDefaults.cardElevation(2.dp),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = White
+                                        )
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(12.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            AsyncImage(
+                                                model = if (follower.profile_image.isNotEmpty())
+                                                    "${RetrofitClient.BASE_URL}${follower.profile_image}"
+                                                else
+                                                    R.drawable.rectangle_36__2_,
+                                                contentDescription = "",
+                                                modifier = Modifier
+                                                    .size(50.dp)
+                                                    .aspectRatio(1f)
+                                                    .clip(CircleShape),
+                                                contentScale = ContentScale.Crop
+                                            )
+                                            Column(
+                                                modifier = Modifier.padding(start = 12.dp)
+                                            ) {
+                                                Text(
+                                                    text = follower.username,
+                                                    fontSize = 18.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                                Text(
+                                                    text = "Follower",
+                                                    fontSize = 14.sp,
+                                                    color = GreyTxt
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -708,6 +788,26 @@ fun ManagePagesItem(
                                     leadingIcon = {
                                         Icon(
                                             painter = painterResource(R.drawable.edit_1_svgrepo_com),
+                                            contentDescription = "",
+                                            Modifier.size(24.dp)
+                                        )
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            "Show Members",
+                                            fontSize = 16.sp)
+                                    },
+                                    onClick = {
+                                        showDropDownMenu = false
+                                        onShowMembers(pageId)
+                                        sheetType = "show members"
+                                        showSheet = true
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            painter = painterResource(R.drawable.team_3),
                                             contentDescription = "",
                                             Modifier.size(24.dp)
                                         )
