@@ -1,7 +1,6 @@
 package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,7 +41,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -58,13 +59,18 @@ import com.example.sociamediaapplication.view.screens.GroupMemberRequestItem
 @Composable
 fun ManagePagesItem(
     isPublic: Boolean = true,
-    pageId: String = "1",
-    onPrivacyToggle: ()-> Unit = {},
+    coverImage: String? = "",
+    profileImage: String? = "",
+    pageId: Int = 1,
+    name: String = "React Developers",
+    followers_count: Int = 28,
+    category: String = "Technology",
+    onPrivacyToggle: () -> Unit = {},
     isPostApproval: Boolean = true,
-    onPostApprovalToggle: ()-> Unit = {},
-    onDelete: ()-> Unit = {},
-    onPageClick:(String) -> Unit = {},
-    onEditPageClick:(String) -> Unit = {}
+    onPostApprovalToggle: () -> Unit = {},
+    onDelete: () -> Unit = {},
+    onPageClick: (String) -> Unit = {},
+    onEditPageClick: (Int) -> Unit = {}
 ) {
 
     val sheetState = rememberModalBottomSheetState()
@@ -528,8 +534,8 @@ fun ManagePagesItem(
             .background(White)
             .clip(RoundedCornerShape(12.dp))
     ){
-        Image(
-            painter = painterResource(R.drawable.travel),
+        AsyncImage(
+            model = "${RetrofitClient.BASE_URL}uploads/$coverImage"?:R.drawable.travel,
             contentDescription = "",
             modifier = Modifier
                 .fillMaxWidth()
@@ -564,8 +570,8 @@ fun ManagePagesItem(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            Image(
-                                painter = painterResource(R.drawable.travel),
+                            AsyncImage(
+                                model = "${RetrofitClient.BASE_URL}uploads/$profileImage"?:R.drawable.travel,
                                 contentDescription = "",
                                 modifier = Modifier
                                     .size(50.dp)
@@ -579,7 +585,7 @@ fun ManagePagesItem(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "React Developers ",
+                                        text = name,
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -599,12 +605,12 @@ fun ManagePagesItem(
                                 ) {
 
                                     Text(
-                                        "28K followers",
+                                        "$followers_count followers",
                                         color = GreyTxt,
                                         fontSize = 14.sp
                                     )
                                     Text(
-                                        "Technology",
+                                        category,
                                         color = GreyTxt,
                                         fontSize = 14.sp
                                     )

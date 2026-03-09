@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.GreyTxt
@@ -40,11 +41,13 @@ import com.example.sociamediaapplication.ui.theme.White
 @Composable
 fun DiscoverPagesItem(
     painter: Painter = painterResource(R.drawable.react_laptop),
+    image: String? = "",
     name: String = "Tech Reviews Hub",
-    memberCount: String = "14K members",
+    memberCount: Int = 14,
     category: String = "Technology",
     isLiked: Boolean = false,
-    onPageClick: (String)-> Unit = {}
+    onPageClick: (String)-> Unit = {},
+    onFollow: ()-> Unit = {}
 ){
     Card(
         modifier = Modifier
@@ -66,8 +69,8 @@ fun DiscoverPagesItem(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painter,
+                AsyncImage(
+                    model = image ?: R.drawable.react_laptop,
                     contentDescription = "",
                     modifier = Modifier
                         .size(60.dp)
@@ -97,7 +100,7 @@ fun DiscoverPagesItem(
                         color = GreyTxt
                     )
                     Text(
-                        text = memberCount,
+                        text = "$memberCount followers",
                         fontSize = 12.sp,
                         color = GreyTxt
                     )
@@ -105,7 +108,7 @@ fun DiscoverPagesItem(
             }
             Row() {
                 IconButton(
-                    onClick = {},
+                    onClick = onFollow,
                     modifier = Modifier
                         .size(44.dp)
                         .padding(end = 8.dp)
@@ -118,25 +121,6 @@ fun DiscoverPagesItem(
                     Icon(
                         painter = painterResource(
                             if(isLiked) R.drawable.heart_filled_svgrepo_com else R.drawable.heart_svgrepo_com),
-                        contentDescription = "",
-                        tint = Blue,
-                        modifier = Modifier
-                            .size(24.dp)
-                    )
-                }
-                IconButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .size(44.dp)
-                        .padding(end = 8.dp)
-                        .aspectRatio(1f),
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = LLBlue
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.add_svgrepo_com),
                         contentDescription = "",
                         tint = Blue,
                         modifier = Modifier

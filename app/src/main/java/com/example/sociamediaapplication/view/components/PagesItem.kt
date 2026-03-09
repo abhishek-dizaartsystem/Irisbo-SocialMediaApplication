@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.White
@@ -33,8 +34,9 @@ import com.example.sociamediaapplication.ui.theme.White
 @Composable
 fun PagesItem(
     painter: Painter = painterResource(R.drawable.react_laptop),
+    image: String? = "",
     name: String = "Tech Reviews Hub",
-    memberCount: String = "14K members",
+    memberCount: Int = 14,
     category: String = "Technology",
     onPageClick: (String) -> Unit = {},
 ){
@@ -60,8 +62,8 @@ fun PagesItem(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painter,
+                AsyncImage(
+                    model = image,
                     contentDescription = "",
                     modifier = Modifier
                         .size(60.dp)
@@ -91,7 +93,7 @@ fun PagesItem(
                         color = GreyTxt
                     )
                     Text(
-                        text = memberCount,
+                        text = "$memberCount Followers",
                         fontSize = 12.sp,
                         color = GreyTxt
                     )

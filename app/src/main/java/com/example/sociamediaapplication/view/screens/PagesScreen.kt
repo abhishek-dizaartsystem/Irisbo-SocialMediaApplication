@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,14 +46,10 @@ import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
-import com.example.sociamediaapplication.ui.theme.White
-import com.example.sociamediaapplication.view.components.DiscoverGroupsItem
 import com.example.sociamediaapplication.view.components.DiscoverPagesItem
-import com.example.sociamediaapplication.view.components.GroupsItem
 import com.example.sociamediaapplication.view.components.ManagePagesItem
 import com.example.sociamediaapplication.view.components.PagesItem
 import com.example.sociamediaapplication.view.navigation.PagesRoutes
-import com.example.sociamediaapplication.viewmodel.GroupViewModel
 import com.example.sociamediaapplication.viewmodel.PageViewModel
 
 @Composable
@@ -59,7 +57,7 @@ fun PagesScreen(
     bnavController: NavController = rememberNavController(),
     navController: NavController = rememberNavController(),
     onPageClick: (String)-> Unit = {},
-    onEditPageClick: (String) -> Unit = {},
+    onEditPageClick: (Int) -> Unit = {},
     viewModel: PageViewModel = viewModel()
 ){
 
@@ -68,6 +66,8 @@ fun PagesScreen(
     var isDiscoverSelected by remember { mutableStateOf(true) }
 
     var optionSelected by remember { mutableStateOf("Your Pages") }
+
+    val pages by viewModel.pages.collectAsState()
 
     Scaffold(
         topBar = {
@@ -281,22 +281,41 @@ fun PagesScreen(
                     Spacer(Modifier.height(4.dp))
 
                 }
-                items(10){
+                items(pages?.data?: emptyList()){page->
                     when (optionSelected) {
                         "Your Pages" -> {
-                            ManagePagesItem(
-                                onPageClick = onPageClick,
-                                onEditPageClick = onEditPageClick
-                            )
+                            if(page.user_role == "admin"){
+                                ManagePagesItem(
+                                    name = page.name,
+                                    coverImage = page.cover_image,
+                                    profileImage = page.profile_image,
+                                    followers_count = page.followers_count,
+                                    pageId = page.id,
+                                    onPageClick = onPageClick,
+                                    onEditPageClick = onEditPageClick
+                                )
+                            }
+
                         }
                         "Liked" -> {
-                            PagesItem(
-                                onPageClick = onPageClick
-                            )
+                            if(page.is_following == 1){
+                                PagesItem(
+                                    onPageClick = onPageClick,
+                                    image = page.profile_image,
+                                    name = page.name,
+                                    memberCount = page.followers_count
+                                )
+                            }
+
                         }
                         else -> {
                             DiscoverPagesItem(
-                                onPageClick = onPageClick
+                                onPageClick = onPageClick,
+                                image = page.profile_image,
+                                name = page.name,
+                                memberCount = page.followers_count,
+                                //category = page.category,
+                                isLiked = page.is_following == 1
                             )
                         }
                     }

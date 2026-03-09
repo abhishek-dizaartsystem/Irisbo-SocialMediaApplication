@@ -45,4 +45,8 @@ object RetrofitClient {
         retrofit.create(GroupApi::class.java)
     }
 
+    val pageApi: PageApi by lazy {
+        retrofit.create(PageApi::class.java)
+    }
+
 }
