@@ -89,6 +89,11 @@ fun CreatePageScreen(
     var phone by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
+    var selectedCategory by remember{ mutableStateOf("Category") }
+    var selectedCategoryId by remember{ mutableStateOf(0) }
+    
+    var showDropDownMenu by remember { mutableStateOf(false) }
+
 
     val categories by viewModel.categories.collectAsState()
 
@@ -285,6 +290,82 @@ fun CreatePageScreen(
                 }
 
                 item {
+
+                    Column(
+                        modifier = Modifier,
+                        verticalArrangement = Arrangement.Bottom,
+                    ) {
+
+                        Text(
+                            text = "Category",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        Column(
+                            modifier = Modifier
+                                .border(
+                                    1.dp,
+                                    color = Grey,
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                                .height(50.dp)
+                                .clickable{
+                                    showDropDownMenu = true
+                                },
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Row(
+                                Modifier
+                                    .padding(horizontal = 12.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = selectedCategory,
+                                    modifier = Modifier
+                                )
+                                Icon(
+                                    painter = painterResource(R.drawable.back_svgrepo_com),
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .rotate(-90f)
+                                )
+                            }
+
+                        }
+                        DropdownMenu(
+                            expanded = showDropDownMenu,
+                            onDismissRequest = {
+                                showDropDownMenu = false
+                            },
+                            Modifier
+                                .height(150.dp)
+                                .fillMaxWidth(0.8f),
+                            containerColor = White
+                        ) {
+                            categories?.categories?.forEach {category->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(category.name)
+                                    },
+                                    onClick = {
+                                        selectedCategory = category.name
+                                        selectedCategoryId = category.id
+                                        showDropDownMenu = false
+                                    }
+                                )
+                                HorizontalDivider()
+                            }
+                        }
+
+                    }
+                }
+
+                item {
                     Card(
                         onClick = {},
                         elevation = CardDefaults.cardElevation(2.dp),
@@ -342,7 +423,8 @@ fun CreatePageScreen(
                                     phone = phone,
                                     email = email,
                                     address = address,
-                                    context = context
+                                    context = context,
+                                    categoryId = selectedCategoryId
                                 )
                             }
                         },

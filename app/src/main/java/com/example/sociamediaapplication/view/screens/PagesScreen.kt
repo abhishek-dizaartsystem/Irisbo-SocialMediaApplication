@@ -308,7 +308,8 @@ fun PagesScreen(
                                     onShowMembers = { pageId ->
                                         viewModel.loadPageFollowers(pageId)
                                     },
-                                    pageFollowers = pageFollowersResponse?.data ?: emptyList()
+                                    pageFollowers = pageFollowersResponse?.data ?: emptyList(),
+                                    category = page.category_name
                                 )
                             }
 
@@ -323,7 +324,8 @@ fun PagesScreen(
                                     memberCount = page.followers_count,
                                     onUnfollow = {
                                         viewModel.unfollowPage(page.id)
-                                    }
+                                    },
+                                    category = page.category_name
                                 )
                             }
 
@@ -336,11 +338,11 @@ fun PagesScreen(
                                     image = page.profile_image,
                                     name = page.name,
                                     memberCount = page.followers_count,
-                                    //category = page.category,
                                     isLiked = page.is_following == 1,
                                     onFollow = {
                                         viewModel.followPage(page.id)
-                                    }
+                                    },
+                                    category = page.category_name
                                 )
                             }
 

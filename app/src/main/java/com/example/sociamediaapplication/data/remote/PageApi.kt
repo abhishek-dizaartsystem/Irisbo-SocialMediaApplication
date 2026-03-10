@@ -44,7 +44,8 @@ interface PageApi {
         @Part("website") website: RequestBody,
         @Part("phone") phone: RequestBody,
         @Part("email") email: RequestBody,
-        @Part("address") address: RequestBody
+        @Part("address") address: RequestBody,
+        @Part("category_id") category_id: RequestBody
     )
 
     @DELETE("api/pages/{pageId}")

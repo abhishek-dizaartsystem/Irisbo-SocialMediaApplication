@@ -46,7 +46,8 @@ class PageRepository(
         phone: String,
         email: String,
         address: String,
-        context: Context
+        context: Context,
+        category_id: Int
     ) {
         val token = "Bearer ${tokenManager.getToken()}"
 
@@ -56,6 +57,7 @@ class PageRepository(
         val phoneBody = phone.toRequestBody("text/plain".toMediaType())
         val emailBody = email.toRequestBody("text/plain".toMediaType())
         val addressBody = address.toRequestBody("text/plain".toMediaType())
+        val categoryIdBody = address.toRequestBody("text/plain".toMediaType())
 
         val profileFile = uriToFile(profileImageUri, context)
         val profileMime = context.contentResolver.getType(profileImageUri) ?: "image/*"
@@ -82,7 +84,8 @@ class PageRepository(
             websiteBody,
             phoneBody,
             emailBody,
-            addressBody
+            addressBody,
+            categoryIdBody
         )
     }
 

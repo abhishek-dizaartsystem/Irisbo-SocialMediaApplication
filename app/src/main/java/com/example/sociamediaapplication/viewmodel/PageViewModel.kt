@@ -80,13 +80,14 @@ class PageViewModel(
         phone: String,
         email: String,
         address: String,
-        context: Context
+        context: Context,
+        categoryId: Int
     ) {
         viewModelScope.launch {
             try {
                 repository.createPage(
                     name, bio, profileImageUri, coverImageUri,
-                    website, phone, email, address, context
+                    website, phone, email, address, context, categoryId
                 )
                 _createPageSuccess.emit(true)
             } catch (e: Exception) {

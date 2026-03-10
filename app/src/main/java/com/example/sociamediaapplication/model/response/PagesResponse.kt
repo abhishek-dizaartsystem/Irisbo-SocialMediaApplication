@@ -16,7 +16,9 @@ data class PageResponse(
     val phone: String,
     val email: String,
     val address: String,
+    val category_id: Int,
     val created_at: String,
+    val category_name: String,
     val followers_count: Int,
     val is_following: Int,
     val user_role: String?
