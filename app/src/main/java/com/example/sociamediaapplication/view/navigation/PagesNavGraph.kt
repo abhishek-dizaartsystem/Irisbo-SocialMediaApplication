@@ -74,6 +74,9 @@ fun PagesNavGraph(
         }
 
         composable(PagesRoutes.CreatePage.route) {
+            LaunchedEffect(Unit) {
+                pageViewModel.loadCatgories()
+            }
             CreatePageScreen(
                 navController = navController,
                 viewModel = pageViewModel

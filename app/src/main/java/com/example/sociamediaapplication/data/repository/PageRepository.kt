@@ -5,6 +5,7 @@ import android.net.Uri
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.uriToFile
+import com.example.sociamediaapplication.model.response.PageCategoriesResponse
 import com.example.sociamediaapplication.model.response.PageFollowersResponse
 import com.example.sociamediaapplication.model.response.PagePostsResponse
 import com.example.sociamediaapplication.model.response.PagesResponse
@@ -98,5 +99,10 @@ class PageRepository(
     suspend fun unfollowPage(pageId: Int) {
         val token = "Bearer ${tokenManager.getToken()}"
         api.unfollowPage(token, pageId)
+    }
+
+    suspend fun fetchCategoriesType(): PageCategoriesResponse {
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.fetchCategories(token)
     }
 }

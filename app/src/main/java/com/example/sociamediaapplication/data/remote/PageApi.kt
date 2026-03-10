@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.data.remote
 
+import com.example.sociamediaapplication.model.response.PageCategoriesResponse
 import com.example.sociamediaapplication.model.response.PageFollowersResponse
 import com.example.sociamediaapplication.model.response.PagePostsResponse
 import com.example.sociamediaapplication.model.response.PagesResponse
@@ -63,4 +64,18 @@ interface PageApi {
         @Header("Authorization") token: String,
         @Path("pageId") pageId: Int
     )
+
+    @GET("api/pages/categories")
+    suspend fun fetchCategories(
+        @Header("Authorization") token: String
+    ): PageCategoriesResponse
+
+
+
+//    @GET("api/pages/categories/{categoryId}/pages")
+//    suspend fun fetchCategoryPages(
+//        @Header("Authorization") token: String,
+//        @Path("categoryId") categoryId: Int
+//    ): CategoryPagesResponse
+
 }

@@ -90,6 +90,8 @@ fun CreatePageScreen(
     var email by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
 
+    val categories by viewModel.categories.collectAsState()
+
     val coverPhoto by viewModel.coverPhoto.collectAsState()
     val pageProfile by viewModel.pageProfile.collectAsState()
 

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.repository.PageRepository
+import com.example.sociamediaapplication.model.response.PageCategoriesResponse
 import com.example.sociamediaapplication.model.response.PageFollowersResponse
 import com.example.sociamediaapplication.model.response.PagePostsResponse
 import com.example.sociamediaapplication.model.response.PagesResponse
@@ -37,6 +38,10 @@ class PageViewModel(
 
     private val _createPageSuccess = MutableSharedFlow<Boolean>()
     val createPageSuccess: SharedFlow<Boolean> = _createPageSuccess
+
+    private val _categories = MutableStateFlow<PageCategoriesResponse?>(null)
+    val categories: StateFlow<PageCategoriesResponse?> = _categories
+
 
     fun loadPages(){
         viewModelScope.launch {
@@ -121,6 +126,16 @@ class PageViewModel(
                 loadPages()
             } catch (e: Exception) {
                 Log.e("UNFOLLOW_PAGE", "Error unfollowing page: ${e.message}", e)
+            }
+        }
+    }
+
+    fun loadCatgories(){
+        viewModelScope.launch {
+            try {
+                _categories.value = repository.fetchCategoriesType()
+            } catch (e: Exception){
+                Log.e("FETCH_CATEGORIES", "Error fetching categories: ${e.message}", e)
             }
         }
     }
