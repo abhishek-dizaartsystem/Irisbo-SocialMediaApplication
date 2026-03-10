@@ -2,6 +2,7 @@ package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -11,10 +12,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.GreyTxt
+import com.example.sociamediaapplication.ui.theme.Red
 import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
@@ -38,8 +46,12 @@ fun PagesItem(
     memberCount: Int = 14,
     category: String = "Technology",
     onPageClick: (String) -> Unit = {},
+    onUnfollow: () -> Unit = {},
     id: Int = 0,
 ){
+
+    var showDropDownMenu by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -99,16 +111,49 @@ fun PagesItem(
                     )
                 }
             }
-            IconButton(
-                onClick = {},
-                modifier = Modifier
-                    .size(30.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.menu_dots_svgrepo_com),
-                    contentDescription = "",
-                    tint = GreyTxt
-                )
+            Box {
+                IconButton(
+                    onClick = {
+                        showDropDownMenu = true
+                    },
+                    modifier = Modifier
+                        .size(30.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.menu_dots_svgrepo_com),
+                        contentDescription = "",
+                        tint = GreyTxt
+                    )
+                }
+                DropdownMenu(
+                    expanded = showDropDownMenu,
+                    onDismissRequest = {
+                        showDropDownMenu = false
+                    },
+                    containerColor = White
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                "Unfollow Page",
+                                fontSize = 16.sp,
+                                color = Red
+                            )
+                        },
+                        onClick = {
+                            showDropDownMenu = false
+                            onUnfollow()
+                        },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.heart_svgrepo_com),
+                                contentDescription = "",
+                                Modifier.size(24.dp),
+                                tint = Red
+                            )
+                        }
+                    )
+                }
             }
         }
     }

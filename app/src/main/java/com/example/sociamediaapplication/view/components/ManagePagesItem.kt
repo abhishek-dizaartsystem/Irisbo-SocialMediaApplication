@@ -835,7 +835,10 @@ fun ManagePagesItem(
                                             fontSize = 16.sp,
                                             color = Red)
                                     },
-                                    onClick = {},
+                                    onClick = {
+                                        showDropDownMenu = false
+                                        onDelete()
+                                    },
                                     leadingIcon = {
                                         Icon(
                                             painter = painterResource(R.drawable.delete_svgrepo_com),

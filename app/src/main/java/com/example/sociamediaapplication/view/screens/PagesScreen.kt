@@ -302,6 +302,9 @@ fun PagesScreen(
                                     pageId = page.id,
                                     onPageClick = onPageClick,
                                     onEditPageClick = onEditPageClick,
+                                    onDelete = {
+                                        viewModel.deletePage(page.id)
+                                    },
                                     onShowMembers = { pageId ->
                                         viewModel.loadPageFollowers(pageId)
                                     },
@@ -311,27 +314,36 @@ fun PagesScreen(
 
                         }
                         "Liked" -> {
-                            if(page.is_following == 1){
+                            if(page.is_following == 1 && page.user_role != "admin"){
                                 PagesItem(
                                     id = page.id,
                                     onPageClick = onPageClick,
                                     image = page.profile_image,
                                     name = page.name,
-                                    memberCount = page.followers_count
+                                    memberCount = page.followers_count,
+                                    onUnfollow = {
+                                        viewModel.unfollowPage(page.id)
+                                    }
                                 )
                             }
 
                         }
                         else -> {
-                            DiscoverPagesItem(
-                                id = page.id,
-                                onPageClick = onPageClick,
-                                image = page.profile_image,
-                                name = page.name,
-                                memberCount = page.followers_count,
-                                //category = page.category,
-                                isLiked = page.is_following == 1
-                            )
+                            if(page.user_role != "admin"){
+                                DiscoverPagesItem(
+                                    id = page.id,
+                                    onPageClick = onPageClick,
+                                    image = page.profile_image,
+                                    name = page.name,
+                                    memberCount = page.followers_count,
+                                    //category = page.category,
+                                    isLiked = page.is_following == 1,
+                                    onFollow = {
+                                        viewModel.followPage(page.id)
+                                    }
+                                )
+                            }
+
                         }
                     }
                 }

@@ -199,7 +199,12 @@ fun PageScreen(
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 Button(
-                                    onClick = {},
+                                    onClick = {
+                                        val id = pageId.toIntOrNull()
+                                        if (id != null) {
+                                            viewModel.followPage(id)
+                                        }
+                                    },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = Blue
                                     ),

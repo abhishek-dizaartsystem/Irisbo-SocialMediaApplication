@@ -5,6 +5,7 @@ import com.example.sociamediaapplication.model.response.PagePostsResponse
 import com.example.sociamediaapplication.model.response.PagesResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
@@ -35,10 +36,31 @@ interface PageApi {
     @POST("api/pages")
     suspend fun createPage(
         @Header("Authorization") token: String,
-        @Part cover_image: MultipartBody.Part,
         @Part profile_image: MultipartBody.Part,
+        @Part cover_image: MultipartBody.Part,
         @Part("name") name: RequestBody,
-        @Part("description") description: RequestBody,
-        @Part("category_id") category: RequestBody
+        @Part("bio") bio: RequestBody,
+        @Part("website") website: RequestBody,
+        @Part("phone") phone: RequestBody,
+        @Part("email") email: RequestBody,
+        @Part("address") address: RequestBody
+    )
+
+    @DELETE("api/pages/{pageId}")
+    suspend fun deletePage(
+        @Header("Authorization") token: String,
+        @Path("pageId") pageId: Int
+    )
+
+    @POST("api/pages/{pageId}/follow")
+    suspend fun followPage(
+        @Header("Authorization") token: String,
+        @Path("pageId") pageId: Int
+    )
+
+    @DELETE("api/pages/{pageId}/unfollow")
+    suspend fun unfollowPage(
+        @Header("Authorization") token: String,
+        @Path("pageId") pageId: Int
     )
 }

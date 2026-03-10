@@ -40,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -71,7 +73,6 @@ import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.CustomTextField
-import com.example.sociamediaapplication.viewmodel.GroupViewModel
 import com.example.sociamediaapplication.viewmodel.PageViewModel
 
 @Composable
@@ -80,22 +81,26 @@ fun CreatePageScreen(
     viewModel: PageViewModel = viewModel()
 ){
 
+    val context = LocalContext.current
 
-
-    val categories = listOf(
-        "Technology", "Art and Photography", "Health and Fitness", "Travel",
-        "Food and Cooking", "Education", "Music", "Business"
-    )
-
-    var selectedCategory by remember { mutableStateOf("Category") }
-    var showDropDownMenu by remember { mutableStateOf(false) }
-
-    var isPrivate by remember { mutableStateOf(true) }
-    var allowMemberPost by remember { mutableStateOf(false) }
-    var isApprovalRequired by remember { mutableStateOf(false) }
+    var pageName by remember { mutableStateOf("") }
+    var pageBio by remember { mutableStateOf("") }
+    var website by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var address by remember { mutableStateOf("") }
 
     val coverPhoto by viewModel.coverPhoto.collectAsState()
     val pageProfile by viewModel.pageProfile.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.createPageSuccess.collect { success ->
+            if (success) {
+                viewModel.loadPages()
+                navController.popBackStack()
+            }
+        }
+    }
 
     val coverImagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -136,7 +141,7 @@ fun CreatePageScreen(
                     )
                 }
                 Text(
-                    text = "Create Group",
+                    text = "Create Page",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
@@ -262,94 +267,19 @@ fun CreatePageScreen(
                 item {
                     CustomTextField(
                         label = "Page name",
-                        value = "travel group",
-                        onValueChange = {},
+                        value = pageName,
+                        onValueChange = { pageName = it },
                     )
 
                 }
 
                 item {
                     CustomTextField(
-                        label = "Description",
-                        value = "What is this page about?",
-                        onValueChange = {},
+                        label = "Bio",
+                        value = pageBio,
+                        onValueChange = { pageBio = it },
                     )
 
-                }
-
-                item {
-
-                    Column(
-                        modifier = Modifier,
-                        verticalArrangement = Arrangement.Bottom,
-                    ) {
-
-                        Text(
-                            text = "Category",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-
-                        Spacer(modifier = Modifier.height(6.dp))
-
-                        Column(
-                            modifier = Modifier
-                                .border(
-                                    1.dp,
-                                    color = Grey,
-                                    shape = RoundedCornerShape(16.dp)
-                                )
-                                .height(50.dp)
-                                .clickable{
-                                    showDropDownMenu = true
-                                },
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Row(
-                                Modifier
-                                    .padding(horizontal = 12.dp)
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = selectedCategory,
-                                    modifier = Modifier
-                                )
-                                Icon(
-                                    painter = painterResource(R.drawable.back_svgrepo_com),
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                        .rotate(-90f)
-                                )
-                            }
-
-                        }
-                        DropdownMenu(
-                            expanded = showDropDownMenu,
-                            onDismissRequest = {
-                                showDropDownMenu = false
-                            },
-                            Modifier
-                                .height(150.dp)
-                                .fillMaxWidth(0.8f),
-                            containerColor = White
-                        ) {
-                            categories.forEach {category->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(category)
-                                    },
-                                    onClick = {
-                                        selectedCategory = category
-                                        showDropDownMenu = false
-                                    }
-                                )
-                                HorizontalDivider()
-                            }
-                        }
-
-                    }
                 }
 
                 item {
@@ -371,23 +301,23 @@ fun CreatePageScreen(
                             )
                             CustomTextField(
                                 label = "Website",
-                                value = "https://yourwebsite.com",
-                                onValueChange = {},
+                                value = website,
+                                onValueChange = { website = it },
                             )
                             CustomTextField(
                                 label = "Phone",
-                                value = "+91 1234567890",
-                                onValueChange = {},
+                                value = phone,
+                                onValueChange = { phone = it },
                             )
                             CustomTextField(
                                 label = "Email",
-                                value = "contact@yourpage.com",
-                                onValueChange = {},
+                                value = email,
+                                onValueChange = { email = it },
                             )
                             CustomTextField(
                                 label = "Address",
-                                value = "NX1 greater noida near gaurs",
-                                onValueChange = {},
+                                value = address,
+                                onValueChange = { address = it },
                             )
 
                         }
@@ -397,7 +327,23 @@ fun CreatePageScreen(
 
                 item {
                     Button(
-                        onClick = {},
+                        onClick = {
+                            val profileUri = pageProfile as? Uri
+                            val coverUri = coverPhoto as? Uri
+                            if (profileUri != null && coverUri != null && pageName.isNotBlank()) {
+                                viewModel.createPage(
+                                    name = pageName,
+                                    bio = pageBio,
+                                    profileImageUri = profileUri,
+                                    coverImageUri = coverUri,
+                                    website = website,
+                                    phone = phone,
+                                    email = email,
+                                    address = address,
+                                    context = context
+                                )
+                            }
+                        },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Blue
                         ),
@@ -405,7 +351,7 @@ fun CreatePageScreen(
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
-                            text = "Create Group",
+                            text = "Create Page",
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
