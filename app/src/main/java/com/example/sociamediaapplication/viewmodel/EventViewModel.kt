@@ -21,8 +21,8 @@ class EventViewModel(
 ): ViewModel() {
 
 
-    private val _coverPhoto = MutableStateFlow<Any>(R.drawable.coverphoto)
-    val coverPhoto: StateFlow<Any> = _coverPhoto
+    private val _coverPhoto = MutableStateFlow<Uri?>(null)
+    val coverPhoto: StateFlow<Uri?> = _coverPhoto
 
     private val _eventProfile = MutableStateFlow<Any>(R.drawable.photoinitial)
     val eventProfile: StateFlow<Any> = _eventProfile
@@ -97,6 +97,7 @@ class EventViewModel(
         viewModelScope.launch{
             try{
                 repository.deleteEvent(eventId)
+                loadMyEvents()
             } catch (e: Exception){
                 Log.e("Event_Debug", e.toString())
             }

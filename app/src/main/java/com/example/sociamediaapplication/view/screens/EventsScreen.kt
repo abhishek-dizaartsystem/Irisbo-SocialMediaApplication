@@ -57,6 +57,7 @@ fun EventsScreen(
     navController: NavController = rememberNavController(),
     onEventClick: (Int, Boolean) -> Unit = { eventId, isCreator -> },
     viewModel: EventViewModel,
+    onCreateClick: () -> Unit = {},
 ){
 
     var searchTxt by remember { mutableStateOf("") }
@@ -99,11 +100,19 @@ fun EventsScreen(
                         fontSize = 18.sp
                     )
 
-                    Text(
-                        text = "Save",
-                        fontSize = 18.sp,
-                        color = White
-                    )
+                    Button(
+                        onClick = {
+                            onCreateClick()
+                        }
+                    ) {
+                        Text(
+                            text = "+ Create",
+                            fontSize = 18.sp,
+                            color = White
+                        )
+
+                    }
+
 
 
                 }
@@ -225,7 +234,8 @@ fun EventsScreen(
                                 )
                             },
                             image = event.cover_image,
-                            time = formatToTime(event.start_time)
+                            time = formatToTime(event.start_time),
+                            onDelete = { viewModel.deleteEvent(event.id) }
                         )
                     }
                 }
@@ -259,6 +269,6 @@ fun EventsScreen(
 @Composable
 fun EventsScreenPreview(){
     EventsScreen(
-        viewModel = viewModel()
+        viewModel = viewModel(),
     )
 }

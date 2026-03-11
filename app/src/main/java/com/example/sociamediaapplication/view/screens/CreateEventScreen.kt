@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -58,6 +59,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -102,6 +104,10 @@ fun CreateEventScreen(
     var allowMemberPost by remember { mutableStateOf(false) }
     var isApprovalRequired by remember { mutableStateOf(false) }
     var isVirtualEvent by remember { mutableStateOf(false) }
+    var name by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf("") }
+
 
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -112,6 +118,8 @@ fun CreateEventScreen(
 
     val coverPhoto by viewModel.coverPhoto.collectAsState()
     val eventProfile by viewModel.eventProfile.collectAsState()
+
+    val context = LocalContext.current.applicationContext
 
     val coverImagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -278,9 +286,9 @@ fun CreateEventScreen(
                 item {
                     CustomTextField(
                         label = "Event name",
-                        value = "",
+                        value = name,
                         placeHolder = "Event Name",
-                        onValueChange = {},
+                        onValueChange = {name = it},
                     )
 
                 }
@@ -291,7 +299,7 @@ fun CreateEventScreen(
                             label = "Date",
                             value = selectedDate,
                             placeHolder = "dd-mm-yyyy",
-                            onValueChange = {},
+                            onValueChange = {selectedDate = it},
                             modifier = Modifier
                                 .weight(1f)
                                 .clickable { showDatePicker = true },
@@ -301,7 +309,7 @@ fun CreateEventScreen(
                         CustomTextField(
                             label = "Starts at",
                             value = selectedTime,
-                            onValueChange = {},
+                            onValueChange = {selectedTime = it},
                             modifier = Modifier
                                 .weight(1f)
                                 .clickable { showTimePicker = true },
@@ -373,9 +381,9 @@ fun CreateEventScreen(
                 if(!isVirtualEvent){
                     item {
                         CustomTextField(
-                            label = "Location",
-                            value = "Add address",
-                            onValueChange = {},
+                            label = "Add address",
+                            value = location,
+                            onValueChange = {location = it},
                         )
 
                     }
@@ -461,9 +469,9 @@ fun CreateEventScreen(
 
                 item {
                     CustomTextField(
-                        label = "Description",
-                        value = "What is this event about?",
-                        onValueChange = {},
+                        label = "What is this event about?",
+                        value = description,
+                        onValueChange = {description = it},
                     )
 
                 }
@@ -471,7 +479,17 @@ fun CreateEventScreen(
 
                 item {
                     Button(
-                        onClick = {},
+                        onClick = {
+                            viewModel.createEvent(
+                                context,
+                                title = name,
+                                description = description,
+                                location_name = if(isVirtualEvent) "" else location,
+                                start_time = "$selectedDate $selectedTime",
+                                end_time = "",
+                                cover_image_uri = coverPhoto?: Uri.parse("")
+                            )
+                        },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Blue
                         ),
@@ -520,7 +538,7 @@ fun CreateEventScreen(
                     is24Hour = false
                 )
 
-                androidx.compose.material3.AlertDialog(
+                AlertDialog(
                     onDismissRequest = { showTimePicker = false },
                     confirmButton = {
                         Button(onClick = {

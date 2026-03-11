@@ -49,6 +49,9 @@ fun EventNavGraph(bNavController: NavHostController) {
                         EventRoutes.Event.createRoute(eventId, isCreator)
                     )
                 },
+                onCreateClick = {
+                    navController.navigate(EventRoutes.CreateEvent.route)
+                },
                 viewModel = eventViewModel
             )
         }
@@ -73,17 +76,8 @@ fun EventNavGraph(bNavController: NavHostController) {
             )
         }
         composable(
-            EventRoutes.CreateEvent.route,
-            arguments = listOf(
-                navArgument("eventId"){type = NavType.IntType},
-                navArgument("isCreator"){type = NavType.BoolType}
-            )
-        ){backStackEntry->
-            val eventId = backStackEntry.arguments?.getInt("eventId")
-
-            LaunchedEffect(eventId) {
-                eventViewModel.loadEventDetails(eventId?:0)
-            }
+            EventRoutes.CreateEvent.route
+        ){
             CreateEventScreen(
                 navController = navController,
                 viewModel = eventViewModel

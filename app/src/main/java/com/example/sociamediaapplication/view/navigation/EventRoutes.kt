@@ -5,7 +5,5 @@ sealed class EventRoutes(val route: String) {
     object Event: EventRoutes("event/{eventId}/{isCreator}"){
         fun createRoute(eventId: Int, isCreator: Boolean) = "event/$eventId/$isCreator"
     }
-    object CreateEvent: EventRoutes("createEvent/{eventId}/{isCreator}"){
-        fun createRoute(eventId: Int, isCreator: Boolean) = "createEvent/$eventId/$isCreator"
-    }
+    object CreateEvent: EventRoutes("createEvent")
 }
