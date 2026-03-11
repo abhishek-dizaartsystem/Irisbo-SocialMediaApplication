@@ -2,6 +2,7 @@ package com.example.sociamediaapplication.data.remote
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 
 object RetrofitClient {
 
@@ -47,6 +48,10 @@ object RetrofitClient {
 
     val pageApi: PageApi by lazy {
         retrofit.create(PageApi::class.java)
+    }
+
+    val eventApi: EventApi by lazy {
+        retrofit.create(EventApi::class.java)
     }
 
 }

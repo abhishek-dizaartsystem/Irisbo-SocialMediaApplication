@@ -22,9 +22,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,16 +36,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.formatToDate
+import com.example.sociamediaapplication.data.utils.formatToTime
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
+import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.White
+import com.example.sociamediaapplication.viewmodel.EventViewModel
 
 @Composable
 fun EventScreen(
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    navController: NavHostController = rememberNavController(),
+    viewModel: EventViewModel,
+    isCreator: Boolean = false
 ) {
+
+    val eventDetails by viewModel.eventDetails.collectAsState()
 
     LazyColumn(
         modifier = Modifier
@@ -58,7 +71,7 @@ fun EventScreen(
             Box {
 
                 AsyncImage(
-                    model = R.drawable.rectangle_24,
+                    model = eventDetails?.event?.cover_image,
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -77,7 +90,7 @@ fun EventScreen(
                         modifier = Modifier
                             .size(42.dp)
                             .background(White.copy(.9f), CircleShape)
-                            .clickable { onBack() },
+                            .clickable { navController.popBackStack() },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -148,7 +161,7 @@ fun EventScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        "Tech Conference 2025",
+                        eventDetails?.event?.title?:"Tech Conference",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.weight(1f)
@@ -184,8 +197,11 @@ fun EventScreen(
                     Spacer(Modifier.width(12.dp))
 
                     Column {
-                        Text("Feb 15, 2025")
-                        Text("9:00 AM - 5:00 PM", color = Color.Gray)
+                        Text(formatToDate(eventDetails?.event?.start_time?: "Feb 15, 2025"))
+                        Text(
+                            "${formatToTime(eventDetails?.event?.start_time?: "9:00 AM")} - ${formatToTime(eventDetails?.event?.end_time?: "5:00 PM")}",
+                            color = Color.Gray
+                        )
                     }
                 }
 
@@ -211,7 +227,7 @@ fun EventScreen(
 
                     Spacer(Modifier.width(12.dp))
 
-                    Text("Convention Center, Downtown")
+                    Text(eventDetails?.event?.location_name?:"Convention Center, Downtown")
                 }
 
                 Spacer(Modifier.height(18.dp))
@@ -294,11 +310,7 @@ fun EventScreen(
                 Spacer(Modifier.height(8.dp))
 
                 Text(
-                    "Join us for the biggest tech conference of the year! " +
-                            "Featuring keynote speakers from top tech companies, " +
-                            "hands-on workshops, and networking opportunities. " +
-                            "Whether you're a developer, designer, or entrepreneur, " +
-                            "this event has something for everyone.",
+                    eventDetails?.event?.description?: "Description of event",
                     color = Color(0xff6b7a90)
                 )
 
@@ -313,10 +325,10 @@ fun EventScreen(
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xffc7d6f5)
+                            containerColor = LLBlue
                         )
                     ) {
-                        Text("✓ Registered", color = Color(0xff1d6ef2))
+                        Text("✓ Registered", color = Blue)
                     }
 
                     Spacer(Modifier.width(12.dp))
@@ -361,5 +373,7 @@ fun EventScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun EventScreenPreview(){
-    EventScreen()
+    EventScreen(
+        viewModel = viewModel()
+    )
 }

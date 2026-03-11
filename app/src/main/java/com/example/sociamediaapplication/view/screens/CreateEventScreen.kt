@@ -78,13 +78,14 @@ import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.CustomTextField
+import com.example.sociamediaapplication.viewmodel.EventViewModel
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateEventScreen(
     navController: NavController = rememberNavController(),
-    viewModel: GroupViewModel = viewModel()
+    viewModel: EventViewModel
 ){
 
 
@@ -110,7 +111,7 @@ fun CreateEventScreen(
 
 
     val coverPhoto by viewModel.coverPhoto.collectAsState()
-    val eventProfile by viewModel.groupProfile.collectAsState()
+    val eventProfile by viewModel.eventProfile.collectAsState()
 
     val coverImagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -125,7 +126,7 @@ fun CreateEventScreen(
         contract = ActivityResultContracts.GetContent()
     ) {uri: Uri?->
         uri?.let{
-            viewModel.updateGroupProfile(uri)
+            viewModel.updateEventProfile(uri)
         }
     }
 
@@ -550,5 +551,7 @@ fun CreateEventScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun CreateEventScreenPreview(){
-    CreateEventScreen()
+    CreateEventScreen(
+        viewModel = viewModel()
+    )
 }

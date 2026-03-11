@@ -47,3 +47,47 @@ fun formatPostTime(isoDate: String): String {
         ""
     }
 }
+
+fun formatToDate(isoDate: String): String {
+    return try{
+        val date = isoDate.split("T")[0]
+        val year = date.split("-")[0]
+        val month = date.split("-")[1]
+        val day = date.split("-")[2]
+
+        val monthName = when(month.toInt()){
+            1 -> "Jan"
+            2 -> "Feb"
+            3 -> "Mar"
+            4 -> "Apr"
+            5 -> "May"
+            6 -> "Jun"
+            7 -> "Jul"
+            8 -> "Aug"
+            9 -> "Sep"
+            10 -> "Oct"
+            11 -> "Nov"
+            12 -> "Dec"
+            else -> ""
+        }
+        "$day $monthName $year"
+    } catch (e: Exception){
+        isoDate
+    }
+}
+
+fun formatToTime(isoDate: String): String{
+    return try{
+        val time = isoDate.split("T")[1]
+        val hour = time.split(":")[0]
+        val minute = time.split(":")[1]
+
+        if(hour.toInt() >= 12){
+            "${hour.toInt() - 12}:${minute} PM"
+        } else{
+            "${hour.toInt()}:${minute} AM"
+        }
+    } catch(e: Exception){
+        isoDate
+    }
+}

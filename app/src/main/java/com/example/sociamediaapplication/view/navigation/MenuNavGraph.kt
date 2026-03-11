@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.view.screens.AdvancedSettingsScreen
-import com.example.sociamediaapplication.view.screens.EventsScreen
 import com.example.sociamediaapplication.view.screens.FriendsScreen
 import com.example.sociamediaapplication.view.screens.GamesScreen
 import com.example.sociamediaapplication.view.screens.JobsScreen
@@ -106,7 +105,7 @@ fun MenuNavGraph(
             FriendsScreen(navController)
         }
         composable(MenuRoutes.Events.route) {
-            EventsScreen(navController)
+            EventNavGraph(bNavController = navController,)
         }
         composable(MenuRoutes.Jobs.route) {
             JobsScreen(navController)

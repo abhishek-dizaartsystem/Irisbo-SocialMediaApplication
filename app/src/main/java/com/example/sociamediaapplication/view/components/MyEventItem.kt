@@ -6,10 +6,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -35,7 +37,7 @@ import com.example.sociamediaapplication.ui.theme.TransparentWhite
 import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
-fun EventItem(
+fun MyEventItem(
     date: String = "Feb 15, 2026",
     name: String = "Tech Conference 2026",
     time: String = "9:00 A.M",
@@ -143,35 +145,40 @@ fun EventItem(
                         modifier = Modifier.padding(start = 6.dp)
                     )
                 }
-                Button(
-                    onClick = {},
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isInterested)LLBlue else Blue
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    if(isInterested){
-                        Icon(
-                            painter = painterResource(R.drawable.tick_svgrepo_com),
-                            contentDescription = null,
-                            tint = Blue,
-                            modifier = Modifier.size(16.dp)
-                        )
+                Row() {
+                    Button(
+                        onClick = {},
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Blue
+                        ),
+                        modifier = Modifier.fillMaxWidth().weight(1f)
+                    ) {
                         Text(
-                            text = "Going",
-                            color = Blue,
-                            fontSize = 14.sp
-                        )
-                    }else{
-                        Text(
-                            text = "Interested",
+                            text = "Update Event",
                             color = White,
                             fontSize = 14.sp
                         )
                     }
 
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Button(
+                        onClick = {},
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Blue
+                        ),
+                        modifier = Modifier.fillMaxWidth().weight(1f)
+                    ) {
+                        Text(
+                            text = "View participants",
+                            color = White,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
+
             }
         }
     }
@@ -179,6 +186,6 @@ fun EventItem(
 
 @Preview(showBackground = true)
 @Composable
-fun EventItemPreview(){
-    EventItem()
+fun MyEventItemPreview(){
+    MyEventItem()
 }
