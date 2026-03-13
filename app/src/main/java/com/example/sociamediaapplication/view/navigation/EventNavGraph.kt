@@ -78,6 +78,10 @@ fun EventNavGraph(bNavController: NavHostController) {
         composable(
             EventRoutes.CreateEvent.route
         ){
+
+            LaunchedEffect(Unit) {
+                eventViewModel.loadCategories()
+            }
             CreateEventScreen(
                 navController = navController,
                 viewModel = eventViewModel

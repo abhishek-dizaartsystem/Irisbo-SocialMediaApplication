@@ -12,8 +12,9 @@ data class MyEvent(
     val description: String,
     val cover_image: String,
     val location_name: String,
-    val start_time: String,
-    val end_time: String,
+    val start_time: String?,
+    val end_time: String?,
+    val category: String?,
     val created_at: String,
     val updated_at: String
 )

@@ -10,20 +10,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,13 +34,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
@@ -58,7 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -75,13 +68,11 @@ import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
-import com.example.sociamediaapplication.ui.theme.LGrey
-import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.CustomTextField
 import com.example.sociamediaapplication.viewmodel.EventViewModel
-import com.example.sociamediaapplication.viewmodel.GroupViewModel
+import androidx.core.net.toUri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,13 +82,10 @@ fun CreateEventScreen(
 ){
 
 
-
-    val categories = listOf(
-        "Technology", "Art and Photography", "Health and Fitness", "Travel",
-        "Food and Cooking", "Education", "Music", "Business"
-    )
+    val categories by viewModel.categories.collectAsState()
 
     var selectedCategory by remember { mutableStateOf("Category") }
+    var selectedCategoryId by remember { mutableStateOf(0) }
     var showDropDownMenu by remember { mutableStateOf(false) }
 
     var isPrivate by remember { mutableStateOf(true) }
@@ -117,7 +105,6 @@ fun CreateEventScreen(
 
 
     val coverPhoto by viewModel.coverPhoto.collectAsState()
-    val eventProfile by viewModel.eventProfile.collectAsState()
 
     val context = LocalContext.current.applicationContext
 
@@ -130,13 +117,6 @@ fun CreateEventScreen(
 
     }
 
-    val eventProfilePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) {uri: Uri?->
-        uri?.let{
-            viewModel.updateEventProfile(uri)
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -232,54 +212,7 @@ fun CreateEventScreen(
                             }
 
                         }
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Bottom
-                        ) {
-                            IconButton(
-                                onClick = {
-                                    eventProfilePicker.launch("image/*")
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth(0.25f)
-                                    .padding(start = 20.dp)
-                                    .border(
-                                        width = 4.dp,
-                                        color = Grey,
-                                        shape = RoundedCornerShape(12.dp)
-                                    )
-                                    .aspectRatio(1f)
 
-
-                                ,
-                                shape = RoundedCornerShape(0.dp)
-                            ){
-                                when(eventProfile){
-                                    is Int->{
-                                        Image(
-                                            painter = painterResource(eventProfile as Int),
-                                            contentDescription = "",
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .aspectRatio(1f)
-                                                .clip(RoundedCornerShape(12.dp)),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                    }
-                                    is Uri->{
-                                        AsyncImage(
-                                            model = eventProfile as Uri,
-                                            contentDescription = "",
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .aspectRatio(1f)
-                                                .clip(RoundedCornerShape(12.dp)),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
 
@@ -450,13 +383,14 @@ fun CreateEventScreen(
                                 .fillMaxWidth(0.8f),
                             containerColor = White
                         ) {
-                            categories.forEach {category->
+                            categories?.categories?.forEach {category->
                                 DropdownMenuItem(
                                     text = {
-                                        Text(category)
+                                        Text(category.name)
                                     },
                                     onClick = {
-                                        selectedCategory = category
+                                        selectedCategory = category.name
+                                        selectedCategoryId = category.id
                                         showDropDownMenu = false
                                     }
                                 )
@@ -487,7 +421,8 @@ fun CreateEventScreen(
                                 location_name = if(isVirtualEvent) "" else location,
                                 start_time = "$selectedDate $selectedTime",
                                 end_time = "",
-                                cover_image_uri = coverPhoto?: Uri.parse("")
+                                cover_image_uri = coverPhoto?: "".toUri(),
+                                category_id = selectedCategoryId
                             )
                         },
                         colors = ButtonDefaults.buttonColors(

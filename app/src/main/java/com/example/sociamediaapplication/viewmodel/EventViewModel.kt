@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.repository.EventRepository
-import com.example.sociamediaapplication.model.response.EventDetails
+import com.example.sociamediaapplication.model.response.EventCategoriesResponse
 import com.example.sociamediaapplication.model.response.EventDetailsResponse
 import com.example.sociamediaapplication.model.response.EventsResponse
 import com.example.sociamediaapplication.model.response.MyEventsResponse
@@ -34,6 +34,10 @@ class EventViewModel(
 
     private val _eventDetails = MutableStateFlow<EventDetailsResponse?>(null)
     val eventDetails: StateFlow<EventDetailsResponse?> = _eventDetails
+
+    private val _categories = MutableStateFlow<EventCategoriesResponse?>(null)
+    val categories: StateFlow<EventCategoriesResponse?> = _categories
+
 
     fun loadEvents(){
         viewModelScope.launch {
@@ -73,7 +77,8 @@ class EventViewModel(
         description: String,
         start_time: String,
         end_time: String,
-        cover_image_uri: Uri
+        cover_image_uri: Uri,
+        category_id: Int
     ){
         viewModelScope.launch {
 
@@ -85,8 +90,19 @@ class EventViewModel(
                     description.toRequestBody(),
                     start_time.toRequestBody(),
                     end_time.toRequestBody(),
-                    cover_image_uri
+                    cover_image_uri,
+                    category_id = category_id.toString().toRequestBody()
                 )
+            } catch (e: Exception){
+                Log.e("Event_Debug", e.toString())
+            }
+        }
+    }
+
+    fun loadCategories(){
+        viewModelScope.launch {
+            try {
+                _categories.value = repository.getCategories()
             } catch (e: Exception){
                 Log.e("Event_Debug", e.toString())
             }
@@ -98,6 +114,35 @@ class EventViewModel(
             try{
                 repository.deleteEvent(eventId)
                 loadMyEvents()
+            } catch (e: Exception){
+                Log.e("Event_Debug", e.toString())
+            }
+        }
+    }
+
+    fun updateEvent(
+        context: Context,
+        title: String,
+        location_name: String,
+        description: String,
+        start_time: String,
+        end_time: String,
+        cover_image_uri: Uri,
+        category_id: Int
+    ){
+        viewModelScope.launch {
+
+            try {
+                repository.createEvent(
+                    context,
+                    title.toRequestBody(),
+                    location_name.toRequestBody(),
+                    description.toRequestBody(),
+                    start_time.toRequestBody(),
+                    end_time.toRequestBody(),
+                    cover_image_uri,
+                    category_id = category_id.toString().toRequestBody()
+                )
             } catch (e: Exception){
                 Log.e("Event_Debug", e.toString())
             }

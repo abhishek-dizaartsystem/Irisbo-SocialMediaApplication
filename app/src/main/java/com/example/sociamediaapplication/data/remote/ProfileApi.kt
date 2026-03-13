@@ -12,26 +12,26 @@ import retrofit2.http.Part
 
 interface ProfileApi {
     @Multipart
-    @PUT("api/profile/profile/profile-image")
+    @PUT("api/users/profile/profile-image")
     suspend fun uploadProfileImage(
         @Header("Authorization") token: String,
         @Part image: MultipartBody.Part
     ): BasicResponse
 
     @Multipart
-    @PUT("api/profile/profile/cover-image")
+    @PUT("api/users/profile/cover-image")
     suspend fun uploadCoverImage(
         @Header("Authorization") token: String,
         @Part image: MultipartBody.Part
     )
 
-    @GET("api/profile/profile")
+    @GET("api/users/profile")
     suspend fun getProfile(
         @Header("Authorization") token: String
     ): ProfileResponse
 
     @Multipart
-    @PUT("api/profile/edit")
+    @PUT("api/users/edit")
     suspend fun editProfile(
         @Header("Authorization") token: String,
 

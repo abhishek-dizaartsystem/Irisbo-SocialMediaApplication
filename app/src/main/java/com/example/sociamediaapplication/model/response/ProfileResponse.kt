@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.model.response
 
 data class ProfileResponse(
+    val id: String,
     val name: String,
     val username: String,
     val bio: String,

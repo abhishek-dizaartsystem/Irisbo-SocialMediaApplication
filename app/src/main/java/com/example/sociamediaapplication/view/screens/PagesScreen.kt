@@ -309,7 +309,7 @@ fun PagesScreen(
                                         viewModel.loadPageFollowers(pageId)
                                     },
                                     pageFollowers = pageFollowersResponse?.data ?: emptyList(),
-                                    category = page.category_name
+                                    category = page.category_name?:""
                                 )
                             }
 
@@ -325,7 +325,7 @@ fun PagesScreen(
                                     onUnfollow = {
                                         viewModel.unfollowPage(page.id)
                                     },
-                                    category = page.category_name
+                                    category = page.category_name?:""
                                 )
                             }
 
@@ -342,7 +342,7 @@ fun PagesScreen(
                                     onFollow = {
                                         viewModel.followPage(page.id)
                                     },
-                                    category = page.category_name
+                                    category = page.category_name?:""
                                 )
                             }
 

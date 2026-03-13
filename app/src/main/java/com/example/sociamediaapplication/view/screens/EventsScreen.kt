@@ -223,7 +223,7 @@ fun EventsScreen(
                 if(selectedOption == "my"){
                     items(myEvents?.events?:emptyList()) { event ->
                         MyEventItem(
-                            date = formatToDate(event.start_time),
+                            date = formatToDate(event.start_time?:"12-02-2026"),
                             name = event.title,
                             location = event.location_name?: "Virtual",
                             isInterested = false,
@@ -234,7 +234,7 @@ fun EventsScreen(
                                 )
                             },
                             image = event.cover_image,
-                            time = formatToTime(event.start_time),
+                            time = formatToTime(event.start_time?: "12:30 PM"),
                             onDelete = { viewModel.deleteEvent(event.id) }
                         )
                     }
@@ -242,7 +242,7 @@ fun EventsScreen(
                 else{
                     items(events?.events?:emptyList()){event->
                         EventItem(
-                            date = formatToDate(event.start_time),
+                            date = formatToDate(event.start_time?:"12-02-2026"),
                             name = event.title,
                             location = event.location_name?: "Virtual",
                             isInterested = false,
@@ -254,7 +254,7 @@ fun EventsScreen(
                             },
                             //interestedPeople = event.,
                             image = event.cover_image,
-                            time = formatToTime(event.start_time)
+                            time = formatToTime(event.start_time?: "12:30 PM")
                         )
                     }
                 }

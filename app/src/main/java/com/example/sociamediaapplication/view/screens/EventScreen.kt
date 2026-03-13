@@ -41,6 +41,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.formatToDate
 import com.example.sociamediaapplication.data.utils.formatToTime
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
@@ -71,7 +72,7 @@ fun EventScreen(
             Box {
 
                 AsyncImage(
-                    model = eventDetails?.event?.cover_image,
+                    model = "${RetrofitClient.BASE_URL}uploads/${eventDetails?.event?.cover_image}",
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
