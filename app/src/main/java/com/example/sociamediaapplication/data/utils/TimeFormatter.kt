@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
-import kotlin.math.max
 
 fun formatPostTime(isoDate: String): String {
     return try {
