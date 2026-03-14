@@ -12,15 +12,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.sociamediaapplication.data.preferences.TokenManager
-import com.example.sociamediaapplication.data.repository.GroupRepository
 import com.example.sociamediaapplication.data.repository.PageRepository
 import com.example.sociamediaapplication.view.screens.CreatePageScreen
 import com.example.sociamediaapplication.view.screens.EditPageScreen
 import com.example.sociamediaapplication.view.screens.PageScreen
 import com.example.sociamediaapplication.view.screens.PagesScreen
-import com.example.sociamediaapplication.viewmodel.GroupViewModel
 import com.example.sociamediaapplication.viewmodel.PageViewModel
-import com.example.sociamediaapplication.viewmodel.factory.GroupViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.PageViewModelFactory
 
 @Composable

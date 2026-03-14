@@ -4,15 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.sociamediaapplication.data.preferences.TokenManager
-import com.example.sociamediaapplication.data.repository.AuthRepository
 import com.example.sociamediaapplication.view.screens.AppearanceScreen
 import com.example.sociamediaapplication.view.screens.EditProfileScreen
 import com.example.sociamediaapplication.view.screens.HelpCenterScreen
@@ -23,7 +18,6 @@ import com.example.sociamediaapplication.view.screens.SecurityScreen
 import com.example.sociamediaapplication.view.screens.SettingsScreen
 import com.example.sociamediaapplication.viewmodel.AuthUiState
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
-import com.example.sociamediaapplication.viewmodel.factory.AuthViewModelFactory
 
 @Composable
 fun SettingsNavGraph(
