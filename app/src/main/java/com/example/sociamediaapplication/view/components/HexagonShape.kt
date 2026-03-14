@@ -1,10 +1,10 @@
 package com.example.sociamediaapplication.view.components
 
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.geometry.Size
 
 val HexagonShape = object : Shape {
     override fun createOutline(

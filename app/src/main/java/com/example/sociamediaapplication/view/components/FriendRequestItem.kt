@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
-import com.example.sociamediaapplication.ui.theme.Green
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey

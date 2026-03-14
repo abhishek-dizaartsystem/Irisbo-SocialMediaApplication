@@ -41,7 +41,6 @@ import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.GreyTxt
-import com.example.sociamediaapplication.ui.theme.TransparentBlack
 import com.example.sociamediaapplication.ui.theme.TransparentWhite
 import com.example.sociamediaapplication.ui.theme.White
 

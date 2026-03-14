@@ -1,6 +1,5 @@
 package com.example.sociamediaapplication.view.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGreen
-import com.example.sociamediaapplication.ui.theme.LLGreen
 import com.example.sociamediaapplication.ui.theme.White
 
 @Composable

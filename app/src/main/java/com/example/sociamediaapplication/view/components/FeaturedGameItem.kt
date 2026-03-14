@@ -28,7 +28,6 @@ import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Gold
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.TTransparentWhite
-import com.example.sociamediaapplication.ui.theme.TransparentWhite
 import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
