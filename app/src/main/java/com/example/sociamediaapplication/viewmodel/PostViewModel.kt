@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavBackStackEntry
 import com.example.sociamediaapplication.data.repository.PostRepository
 import com.example.sociamediaapplication.model.response.PostResponse
 import kotlinx.coroutines.flow.MutableStateFlow

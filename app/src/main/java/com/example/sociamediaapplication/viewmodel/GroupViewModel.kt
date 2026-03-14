@@ -3,13 +3,11 @@ package com.example.sociamediaapplication.viewmodel
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.compose.ui.unit.Velocity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.repository.GroupRepository
 import com.example.sociamediaapplication.data.utils.toPlainRequestBody
-import com.example.sociamediaapplication.model.Group
 import com.example.sociamediaapplication.model.response.GroupCategoryTypesResponse
 import com.example.sociamediaapplication.model.response.GroupDetailsResponse
 import com.example.sociamediaapplication.model.response.GroupMembersResponse
@@ -17,12 +15,9 @@ import com.example.sociamediaapplication.model.response.GroupPostDetailsResponse
 import com.example.sociamediaapplication.model.response.GroupPostsResponse
 import com.example.sociamediaapplication.model.response.GroupsResponse
 import com.example.sociamediaapplication.model.response.MyGroupsResponse
-import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.MultipartBody
 import retrofit2.HttpException
 
 class GroupViewModel(

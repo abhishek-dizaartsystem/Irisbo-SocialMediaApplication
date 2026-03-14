@@ -28,8 +28,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlin.collections.emptyList
-import kotlin.collections.map
 
 class MarketplaceViewModel(
     private val repository: MarketplaceRepository

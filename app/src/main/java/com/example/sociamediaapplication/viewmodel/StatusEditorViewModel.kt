@@ -1,19 +1,15 @@
 package com.example.sociamediaapplication.viewmodel
 
-import android.util.Log
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.toColorLong
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
-import com.example.sociamediaapplication.model.editor.*
+import com.example.sociamediaapplication.model.editor.EditorLayer
+import com.example.sociamediaapplication.model.editor.ImageLayer
+import com.example.sociamediaapplication.model.editor.StickerLayer
+import com.example.sociamediaapplication.model.editor.TextLayer
 import com.example.sociamediaapplication.ui.theme.Black
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

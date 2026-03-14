@@ -1,8 +1,6 @@
 package com.example.sociamediaapplication.viewmodel
 
 import android.net.Uri
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import com.example.sociamediaapplication.model.MediaType
 import com.example.sociamediaapplication.model.UploadMedia

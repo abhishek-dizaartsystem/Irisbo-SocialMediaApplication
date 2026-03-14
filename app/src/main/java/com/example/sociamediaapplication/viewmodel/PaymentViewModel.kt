@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.PaymentRepository
 import com.example.sociamediaapplication.model.request.OrderItem
 import com.example.sociamediaapplication.model.request.VerifyPaymentRequest
-import com.razorpay.BuildConfig
 import com.razorpay.Checkout
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
