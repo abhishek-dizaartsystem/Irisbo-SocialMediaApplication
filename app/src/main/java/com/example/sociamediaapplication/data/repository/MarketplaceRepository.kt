@@ -1,7 +1,6 @@
 package com.example.sociamediaapplication.data.repository
 
 import android.util.Log
-import androidx.room.Query
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.model.request.AddReviewRequest
@@ -14,19 +13,16 @@ import com.example.sociamediaapplication.model.response.AddReviewResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.BasicResponse2
 import com.example.sociamediaapplication.model.response.CartResponse
-import com.example.sociamediaapplication.model.response.CategoryProductsResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
 import com.example.sociamediaapplication.model.response.EditProductResponse
-import com.example.sociamediaapplication.model.response.ReviewsResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
 import com.example.sociamediaapplication.model.response.ProductDetailsResponse
+import com.example.sociamediaapplication.model.response.ReviewsResponse
 import com.example.sociamediaapplication.model.response.SearchProductResponse
 import com.example.sociamediaapplication.model.response.UserProductsResponse
-import com.example.sociamediaapplication.model.response.VendorProductResponse
 import com.example.sociamediaapplication.model.response.VendorProductsResponse
 import com.example.sociamediaapplication.model.response.WishlistResponse
 import okhttp3.MultipartBody
-import okhttp3.Request
 import okhttp3.RequestBody
 import retrofit2.HttpException
 

@@ -2,9 +2,9 @@ package com.example.sociamediaapplication.data.repository
 
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
-import com.example.sociamediaapplication.model.response.AuthResponse
 import com.example.sociamediaapplication.model.request.LoginRequest
 import com.example.sociamediaapplication.model.request.SignupRequest
+import com.example.sociamediaapplication.model.response.AuthResponse
 
 class AuthRepository(
     private val tokenManager: TokenManager
