@@ -1,9 +1,11 @@
 package com.example.sociamediaapplication.view.screens
 
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -53,9 +56,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.getFrameFromUrl
 import com.example.sociamediaapplication.data.utils.isVideo
-import com.example.sociamediaapplication.model.response.Reel
 import com.example.sociamediaapplication.model.response.PostResponse
+import com.example.sociamediaapplication.model.response.Reel
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -67,10 +71,6 @@ import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
-import android.graphics.Bitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.foundation.Image
-import com.example.sociamediaapplication.data.utils.getFrameFromUrl
 
 
 @Composable

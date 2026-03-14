@@ -63,7 +63,6 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
-import com.example.sociamediaapplication.model.CategoriesMarketplace
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue

@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -44,16 +43,8 @@ import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
-import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.ApplicationItem
-import com.example.sociamediaapplication.view.components.DiscoverGroupsItem
-import com.example.sociamediaapplication.view.components.DiscoverPagesItem
-import com.example.sociamediaapplication.view.components.FriendRequestItem
-import com.example.sociamediaapplication.view.components.FriendsItem
-import com.example.sociamediaapplication.view.components.FriendsSuggestionItem
-import com.example.sociamediaapplication.view.components.GroupsItem
 import com.example.sociamediaapplication.view.components.JobItem
-import com.example.sociamediaapplication.view.components.PagesItem
 
 @Composable
 fun JobsScreen(

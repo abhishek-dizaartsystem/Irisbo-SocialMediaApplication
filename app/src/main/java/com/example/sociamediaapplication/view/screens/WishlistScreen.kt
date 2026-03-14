@@ -32,8 +32,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
-import com.example.sociamediaapplication.model.CartItem
-import com.example.sociamediaapplication.model.WishlistItem
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.view.components.WishlistItem
