@@ -1,14 +1,9 @@
 package com.example.sociamediaapplication.data.remote
 
-import androidx.media3.common.Player
 import com.example.sociamediaapplication.model.response.EventCategoriesResponse
-import com.example.sociamediaapplication.model.response.MyEventsResponse
-import com.example.sociamediaapplication.model.response.EventsResponse
-import com.example.sociamediaapplication.model.response.PageCategoriesResponse
-import com.example.sociamediaapplication.model.response.PageFollowersResponse
-import com.example.sociamediaapplication.model.response.PagePostsResponse
-import com.example.sociamediaapplication.model.response.PagesResponse
 import com.example.sociamediaapplication.model.response.EventDetailsResponse
+import com.example.sociamediaapplication.model.response.EventsResponse
+import com.example.sociamediaapplication.model.response.MyEventsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.DELETE

@@ -1,6 +1,5 @@
 package com.example.sociamediaapplication.data.remote
 
-import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.model.request.CreateOrderRequest
 import com.example.sociamediaapplication.model.request.VerifyPaymentRequest
 import com.example.sociamediaapplication.model.response.BasicResponse

@@ -1,12 +1,10 @@
 package com.example.sociamediaapplication.data.remote
 
-import androidx.room.Delete
 import com.example.sociamediaapplication.model.response.AddGroupResponse
 import com.example.sociamediaapplication.model.response.GroupCategoryTypesResponse
 import com.example.sociamediaapplication.model.response.GroupDetailsResponse
 import com.example.sociamediaapplication.model.response.GroupMembersResponse
 import com.example.sociamediaapplication.model.response.GroupPostDetailsResponse
-import com.example.sociamediaapplication.model.response.GroupPostReponse
 import com.example.sociamediaapplication.model.response.GroupPostsResponse
 import com.example.sociamediaapplication.model.response.GroupsResponse
 import com.example.sociamediaapplication.model.response.MyGroupsResponse

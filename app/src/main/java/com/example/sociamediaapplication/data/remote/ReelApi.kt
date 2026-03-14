@@ -6,7 +6,6 @@ import com.example.sociamediaapplication.model.response.ReelListResponse
 import com.example.sociamediaapplication.model.response.SaveResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart

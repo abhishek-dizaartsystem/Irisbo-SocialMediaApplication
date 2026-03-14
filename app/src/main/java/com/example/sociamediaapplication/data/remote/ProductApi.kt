@@ -1,7 +1,5 @@
 package com.example.sociamediaapplication.data.remote
 
-import androidx.room.Delete
-import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.model.request.AddReviewRequest
 import com.example.sociamediaapplication.model.request.AddToCartRequest
 import com.example.sociamediaapplication.model.request.AddToWishlistRequest
@@ -12,7 +10,6 @@ import com.example.sociamediaapplication.model.response.AddReviewResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.BasicResponse2
 import com.example.sociamediaapplication.model.response.CartResponse
-import com.example.sociamediaapplication.model.response.CategoryProductsResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
 import com.example.sociamediaapplication.model.response.EditProductResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
