@@ -4,23 +4,23 @@ import com.example.sociamediaapplication.model.Specification
 
 data class VendorProductsResponse(
     val success: Boolean,
-    val total_products: Int,
-    val products: List<VendorProductResponse>
+    val products: List<VendorProductResponse>,
+    val pagination: PaginationResponse
 )
 
 data class VendorProductResponse(
     val id: Int,
     val name: String,
-    val category: String?,
+    val category_name: String?,
     val price: String,
     val discount: String,
-    val discounted_price: String,
+    val final_price: String,
     val stock: Int,
     val sold: Int,
+    val status: String,
     val created_at: String,
-    val username: String,
     val specifications: List<Specification>,
-    val product_images: List<String>,
-    val is_liked: Boolean,
+    val username: String,
+    val product_image: String,
     val description: String? = "No description fetched",
 )

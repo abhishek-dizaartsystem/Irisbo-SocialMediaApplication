@@ -10,13 +10,13 @@ import retrofit2.http.POST
 
 interface PaymentApi {
 
-    @POST("api/payment/create-order")
+    @POST("api/marketplace/payment/create-order")
     suspend fun createOrder(
         @Header("Authorization") token: String,
         @Body request: CreateOrderRequest
     ): CreateOrderResponse
 
-    @POST("api/payment/verify-payment")
+    @POST("api/marketplace/payment/verify-payment")
     suspend fun verifyPayment(
         @Body request: VerifyPaymentRequest
     ): BasicResponse

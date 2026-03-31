@@ -12,6 +12,7 @@ import com.example.sociamediaapplication.model.response.AddProductResponse
 import com.example.sociamediaapplication.model.response.AddReviewResponse
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.BasicResponse2
+import com.example.sociamediaapplication.model.response.BasicResponse3
 import com.example.sociamediaapplication.model.response.CartResponse
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
 import com.example.sociamediaapplication.model.response.EditProductResponse
@@ -32,15 +33,38 @@ class MarketplaceRepository(
 
     private val api = RetrofitClient.productApi
 
+    //NEW
+
+    suspend fun getProducts(): UserProductsResponse{
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        Log.d("TOKEN_DEBUG", token)
+        return api.getProducts(token)
+    }
+
+
     suspend fun getVendorProducts(): VendorProductsResponse {
         val token = "Bearer ${tokenManager.getToken()}"
         return api.getAllVendorProducts(token)
     }
 
-    suspend fun getUserProducts(): UserProductsResponse {
-        val token = "Bearer ${tokenManager.getToken()}"
-        return api.getAllUserProducts(token)
-    }
+
+
+
+
+
+
+    //OLD
+
+//    suspend fun getVendorProducts(): VendorProductsResponse {
+//        val token = "Bearer ${tokenManager.getToken()}"
+//        return api.getAllVendorProducts(token)
+//    }
+
+//    suspend fun getUserProducts(): UserProductsResponse {
+//        val token = "Bearer ${tokenManager.getToken()}"
+//        return api.getAllUserProducts(token)
+//    }
 
     suspend fun getProductDetails(productId: Int): ProductDetailsResponse {
         val token = "Bearer ${tokenManager.getToken()}"
@@ -85,6 +109,15 @@ class MarketplaceRepository(
     ): AddReviewResponse {
         val token = "Bearer ${tokenManager.getToken()}"
         val response = api.addReview(token, productId, AddReviewRequest(rating, comment))
+
+        return response
+    }
+
+    suspend fun deleteReview(
+        productId: Int,
+    ): AddReviewResponse{
+        val token = "Bearer ${tokenManager.getToken()}"
+        val response = api.deleteReview(token, productId)
 
         return response
     }
@@ -184,12 +217,17 @@ class MarketplaceRepository(
 
     }
 
-    suspend fun addToCart(request: AddToCartRequest): BasicResponse {
+    suspend fun addToCart(id: Int, request: AddToCartRequest): BasicResponse {
         val token = "Bearer ${tokenManager.getToken()}"
-        return api.addToCart(token, request)
+        return api.addToCart(token, id, request)
     }
 
-    suspend fun getCartProducts(): List<CartResponse> {
+    suspend fun updateCartQuantity(id: Int, request: AddToCartRequest): BasicResponse3 {
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.updateCartQuantity(token, id, request)
+    }
+
+    suspend fun getCartProducts(): CartResponse {
         val token = "Bearer ${tokenManager.getToken()}"
         return api.fetchCart(token)
     }
@@ -199,7 +237,7 @@ class MarketplaceRepository(
         return api.deleteCartProduct(token, productId)
     }
 
-    suspend fun getWishlistProducts(): List<WishlistResponse> {
+    suspend fun getWishlistProducts(): WishlistResponse {
         val token = "Bearer ${tokenManager.getToken()}"
         return api.fetchWishlist(token)
     }
@@ -212,6 +250,11 @@ class MarketplaceRepository(
     suspend fun removeFromWishlist(productId: Int): BasicResponse{
         val token = "Bearer ${tokenManager.getToken()}"
         return api.removeFromWishlist(token, productId.toString())
+    }
+
+    suspend fun toggleWishlist(productId: Int): BasicResponse{
+        val token = "Bearer ${tokenManager.getToken()}"
+        return  api.toggleWishList(token, productId)
     }
 
     suspend fun fetchCheckoutDetails(): CheckoutDetailsResponse{

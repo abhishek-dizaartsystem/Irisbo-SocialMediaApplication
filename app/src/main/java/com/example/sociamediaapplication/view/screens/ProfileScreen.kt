@@ -2,6 +2,7 @@ package com.example.sociamediaapplication.view.screens
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -56,6 +57,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.getFrameFromUrl
 import com.example.sociamediaapplication.data.utils.isVideo
 import com.example.sociamediaapplication.model.response.PostResponse
@@ -129,8 +131,14 @@ fun ProfileScreen(
             contentAlignment = Alignment.BottomStart
         ) {
             Column(modifier = Modifier.height(220.dp)) {
+
+                val url = profile?.data?.cover_img?.removePrefix("/").let {
+                    "${RetrofitClient.BASE_URL}$it"
+                }
+
+
                 AsyncImage(
-                    model = profile?.cover_img,
+                    model = url,
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -156,7 +164,7 @@ fun ProfileScreen(
                             )
                         ) {
                             AsyncImage(
-                                model = profile?.profile_img,
+                                model = "${RetrofitClient.BASE_URL}${profile?.data?.profile_image?.removePrefix("/")}",
                                 contentDescription = "Profile Image",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -212,12 +220,12 @@ fun ProfileScreen(
             }
         }
         Text(
-            text = profile?.name?:"",
+            text = profile?.data?.name?:"",
             fontSize = 25.sp,
             modifier = Modifier.padding(start = 16.dp)
         )
         Text(
-            text = profile?.bio?:"",
+            text = profile?.data?.bio?:"",
             fontSize = 15.sp,
             modifier = Modifier.padding(start = 16.dp)
         )
@@ -384,7 +392,7 @@ fun ProfileScreen(
                             tint = GreyTxt
                         )
                         Text(
-                            text = "Works at ${profile?.work}",
+                            text = "Works at ${profile?.data?.work}",
                             modifier = Modifier
                                 .padding(start = 6.dp),
                             color = GreyTxt
@@ -401,7 +409,7 @@ fun ProfileScreen(
                             tint = GreyTxt
                         )
                         Text(
-                            text = "Studied at ${profile?.education}",
+                            text = "Studied at ${profile?.data?.education}",
                             modifier = Modifier
                                 .padding(start = 6.dp),
                             color = GreyTxt
@@ -483,7 +491,7 @@ fun ProfileScreen(
                         modifier = Modifier
                             .aspectRatio(0.5f)
                             .fillMaxWidth()
-                            .clickable { selectedReelIndex = index}
+                            .clickable { selectedReelIndex = index }
                     ) {
 
                         AsyncImage(

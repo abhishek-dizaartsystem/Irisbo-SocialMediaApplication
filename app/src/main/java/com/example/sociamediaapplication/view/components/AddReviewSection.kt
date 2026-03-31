@@ -39,7 +39,7 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 
 @Composable
 fun AddReviewSection(
-    onSendReview: (String, Int)-> Unit = {review, rating->}
+    onSendReview: (String, Int) -> Unit = { review, rating -> }
 ){
     var review by remember { mutableStateOf("") }
     var rating by remember { mutableStateOf(5) }

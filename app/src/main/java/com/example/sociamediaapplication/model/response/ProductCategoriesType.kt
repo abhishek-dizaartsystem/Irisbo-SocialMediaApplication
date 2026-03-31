@@ -2,7 +2,7 @@ package com.example.sociamediaapplication.model.response
 
 data class ProductCategoriesType(
     val success: Boolean,
-    val categories: List<CategoriesType>
+    val data: List<CategoriesType>
 )
 
 data class CategoriesType(

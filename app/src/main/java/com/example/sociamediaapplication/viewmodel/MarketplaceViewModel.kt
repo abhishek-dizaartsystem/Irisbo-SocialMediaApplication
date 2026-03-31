@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sociamediaapplication.data.remote.ProductApi
 import com.example.sociamediaapplication.data.repository.MarketplaceRepository
 import com.example.sociamediaapplication.data.utils.fileToMultipart
 import com.example.sociamediaapplication.data.utils.getMimeType
@@ -54,11 +55,11 @@ class MarketplaceViewModel(
     val userProducts: StateFlow<UserProductsResponse?> = _userProducts
 
 
-    private val _wishListItems = MutableStateFlow<List<WishlistResponse>>(emptyList())
-    val wishListItems: StateFlow<List<WishlistResponse>> = _wishListItems
+    private val _wishListItems = MutableStateFlow<WishlistResponse?>(null)
+    val wishListItems: StateFlow<WishlistResponse?> = _wishListItems
 
-    private val _cartItems = MutableStateFlow<List<CartResponse>>(emptyList())
-    val cartItems: StateFlow<List<CartResponse>> = _cartItems
+    private val _cartItems = MutableStateFlow<CartResponse?>(null)
+    val cartItems: StateFlow<CartResponse?> = _cartItems
 
     private val _cartSum = MutableStateFlow<Double>(0.0)
     val cartSum: StateFlow<Double> = _cartSum
@@ -133,11 +134,11 @@ class MarketplaceViewModel(
 
             try {
                 val result = repository.searchProducts(query, page, limit)
-                _userProducts.value = UserProductsResponse(
-                    success = result.success,
-                    total_products = result.total_products,
-                    products = result.products
-                )
+//                _userProducts.value = UserProductsResponse(
+//                    success = result.success,
+//                    total_products = result.total_products,
+//                    products = result.products
+//                )
             } catch (e: Exception) {
                 Log.e("SEARCH_DEBUG", e.message.toString())
             } finally {
@@ -151,28 +152,28 @@ class MarketplaceViewModel(
     fun likeReview(reviewId: Int){
         viewModelScope.launch {
             repository.reactToReview(reviewId, "like")
-            loadProductReviews(productDetails.value!!.product.id)
+            loadProductReviews(productDetails.value!!.data.id)
         }
     }
 
     fun dislikeReview(reviewId: Int){
         viewModelScope.launch {
             repository.reactToReview(reviewId, "dislike")
-            loadProductReviews(productDetails.value!!.product.id)
+            loadProductReviews(productDetails.value!!.data.id)
         }
     }
 
     fun likeReviewReply(reviewId: Int){
         viewModelScope.launch {
             repository.reactToReviewReply(reviewId, "like")
-            loadProductReviews(productDetails.value!!.product.id)
+            loadProductReviews(productDetails.value!!.data.id)
         }
     }
 
     fun dislikeReviewReply(reviewId: Int){
         viewModelScope.launch {
             repository.reactToReviewReply(reviewId, "dislike")
-            loadProductReviews(productDetails.value!!.product.id)
+            loadProductReviews(productDetails.value!!.data.id)
         }
     }
 
@@ -192,6 +193,19 @@ class MarketplaceViewModel(
                 Log.e("ADD_REVIEW_DEBUG", e.message.toString())
             }
 
+        }
+    }
+
+    fun deleteProductReview(
+        productId: Int,
+    ){
+        viewModelScope.launch {
+            try{
+                repository.deleteReview(productId)
+                loadProductReviews(productId)
+            }catch (e: Exception){
+                Log.e("DELETE_REVIEW_DEBUG", e.message.toString())
+            }
         }
     }
 
@@ -302,7 +316,7 @@ class MarketplaceViewModel(
 
                 Log.d("API_DEBUG", "Calling repository.getProducts()")
 
-                val products = repository.getUserProducts()
+                val products = repository.getProducts()
                 _userProducts.value = products
                 Log.d("API_DEBUG", "StateFlow updated with products")
             }catch (e: Exception) {
@@ -327,8 +341,8 @@ class MarketplaceViewModel(
                 val cart = repository.getCartProducts()
                 _cartItems.value = cart
 
-                _cartSum.value = cart.sumOf {
-                    (it.discounted_price.toDoubleOrNull() ?: 0.0) * it.quantity
+                _cartSum.value = cart.items.sumOf {
+                    (it.final_price.toDouble()) * it.quantity
                 }
 
             }catch (e: Exception){
@@ -346,7 +360,7 @@ class MarketplaceViewModel(
     ){
         viewModelScope.launch {
             try{
-                repository.addToCart(AddToCartRequest(productId, 1))
+                repository.addToCart(productId.toInt(), AddToCartRequest(1))
                 loadCart()
             } catch (e: Exception) {
                 onError(e.message ?: "Add to cart failed")
@@ -361,11 +375,12 @@ class MarketplaceViewModel(
         viewModelScope.launch {
             try {
 
-                val currentItem = _cartItems.value.find { it.id == productId }
+                val currentItem = _cartItems.value?.items?.find { it.id == productId }
                 val newQty = (currentItem?.quantity ?: 0) + 1
 
-                repository.addToCart(
-                    AddToCartRequest(productId.toString(), newQty)
+                repository.updateCartQuantity(
+                    id = productId,
+                    request = AddToCartRequest(newQty)
                 )
 
                 loadCart()
@@ -383,7 +398,7 @@ class MarketplaceViewModel(
         viewModelScope.launch {
             try {
 
-                val currentItem = _cartItems.value.find { it.id == productId }
+                val currentItem = _cartItems.value?.items?.find { it.id == productId }
                     ?: return@launch
 
                 val newQty = currentItem.quantity - 1
@@ -391,8 +406,9 @@ class MarketplaceViewModel(
                 if (newQty <= 0) {
                     repository.deleteCartProduct(productId.toString())
                 } else {
-                    repository.addToCart(
-                        AddToCartRequest(productId.toString(), newQty)
+                    repository.updateCartQuantity(
+                        productId,
+                        AddToCartRequest(newQty)
                     )
                 }
 
@@ -466,7 +482,18 @@ class MarketplaceViewModel(
         }
     }
 
-
+    fun toggleWishlist(
+        productId: Int
+    ){
+        viewModelScope.launch {
+            try {
+                repository.toggleWishlist(productId)
+                loadUserProducts()
+            }catch (e: Exception){
+                Log.e("Wishlist_debug", e.message.toString())
+            }
+        }
+    }
 
 
     fun addProduct(
@@ -492,7 +519,7 @@ class MarketplaceViewModel(
                     val file = uriToFile(uri, context)
                     val mime = getMimeType(context, uri)
 
-                    fileToMultipart("product_images", file, mime)
+                    fileToMultipart("images", file, mime)
                 }
 
                 val specsPart = Gson().toJson(specs).toPart()
@@ -531,12 +558,12 @@ class MarketplaceViewModel(
     }
 
     fun getOrderItemsFromCart(): List<OrderItem> {
-        return _cartItems.value.map {
+        return _cartItems.value?.items?.map {
             OrderItem(
                 product_id = it.id,
                 quantity = it.quantity
             )
-        }
+        }?:emptyList()
     }
 
 

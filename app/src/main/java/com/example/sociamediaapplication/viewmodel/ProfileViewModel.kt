@@ -2,6 +2,7 @@ package com.example.sociamediaapplication.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.remote.RetrofitClient
@@ -26,6 +27,7 @@ class ProfileViewModel(
     val error: StateFlow<String?> = _error
 
     init {
+
         loadProfile()
     }
 
@@ -54,15 +56,36 @@ class ProfileViewModel(
             _isLoading.value = true
             _error.value = null
 
+            Log.e("Profile_Debug", "init called")
+
             try {
                 val response = repository.getProfile()
 
-                val fixedProfile = response.copy(
-                    profile_img = buildImageUrl(response.profile_img),
-                    cover_img = buildImageUrl(response.cover_img)
+                Log.e("Profile_debug", "id = ${response.data.id}")
+                Log.e("Profile_debug", "name = ${response.data.name}")
+                Log.e("Profile_debug", "username = ${response.data.username}")
+                Log.e("Profile_debug", "email = ${response.data.email}")
+                Log.e("Profile_debug", "bio = ${response.data.bio}")
+                Log.e("Profile_debug", "education = ${response.data.education}")
+                Log.e("Profile_debug", "work = ${response.data.work}")
+                Log.e("Profile_debug", "phone = ${response.data.phone}")
+                Log.e("Profile_debug", "profile_image = ${response.data.profile_image}")
+                Log.e("Profile_debug", "cover_img = ${response.data.cover_img}")
+                Log.e("Profile_debug", "create_at = ${response.data.create_at}")
+
+
+                val fixedProfile = response.data.copy(
+                    profile_image = buildImageUrl(response.data.profile_image),
+                    cover_img = buildImageUrl(response.data.cover_img)
                 )
 
-                _profile.value = fixedProfile
+                Log.e("Profile_debug", response.data.profile_image?:"No value")
+
+                _profile.value = response
+
+                Log.e("Profile_debug", profile.value?.data?.profile_image?.removePrefix("/").let {
+                    "${RetrofitClient.BASE_URL}$it"
+                })
 
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -53,7 +53,7 @@ fun VendorReviewReplyItem(
             reviewText = reviewText,
             profileImage = profileImage,
             vendor_reply = null, // vendor side shouldn't auto show reply
-            isVendor = true
+            isVendor = true,
         )
 
         Spacer(modifier = Modifier.height(6.dp))

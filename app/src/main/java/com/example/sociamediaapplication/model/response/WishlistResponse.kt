@@ -1,9 +1,9 @@
 package com.example.sociamediaapplication.model.response
 
+import com.example.sociamediaapplication.model.WishlistItem
+
 data class WishlistResponse(
-    val id: Int,
-    val name: String,
-    val product_image: List<String>,
-    val price: String,
-    val username: String
+    val success: Boolean,
+    val wishlist: List<WishlistItem>,
+    val pagination: PaginationResponse
 )

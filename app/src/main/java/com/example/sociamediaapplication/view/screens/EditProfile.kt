@@ -45,6 +45,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.model.request.EditProfileRequest
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -78,12 +79,12 @@ fun EditProfileScreen(
     /* 🔥 Auto-fill when profile loads */
     LaunchedEffect(profile) {
         profile?.let {
-            name = it.name
-            username = it.username
-            bio = it.bio
-            work = it.work
-            education = it.education
-            phone = it.phone
+            name = it.data.name
+            username = it.data.username
+            bio = it.data.bio
+            work = it.data.work
+            education = it.data.education
+            phone = it.data.phone
         }
     }
 
@@ -184,7 +185,7 @@ fun EditProfileScreen(
                         )
                     ) {
                         AsyncImage(
-                            model = profileUri ?: profile?.profile_img,
+                            model = profileUri ?: "${RetrofitClient.BASE_URL}${profile?.data?.profile_image?.removePrefix("/")}",
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -235,7 +236,7 @@ fun EditProfileScreen(
                     ) {
 
                         AsyncImage(
-                            model = coverUri ?: profile?.cover_img,
+                            model = coverUri ?: "${RetrofitClient.BASE_URL}${profile?.data?.cover_img?.removePrefix("/")}",
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier

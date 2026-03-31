@@ -48,13 +48,13 @@ fun VendorProductReviewSheetContent(
         reviews?.reviews?.forEach { review ->
 
             VendorReviewReplyItem(
-                name = review.username,
+                name = review.reviewer_username,
                 timeAgo = review.created_at,
                 rating = review.rating,
-                reviewText = review.comment,
+                reviewText = review.review,
                 profileImage = R.drawable.rectangle_36__2_,
-                existingReply = review.vendor_reply,
-                existingReplyTime = review.vendor_reply_at,
+                existingReply = review.reply,
+                existingReplyTime = review.reply_created_at,
                 onSendReply = { reply ->
                     viewModel.addReviewReply(
                         context = context,

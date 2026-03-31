@@ -158,7 +158,9 @@ fun MarketplaceScreen(
                             Icon(
                                 painter = painterResource(R.drawable.menu_dots_svgrepo_com),
                                 contentDescription = null,
-                                Modifier.size(24.dp).rotate(90f)
+                                Modifier
+                                    .size(24.dp)
+                                    .rotate(90f)
                             )
                         }
 
@@ -417,29 +419,32 @@ fun MarketplaceScreen(
                             span = { GridItemSpan(2) }
                         ){ product ->
 
-                            VendorProductCard(
-                                product_id = product.id,
-                                productName = product.name,
-                                price = "₹${product.price}",
-                                stock = product.stock,
-                                sold = product.sold,
-                                revenue = "₹${product.price.toDoubleOrNull()?.times(product.stock) ?: 0}",
-                                isActive = true,
-                                imageUrl = product.product_images
+                            if(product.status != "deleted"){
+                                VendorProductCard(
+                                    product_id = product.id,
+                                    productName = product.name,
+                                    price = "₹${product.price}",
+                                    stock = product.stock,
+                                    sold = product.sold,
+                                    revenue = "₹${product.price.toDoubleOrNull()?.times(product.sold) ?: 0}",
+                                    isActive = true,
+                                    imageUrl = "${RetrofitClient.BASE_URL}${product.product_image.removePrefix("/")}"/*s
                                     ?.firstOrNull()
                                     ?.let { "${RetrofitClient.BASE_URL}uploads/$it" }
-                                    ?: "https://picsum.photos/200",
-                                onEditClick = {
-                                   // navController.navigate("edit_product/${product.id}")
-                                },
-                                onReplyClick = {
-                                    selectedProductId = product.id
-                                    showReviewSheet = true
-                                },
-                                onDelete = {
-                                    viewModel.deleteProduct(product.id)
-                                }
-                            )
+                                    ?: "https://picsum.photos/200"*/,
+                                    onEditClick = {
+                                        // navController.navigate("edit_product/${product.id}")
+                                    },
+                                    onReplyClick = {
+                                        selectedProductId = product.id
+                                        showReviewSheet = true
+                                    },
+                                    onDelete = {
+                                        viewModel.deleteProduct(product.id)
+                                    }
+                                )
+                            }
+
                         }
                     }
 
@@ -477,7 +482,7 @@ fun MarketplaceScreen(
                                 }
                                 Spacer(Modifier.width(12.dp))
                             }
-                            items(categoryTypes?.categories ?: emptyList()){ category->
+                            items(categoryTypes?.data ?: emptyList()){ category->
                                 Card(
                                     onClick = {
                                         viewModel.loadCategoryProducts(category.id)
@@ -493,10 +498,10 @@ fun MarketplaceScreen(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         AsyncImage(
-                                            model = ImageRequest.Builder(context)
+                                            model = "${RetrofitClient.BASE_URL}${category.image}"/*ImageRequest.Builder(context)
                                                 .data("${RetrofitClient.BASE_URL}${category.image}")
                                                 .decoderFactory(SvgDecoder.Factory())
-                                                .build(),
+                                                .build()*/,
                                             contentDescription = "",
                                             modifier = Modifier.size(30.dp)
                                         )
@@ -522,29 +527,23 @@ fun MarketplaceScreen(
 
                     items(userProducts?.products ?: emptyList()){ product->
 
-                        val url = product.product_image?.let {
-                            "${RetrofitClient.BASE_URL}uploads/$it"
+                        val url = product.product_image?.removePrefix("/")?.let {
+                            "${RetrofitClient.BASE_URL}$it"
                         }
                         Log.d("IMG_DEBUG", "URL = $url")
 
                         MarketPlaceItem(
                             productId = product.id.toString(),
-                            imageUrl = product.product_images
-                                ?.firstOrNull()
-                                ?.let { "${RetrofitClient.BASE_URL}uploads/$it" }
-                                ?: "https://picsum.photos/200",
+                            imageUrl = url,
                             productName = product.name,
                             price = product.price.toFloatOrNull()?:0f,
                             onClick = onProductClick,
                             onIconClick = {
-                                viewModel.addToWishlist(
-                                    product.id,
-                                    onError = {error->
-                                        Log.e("WISHLIST_DEBUG", error)
-                                    }
+                                viewModel.toggleWishlist(
+                                    product.id
                                 )
                             },
-                            isLiked = product.is_liked
+                            isLiked = product.is_wishlisted
                         )
                     }
 

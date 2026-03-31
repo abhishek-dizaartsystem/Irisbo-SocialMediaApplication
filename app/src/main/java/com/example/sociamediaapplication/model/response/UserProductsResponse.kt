@@ -4,22 +4,21 @@ import com.example.sociamediaapplication.model.Specification
 
 data class UserProductsResponse(
     val success: Boolean,
-    val total_products: Int,
-    val products: List<UserProductResponse>
+    val products: List<UserProductResponse>,
+    val pagination: PaginationResponse
 )
 
 data class UserProductResponse(
     val id: Int,
     val name: String,
-    val category: String?,
+    val category_name: String?,
     val product_image: String?,
     val price: String,
     val discount: String,
-    val discounted_price: String,
+    val final_price: String,
     val stock: Int,
-    val created_at: String,
-    val username: String,
     val specifications: List<Specification>,
-    val is_liked: Boolean,
-    val product_images: List<String>
+    val created_at: String,
+    val seller_username: String,
+    val is_wishlisted: Boolean
 )

@@ -124,19 +124,19 @@ fun CartScreen(
                 Column(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    if(cartItems.isNotEmpty()){
+                    if(cartItems?.summary?.total_items!=0){
                         LazyColumn(
                             modifier = Modifier.padding(16.dp).fillMaxSize(),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
 
-                            items(cartItems){item->
+                            items(cartItems?.items ?: emptyList()) { item ->
                                 CartItem(
                                     productId = item.id,
-                                    productImage = item.product_image.firstOrNull(),
+                                    productImage = item.product_image,
                                     productName = item.name,
-                                    sellerName = item.username?:"Seller",
-                                    price = item.discounted_price.toFloatOrNull()?:0f,
+                                    sellerName = item.seller_username?:"Seller",
+                                    price = item.final_price.toFloat(),
                                     quantity = item.quantity,
                                     onIncreaseQuantity = {
                                         viewModel.increaseProductQuantity(

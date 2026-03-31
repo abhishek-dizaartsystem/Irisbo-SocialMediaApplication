@@ -31,7 +31,7 @@ interface PostApi {
         @Path("post_id") postId: Int
     ): GroupPostDetailsResponse
 
-    @GET("api/posts/all")
+    @GET("api/users/{userId}/posts")
     suspend fun getAllPosts(
         @Header("Authorization") token: String
     ): PostsListResponse

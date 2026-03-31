@@ -96,7 +96,7 @@ fun ProductScreen(
     val productReviews by viewModel.productReviews.collectAsState()
 
     val pagerState = rememberPagerState(
-        pageCount = { productDetails?.product?.product_images?.size ?: 0 }
+        pageCount = { productDetails?.data?.images?.size ?: 0 }
     )
 
     var showReviewSection by remember { mutableStateOf(false) }
@@ -208,7 +208,10 @@ fun ProductScreen(
                                 .aspectRatio(1f)
                         ) {page->
 
-                            val mediaUrl = "${RetrofitClient.BASE_URL}uploads/${productDetails?.product?.product_images?.getOrNull(page)}"
+                            val image = productDetails?.data?.images?.getOrNull(page)
+                            val mediaUrl = image?.image_url
+                                ?.removePrefix("/")   // 👈 removes leading slash
+                                ?.let { "${RetrofitClient.BASE_URL}$it" }
 
                             when{
                                 mediaUrl == null -> {}
@@ -250,7 +253,7 @@ fun ProductScreen(
                                 // 🔥 Smart Dots Indicator
 
 
-                                val totalDots = productDetails?.product?.product_images?.size ?: 0
+                                val totalDots = productDetails?.data?.images?.size ?: 0
                                 val currentPage = pagerState.currentPage
                                 val maxVisibleDots = 5
 
@@ -321,13 +324,15 @@ fun ProductScreen(
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        productDetails?.product?.product_images?.let { images ->
+                        productDetails?.data?.images?.let { images ->
                             items(images){image->
-                                val mediaUrl = "${RetrofitClient.BASE_URL}uploads/$image"
+                                val mediaUrl = image.image_url
+                                    ?.removePrefix("/")   // 👈 removes leading slash
+                                    ?.let { "${RetrofitClient.BASE_URL}$it" }
 
                                 val thumbnail: Bitmap? = remember(mediaUrl) {
-                                    if (isVideo(mediaUrl))
-                                        getFrameFromUrl(context, mediaUrl)
+                                    if (isVideo(mediaUrl ?: ""))
+                                        getFrameFromUrl(context, mediaUrl ?: "")
                                     else null
                                 }
 
@@ -361,13 +366,13 @@ fun ProductScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "$${productDetails?.product?.discounted_price}",
+                                text = "₹${productDetails?.data?.final_price}",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp
                             )
 
                             Text(
-                                text = "$${productDetails?.product?.price}",
+                                text = "₹${productDetails?.data?.price}",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp,
                                 style = TextStyle(
@@ -384,7 +389,7 @@ fun ProductScreen(
                                     )
                             ) {
                                 Text(
-                                    text = "${productDetails?.product?.discount}% OFF",
+                                    text = "${productDetails?.data?.discount}% OFF",
                                     color = Green,
                                     fontSize = 14.sp,
                                     modifier = Modifier.padding(
@@ -397,7 +402,7 @@ fun ProductScreen(
                         }
 
                         Text(
-                            text = "${productDetails?.product?.name}",
+                            text = "${productDetails?.data?.name}",
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
                             modifier = Modifier.padding(horizontal = 16.dp)
@@ -415,7 +420,7 @@ fun ProductScreen(
                                 modifier = Modifier.size(20.dp)
                             )
                             Text(
-                                text = "(${productReviews?.total_reviews} reviews)",
+                                text = "(${productReviews?.summary?.total_reviews} reviews)",
                                 fontSize = 18.sp,
                                 color = GreyTxt
                             )
@@ -436,7 +441,7 @@ fun ProductScreen(
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
                         Text(
-                            text = "${productDetails?.product?.description}",
+                            text = "${productDetails?.data?.description}",
                             fontSize = 16.sp,
                             color = GreyTxt,
                             modifier = Modifier
@@ -468,7 +473,7 @@ fun ProductScreen(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp
                             )
-                            productDetails?.product?.specifications?.forEach {specification->
+                            productDetails?.data?.specifications?.forEach {specification->
                                 Row(
                                     modifier = Modifier
                                         .padding(top = 12.dp)
@@ -500,7 +505,7 @@ fun ProductScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Reviews (${productReviews?.total_reviews})",
+                                text = "Reviews (${productReviews?.summary?.total_reviews})",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp,
                                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -543,7 +548,7 @@ fun ProductScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Text(
-                                        text = "${productDetails?.product?.average_rating}",
+                                        text = "${productReviews?.summary?.average_rating}",
                                         fontSize = 28.sp,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -582,7 +587,7 @@ fun ProductScreen(
                                     }
 
                                     Text(
-                                        text = "${productReviews?.total_reviews} reviews",
+                                        text = "${productReviews?.summary?.total_reviews} reviews",
                                         fontSize = 16.sp,
                                         color = GreyTxt
                                     )
@@ -615,7 +620,7 @@ fun ProductScreen(
 
                                         CustomProgressBar2(
                                             value = s5.toFloat(),
-                                            maxValue = productReviews?.total_reviews?.toFloat() ?: 0f,
+                                            maxValue = productReviews?.summary?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)   // 🔥 THIS IS THE KEY
                                         )
 
@@ -649,7 +654,7 @@ fun ProductScreen(
                                         Spacer(Modifier.width(8.dp))
                                         CustomProgressBar2(
                                             value = s4.toFloat(),
-                                            maxValue = productReviews?.total_reviews?.toFloat() ?: 0f,
+                                            maxValue = productReviews?.summary?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Spacer(Modifier.width(8.dp))
@@ -680,7 +685,7 @@ fun ProductScreen(
                                         Spacer(Modifier.width(8.dp))
                                         CustomProgressBar2(
                                             value = s3.toFloat(),
-                                            maxValue = productReviews?.total_reviews?.toFloat() ?: 0f,
+                                            maxValue = productReviews?.summary?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Spacer(Modifier.width(8.dp))
@@ -711,7 +716,7 @@ fun ProductScreen(
                                         Spacer(Modifier.width(8.dp))
                                         CustomProgressBar2(
                                             value = s2.toFloat(),
-                                            maxValue = productReviews?.total_reviews?.toFloat() ?: 0f,
+                                            maxValue = productReviews?.summary?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Spacer(Modifier.width(8.dp))
@@ -742,7 +747,7 @@ fun ProductScreen(
                                         Spacer(Modifier.width(8.dp))
                                         CustomProgressBar2(
                                             value = s1.toFloat(),
-                                            maxValue = productReviews?.total_reviews?.toFloat() ?: 0f,
+                                            maxValue = productReviews?.summary?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Spacer(Modifier.width(8.dp))
@@ -761,15 +766,15 @@ fun ProductScreen(
 
                 items(productReviews?.reviews?.size ?: 0){review->
                     ReviewItem(
-                        name = productReviews?.reviews?.get(review)?.username ?: "",
+                        name = productReviews?.reviews?.get(review)?.reviewer_username ?: "",
                         timeAgo = formatPostTime(
                             productReviews?.reviews?.get(review)?.created_at ?: ""
                         ),
                         rating = productReviews?.reviews?.get(review)?.rating ?: 3,
-                        reviewText = productReviews?.reviews?.get(review)?.comment ?: "",
+                        reviewText = productReviews?.reviews?.get(review)?.review ?: "",
                         profileImage = R.drawable.rectangle_36__2_,
-                        vendor_reply = productReviews?.reviews?.get(review)?.vendor_reply ?: "",
-                        vendor_reply_at = formatPostTime(productReviews?.reviews?.get(review)?.vendor_reply_at ?: ""),
+                        vendor_reply = productReviews?.reviews?.get(review)?.reply ?: "",
+                        vendor_reply_at = formatPostTime(productReviews?.reviews?.get(review)?.reply_created_at ?: ""),
                         review_likes = productReviews?.reviews?.get(review)?.review_likes ?: 0,
                         review_dislikes = productReviews?.reviews?.get(review)?.review_dislikes ?: 0,
                         reply_likes = productReviews?.reviews?.get(review)?.reply_likes ?: 0,
@@ -787,6 +792,9 @@ fun ProductScreen(
                         },
                         onReplyDisliked = {
                             viewModel.dislikeReviewReply(productReviews?.reviews?.get(review)?.id ?: 0)
+                        },
+                        onReviewDeleted = {
+                            viewModel.deleteProductReview(productReviews?.reviews?.get(review)?.id ?: 0)
                         }
                     )
 
@@ -889,7 +897,7 @@ fun ProductScreen(
                     Toast.makeText(context, review, Toast.LENGTH_SHORT).show()
                     showReviewSection = false
                     viewModel.addProductReview(
-                        productId = productDetails?.product?.id ?: 0,
+                        productId = productDetails?.data?.id ?: 0,
                         rating = rating,
                         comment = review,
                         context = context

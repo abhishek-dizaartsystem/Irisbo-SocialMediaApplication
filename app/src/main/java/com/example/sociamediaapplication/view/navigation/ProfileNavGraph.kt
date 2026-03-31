@@ -57,7 +57,7 @@ fun ProfileNavGraph(
         composable("profileMain"){
             LaunchedEffect(Unit) {
                 postViewModel.loadPosts()
-                reelViewModel.loadReels()
+//                reelViewModel.loadReels()
             }
 
             ProfileScreen(

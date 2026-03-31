@@ -103,19 +103,19 @@ fun WishlistScreen(
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
-            if(wishlistItems.isNotEmpty()){
+            if(wishlistItems?.pagination?.total!=0){
                 val context = LocalContext.current
                 LazyColumn(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(wishlistItems){item->
+                    items(wishlistItems?.wishlist ?: emptyList()){item->
                         WishlistItem(
                             productId = item.id,
-                            productImage = item.product_image.firstOrNull(),
+                            productImage = item.product_image,
                             productName = item.name,
-                            sellerName = item.username,
-                            price = item.price.toFloat(),
+                            sellerName = item.seller_username,
+                            price = item.final_price,
                             onAddToCart = {
                                 viewModel.addToCart(
                                     productId = item.id.toString(),

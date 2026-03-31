@@ -17,7 +17,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -58,14 +61,17 @@ fun ReviewItem(
     reply_dislikes: Int = 0,
     user_review_reaction: String? = null,
     user_reply_reaction: String? = null,
-    onReviewLiked: () -> Unit ={},
+    onReviewLiked: () -> Unit = {},
     onReviewDisliked: () -> Unit = {},
     onReplyLiked: () -> Unit = {},
     onReplyDisliked: () -> Unit = {},
-    isVendor: Boolean = false
+    isVendor: Boolean = false,
+    onReviewDeleted: () -> Unit = {}
 ) {
 
     var showReply by remember { mutableStateOf(false) }
+
+    var showDropDownMenu by remember { mutableStateOf(false) }
 
     Card(
         modifier = modifier
@@ -122,11 +128,45 @@ fun ReviewItem(
                     }
                 }
 
-                Text(
-                    text = timeAgo,
-                    fontSize = 14.sp,
-                    color = GreyTxt
-                )
+                Column() {
+                    IconButton(
+                        onClick = {
+                            showDropDownMenu = true
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.menu_dots_svgrepo_com),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .rotate(90f)
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = showDropDownMenu,
+                        onDismissRequest = {
+                            showDropDownMenu = false
+                        }
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text("Delete")
+                            },
+                            onClick = {
+                                showDropDownMenu = false
+                                onReviewDeleted()
+                            }
+                        )
+                    }
+                }
+
+
+//                Text(
+//                    text = timeAgo,
+//                    fontSize = 14.sp,
+//                    color = GreyTxt
+//                )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -184,7 +224,9 @@ fun ReviewItem(
                             else
                                 painterResource(R.drawable.like_svgrepo_com),
                             contentDescription = null,
-                            modifier = Modifier.size(20.dp).rotate(180f),
+                            modifier = Modifier
+                                .size(20.dp)
+                                .rotate(180f),
                             tint = GreyTxt
                         )
                         Text(

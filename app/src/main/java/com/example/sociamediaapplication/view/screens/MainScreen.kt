@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -43,6 +44,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.preferences.TokenManager
+import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.repository.PostRepository
 import com.example.sociamediaapplication.data.repository.ProfileRepository
 import com.example.sociamediaapplication.data.repository.ReelRepository
@@ -93,6 +95,10 @@ fun MainScreen(
     val profileViewModel: ProfileViewModel = viewModel(factory = profileFactory)
 
     val profile by profileViewModel.profile.collectAsState()
+
+    LaunchedEffect(Unit) {
+        profileViewModel.loadProfile()
+    }
 
 
     Scaffold(
@@ -202,7 +208,7 @@ fun MainScreen(
                             // Set the size of the clickable area
                         ) {
                             AsyncImage(
-                                model = profile?.profile_img,
+                                model = "${RetrofitClient.BASE_URL}${profile?.data?.profile_image?.removePrefix("/")}",
                                 contentDescription = "Profile Image",
                                 // This crops the image into a square before clipping to a circle
 

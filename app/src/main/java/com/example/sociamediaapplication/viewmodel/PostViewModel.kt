@@ -27,7 +27,7 @@ class PostViewModel(
     val error: StateFlow<String?> = _error
 
     init {
-        loadPosts()
+        //loadPosts()
     }
 
     fun loadPosts() {

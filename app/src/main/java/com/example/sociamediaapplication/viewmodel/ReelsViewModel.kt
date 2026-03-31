@@ -83,7 +83,7 @@ class ReelsViewModel(
     val error: StateFlow<String?> = _error
 
     init {
-        loadReels()
+        //loadReels()
     }
 
     fun loadReels() {

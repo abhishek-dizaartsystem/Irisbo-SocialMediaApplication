@@ -41,7 +41,7 @@ import com.example.sociamediaapplication.ui.theme.White
 @Composable
 fun WishlistItem(
     productId: Int = 1,
-    productImage: String?,
+    productImage: String,
     productName: String,
     sellerName: String,
     price: Float,

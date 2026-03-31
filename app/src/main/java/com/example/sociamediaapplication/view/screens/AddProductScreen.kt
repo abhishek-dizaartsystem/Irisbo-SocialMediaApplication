@@ -293,7 +293,7 @@ fun AddProductScreen(
                         showDropdown = false
                     }
                 ) {
-                    categoryTypes?.categories?.forEach { category->
+                    categoryTypes?.data?.forEach { category->
                         DropdownMenuItem(
                             text = {
                                 Text(category.name)
