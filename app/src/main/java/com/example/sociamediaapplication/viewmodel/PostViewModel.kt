@@ -30,11 +30,11 @@ class PostViewModel(
         //loadPosts()
     }
 
-    fun loadPosts() {
+    fun loadPosts(id: Int) {
         viewModelScope.launch {
             _loading.value = true
             try {
-                _posts.value = repository.getPosts()
+                _posts.value = repository.getPosts(id)
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
@@ -43,38 +43,38 @@ class PostViewModel(
         }
     }
 
-    fun toggleSave(post: PostResponse){
+    fun toggleSave(post: PostResponse, id: Int){
         _posts.value = _posts.value.map {
             if(it.id == post.id) {
                 it.copy(
-                    is_saved = !it.is_saved
+                    is_saved = if(it.is_saved == 1) 0 else 1
                 )
             }else it
         }
         viewModelScope.launch {
             try {
-                val reposnse = repository.toggleSave(post.id)
+                val response = repository.toggleSave(post.id)
 
                 _posts.value = _posts.value.map {
                     if(it.id == post.id) {
                         it.copy(
-                            is_saved = reposnse.saved
+                            is_saved = if(response.saved)1 else 0
                         )
                     }else it
                 }
             }catch (e: Exception){
-                loadPosts()
+                loadPosts(id)
             }
         }
     }
 
-    fun toggleLike(post: PostResponse){
+    fun toggleLike(post: PostResponse, id: Int){
         _posts.value = _posts.value.map{
             if(it.id == post.id){
                 it.copy(
-                    is_liked = !it.is_liked,
+                    is_liked = if(it.is_liked == 1) 0 else 1,
                     likes_count =
-                        if (it.is_liked) it.likes_count - 1
+                        if (it.is_liked == 1) it.likes_count - 1
                         else it.likes_count + 1
                 )
             }else it
@@ -87,7 +87,7 @@ class PostViewModel(
                 _posts.value = _posts.value.map {
                     if (it.id == post.id) {
                         it.copy(
-                            is_liked = response.liked,
+                            is_liked = if(response.liked) 1 else 0,
                             likes_count = response.likes_count
                         )
                     } else it
@@ -95,7 +95,7 @@ class PostViewModel(
 
             } catch (e: Exception) {
                 // 🔥 rollback on failure
-                loadPosts()
+                loadPosts(id)
             }
         }
     }
@@ -104,6 +104,7 @@ class PostViewModel(
         caption: String,
         mediaUris: List<Uri>?,
         context: Context,
+        id:Int,
         onSuccess: () -> Unit
     ) {
         viewModelScope.launch {
@@ -117,7 +118,7 @@ class PostViewModel(
                 )
 
                 // 🔥 reload feed after upload
-                repository.getPosts()
+                repository.getPosts(id)
 
                 onSuccess()
 

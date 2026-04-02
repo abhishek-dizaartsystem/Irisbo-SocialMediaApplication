@@ -23,17 +23,18 @@ class PostRepository(
 
 
 
-    suspend fun getPosts(): List<PostResponse> {
+    suspend fun getPosts(id: Int): List<PostResponse> {
         val token = tokenManager.getToken()
-        println("TOKEN DEBUG: $token")
+        Log.d("TOKEN DEBUG" ,"$token")
 
         val response = api.getAllPosts(
-            token = "Bearer $token"
+            token = "Bearer $token",
+            id
         )
 
-        println("POSTS DEBUG: ${response.posts.size}")
+        Log.d("POST DEBUG" ,"${response.size}")
 
-        return response.posts
+        return response
     }
 
     suspend fun toggleLike(postId: Int): LikeResponse {
@@ -67,7 +68,7 @@ class PostRepository(
         val token = tokenManager.getToken()
             ?: throw IllegalStateException("No token")
 
-        Log.d("TOKEN_DEBUG", token)
+//        Log.d("TOKEN_DEBUG", token)
 
         val caption = captionText.toRequestBody("text/plain".toMediaType())
 
@@ -113,7 +114,7 @@ class PostRepository(
         val token = tokenManager.getToken()
             ?: throw IllegalStateException("No token")
 
-        Log.d("TOKEN_DEBUG", token)
+//        Log.d("TOKEN_DEBUG", token)
 
         val caption = captionText.toRequestBody("text/plain".toMediaType())
 

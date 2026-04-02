@@ -2,6 +2,8 @@ package com.example.sociamediaapplication.data.utils
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
+import com.example.sociamediaapplication.data.remote.RetrofitClient
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -47,5 +49,28 @@ fun String.toPart(): RequestBody =
 
 fun getMimeType(context: Context, uri: Uri): String {
     return context.contentResolver.getType(uri) ?: "image/*"
+}
+
+
+fun correctUrl(url: String?): String{
+
+    if(url == null){
+        return "${RetrofitClient.BASE_URL}uploads/1774852869892-939140931.jpg"
+    }else{
+        if(url?.startsWith("http") == true){
+
+            Log.d("correctUrl_DEBUG", "$url")
+            return url
+        } else{
+            val correct_url = url?.split("/")
+
+            Log.d("correctUrl_DEBUG", "${RetrofitClient.BASE_URL}uploads/${correct_url?.last()}")
+
+            return "${RetrofitClient.BASE_URL}uploads/${correct_url?.last()}"
+        }
+    }
+
+
+
 }
 

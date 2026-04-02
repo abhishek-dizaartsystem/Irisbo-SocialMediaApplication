@@ -41,6 +41,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.model.FeedPost
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -79,7 +80,7 @@ fun GroupDetailsScreen(
         item {
             Box(){
                 AsyncImage(
-                    model = "${RetrofitClient.BASE_URL}${groupDetails?.group?.cover_image}",
+                    model = correctUrl(groupDetails?.group?.cover_image),
                     contentDescription = "",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -165,7 +166,7 @@ fun GroupDetailsScreen(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 AsyncImage(
-                                    model = "${RetrofitClient.BASE_URL}${groupDetails?.group?.cover_image}",
+                                    model = correctUrl(groupDetails?.group?.cover_image),
                                     contentDescription = "",
                                     modifier = Modifier
                                         .size(60.dp)
@@ -181,7 +182,7 @@ fun GroupDetailsScreen(
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        text = groupDetails?.group?.slug?: "",
+                                        text = groupDetails?.group?.name?: "",
                                         color = GreyTxt,
                                         fontSize = 14.sp
                                     )

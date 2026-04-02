@@ -48,6 +48,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.data.utils.formatPostTime
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -169,7 +170,7 @@ fun ManageGroupsItem(
                                         GroupMemberRequestItem(
                                             uid = member.user_id,
                                             username = member.username,
-                                            image = member.profile_image,
+                                            image = correctUrl(member.profile_image),
                                             requestTime = formatPostTime(member.joined_at),
                                             onApproveRequest = {
                                                 viewModel.approveMemberRequest(groupId, member.user_id)
@@ -196,7 +197,7 @@ fun ManageGroupsItem(
                                         AllGroupMemberItem(
                                             uid = member.user_id,
                                             username = member.username,
-                                            image = member.profile_image,
+                                            image = correctUrl(member.profile_image),
                                             joinedOn = formatPostTime((member.joined_at)),
                                             role = member.role,
                                             onRemoveMember = {
@@ -332,7 +333,7 @@ fun ManageGroupsItem(
             }
     ){
         AsyncImage(
-            model = "${RetrofitClient.BASE_URL}$image",
+            model = image,
             contentDescription = "",
             modifier = Modifier
                 .fillMaxWidth()
@@ -368,7 +369,7 @@ fun ManageGroupsItem(
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             AsyncImage(
-                                model = "${RetrofitClient.BASE_URL}$image",
+                                model = image,
                                 contentDescription = "",
                                 modifier = Modifier
                                     .size(50.dp)

@@ -61,17 +61,17 @@ class ProfileViewModel(
             try {
                 val response = repository.getProfile()
 
-                Log.e("Profile_debug", "id = ${response.data.id}")
-                Log.e("Profile_debug", "name = ${response.data.name}")
-                Log.e("Profile_debug", "username = ${response.data.username}")
-                Log.e("Profile_debug", "email = ${response.data.email}")
-                Log.e("Profile_debug", "bio = ${response.data.bio}")
-                Log.e("Profile_debug", "education = ${response.data.education}")
-                Log.e("Profile_debug", "work = ${response.data.work}")
-                Log.e("Profile_debug", "phone = ${response.data.phone}")
-                Log.e("Profile_debug", "profile_image = ${response.data.profile_image}")
-                Log.e("Profile_debug", "cover_img = ${response.data.cover_img}")
-                Log.e("Profile_debug", "create_at = ${response.data.create_at}")
+//                Log.e("Profile_debug", "id = ${response.data.id}")
+//                Log.e("Profile_debug", "name = ${response.data.name}")
+//                Log.e("Profile_debug", "username = ${response.data.username}")
+//                Log.e("Profile_debug", "email = ${response.data.email}")
+//                Log.e("Profile_debug", "bio = ${response.data.bio}")
+//                Log.e("Profile_debug", "education = ${response.data.education}")
+//                Log.e("Profile_debug", "work = ${response.data.work}")
+//                Log.e("Profile_debug", "phone = ${response.data.phone}")
+//                Log.e("Profile_debug", "profile_image = ${response.data.profile_image}")
+//                Log.e("Profile_debug", "cover_img = ${response.data.cover_img}")
+//                Log.e("Profile_debug", "create_at = ${response.data.create_at}")
 
 
                 val fixedProfile = response.data.copy(
@@ -79,13 +79,13 @@ class ProfileViewModel(
                     cover_img = buildImageUrl(response.data.cover_img)
                 )
 
-                Log.e("Profile_debug", response.data.profile_image?:"No value")
+//                Log.e("Profile_debug", response.data.profile_image?:"No value")
 
                 _profile.value = response
 
-                Log.e("Profile_debug", profile.value?.data?.profile_image?.removePrefix("/").let {
-                    "${RetrofitClient.BASE_URL}$it"
-                })
+//                Log.e("Profile_debug", profile.value?.data?.profile_image?.removePrefix("/").let {
+//                    "${RetrofitClient.BASE_URL}$it"
+//                })
 
             } catch (e: Exception) {
                 e.printStackTrace()

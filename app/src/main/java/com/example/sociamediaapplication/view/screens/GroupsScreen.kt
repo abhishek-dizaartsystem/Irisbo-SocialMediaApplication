@@ -42,6 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -322,7 +323,7 @@ fun GroupsScreen(
                                         //onEditClick = onEditClick,
                                         viewModel = viewModel,
                                         total_members = group.member_count,
-                                        image = group.cover_image
+                                        image = correctUrl(group.cover_image)
                                         )
                                 }
 
@@ -340,7 +341,7 @@ fun GroupsScreen(
                                     groupId = group.id,
                                     name = group.name,
                                     memberCount = group.member_count,
-                                    image = group.cover_image,
+                                    image = correctUrl(group.cover_image),
                                     isPrivate = group.privacy != "public",
                                     onGroupClick = onGroupClick,
                                     onLeave = {
@@ -357,7 +358,7 @@ fun GroupsScreen(
                                 groupId = group.id,
                                 name = group.name,
                                 memberCount = group.member_count,
-                                image = group.cover_image,
+                                image = correctUrl(group.cover_image),
                                 onGroupClick = onGroupClick ,
                                 onJoin = {
                                     viewModel.joinGroup(group.id)

@@ -285,6 +285,13 @@ fun Post(
 
                             is String -> {
 
+                                val fullUrl =
+                                    if (media.startsWith("http")) {
+                                        media // already full URL
+                                    } else {
+                                        "${RetrofitClient.BASE_URL}uploads/$media"
+                                    }
+
                                 if (isVideo(media)) {
 
                                     AutoVideo(
@@ -292,7 +299,7 @@ fun Post(
                                             if(type == "group post")
                                                 "${RetrofitClient.BASE_URL}$media"
                                             else
-                                                media,
+                                                fullUrl,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .aspectRatio(1f)
@@ -305,7 +312,7 @@ fun Post(
                                             if (type == "group post")
                                                 "${RetrofitClient.BASE_URL}$media"
                                             else
-                                                media,
+                                                fullUrl,
                                         contentDescription = null,
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier

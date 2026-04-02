@@ -8,7 +8,6 @@ data class GroupDetailsResponse(
 data class GroupDetails(
     val id: Int,
     val name: String,
-    val slug: String,
     val description: String,
     val cover_image: String,
     val privacy: String,

@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,7 +57,10 @@ fun ProfileNavGraph(
     ){
         composable("profileMain"){
             LaunchedEffect(Unit) {
-                postViewModel.loadPosts()
+                Log.d("POST_DEBUG", "loadPosts() called")
+                postViewModel.loadPosts(
+                    id = profile?.data?.id ?: 0
+                )
 //                reelViewModel.loadReels()
             }
 
@@ -80,10 +84,10 @@ fun ProfileNavGraph(
                     reelViewModel.toggleSave(it)
                 },
                 onPostLike = {
-                    postViewModel.toggleLike(it)
+                    postViewModel.toggleLike(it, profile?.data?.id ?: 0)
                 },
                 onPostSave = {
-                    postViewModel.toggleSave(it)
+                    postViewModel.toggleSave(it, profile?.data?.id ?: 0)
                 }
             )
         }

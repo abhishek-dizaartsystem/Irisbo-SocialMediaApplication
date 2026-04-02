@@ -36,6 +36,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,6 +74,8 @@ import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -173,22 +176,22 @@ fun ProfileScreen(
                             )
 
                         }
-                        IconButton(
-                            onClick = {
-                                userProfileImagePicker.launch("image/*")
-                            },
-                            modifier = Modifier.size(40.dp),
-                            colors = IconButtonDefaults.iconButtonColors(
-                                containerColor = GreyBtn
-                            )
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.camera_svgrepo_com),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .size(30.dp)
-                            )
-                        }
+//                        IconButton(
+//                            onClick = {
+//                                userProfileImagePicker.launch("image/*")
+//                            },
+//                            modifier = Modifier.size(40.dp),
+//                            colors = IconButtonDefaults.iconButtonColors(
+//                                containerColor = GreyBtn
+//                            )
+//                        ) {
+//                            Icon(
+//                                painter = painterResource(R.drawable.camera_svgrepo_com),
+//                                contentDescription = "",
+//                                modifier = Modifier
+//                                    .size(30.dp)
+//                            )
+//                        }
                     }
 
                 }
@@ -198,22 +201,22 @@ fun ProfileScreen(
                         Spacer(
                             modifier = Modifier.height(8.dp)
                         )
-                        IconButton(
-                            onClick = {
-                                userCoverImagePicker.launch("image/*")
-                            },
-                            modifier = Modifier.size(40.dp),
-                            colors = IconButtonDefaults.iconButtonColors(
-                                containerColor = GreyBtn
-                            )
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.camera_svgrepo_com),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .size(30.dp)
-                            )
-                        }
+//                        IconButton(
+//                            onClick = {
+//                                userCoverImagePicker.launch("image/*")
+//                            },
+//                            modifier = Modifier.size(40.dp),
+//                            colors = IconButtonDefaults.iconButtonColors(
+//                                containerColor = GreyBtn
+//                            )
+//                        ) {
+//                            Icon(
+//                                painter = painterResource(R.drawable.camera_svgrepo_com),
+//                                contentDescription = "",
+//                                modifier = Modifier
+//                                    .size(30.dp)
+//                            )
+//                        }
                     }
                     Spacer(modifier = Modifier.width(4.dp))
                 }
@@ -418,15 +421,41 @@ fun ProfileScreen(
                 }
             }
             if(postSelected){
-                items(posts) { post ->
+                items(
+                    items = posts,
+                    key = { it.id } // 🔥 improves performance
+                ) { post ->
 
-                    val thumbnailUrl = post.media_urls.firstOrNull()
                     val context = LocalContext.current
 
-                    val videoFrame: Bitmap? = remember(thumbnailUrl) {
-                        if (thumbnailUrl != null && isVideo(thumbnailUrl))
-                            getFrameFromUrl(context, thumbnailUrl)
-                        else null
+                    // ✅ Build full media URL
+//                    val mediaUrl = post.media?.firstOrNull()?.let {
+//                        "${RetrofitClient.BASE_URL}/uploads/$it"
+//                    }
+//
+//                    val isVideoPost = post.media_type == "video"
+
+                    val firstMedia = post.media?.firstOrNull()
+
+                    val mediaUrl = firstMedia?.let {
+                        if (it.startsWith("http")) it
+                        else "${RetrofitClient.BASE_URL}uploads/$it"
+                    }
+
+                    val isVideoPost = firstMedia?.let { isVideo(it) } == true
+
+                    // ✅ State for video frame
+                    var videoFrame by remember { mutableStateOf<Bitmap?>(null) }
+
+                    // ✅ Load frame in background (NO ANR 🚀)
+                    LaunchedEffect(mediaUrl) {
+                        if (mediaUrl != null && isVideoPost) {
+                            videoFrame = withContext(Dispatchers.IO) {
+                                getFrameFromUrl(context, mediaUrl)
+                            }
+                        } else {
+                            videoFrame = null
+                        }
                     }
 
                     Box(
@@ -436,15 +465,17 @@ fun ProfileScreen(
                             .clickable { selectedPostId = post.id }
                     ) {
 
-                        when{
-                            videoFrame != null -> {
+                        when {
+                            // 🎥 VIDEO
+                            isVideoPost && videoFrame != null -> {
                                 Image(
-                                    bitmap = videoFrame.asImageBitmap(),
+                                    bitmap = videoFrame!!.asImageBitmap(),
                                     contentDescription = null,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier.fillMaxSize()
                                 )
 
+                                // ▶ play icon
                                 Icon(
                                     painter = painterResource(R.drawable.play_svgrepo_com),
                                     contentDescription = null,
@@ -454,16 +485,27 @@ fun ProfileScreen(
                                         .size(26.dp)
                                 )
                             }
-                            thumbnailUrl != null -> {
+
+                            // ⏳ loading video frame
+                            isVideoPost -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.DarkGray)
+                                )
+                            }
+
+                            // 🖼 IMAGE
+                            mediaUrl != null -> {
                                 AsyncImage(
-                                    model = thumbnailUrl,
+                                    model = mediaUrl,
                                     contentDescription = null,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
 
-                            // 🔥 fallback
+                            // ⚠️ fallback
                             else -> {
                                 Box(
                                     modifier = Modifier
@@ -472,7 +514,19 @@ fun ProfileScreen(
                                 )
                             }
                         }
-
+//
+//                        // 📸 Multiple media indicator
+//                        if ((post.media?.size ?: 0) > 1) {
+//                            Icon(
+//                                painter = painterResource(R.drawable.gallery_svgrepo_com),
+//                                contentDescription = null,
+//                                tint = Color.White,
+//                                modifier = Modifier
+//                                    .align(Alignment.TopEnd)
+//                                    .padding(6.dp)
+//                                    .size(18.dp)
+//                            )
+//                        }
                     }
                 }
             }
@@ -546,15 +600,15 @@ fun ProfileScreen(
             Post(
                 uName = post.username ?: "",
                 caption = post.caption ?: "",
-                mediaList = post.media_urls,
+                mediaList = post.media,
                 postLikes = post.likes_count ?: 0,
-                profileImageUrl = post.profile_image_url,
-                isLiked = post.is_liked,
+                profileImageUrl = post.profile_image,
+                isLiked = post.is_liked == 1,
                 onLiked = { onPostLike(post) },
                 onFollow = {},
                 onPostProfileClick = {},
                 onSaved = { onPostSave(post) },
-                isSaved = post.is_saved,
+                isSaved = post.is_saved == 1,
                 createdAt = post.created_at
             )
         }

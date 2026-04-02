@@ -249,6 +249,8 @@ class GroupViewModel(
         viewModelScope.launch {
             try {
                 repository.joinGroup(groupId)
+                loadGroups()
+                loadMyGroups()
             }catch (e: Exception){
                 Log.e("GroupViewModel", e.message, e)
 
@@ -273,6 +275,8 @@ class GroupViewModel(
         viewModelScope.launch {
             try {
                 repository.leaveGroup(groupId)
+                loadGroups()
+                loadMyGroups()
             } catch (e: Exception) {
                 Log.e("GroupViewModel", e.message, e)
 

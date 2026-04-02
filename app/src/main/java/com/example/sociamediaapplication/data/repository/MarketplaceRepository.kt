@@ -38,7 +38,7 @@ class MarketplaceRepository(
     suspend fun getProducts(): UserProductsResponse{
         val token = "Bearer ${tokenManager.getToken()}"
 
-        Log.d("TOKEN_DEBUG", token)
+//        Log.d("TOKEN_DEBUG", token)
         return api.getProducts(token)
     }
 
@@ -160,15 +160,15 @@ class MarketplaceRepository(
                 specs = specs
             )
 
-            Log.d("UPLOAD_DEBUG", "SUCCESS RESPONSE = $response")
+//            Log.d("UPLOAD_DEBUG", "SUCCESS RESPONSE = $response")
             return response
 
         } catch (e: HttpException) {
 
             val errorBody = e.response()?.errorBody()?.string()
 
-            Log.e("UPLOAD_DEBUG", "HTTP ERROR ${e.code()}")
-            Log.e("UPLOAD_DEBUG", "ERROR BODY = $errorBody")
+//            Log.e("UPLOAD_DEBUG", "HTTP ERROR ${e.code()}")
+//            Log.e("UPLOAD_DEBUG", "ERROR BODY = $errorBody")
 
             throw e
         }
@@ -202,15 +202,15 @@ class MarketplaceRepository(
                 id = product_id
             )
 
-            Log.d("UPLOAD_DEBUG", "SUCCESS RESPONSE = $response")
+//            Log.d("UPLOAD_DEBUG", "SUCCESS RESPONSE = $response")
             return response
 
         } catch (e: HttpException) {
 
             val errorBody = e.response()?.errorBody()?.string()
 
-            Log.e("UPLOAD_DEBUG", "HTTP ERROR ${e.code()}")
-            Log.e("UPLOAD_DEBUG", "ERROR BODY = $errorBody")
+//            Log.e("UPLOAD_DEBUG", "HTTP ERROR ${e.code()}")
+//            Log.e("UPLOAD_DEBUG", "ERROR BODY = $errorBody")
 
             throw e
         }

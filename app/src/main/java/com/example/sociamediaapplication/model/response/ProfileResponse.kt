@@ -6,7 +6,7 @@ data class ProfileResponse(
 )
 
 data class ProfileModel(
-    val id: String,
+    val id: Int,
     val name: String,
     val username: String,
     val email: String,

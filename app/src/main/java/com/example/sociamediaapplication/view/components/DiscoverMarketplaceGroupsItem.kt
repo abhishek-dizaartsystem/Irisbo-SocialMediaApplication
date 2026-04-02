@@ -67,7 +67,7 @@ fun DiscoverGroupsItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
-                    model = "${RetrofitClient.BASE_URL}$image",
+                    model = image,
                     contentDescription = "",
                     modifier = Modifier
                         .size(60.dp)

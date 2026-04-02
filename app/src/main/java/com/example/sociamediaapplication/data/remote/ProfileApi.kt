@@ -31,7 +31,7 @@ interface ProfileApi {
     ): ProfileResponse
 
     @Multipart
-    @PUT("api/users/edit")
+    @PUT("api/users/profile")
     suspend fun editProfile(
         @Header("Authorization") token: String,
 

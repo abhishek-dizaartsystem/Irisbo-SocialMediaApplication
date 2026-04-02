@@ -79,7 +79,7 @@ fun AllGroupMemberItem(
                     contentAlignment = Alignment.BottomEnd
                 ){
                     AsyncImage(
-                        model = "${RetrofitClient.BASE_URL}$image",
+                        model = image,
                         contentDescription = "",
                         modifier = Modifier
                             .size(50.dp)

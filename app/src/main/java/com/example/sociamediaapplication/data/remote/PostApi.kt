@@ -3,6 +3,7 @@ package com.example.sociamediaapplication.data.remote
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.GroupPostDetailsResponse
 import com.example.sociamediaapplication.model.response.LikeResponse
+import com.example.sociamediaapplication.model.response.PostResponse
 import com.example.sociamediaapplication.model.response.PostsListResponse
 import com.example.sociamediaapplication.model.response.SaveResponse
 import okhttp3.MultipartBody
@@ -33,8 +34,9 @@ interface PostApi {
 
     @GET("api/users/{userId}/posts")
     suspend fun getAllPosts(
-        @Header("Authorization") token: String
-    ): PostsListResponse
+        @Header("Authorization") token: String,
+        @Path("userId") id: Int
+    ): List<PostResponse>
 
     @Multipart
     @POST("api/posts/create")
