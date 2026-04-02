@@ -40,6 +40,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -296,8 +297,8 @@ fun PagesScreen(
                             if(page.user_role == "admin"){
                                 ManagePagesItem(
                                     name = page.name,
-                                    coverImage = page.cover_image,
-                                    profileImage = page.profile_image,
+                                    coverImage = correctUrl(page.cover_image),
+                                    profileImage = correctUrl(page.profile_image),
                                     followers_count = page.followers_count,
                                     pageId = page.id,
                                     onPageClick = onPageClick,
@@ -319,7 +320,7 @@ fun PagesScreen(
                                 PagesItem(
                                     id = page.id,
                                     onPageClick = onPageClick,
-                                    image = page.profile_image,
+                                    image = correctUrl(page.profile_image),
                                     name = page.name,
                                     memberCount = page.followers_count,
                                     onUnfollow = {
@@ -335,7 +336,7 @@ fun PagesScreen(
                                 DiscoverPagesItem(
                                     id = page.id,
                                     onPageClick = onPageClick,
-                                    image = page.profile_image,
+                                    image = correctUrl(page.profile_image),
                                     name = page.name,
                                     memberCount = page.followers_count,
                                     isLiked = page.is_following == 1,

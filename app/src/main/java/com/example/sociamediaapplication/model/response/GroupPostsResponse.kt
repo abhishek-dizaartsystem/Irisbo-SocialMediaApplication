@@ -2,19 +2,15 @@ package com.example.sociamediaapplication.model.response
 
 data class GroupPostsResponse(
     val success: Boolean,
-    val total_pages: Int,
-    val total_posts: Int,
-
-
-    val posts: List<GroupPostReponse>
+    val posts: List<GroupPostResponse>
 )
 
-data class GroupPostReponse(
+data class GroupPostResponse(
     val id: Int,
     val user_id: Int,
     val caption: String,
     val mediaType: String,
-    val media: String,
+    val media: List<String>,
     val likes_count: Int,
     val shares_count: Int,
     val tags: List<Any>,

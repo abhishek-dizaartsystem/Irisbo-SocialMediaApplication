@@ -6,6 +6,7 @@ import android.util.Log
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.uriToFile
+import com.example.sociamediaapplication.model.response.BasicResponse2
 import com.example.sociamediaapplication.model.response.GroupPostDetailsResponse
 import com.example.sociamediaapplication.model.response.LikeResponse
 import com.example.sociamediaapplication.model.response.PostResponse
@@ -56,6 +57,26 @@ class PostRepository(
         return api.toggleSavePost(
             id = postId,
             token = "Bearer $token"
+        )
+    }
+
+    suspend fun savePost(postId: Int): BasicResponse2{
+        val token = tokenManager.getToken()
+            ?: throw IllegalStateException("No token")
+
+        return api.savePost(
+            postId,
+            "Bearer $token"
+        )
+    }
+
+    suspend fun unsavePost(postId: Int): BasicResponse2{
+        val token = tokenManager.getToken()
+            ?: throw IllegalStateException("No token")
+
+        return api.unsavePost(
+            postId,
+            "Bearer $token"
         )
     }
 

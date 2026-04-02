@@ -44,21 +44,21 @@ class PostViewModel(
     }
 
     fun toggleSave(post: PostResponse, id: Int){
-        _posts.value = _posts.value.map {
-            if(it.id == post.id) {
-                it.copy(
-                    is_saved = if(it.is_saved == 1) 0 else 1
-                )
-            }else it
-        }
+//        _posts.value = _posts.value.map {
+//            if(it.id == post.id) {
+//                it.copy(
+//                    is_saved = if(it.is_saved == 1) 0 else 1
+//                )
+//            }else it
+//        }
         viewModelScope.launch {
             try {
-                val response = repository.toggleSave(post.id)
+                val response = if(post.is_saved == 1) repository.unsavePost(post.id) else repository.savePost(post.id)
 
                 _posts.value = _posts.value.map {
                     if(it.id == post.id) {
                         it.copy(
-                            is_saved = if(response.saved)1 else 0
+                            is_saved = if(response.message.contains("unsaved successfully"))0 else 1
                         )
                     }else it
                 }
@@ -100,35 +100,35 @@ class PostViewModel(
         }
     }
 
-    fun createPost(
-        caption: String,
-        mediaUris: List<Uri>?,
-        context: Context,
-        id:Int,
-        onSuccess: () -> Unit
-    ) {
-        viewModelScope.launch {
-            _isUploading.value = true
-            try {
-
-                repository.createPost(
-                    captionText = caption,
-                    uris = mediaUris,
-                    context = context
-                )
-
-                // 🔥 reload feed after upload
-                repository.getPosts(id)
-
-                onSuccess()
-
-            } catch (e: Exception) {
-                _error.value = e.message
-            } finally {
-                _isUploading.value = false
-            }
-        }
-    }
+//    fun createPost(
+//        caption: String,
+//        mediaUris: List<Uri>?,
+//        context: Context,
+//        id:Int,
+//        onSuccess: () -> Unit
+//    ) {
+//        viewModelScope.launch {
+//            _isUploading.value = true
+//            try {
+//
+//                repository.createPost(
+//                    captionText = caption,
+//                    uris = mediaUris,
+//                    context = context
+//                )
+//
+//                // 🔥 reload feed after upload
+//                repository.getPosts(id)
+//
+//                onSuccess()
+//
+//            } catch (e: Exception) {
+//                _error.value = e.message
+//            } finally {
+//                _isUploading.value = false
+//            }
+//        }
+//    }
 
 
 }

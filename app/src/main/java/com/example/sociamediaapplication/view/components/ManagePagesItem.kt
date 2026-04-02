@@ -615,7 +615,7 @@ fun ManagePagesItem(
             .clip(RoundedCornerShape(12.dp))
     ){
         AsyncImage(
-            model = "${RetrofitClient.BASE_URL}uploads/$coverImage"?:R.drawable.travel,
+            model = coverImage ?:R.drawable.travel,
             contentDescription = "",
             modifier = Modifier
                 .fillMaxWidth()
@@ -651,7 +651,7 @@ fun ManagePagesItem(
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             AsyncImage(
-                                model = "${RetrofitClient.BASE_URL}uploads/$profileImage"?:R.drawable.travel,
+                                model = profileImage?:R.drawable.travel,
                                 contentDescription = "",
                                 modifier = Modifier
                                     .size(50.dp)

@@ -57,7 +57,7 @@ class PageRepository(
         val phoneBody = phone.toRequestBody("text/plain".toMediaType())
         val emailBody = email.toRequestBody("text/plain".toMediaType())
         val addressBody = address.toRequestBody("text/plain".toMediaType())
-        val categoryIdBody = address.toRequestBody("text/plain".toMediaType())
+        val categoryIdBody = category_id.toString().toRequestBody("text/plain".toMediaType())
 
         val profileFile = uriToFile(profileImageUri, context)
         val profileMime = context.contentResolver.getType(profileImageUri) ?: "image/*"

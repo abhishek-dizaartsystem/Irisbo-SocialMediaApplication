@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.AuthRepository
@@ -78,6 +79,9 @@ class AuthViewModel(
                 _authState.value = AuthUiState.Loading
 
                 val response = repository.logout()
+
+                Log.d("AUTH_DEBUG", "${response.message}")
+                Log.d("AUTH_DEBUG", "${response.token}")
 
                 _authState.value =
                     AuthUiState.Success(response.message?:"")
