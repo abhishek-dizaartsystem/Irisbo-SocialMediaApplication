@@ -53,4 +53,8 @@ object RetrofitClient {
         retrofit.create(EventApi::class.java)
     }
 
+    val jobApi: JobApi by lazy {
+        retrofit.create(JobApi::class.java)
+    }
+
 }
