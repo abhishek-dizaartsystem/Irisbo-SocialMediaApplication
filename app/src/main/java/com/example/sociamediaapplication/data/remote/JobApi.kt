@@ -2,6 +2,7 @@ package com.example.sociamediaapplication.data.remote
 
 import com.example.sociamediaapplication.model.request.CreateJobRequest
 import com.example.sociamediaapplication.model.response.ApplicationsResponse
+import com.example.sociamediaapplication.model.response.JobMetadataResponse
 import com.example.sociamediaapplication.model.response.JobsResponse
 import com.example.sociamediaapplication.model.response.PublicJobsResponse
 import com.example.sociamediaapplication.model.response.SavedJobsResponse
@@ -37,5 +38,8 @@ interface JobApi {
         @Header("Authorization") token: String,
         @Body request: CreateJobRequest
     )
+
+    @GET("api/jobs/meta")
+    suspend fun getJobMetadata(): JobMetadataResponse
 
 }

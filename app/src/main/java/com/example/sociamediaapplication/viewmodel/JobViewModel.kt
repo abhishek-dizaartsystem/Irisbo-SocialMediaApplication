@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.JobRepository
 import com.example.sociamediaapplication.model.response.ApplicationsResponse
+import com.example.sociamediaapplication.model.response.JobMetadataResponse
 import com.example.sociamediaapplication.model.response.JobsResponse
 import com.example.sociamediaapplication.model.response.PublicJobsResponse
 import com.example.sociamediaapplication.model.response.SavedJobsResponse
@@ -27,6 +28,9 @@ class JobViewModel(
 
     private val _myApplications = MutableStateFlow<ApplicationsResponse?>(null)
     val myApplications: StateFlow<ApplicationsResponse?> = _myApplications
+
+    private val _jobMetadata = MutableStateFlow<JobMetadataResponse?>(null)
+    val jobMetadata: StateFlow<JobMetadataResponse?> = _jobMetadata
 
     fun loadPublicJobs(){
         viewModelScope.launch {
@@ -63,6 +67,58 @@ class JobViewModel(
             try {
                 _myApplications.value = repository.getMyApplications()
             }catch (e: Exception){
+                Log.e("JobViewModel", e.message, e)
+            }
+        }
+    }
+
+    fun createJob(
+        title: String,
+        company_name: String,
+        description: String,
+        responsibilities: String,
+        requirements: String,
+        benefits: String,
+        location: String,
+        workplace_type: String,
+        job_type: String,
+        experience_level: String,
+        min_salary: Int,
+        max_salary: Int,
+        salary_currency: String,
+        vacancies: Int,
+        application_deadline: String
+    ){
+        viewModelScope.launch {
+            try {
+                repository.createJob(
+                    title,
+                    company_name,
+                    description,
+                    responsibilities,
+                    requirements,
+                    benefits,
+                    location,
+                    workplace_type,
+                    job_type,
+                    experience_level,
+                    min_salary,
+                    max_salary,
+                    salary_currency,
+                    vacancies,
+                    application_deadline
+                )
+            } catch (e: Exception){
+                Log.e("JobViewModel", e.message, e)
+            }
+        }
+    }
+
+    fun loadJobMetadata(){
+        viewModelScope.launch {
+            try {
+                _jobMetadata.value = repository.getJobMetadata()
+            } catch (e: Exception){
                 Log.e("JobViewModel", e.message, e)
             }
         }

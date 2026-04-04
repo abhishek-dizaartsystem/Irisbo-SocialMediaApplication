@@ -76,15 +76,21 @@ fun JobsNavGraph(bNavController: NavHostController) {
             }
             JobRecruiterScreen(
                 navController,
-                viewModel
+                viewModel,
+                onCreateClick = {
+                    navController.navigate(JobsRoutes.CreateJob.route)
+                }
             )
         }
 
         composable(JobsRoutes.CreateJob.route) {
-            CreateJobScreen(
-                onSubmit = {
 
-                }
+            LaunchedEffect(Unit) {
+                viewModel.loadJobMetadata()
+            }
+            CreateJobScreen(
+                viewModel = viewModel,
+                navController = navController
             )
         }
 

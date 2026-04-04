@@ -59,7 +59,8 @@ data class Job(
 @Composable
 fun JobRecruiterScreen(
     navController: NavHostController = rememberNavController(),
-    viewModel: JobViewModel = viewModel()
+    viewModel: JobViewModel = viewModel(),
+    onCreateClick: ()-> Unit = {}
 ) {
 
     val myJobs by viewModel.myJobs.collectAsState()
@@ -122,7 +123,25 @@ fun JobRecruiterScreen(
 
             }
         },
-        floatingActionButton = { PostJobFAB() }
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onCreateClick,
+                containerColor = Blue,
+                contentColor = White,
+                modifier = Modifier
+                    .height(34.dp)
+                    .width(100.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(R.drawable.add_svgrepo_com),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Text("Post Job")
+                }
+            }
+        }
     ) { paddingValues ->
 
         Column(
@@ -187,30 +206,6 @@ fun RecruiterTopBar(onBackClick: () -> Unit = {}) {
             containerColor = BackgroundColor
         )
     )
-}
-
-// -------------------- FAB --------------------
-@Composable
-fun PostJobFAB() {
-
-    FloatingActionButton(
-        onClick = {
-        },
-        containerColor = Blue,
-        contentColor = White,
-        modifier = Modifier
-            .height(34.dp)
-            .width(100.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                painter = painterResource(R.drawable.add_svgrepo_com),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-            Text("Post Job")
-        }
-    }
 }
 
 // -------------------- SECTION TITLE --------------------
