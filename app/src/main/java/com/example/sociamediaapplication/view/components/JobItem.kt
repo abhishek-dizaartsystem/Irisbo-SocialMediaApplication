@@ -55,6 +55,7 @@ fun JobItem(
     officeType: String = "Remote",
     isSaved: Boolean = false,
     isApplied: Boolean = false,
+    onJobClick: () -> Unit = {},
 ){
     Card(
         modifier = Modifier
@@ -63,6 +64,7 @@ fun JobItem(
             containerColor = White
         ),
         elevation = CardDefaults.cardElevation(2.dp),
+        onClick = onJobClick
     ) {
         Column(
             modifier = Modifier

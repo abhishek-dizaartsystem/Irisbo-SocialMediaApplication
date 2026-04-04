@@ -1,11 +1,14 @@
 package com.example.sociamediaapplication.data.remote
 
+import com.example.sociamediaapplication.model.request.CreateJobRequest
 import com.example.sociamediaapplication.model.response.ApplicationsResponse
 import com.example.sociamediaapplication.model.response.JobsResponse
 import com.example.sociamediaapplication.model.response.PublicJobsResponse
 import com.example.sociamediaapplication.model.response.SavedJobsResponse
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.POST
 
 interface JobApi {
 
@@ -28,5 +31,11 @@ interface JobApi {
     suspend fun getMyApplications(
         @Header("Authorization") token: String
     ): ApplicationsResponse
+
+    @POST("api/jobs")
+    suspend fun createJob(
+        @Header("Authorization") token: String,
+        @Body request: CreateJobRequest
+    )
 
 }

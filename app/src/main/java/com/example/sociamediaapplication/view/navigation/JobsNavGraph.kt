@@ -6,18 +6,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.repository.JobRepository
-import com.example.sociamediaapplication.data.repository.MarketplaceRepository
+import com.example.sociamediaapplication.view.screens.CreateJobScreen
+import com.example.sociamediaapplication.view.screens.JobRecruiterScreen
 import com.example.sociamediaapplication.view.screens.JobScreen
 import com.example.sociamediaapplication.view.screens.JobsScreen
 import com.example.sociamediaapplication.viewmodel.JobViewModel
-import com.example.sociamediaapplication.viewmodel.MarketplaceViewModel
 import com.example.sociamediaapplication.viewmodel.factory.JobViewModelFactory
-import com.example.sociamediaapplication.viewmodel.factory.MarketplaceViewModelFactory
 
 @Composable
 fun JobsNavGraph(bNavController: NavHostController) {
@@ -36,10 +37,9 @@ fun JobsNavGraph(bNavController: NavHostController) {
         navController = navController,
         startDestination = "jobs"
     ){
-        composable("jobs"){
+        composable(JobsRoutes.Jobs.route){
 
             LaunchedEffect(Unit) {
-                viewModel.loadMyJobs()
                 viewModel.loadPublicJobs()
                 viewModel.loadSavedJobs()
                 viewModel.loadMyApplications()
@@ -47,13 +47,46 @@ fun JobsNavGraph(bNavController: NavHostController) {
 
             JobsScreen(
                 bNavController,
+                viewModel,
+                onJobClick = {
+                    navController.navigate(JobsRoutes.Job.route)
+                },
+                onRecruiterClick = {
+                    navController.navigate(JobsRoutes.Recruiter.route)
+                }
+            )
+        }
+        composable(
+            route = JobsRoutes.Job.route,
+            arguments = listOf(
+                navArgument("id"){ type = NavType.IntType}
+            )
+        ){backStackEntry->
+
+            val id = backStackEntry.arguments?.getInt("id")
+            JobScreen(
+                navController,
+                id = id
+            )
+        }
+        composable(JobsRoutes.Recruiter.route) {
+
+            LaunchedEffect(Unit) {
+                viewModel.loadMyJobs()
+            }
+            JobRecruiterScreen(
+                navController,
                 viewModel
             )
         }
-        composable("job"){
-            JobScreen(
-                navController
+
+        composable(JobsRoutes.CreateJob.route) {
+            CreateJobScreen(
+                onSubmit = {
+
+                }
             )
         }
+
     }
 }

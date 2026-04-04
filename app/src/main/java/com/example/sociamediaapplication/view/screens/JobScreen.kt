@@ -36,7 +36,7 @@ import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
-fun JobScreen(navController: NavHostController = rememberNavController()) {
+fun JobScreen(navController: NavHostController = rememberNavController(), id: Int?) {
 
     Box(
         Modifier.fillMaxSize(),

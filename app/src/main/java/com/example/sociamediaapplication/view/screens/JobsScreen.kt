@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,6 +48,7 @@ import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
+import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.ApplicationItem
 import com.example.sociamediaapplication.view.components.JobItem
 import com.example.sociamediaapplication.viewmodel.JobViewModel
@@ -54,10 +56,11 @@ import com.example.sociamediaapplication.viewmodel.JobViewModel
 @Composable
 fun JobsScreen(
     navController: NavController = rememberNavController(),
-    viewModel: JobViewModel = viewModel()
+    viewModel: JobViewModel = viewModel(),
+    onJobClick: () -> Unit = {},
+    onRecruiterClick: () -> Unit = {}
 ){
 
-    val myJobs by viewModel.myJobs.collectAsState()
     val publicJobs by viewModel.publicJobs.collectAsState()
     val savedJobs by viewModel.savedJobs.collectAsState()
     val myApplications by viewModel.myApplications.collectAsState()
@@ -98,11 +101,20 @@ fun JobsScreen(
                         fontSize = 18.sp
                     )
 
-                    Text(
-                        text = "Create",
-                        fontSize = 18.sp,
-                        color = Transparent
-                    )
+                    Button(
+                        onClick = onRecruiterClick,
+                        colors = ButtonDefaults.buttonColors(containerColor = Blue),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.padding(end = 8.dp).height(34.dp).width(80.dp),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Text(
+                            text = "Create",
+                            fontSize = 18.sp,
+                            color = White
+                        )
+                    }
+
 
 
 
@@ -277,7 +289,8 @@ fun JobsScreen(
                             salary = "${job.min_salary} - ${job.max_salary} ${job.salary_currency}",
                             officeType = job.workplace_type,
                             isSaved = if(job.is_saved == 1) true else false,
-                            isApplied = if(job.has_applied == 1) true else false
+                            isApplied = if(job.has_applied == 1) true else false,
+                            onJobClick = onJobClick
                         )
                     }
                 }
@@ -291,7 +304,7 @@ fun JobsScreen(
                             postedSince = formatToDate(job.created_at),
                             salary = "${job.min_salary} - ${job.max_salary} ${job.salary_currency}",
                             officeType = job.workplace_type,
-                            isSaved = true
+                            isSaved = true,
                         )
                     }
                 }
