@@ -69,8 +69,23 @@ fun correctUrl(url: String?): String{
             return "${RetrofitClient.BASE_URL}uploads/${correct_url?.last()}"
         }
     }
+}
 
+fun correctUrl2(url: String?): String{
+    if(url == null){
+        return "${RetrofitClient.BASE_URL}uploads/1774852869892-939140931.jpg"
+    }else{
+        if(url?.startsWith("http") == true){
 
+            Log.d("correctUrl_DEBUG", "$url")
+            return url
+        } else{
+            val correct_url = url?.split("\\")
 
+            Log.d("correctUrl_DEBUG", "${RetrofitClient.BASE_URL}uploads/${correct_url?.last()}")
+
+            return "${RetrofitClient.BASE_URL}uploads/${correct_url?.last()}"
+        }
+    }
 }
 

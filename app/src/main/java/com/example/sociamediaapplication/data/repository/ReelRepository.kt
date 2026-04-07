@@ -5,9 +5,17 @@ import android.net.Uri
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.uriToFile
+import com.example.sociamediaapplication.model.request.PostReactionRequest
+import com.example.sociamediaapplication.model.request.UpdateReelRequest
+import com.example.sociamediaapplication.model.response.BasicResponse2
+import com.example.sociamediaapplication.model.response.LikePostResponse
+import com.example.sociamediaapplication.model.response.LikeReelResponse
 import com.example.sociamediaapplication.model.response.LikeResponse
 import com.example.sociamediaapplication.model.response.Reel
+import com.example.sociamediaapplication.model.response.ReelListResponse
 import com.example.sociamediaapplication.model.response.SaveResponse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -22,7 +30,7 @@ class ReelRepository(
 
     // ✅ fetch reels
     suspend fun getReels(): List<Reel> {
-        return api.getAllReels(token = "Bearer ${tokenManager.getToken()}").reels
+        return api.getAllReels(token = "Bearer ${tokenManager.getToken()}").data.reels
     }
 
     // ✅ upload reel (single video)
@@ -30,7 +38,7 @@ class ReelRepository(
         captionText: String?,
         uri: Uri?,
         context: Context
-    ) {
+    ) = withContext(Dispatchers.IO) {
 
         val token = tokenManager.getToken()
             ?: throw IllegalStateException("No token")
@@ -61,14 +69,27 @@ class ReelRepository(
         )
     }
 
-    suspend fun toggleLike(reelId: Int): LikeResponse {
+    suspend fun likeReel(reelId: Int): LikeReelResponse {
 
         val token = tokenManager.getToken()
             ?: throw IllegalStateException("No token")
 
         return api.toggleLikeReel(
             id = reelId,
-            token = "Bearer $token"
+            token = "Bearer $token",
+            PostReactionRequest("like")
+        )
+    }
+
+    suspend fun unlikeReel(reelId: Int): LikeReelResponse {
+
+        val token = tokenManager.getToken()
+            ?: throw IllegalStateException("No token")
+
+        return api.toggleLikeReel(
+            id = reelId,
+            token = "Bearer $token",
+            PostReactionRequest("dislike")
         )
     }
 
@@ -80,5 +101,29 @@ class ReelRepository(
             id = reelId,
             token = "Bearer $token"
         )
+    }
+
+    suspend fun saveReel(reelId: Int): BasicResponse2{
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.saveReel(reelId, token)
+    }
+
+    suspend fun unsaveReel(reelId: Int): BasicResponse2{
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.unsaveReel(reelId, token)
+    }
+
+    suspend fun getMyReels(): List<Reel>{
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.getMyReels(token).data.reels
+    }
+
+    suspend fun updateReel(caption: String){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.updateReelCaption(token, UpdateReelRequest(caption))
     }
 }

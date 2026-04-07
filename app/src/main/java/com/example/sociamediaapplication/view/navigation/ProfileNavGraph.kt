@@ -47,7 +47,7 @@ fun ProfileNavGraph(
     val reelFactory = remember { ReelsViewModelFactory(reelRepository) }
     val reelViewModel: ReelsViewModel = viewModel(factory = reelFactory)
 
-    val reels by reelViewModel.reels.collectAsState()
+    val myReels by reelViewModel.myReels.collectAsState()
 
     val profile by profileViewModel.profile.collectAsState()
 
@@ -61,15 +61,15 @@ fun ProfileNavGraph(
                 postViewModel.loadPosts(
                     id = profile?.data?.id ?: 0
                 )
-//                reelViewModel.loadReels()
+                reelViewModel.loadMyReels()
             }
 
             ProfileScreen(
                 viewModel = profileViewModel,
                 posts = posts,
-                reels = reels,
+                myReels = myReels,
                 onReelLike = {
-                    reelViewModel.toggleLike(it)
+                    reelViewModel.toggleLikeMyReels(it)
                 },
                 onEditStatus = {
                     mainNavController.navigate(Routes.EditStatus.route)
@@ -81,7 +81,7 @@ fun ProfileNavGraph(
                     navController.navigate(ProfileRoutes.Menu.route)
                 },
                 onReelSave = {
-                    reelViewModel.toggleSave(it)
+                    reelViewModel.toggleSaveMyReels(it)
                 },
                 onPostLike = {
                     postViewModel.toggleLike(it, profile?.data?.id ?: 0)

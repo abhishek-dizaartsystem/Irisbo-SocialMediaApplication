@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl2
 import com.example.sociamediaapplication.model.response.Reel
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.DTransparentBlack
@@ -42,7 +43,9 @@ fun ReelsScreen(
     reels: List<Reel> = emptyList(),
     startIndex: Int = 0,
     onLike: (Reel) -> Unit = {},
-    onSave: (Reel) -> Unit = {}
+    onSave: (Reel) -> Unit = {},
+    profileImage: String? = null,
+    userName: String? = null
 ) {
 
     var isMuted by remember { mutableStateOf(false) }
@@ -72,7 +75,7 @@ fun ReelsScreen(
             val isVisible = pagerState.currentPage == page
 
             ReelItem(
-                videoUrl = reel.video_url,
+                videoUrl = correctUrl2(reel.video_url),
                 isVisible = isVisible,
                 isMuted = isMuted
             )
@@ -116,7 +119,7 @@ fun ReelsScreen(
                         ) {
                             Icon(
                                 painter = painterResource(
-                                    if(reels[page].is_liked) R.drawable.like_svgrepo_com__1_ else R.drawable.like_svgrepo_com),
+                                    if(reels[page].is_liked == 1) R.drawable.like_svgrepo_com__1_ else R.drawable.like_svgrepo_com),
                                 contentDescription = "",
                                 modifier = Modifier.size(30.dp),
                                 tint = White
@@ -160,7 +163,7 @@ fun ReelsScreen(
                         ) {
                             Icon(
                                 painter = painterResource(
-                                    if(reel.is_saved) R.drawable.save_filled else R.drawable.save_icon),
+                                    if(reel.is_saved == 1) R.drawable.save_filled else R.drawable.save_icon),
                                 contentDescription = "",
                                 modifier = Modifier.size(30.dp),
                                 tint = White
@@ -170,7 +173,11 @@ fun ReelsScreen(
                 }
 
                 Row() {
-                    ReelDetailComponent()
+                    ReelDetailComponent(
+                        profile_image_url = if (reel.user_profile_image == null) profileImage else reel.user_profile_image,
+                        caption = reel.caption,
+                        username = reel.user_name ?: userName
+                    )
                 }
 
             }

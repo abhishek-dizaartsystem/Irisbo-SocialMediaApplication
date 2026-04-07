@@ -6,8 +6,8 @@ data class Reel(
     val video_url: String,
     val caption: String?,
     val likes_count: Int,
-    val username: String,
-    val profile_image_url: String?,
-    val is_liked: Boolean,
-    val is_saved: Boolean
+    val user_name: String?,
+    val user_profile_image: String?,
+    val is_liked: Int,
+    val is_saved: Int
 )

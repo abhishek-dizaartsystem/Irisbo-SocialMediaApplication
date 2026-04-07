@@ -102,7 +102,7 @@ class UploadViewModel(
                 )
 
             } catch (e: Exception) {
-                _error.value = e.message
+                Log.e("UploadViewModel", e.message.toString())
             } finally {
                 _isUploading.value = false
             }

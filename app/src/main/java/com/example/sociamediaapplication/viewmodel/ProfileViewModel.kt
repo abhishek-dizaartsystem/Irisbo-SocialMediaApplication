@@ -27,7 +27,6 @@ class ProfileViewModel(
     val error: StateFlow<String?> = _error
 
     init {
-
         loadProfile()
     }
 

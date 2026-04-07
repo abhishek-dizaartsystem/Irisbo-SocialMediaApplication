@@ -2,6 +2,7 @@ package com.example.sociamediaapplication.view.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.CustomCard
+import com.example.sociamediaapplication.view.components.HexagonShape
 
 @Composable
 fun MenuScreen(
@@ -80,7 +82,14 @@ fun MenuScreen(
             ) {
                 IconButton(
                     onClick = { },
-                    modifier = Modifier.size(80.dp)
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = Black,
+                            shape = HexagonShape
+                        )
+                        .size(80.dp),
+                    shape = HexagonShape
                 ) {
                     AsyncImage(
                         model = if(profileImg == null) R.drawable.profile_image_placeholder else "${RetrofitClient.BASE_URL}${profileImg?.removePrefix("/")}",
@@ -88,7 +97,7 @@ fun MenuScreen(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(80.dp)
-                            .clip(CircleShape)
+                            .clip(HexagonShape)
                     )
 
                 }

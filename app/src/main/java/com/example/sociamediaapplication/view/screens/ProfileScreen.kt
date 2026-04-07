@@ -2,7 +2,6 @@ package com.example.sociamediaapplication.view.screens
 
 import android.graphics.Bitmap
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -59,6 +58,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.utils.correctUrl
+import com.example.sociamediaapplication.data.utils.correctUrl2
 import com.example.sociamediaapplication.data.utils.getFrameFromUrl
 import com.example.sociamediaapplication.data.utils.isVideo
 import com.example.sociamediaapplication.model.response.PostResponse
@@ -72,6 +73,7 @@ import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.White
+import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
@@ -82,14 +84,15 @@ import kotlinx.coroutines.withContext
 fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel(),
     posts: List<PostResponse> = emptyList(),
-    reels: List<Reel> = emptyList(),
+//    reels: List<Reel> = emptyList(),
     onEditProfile: () -> Unit = {},
     onMenu: () -> Unit = {},
     onEditStatus: () -> Unit = {},
     onReelLike: (Reel) -> Unit = {},
     onReelSave: (Reel) -> Unit = {},
     onPostLike: (PostResponse) -> Unit = {},
-    onPostSave: (PostResponse) -> Unit = {}
+    onPostSave: (PostResponse) -> Unit = {},
+    myReels: List<Reel> = emptyList()
 ){
 
 
@@ -164,7 +167,8 @@ fun ProfileScreen(
                             modifier = Modifier.size(134.dp),
                             colors = IconButtonDefaults.iconButtonColors(
                                 containerColor = White
-                            )
+                            ),
+                            shape = HexagonShape
                         ) {
                             AsyncImage(
                                 model = if(profile?.data?.profile_image == null ) R.drawable.profile_image_placeholder else "${RetrofitClient.BASE_URL}${profile?.data?.profile_image?.removePrefix("/")}",
@@ -172,7 +176,7 @@ fun ProfileScreen(
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .size(130.dp)
-                                    .clip(CircleShape)
+                                    .clip(HexagonShape)
                             )
 
                         }
@@ -531,14 +535,20 @@ fun ProfileScreen(
                 }
             }
             else{
-                itemsIndexed(reels){ index, reel ->
+                itemsIndexed(myReels){ index, reel ->
 
                     val context = LocalContext.current
 
-                    val thumbnail: Bitmap? = remember(reel.video_url) {
-                        if (isVideo(reel.video_url))
-                            getFrameFromUrl(context, reel.video_url)
-                        else null
+                    var thumbnail by remember { mutableStateOf<Bitmap?>(null) }
+
+                    LaunchedEffect(reel.video_url) {
+                        if (isVideo(reel.video_url)) {
+                            thumbnail = withContext(Dispatchers.IO) {
+                                getFrameFromUrl(context, correctUrl2(reel.video_url))
+                            }
+                        } else {
+                            thumbnail = null
+                        }
                     }
 
                     Box(
@@ -549,24 +559,22 @@ fun ProfileScreen(
                     ) {
 
                         AsyncImage(
-                            model = reel.video_url,
+                            model = correctUrl2(reel.video_url),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
 
-                        if (thumbnail != null) {
+                        val currentThumbnail = thumbnail
 
+                        if (currentThumbnail != null) {
                             Image(
-                                bitmap = thumbnail.asImageBitmap(),
+                                bitmap = currentThumbnail.asImageBitmap(),
                                 contentDescription = null,
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop
                             )
-
                         } else {
-
-                            // fallback if frame fails
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -615,18 +623,21 @@ fun ProfileScreen(
     }
     selectedReelIndex?.let { startIndex ->
 
-        Dialog(
-            onDismissRequest = { selectedReelIndex = null }
-        ) {
 
-            ReelsScreen(
-                reels = reels,
-                loading = false,
-                startIndex = startIndex,   // 🔥 NEW PARAM
-                onLike = onReelLike,
-                onSave = onReelSave
-            )
-        }
+
+
+                ReelsScreen(
+                    reels = myReels,
+                    loading = false,
+                    startIndex = startIndex,   // 🔥 NEW PARAM
+                    onLike = onReelLike,
+                    onSave = onReelSave,
+                    profileImage = profile?.data?.profile_image,
+                    userName = profile?.data?.username
+                )
+
+
+
     }
 
 
