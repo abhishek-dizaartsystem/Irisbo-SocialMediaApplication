@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.repository.JobRepository
 import com.example.sociamediaapplication.view.screens.CreateJobScreen
+import com.example.sociamediaapplication.view.screens.JobApplyScreen
 import com.example.sociamediaapplication.view.screens.JobRecruiterScreen
 import com.example.sociamediaapplication.view.screens.JobScreen
 import com.example.sociamediaapplication.view.screens.JobsScreen
@@ -35,7 +36,7 @@ fun JobsNavGraph(bNavController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = "jobs"
+        startDestination = JobsRoutes.Jobs.route
     ){
         composable(JobsRoutes.Jobs.route){
 
@@ -48,11 +49,17 @@ fun JobsNavGraph(bNavController: NavHostController) {
             JobsScreen(
                 bNavController,
                 viewModel,
-                onJobClick = {
-                    navController.navigate(JobsRoutes.Job.route)
+                onJobClick = {id->
+                    navController.navigate(
+                        JobsRoutes.Job.createRoute(id))
                 },
                 onRecruiterClick = {
                     navController.navigate(JobsRoutes.Recruiter.route)
+                },
+                onApplyClick = {id->
+                    navController.navigate(
+                        JobsRoutes.ApplyForJob.createRoute(id)
+                    )
                 }
             )
         }
@@ -64,10 +71,22 @@ fun JobsNavGraph(bNavController: NavHostController) {
         ){backStackEntry->
 
             val id = backStackEntry.arguments?.getInt("id")
+
+            LaunchedEffect(id) {
+                viewModel.loadJobDetails(id ?: 0)
+            }
+
             JobScreen(
                 navController,
-                id = id
+                viewModel = viewModel,
+                onApplyClick = {
+                    navController.navigate(
+                        JobsRoutes.ApplyForJob.createRoute(id?: 0)
+                    )
+                }
             )
+
+
         }
         composable(JobsRoutes.Recruiter.route) {
 
@@ -92,6 +111,23 @@ fun JobsNavGraph(bNavController: NavHostController) {
                 viewModel = viewModel,
                 navController = navController
             )
+        }
+
+        composable(
+            route = JobsRoutes.ApplyForJob.route,
+            arguments = listOf(
+                navArgument("id"){ type = NavType.IntType }
+            )
+        ){backStackEntry->
+
+            val id = backStackEntry.arguments?.getInt("id")
+
+            JobApplyScreen(
+                navController = navController,
+                viewModel = viewModel,
+                id = id
+            )
+
         }
 
     }

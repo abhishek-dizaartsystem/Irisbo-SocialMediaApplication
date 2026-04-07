@@ -7,12 +7,10 @@ data class PostResponse(
     val media: List<String>?,
     val media_type: String?,
     val likes_count: Int,
-    val shares_count: Int?,
     val tags: String?,
     val created_at: String,
     val username: String,
     val profile_image: String?,
-    val is_liked: Int,
-    val is_saved: Int,
-
+    val user_reaction: String,
+    val is_saved: Boolean,
 )

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,16 +19,19 @@ import com.example.sociamediaapplication.view.screens.SecurityScreen
 import com.example.sociamediaapplication.view.screens.SettingsScreen
 import com.example.sociamediaapplication.viewmodel.AuthUiState
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
+import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 
 @Composable
 fun SettingsNavGraph(
     mainNavController: NavController,
     bNavController: NavController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    profileViewModel: ProfileViewModel = viewModel()
 ){
     val navController = rememberNavController()
 
     val authState by authViewModel.authState.collectAsState()
+
 
     NavHost(
         navController = navController,
@@ -57,7 +61,8 @@ fun SettingsNavGraph(
                 onHelpCenter = { navController.navigate(SettingsRoutes.HelpCenter.route) },
                 onLogout = {
                     authViewModel.logout()
-                }
+                },
+                profileViewModel = profileViewModel
             )
         }
         composable(SettingsRoutes.EditProfile.route) {

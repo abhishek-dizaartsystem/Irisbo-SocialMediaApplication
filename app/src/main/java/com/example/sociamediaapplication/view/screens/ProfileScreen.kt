@@ -141,7 +141,7 @@ fun ProfileScreen(
 
 
                 AsyncImage(
-                    model = url,
+                    model = if(profile?.data?.cover_img == null ) R.drawable.cover_image_placeholder else url,
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -167,7 +167,7 @@ fun ProfileScreen(
                             )
                         ) {
                             AsyncImage(
-                                model = "${RetrofitClient.BASE_URL}${profile?.data?.profile_image?.removePrefix("/")}",
+                                model = if(profile?.data?.profile_image == null ) R.drawable.profile_image_placeholder else "${RetrofitClient.BASE_URL}${profile?.data?.profile_image?.removePrefix("/")}",
                                 contentDescription = "Profile Image",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -603,12 +603,12 @@ fun ProfileScreen(
                 mediaList = post.media,
                 postLikes = post.likes_count ?: 0,
                 profileImageUrl = post.profile_image,
-                isLiked = post.is_liked == 1,
+                isLiked = post.user_reaction == "like",
                 onLiked = { onPostLike(post) },
                 onFollow = {},
                 onPostProfileClick = {},
                 onSaved = { onPostSave(post) },
-                isSaved = post.is_saved == 1,
+                isSaved = post.is_saved,
                 createdAt = post.created_at
             )
         }

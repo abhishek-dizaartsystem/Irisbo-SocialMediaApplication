@@ -2,6 +2,7 @@ package com.example.sociamediaapplication.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.PostRepository
@@ -53,12 +54,12 @@ class PostViewModel(
 //        }
         viewModelScope.launch {
             try {
-                val response = if(post.is_saved == 1) repository.unsavePost(post.id) else repository.savePost(post.id)
+                val response = if(post.is_saved) repository.unsavePost(post.id) else repository.savePost(post.id)
 
                 _posts.value = _posts.value.map {
                     if(it.id == post.id) {
                         it.copy(
-                            is_saved = if(response.message.contains("unsaved successfully"))0 else 1
+                            is_saved = if(response.message.contains("unsaved successfully")) false else true
                         )
                     }else it
                 }
@@ -69,27 +70,34 @@ class PostViewModel(
     }
 
     fun toggleLike(post: PostResponse, id: Int){
-        _posts.value = _posts.value.map{
-            if(it.id == post.id){
+        val currentlyLiked = post.user_reaction == "like"
+
+        // 🔥 Optimistic UI update (instant feedback)
+        _posts.value = _posts.value.map {
+            if (it.id == post.id) {
                 it.copy(
-                    is_liked = if(it.is_liked == 1) 0 else 1,
-                    likes_count =
-                        if (it.is_liked == 1) it.likes_count - 1
-                        else it.likes_count + 1
+                    user_reaction = if (currentlyLiked) "dislike" else "like",
+                    likes_count = if (currentlyLiked) it.likes_count - 1 else it.likes_count + 1
                 )
-            }else it
+            } else it
         }
         viewModelScope.launch {
             try {
-                val response = repository.toggleLike(post.id)
-
-                // 🔥 sync with backend truth
+                val response = if (currentlyLiked) {
+                    repository.unlikePost(post.id)
+                } else {
+                    repository.likePost(post.id)
+                }
+                Log.e("Post_like", response.toString())
+                Log.e("Post_like", response.data.user_reaction.reaction)
+                // ✅ Sync with backend truth
                 _posts.value = _posts.value.map {
                     if (it.id == post.id) {
                         it.copy(
-                            is_liked = if(response.liked) 1 else 0,
-                            likes_count = response.likes_count
+                            user_reaction = response.data.user_reaction.reaction,
+                            likes_count = response.data.counts.likes
                         )
+
                     } else it
                 }
 

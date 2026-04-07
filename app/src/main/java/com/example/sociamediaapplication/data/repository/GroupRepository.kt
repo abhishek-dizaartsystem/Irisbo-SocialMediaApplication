@@ -101,6 +101,9 @@ class GroupRepository(
         userId: Int
     ){
         val token = "Bearer ${tokenManager.getToken()}"
+
+        Log.d("ApproveMember_DEBUG", "groupId = $groupId\nuserId = $userId")
+
         api.approveMemberRequest(token, groupId, userId)
     }
 

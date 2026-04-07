@@ -57,8 +57,9 @@ import com.example.sociamediaapplication.viewmodel.JobViewModel
 fun JobsScreen(
     navController: NavController = rememberNavController(),
     viewModel: JobViewModel = viewModel(),
-    onJobClick: () -> Unit = {},
-    onRecruiterClick: () -> Unit = {}
+    onJobClick: (Int) -> Unit = {},
+    onRecruiterClick: () -> Unit = {},
+    onApplyClick: (Int) -> Unit = {}
 ){
 
     val publicJobs by viewModel.publicJobs.collectAsState()
@@ -105,7 +106,10 @@ fun JobsScreen(
                         onClick = onRecruiterClick,
                         colors = ButtonDefaults.buttonColors(containerColor = Blue),
                         shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.padding(end = 8.dp).height(34.dp).width(80.dp),
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .height(34.dp)
+                            .width(80.dp),
                         contentPadding = PaddingValues(0.dp)
                     ) {
                         Text(
@@ -290,7 +294,8 @@ fun JobsScreen(
                             officeType = job.workplace_type,
                             isSaved = if(job.is_saved == 1) true else false,
                             isApplied = if(job.has_applied == 1) true else false,
-                            onJobClick = onJobClick
+                            onJobClick = { onJobClick(job.id) },
+                            onApplyClick = { onApplyClick(job.id) }
                         )
                     }
                 }
@@ -305,6 +310,8 @@ fun JobsScreen(
                             salary = "${job.min_salary} - ${job.max_salary} ${job.salary_currency}",
                             officeType = job.workplace_type,
                             isSaved = true,
+                            onJobClick = { onJobClick(job.id) },
+                            onApplyClick = { onApplyClick(job.id) }
                         )
                     }
                 }

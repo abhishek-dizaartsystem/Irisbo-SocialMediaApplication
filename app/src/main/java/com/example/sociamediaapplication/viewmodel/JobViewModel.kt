@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.JobRepository
 import com.example.sociamediaapplication.model.response.ApplicationsResponse
+import com.example.sociamediaapplication.model.response.JobDetailsResponse
 import com.example.sociamediaapplication.model.response.JobMetadataResponse
 import com.example.sociamediaapplication.model.response.JobsResponse
 import com.example.sociamediaapplication.model.response.PublicJobsResponse
@@ -31,6 +32,9 @@ class JobViewModel(
 
     private val _jobMetadata = MutableStateFlow<JobMetadataResponse?>(null)
     val jobMetadata: StateFlow<JobMetadataResponse?> = _jobMetadata
+
+    private val _jobDetails = MutableStateFlow<JobDetailsResponse?>(null)
+    val jobDetails: StateFlow<JobDetailsResponse?> = _jobDetails
 
     fun loadPublicJobs(){
         viewModelScope.launch {
@@ -119,6 +123,55 @@ class JobViewModel(
             try {
                 _jobMetadata.value = repository.getJobMetadata()
             } catch (e: Exception){
+                Log.e("JobViewModel", e.message, e)
+            }
+        }
+    }
+
+    fun loadJobDetails(id: Int){
+        viewModelScope.launch {
+            try {
+                _jobDetails.value = repository.getJobDetails(id)
+            }catch (e: Exception){
+                Log.e("JobViewModel", e.message, e)
+            }
+        }
+
+    }
+
+    fun applyToJob(
+        id:Int,
+        full_name: String,
+        email: String,
+        phone: String,
+        resume_url: String,
+        cover_letter: String,
+        experience_years: Float,
+        current_company: String,
+        current_ctc: Int,
+        expected_ctc: Int,
+        notice_period: String,
+        portfolio_url: String,
+        linkedin_url: String
+    ){
+        viewModelScope.launch {
+            try {
+                repository.applyToJob(
+                    id,
+                    full_name,
+                    email,
+                    phone,
+                    resume_url,
+                    cover_letter,
+                    experience_years,
+                    current_company,
+                    current_ctc,
+                    expected_ctc,
+                    notice_period,
+                    portfolio_url,
+                    linkedin_url
+                )
+            }catch (e: Exception){
                 Log.e("JobViewModel", e.message, e)
             }
         }

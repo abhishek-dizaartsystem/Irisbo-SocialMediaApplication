@@ -20,6 +20,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,15 +30,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.formatPostTime
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.White
+import com.example.sociamediaapplication.viewmodel.JobViewModel
 
 @Composable
-fun JobScreen(navController: NavHostController = rememberNavController(), id: Int? = 0) {
+fun JobScreen(
+    navController: NavController = rememberNavController(),
+    viewModel: JobViewModel = viewModel(),
+    onApplyClick: () -> Unit = {}
+) {
+
+    val jobDetails by viewModel.jobDetails.collectAsState()
 
     Box(
         Modifier.fillMaxSize(),
@@ -78,12 +89,12 @@ fun JobScreen(navController: NavHostController = rememberNavController(), id: In
 
                         Column {
                             Text(
-                                "Senior React Developer",
+                                jobDetails?.data?.title ?: "Senior React Developer",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp
                             )
                             Text(
-                                "TechCorp Inc.",
+                                jobDetails?.data?.display_company_name ?: "TechCorp Inc.",
                                 color = Color(0xff6b7a90)
                             )
                         }
@@ -97,7 +108,12 @@ fun JobScreen(navController: NavHostController = rememberNavController(), id: In
                                 .background(Color(0xffe7f0ff), RoundedCornerShape(50))
                                 .padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
-                            Text("$120k - $160k", color = Color(0xff1d6ef2))
+                            if(jobDetails?.data?.min_salary == null || jobDetails?.data?.max_salary == null){
+                                Text("Not Disclosed", color = Color(0xff1d6ef2))
+                            }else{
+
+                                Text("${jobDetails?.data?.min_salary} - ${jobDetails?.data?.max_salary }", color = Color(0xff1d6ef2))
+                            }
                         }
 
                         Spacer(Modifier.width(8.dp))
@@ -107,7 +123,7 @@ fun JobScreen(navController: NavHostController = rememberNavController(), id: In
                                 .border(1.dp, Color(0xffd9e1ec), RoundedCornerShape(50))
                                 .padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
-                            Text("Full-time")
+                            Text( jobDetails?.data?.job_type ?: "Full-time")
                         }
 
                         Spacer(Modifier.width(8.dp))
@@ -117,7 +133,7 @@ fun JobScreen(navController: NavHostController = rememberNavController(), id: In
                                 .border(1.dp, Color(0xffd9e1ec), RoundedCornerShape(50))
                                 .padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
-                            Text("Remote")
+                            Text(jobDetails?.data?.workplace_type ?: "Remote")
                         }
                     }
 
@@ -132,7 +148,7 @@ fun JobScreen(navController: NavHostController = rememberNavController(), id: In
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(Modifier.width(6.dp))
-                        Text("San Francisco, CA", color = Color(0xff6b7a90))
+                        Text(jobDetails?.data?.location ?: "San Francisco, CA", color = Color(0xff6b7a90))
 
                         Spacer(Modifier.width(16.dp))
 
@@ -143,7 +159,7 @@ fun JobScreen(navController: NavHostController = rememberNavController(), id: In
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(Modifier.width(6.dp))
-                        Text("2 days ago", color = Color(0xff6b7a90))
+                        Text(formatPostTime(jobDetails?.data?.created_at?: "2 days ago"), color = Color(0xff6b7a90))
                     }
 
                     Spacer(Modifier.height(12.dp))
@@ -156,7 +172,7 @@ fun JobScreen(navController: NavHostController = rememberNavController(), id: In
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(Modifier.width(6.dp))
-                        Text("47 applicants", color = Color(0xff6b7a90))
+                        Text("${jobDetails?.data?.applications_count ?: "47"} applicants", color = Color(0xff6b7a90))
                     }
                 }
             }
@@ -181,8 +197,9 @@ fun JobScreen(navController: NavHostController = rememberNavController(), id: In
                     Spacer(Modifier.height(8.dp))
 
                     Text(
-                        "We are looking for a Senior React Developer to join our growing engineering team. " +
-                                "You will be responsible for building and maintaining high-quality web applications.",
+                        jobDetails?.data?.description
+                            ?: ("We are looking for a Senior React Developer to join our growing engineering team. " +
+                                    "You will be responsible for building and maintaining high-quality web applications."),
                         color = Color(0xff6b7a90)
                     )
                 }
@@ -207,7 +224,7 @@ fun JobScreen(navController: NavHostController = rememberNavController(), id: In
 
                     Spacer(Modifier.height(10.dp))
 
-                    val reqs = listOf(
+                    val reqs = jobDetails?.data?.requirements?.split(", ") ?: listOf(
                         "5+ years of experience with React",
                         "Strong TypeScript skills",
                         "Experience with state management (Redux, Zustand)",
@@ -252,7 +269,7 @@ fun JobScreen(navController: NavHostController = rememberNavController(), id: In
 
                     Spacer(Modifier.height(10.dp))
 
-                    val benefits = listOf(
+                    val benefits = jobDetails?.data?.benefits?.split(", ") ?: listOf(
                         "Health, dental & vision insurance",
                         "401(k) with company match",
                         "Unlimited PTO",
@@ -290,7 +307,7 @@ fun JobScreen(navController: NavHostController = rememberNavController(), id: In
                 ) {
 
                     Text(
-                        "About TechCorp Inc.",
+                        "About",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
@@ -372,7 +389,7 @@ fun JobScreen(navController: NavHostController = rememberNavController(), id: In
             verticalArrangement = Arrangement.Center,
         ) {
             Button(
-                onClick = {},
+                onClick = onApplyClick,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Blue
                 ),

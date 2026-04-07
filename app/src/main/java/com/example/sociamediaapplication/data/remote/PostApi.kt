@@ -1,14 +1,17 @@
 package com.example.sociamediaapplication.data.remote
 
+import com.example.sociamediaapplication.model.request.PostReactionRequest
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.BasicResponse2
 import com.example.sociamediaapplication.model.response.GroupPostDetailsResponse
+import com.example.sociamediaapplication.model.response.LikePostResponse
 import com.example.sociamediaapplication.model.response.LikeResponse
 import com.example.sociamediaapplication.model.response.PostResponse
 import com.example.sociamediaapplication.model.response.PostsListResponse
 import com.example.sociamediaapplication.model.response.SaveResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -38,7 +41,12 @@ interface PostApi {
         @Header("Authorization") token: String
     ): BasicResponse2
 
-
+    @POST("api/posts/{id}/react")
+    suspend fun toggleLikePost(
+        @Path("id") id: Int,
+        @Header("Authorization") token: String,
+        @Body request: PostReactionRequest
+    ): LikePostResponse
 
 
 
@@ -84,11 +92,11 @@ interface PostApi {
         @Part media: List<MultipartBody.Part>? = emptyList()
     ): BasicResponse
 
-    @POST("api/likePosts/{id}/like")
-    suspend fun toggleLikePost(
-        @Path("id") id: Int,
-        @Header("Authorization") token: String
-    ): LikeResponse
+//    @POST("api/likePosts/{id}/like")
+//    suspend fun toggleLikePost(
+//        @Path("id") id: Int,
+//        @Header("Authorization") token: String
+//    ): LikeResponse
 
 //    @POST("api/savePosts/toggle/{id}")
 //    suspend fun toggleSavePost(

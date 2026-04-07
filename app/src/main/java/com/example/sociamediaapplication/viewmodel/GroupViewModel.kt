@@ -264,7 +264,10 @@ class GroupViewModel(
     ){
         viewModelScope.launch {
             try {
+
+                Log.d("RemoveMember_DEBUG", "groupId = $groupId\nuserId = $userId")
                 repository.removeMember(groupId, userId)
+
             }catch (e: Exception){
                 Log.e("GroupViewModel", e.message, e)
             }
@@ -290,8 +293,8 @@ class GroupViewModel(
         name: String,
         description: String,
         privacy: String,
-        approvalRequired: String,
-        onlyAdminPost: String,
+        approvalRequired: Boolean,
+        onlyAdminPost: Boolean,
         category: Int
     ) {
         viewModelScope.launch {
@@ -312,8 +315,8 @@ class GroupViewModel(
                     name = name.toPlainRequestBody(),
                     description = description.toPlainRequestBody(),
                     privacy = privacy.toPlainRequestBody(),
-                    approvalRequired = approvalRequired.toInt().toPlainRequestBody(),
-                    onlyAdminPost = onlyAdminPost.toInt().toPlainRequestBody(),
+                    approvalRequired = approvalRequired.toPlainRequestBody(),
+                    onlyAdminPost = onlyAdminPost.toPlainRequestBody(),
                     category = category.toString().toPlainRequestBody()
                 )
 

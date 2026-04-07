@@ -83,7 +83,7 @@ fun MenuScreen(
                     modifier = Modifier.size(80.dp)
                 ) {
                     AsyncImage(
-                        model = "${RetrofitClient.BASE_URL}${profileImg?.removePrefix("/")}",
+                        model = if(profileImg == null) R.drawable.profile_image_placeholder else "${RetrofitClient.BASE_URL}${profileImg?.removePrefix("/")}",
                         contentDescription = "Profile Image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier

@@ -6,8 +6,10 @@ import android.util.Log
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.uriToFile
+import com.example.sociamediaapplication.model.request.PostReactionRequest
 import com.example.sociamediaapplication.model.response.BasicResponse2
 import com.example.sociamediaapplication.model.response.GroupPostDetailsResponse
+import com.example.sociamediaapplication.model.response.LikePostResponse
 import com.example.sociamediaapplication.model.response.LikeResponse
 import com.example.sociamediaapplication.model.response.PostResponse
 import com.example.sociamediaapplication.model.response.SaveResponse
@@ -38,14 +40,37 @@ class PostRepository(
         return response
     }
 
-    suspend fun toggleLike(postId: Int): LikeResponse {
+//    suspend fun toggleLike(postId: Int): LikePostResponse {
+//
+//        val token = tokenManager.getToken()
+//            ?: throw IllegalStateException("No token")
+//
+//        return api.toggleLikePost(
+//            id = postId,
+//            token = "Bearer $token",
+//        )
+//    }
+
+    suspend fun likePost(postId: Int): LikePostResponse {
 
         val token = tokenManager.getToken()
             ?: throw IllegalStateException("No token")
 
         return api.toggleLikePost(
             id = postId,
-            token = "Bearer $token"
+            token = "Bearer $token",
+            request = PostReactionRequest("like")
+        )
+    }
+    suspend fun unlikePost(postId: Int): LikePostResponse {
+
+        val token = tokenManager.getToken()
+            ?: throw IllegalStateException("No token")
+
+        return api.toggleLikePost(
+            id = postId,
+            token = "Bearer $token",
+            request = PostReactionRequest("dislike")
         )
     }
 

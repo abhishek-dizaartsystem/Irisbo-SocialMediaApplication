@@ -11,6 +11,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -24,6 +25,7 @@ fun CustomTextField(
     enabled: Boolean = true,
     label: String,
     value: String,
+    icon: Painter? = null,
     placeHolder: String = "placeholder",
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,

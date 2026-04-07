@@ -111,7 +111,9 @@ class MarketplaceViewModel(
         viewModelScope.launch {
             val products = repository.getCategoryProducts(categoryId)
 
-            _userProducts.value = products
+            _userProducts.value = _userProducts.value?.copy(
+                products = products.data
+            )
         }
     }
 
@@ -134,11 +136,9 @@ class MarketplaceViewModel(
 
             try {
                 val result = repository.searchProducts(query, page, limit)
-//                _userProducts.value = UserProductsResponse(
-//                    success = result.success,
-//                    total_products = result.total_products,
-//                    products = result.products
-//                )
+                _userProducts.value = _userProducts.value?.copy(
+                    products = result.products
+                )
             } catch (e: Exception) {
                 Log.e("SEARCH_DEBUG", e.message.toString())
             } finally {

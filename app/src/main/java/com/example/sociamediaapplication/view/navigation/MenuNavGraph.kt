@@ -134,7 +134,9 @@ fun MenuNavGraph(
             SettingsNavGraph(
                 mainNavController = mainNavController,
                 bNavController = navController,
-                authViewModel = authViewModel)
+                authViewModel = authViewModel,
+                profileViewModel = profileViewModel
+            )
         }
 
     }

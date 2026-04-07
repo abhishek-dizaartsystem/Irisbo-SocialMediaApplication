@@ -3,7 +3,9 @@ package com.example.sociamediaapplication.data.repository
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.model.request.CreateJobRequest
+import com.example.sociamediaapplication.model.request.JobApplyRequest
 import com.example.sociamediaapplication.model.response.ApplicationsResponse
+import com.example.sociamediaapplication.model.response.JobDetailsResponse
 import com.example.sociamediaapplication.model.response.JobMetadataResponse
 import com.example.sociamediaapplication.model.response.JobsResponse
 import com.example.sociamediaapplication.model.response.PublicJobsResponse
@@ -82,6 +84,52 @@ class JobRepository(
 
     suspend fun getJobMetadata(): JobMetadataResponse{
         return api.getJobMetadata()
+    }
+
+    suspend fun getJobDetails(
+        id: Int
+    ): JobDetailsResponse{
+
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.getJobDetails(token, id)
+    }
+
+    suspend fun applyToJob(
+        id:Int,
+        full_name: String,
+        email: String,
+        phone: String,
+        resume_url: String,
+        cover_letter: String,
+        experience_years: Float,
+        current_company: String,
+        current_ctc: Int,
+        expected_ctc: Int,
+        notice_period: String,
+        portfolio_url: String,
+        linkedin_url: String
+    ){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.applyToJob(
+            token,
+            id,
+            JobApplyRequest(
+                full_name,
+                email,
+                phone,
+                resume_url,
+                cover_letter,
+                experience_years,
+                current_company,
+                current_ctc,
+                expected_ctc,
+                notice_period,
+                portfolio_url,
+                linkedin_url
+            )
+        )
     }
 
 }

@@ -56,6 +56,7 @@ fun JobItem(
     isSaved: Boolean = false,
     isApplied: Boolean = false,
     onJobClick: () -> Unit = {},
+    onApplyClick: () -> Unit = {},
 ){
     Card(
         modifier = Modifier
@@ -206,7 +207,7 @@ fun JobItem(
                     }
                 }
                 Button(
-                    onClick = {},
+                    onClick = onApplyClick,
                     contentPadding = PaddingValues(0.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(

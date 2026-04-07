@@ -81,9 +81,9 @@ fun EditProfileScreen(
         profile?.let {
             name = it.data.name
             username = it.data.username
-            bio = it.data.bio
-            work = it.data.work
-            education = it.data.education
+            bio = it.data.bio ?: "null"
+            work = it.data.work ?: "null"
+            education = it.data.education ?: "null"
             phone = it.data.phone
         }
     }

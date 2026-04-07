@@ -7,4 +7,8 @@ sealed class JobsRoutes(val route: String){
     }
     object Recruiter: JobsRoutes("recruiter")
     object CreateJob: JobsRoutes("create")
+
+    object ApplyForJob: JobsRoutes("apply/{id}"){
+        fun createRoute(id: Int) = "apply/$id"
+    }
 }

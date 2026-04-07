@@ -11,6 +11,7 @@ import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.BasicResponse2
 import com.example.sociamediaapplication.model.response.BasicResponse3
 import com.example.sociamediaapplication.model.response.CartResponse
+import com.example.sociamediaapplication.model.response.CategoryProducts
 import com.example.sociamediaapplication.model.response.CheckoutDetailsResponse
 import com.example.sociamediaapplication.model.response.EditProductResponse
 import com.example.sociamediaapplication.model.response.ProductCategoriesType
@@ -138,9 +139,17 @@ interface ProductApi {
         @Path("id") id: Int
     ): AddReviewResponse
 
+    @GET("api/marketplace/category/{id}")
+    suspend fun fetchCategoryProducts(
+        @Path("id") id: Int
+    ): CategoryProducts
 
-
-
+    @GET("api/marketplace/products")
+    suspend fun searchProducts(
+        @Query("search") query: String,
+        @Query("page") page: Int,
+        @Query("limit") limit: Int
+    ): SearchProductResponse
 
 
 
@@ -162,17 +171,17 @@ interface ProductApi {
 //        @Path("id") id: Int
 //    ): ReviewsResponse
 
-    @GET("api/products/category/{id}")
-    suspend fun fetchCategoryProducts(
-        @Path("id") id: Int
-    ): UserProductsResponse
+//    @GET("api/products/category/{id}")
+//    suspend fun fetchCategoryProducts(
+//        @Path("id") id: Int
+//    ): UserProductsResponse
 
-    @GET("api/products/search")
-    suspend fun searchProducts(
-        @Query("query") query: String,
-        @Query("page") page: Int,
-        @Query("limit") limit: Int
-    ): SearchProductResponse
+//    @GET("api/products/search")
+//    suspend fun searchProducts(
+//        @Query("query") query: String,
+//        @Query("page") page: Int,
+//        @Query("limit") limit: Int
+//    ): SearchProductResponse
 
 
     @POST("api/products/{id}/react")

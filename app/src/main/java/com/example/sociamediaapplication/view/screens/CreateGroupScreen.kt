@@ -517,8 +517,8 @@ fun CreateGroupScreen(
                                 name = groupName,
                                 description = description,
                                 privacy = if (isPrivate) "private" else "public",
-                                approvalRequired = if(isApprovalRequired) "1" else "0",
-                                onlyAdminPost = if(allowMemberPost) "0" else "1",
+                                approvalRequired = isApprovalRequired,
+                                onlyAdminPost = !allowMemberPost,
                                 category = selectedCategoryId
                             )
 
