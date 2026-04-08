@@ -18,5 +18,7 @@ data class EventDetails(
     val page_id: Int? = null,
     val status: String,
     val created_at: String,
-    val updated_at: String
+    val updated_at: String,
+    val category: String,
+    val participants: Int
 )

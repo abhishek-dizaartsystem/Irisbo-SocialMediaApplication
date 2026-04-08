@@ -41,7 +41,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.DGrey
@@ -53,6 +55,7 @@ import com.example.sociamediaapplication.ui.theme.LRed
 import com.example.sociamediaapplication.ui.theme.Red
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
+import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 
 @Composable
@@ -149,15 +152,16 @@ fun SettingsScreen(
                                 modifier = Modifier.size(68.dp),
                                 colors = IconButtonDefaults.iconButtonColors(
                                     containerColor = LBlue
-                                )
+                                ),
+                                shape = HexagonShape
                             ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.rectangle_5),
+                                AsyncImage(
+                                    model = if(profile?.data?.profile_image == null) R.drawable.profile_image_placeholder else correctUrl(profile?.data?.profile_image),
                                     contentDescription = "Profile Image",
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
                                         .size(60.dp)
-                                        .clip(CircleShape)
+                                        .clip(HexagonShape)
                                 )
 
                             }
@@ -166,12 +170,12 @@ fun SettingsScreen(
                                 verticalArrangement = Arrangement.Center
                             ) {
                                 Text(
-                                    text = "John Doe",
+                                    text = profile?.data?.name ?: "John Doe",
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "@johndoe",
+                                    text = "@${profile?.data?.username ?: "johndoe"}",
                                     fontSize = 15.sp,
                                     color = GreyTxt
                                 )

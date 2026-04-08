@@ -8,6 +8,7 @@ import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.uriToFile
 import com.example.sociamediaapplication.model.request.PostReactionRequest
 import com.example.sociamediaapplication.model.response.BasicResponse2
+import com.example.sociamediaapplication.model.response.GlobalPostsResponse
 import com.example.sociamediaapplication.model.response.GroupPostDetailsResponse
 import com.example.sociamediaapplication.model.response.LikePostResponse
 import com.example.sociamediaapplication.model.response.LikeResponse
@@ -39,6 +40,12 @@ class PostRepository(
 
         return response
     }
+
+    suspend fun getGlobalPosts(): GlobalPostsResponse {
+        val token = tokenManager.getToken()
+        return api.getAllPostsGloabal("Bearer $token")
+    }
+
 
 //    suspend fun toggleLike(postId: Int): LikePostResponse {
 //

@@ -39,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl2
 import com.example.sociamediaapplication.data.utils.formatToDate
 import com.example.sociamediaapplication.data.utils.formatToTime
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
@@ -233,9 +234,10 @@ fun EventsScreen(
                                     true
                                 )
                             },
-                            image = event.cover_image,
+                            image = correctUrl2(event.cover_image),
                             time = formatToTime(event.start_time?: "12:30 PM"),
-                            onDelete = { viewModel.deleteEvent(event.id) }
+                            onDelete = { viewModel.deleteEvent(event.id) },
+                            interestedPeople = event.participants
                         )
                     }
                 }
@@ -245,15 +247,19 @@ fun EventsScreen(
                             date = formatToDate(event.start_time?:"12-02-2026"),
                             name = event.title,
                             location = event.location_name?: "Virtual",
-                            isInterested = false,
+                            isInterested = event.is_participating == 1,
                             onEventClick = {
                                 onEventClick(
                                     event.id,
                                     false
                                 )
                             },
-                            //interestedPeople = event.,
-                            image = event.cover_image,
+                            onInterested = {
+                                viewModel.interestedInEvent(event.id)
+
+                            },
+                            interestedPeople = event.participants,
+                            image = correctUrl2(event.cover_image),
                             time = formatToTime(event.start_time?: "12:30 PM")
                         )
                     }

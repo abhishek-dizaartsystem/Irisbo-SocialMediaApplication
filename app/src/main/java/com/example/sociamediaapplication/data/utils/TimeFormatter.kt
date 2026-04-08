@@ -90,3 +90,15 @@ fun formatToTime(isoDate: String): String{
         isoDate
     }
 }
+
+fun convertToBackendFormat(date: String, time: String): String {
+    return try {
+        val inputFormat = java.text.SimpleDateFormat("dd-MM-yyyy HH:mm", java.util.Locale.getDefault())
+        val outputFormat = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+
+        val dateObj = inputFormat.parse("$date $time")
+        outputFormat.format(dateObj!!)
+    } catch (e: Exception) {
+        ""
+    }
+}

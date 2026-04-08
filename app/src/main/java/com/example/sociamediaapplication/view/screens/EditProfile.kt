@@ -185,7 +185,7 @@ fun EditProfileScreen(
                         )
                     ) {
                         AsyncImage(
-                            model = profileUri ?: "${RetrofitClient.BASE_URL}${profile?.data?.profile_image?.removePrefix("/")}",
+                            model = if(profileUri == null) R.drawable.profile_image_placeholder else "${RetrofitClient.BASE_URL}${profile?.data?.profile_image?.removePrefix("/")}",
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -236,7 +236,7 @@ fun EditProfileScreen(
                     ) {
 
                         AsyncImage(
-                            model = coverUri ?: "${RetrofitClient.BASE_URL}${profile?.data?.cover_img?.removePrefix("/")}",
+                            model = if(coverUri == null) R.drawable.cover_image_placeholder else "${RetrofitClient.BASE_URL}${profile?.data?.cover_img?.removePrefix("/")}",
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier

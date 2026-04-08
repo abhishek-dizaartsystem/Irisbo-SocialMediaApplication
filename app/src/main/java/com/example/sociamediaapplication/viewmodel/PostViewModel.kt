@@ -18,6 +18,10 @@ class PostViewModel(
     private val _posts = MutableStateFlow<List<PostResponse>>(emptyList())
     val posts: StateFlow<List<PostResponse>> = _posts
 
+    private val _globalPosts = MutableStateFlow<List<PostResponse>>(emptyList())
+    val globalPosts: StateFlow<List<PostResponse>> = _globalPosts
+
+
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
@@ -43,6 +47,20 @@ class PostViewModel(
             }
         }
     }
+
+    fun loadGlobalPosts() {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                _globalPosts.value = repository.getGlobalPosts().posts
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
 
     fun toggleSave(post: PostResponse, id: Int){
 //        _posts.value = _posts.value.map {
@@ -138,6 +156,57 @@ class PostViewModel(
 //        }
 //    }
 
+    fun toggleGlobalSave(post: PostResponse) {
+        viewModelScope.launch {
+            try {
+                val response = if(post.is_saved) repository.unsavePost(post.id) else repository.savePost(post.id)
+
+                _globalPosts.value = _globalPosts.value.map {
+                    if(it.id == post.id) {
+                        it.copy(
+                            is_saved = if(response.message.contains("unsaved successfully")) false else true
+                        )
+                    } else it
+                }
+            } catch (e: Exception) {
+                loadGlobalPosts()
+            }
+        }
+    }
+
+    fun toggleGlobalLike(post: PostResponse) {
+        val currentlyLiked = post.user_reaction == "like"
+
+        _globalPosts.value = _globalPosts.value.map {
+            if (it.id == post.id) {
+                it.copy(
+                    user_reaction = if (currentlyLiked) "dislike" else "like",
+                    likes_count = if (currentlyLiked) it.likes_count - 1 else it.likes_count + 1
+                )
+            } else it
+        }
+        viewModelScope.launch {
+            try {
+                val response = if (currentlyLiked) {
+                    repository.unlikePost(post.id)
+                } else {
+                    repository.likePost(post.id)
+                }
+                
+                _globalPosts.value = _globalPosts.value.map {
+                    if (it.id == post.id) {
+                        it.copy(
+                            user_reaction = response.data.user_reaction.reaction,
+                            likes_count = response.data.counts.likes
+                        )
+                    } else it
+                }
+
+            } catch (e: Exception) {
+                loadGlobalPosts()
+            }
+        }
+    }
 
 }
 

@@ -76,20 +76,27 @@ class EventViewModel(
         location_name: String,
         description: String,
         start_time: String,
-        end_time: String,
+//        end_time: String,
         cover_image_uri: Uri,
         category_id: Int
     ){
         viewModelScope.launch {
 
             try {
+
+                Log.d("EventVM_DEBUG", title)
+                Log.d("EventVM_DEBUG", location_name)
+                Log.d("EventVM_DEBUG", description)
+                Log.d("EventVM_DEBUG", start_time)
+                Log.d("EventVM_DEBUG", cover_image_uri.toString())
+                Log.d("EventVM_DEBUG", category_id.toString())
                 repository.createEvent(
                     context,
                     title.toRequestBody(),
                     location_name.toRequestBody(),
                     description.toRequestBody(),
                     start_time.toRequestBody(),
-                    end_time.toRequestBody(),
+//                    end_time.toRequestBody(),
                     cover_image_uri,
                     category_id = category_id.toString().toRequestBody()
                 )
@@ -126,7 +133,7 @@ class EventViewModel(
         location_name: String,
         description: String,
         start_time: String,
-        end_time: String,
+//        end_time: String,
         cover_image_uri: Uri,
         category_id: Int
     ){
@@ -139,7 +146,7 @@ class EventViewModel(
                     location_name.toRequestBody(),
                     description.toRequestBody(),
                     start_time.toRequestBody(),
-                    end_time.toRequestBody(),
+//                    end_time.toRequestBody(),
                     cover_image_uri,
                     category_id = category_id.toString().toRequestBody()
                 )
@@ -156,5 +163,18 @@ class EventViewModel(
     fun updateEventProfile(uri: Uri){
         _eventProfile.value = uri
     }
+
+    fun interestedInEvent(id: Int){
+        viewModelScope.launch {
+            try {
+                repository.interestedInEvent(id)
+
+                loadEvents()
+            }catch (e: Exception){
+                Log.e("Event_Debug", e.toString())
+            }
+        }
+    }
+
 
 }

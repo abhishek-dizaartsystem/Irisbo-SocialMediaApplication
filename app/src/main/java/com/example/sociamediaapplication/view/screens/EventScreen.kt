@@ -37,11 +37,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.utils.correctUrl2
 import com.example.sociamediaapplication.data.utils.formatToDate
 import com.example.sociamediaapplication.data.utils.formatToTime
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
@@ -53,7 +55,7 @@ import com.example.sociamediaapplication.viewmodel.EventViewModel
 @Composable
 fun EventScreen(
     onBack: () -> Unit = {},
-    navController: NavHostController = rememberNavController(),
+    navController: NavController = rememberNavController(),
     viewModel: EventViewModel,
     isCreator: Boolean = false
 ) {
@@ -72,7 +74,7 @@ fun EventScreen(
             Box {
 
                 AsyncImage(
-                    model = "${RetrofitClient.BASE_URL}uploads/${eventDetails?.event?.cover_image}",
+                    model = correctUrl2(eventDetails?.event?.cover_image),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -103,21 +105,21 @@ fun EventScreen(
 
                     Row {
 
-                        Box(
-                            modifier = Modifier
-                                .size(42.dp)
-                                .background(White.copy(.9f), CircleShape)
-                                .clickable {},
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.save_icon),
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-
-                        Spacer(Modifier.width(8.dp))
+//                        Box(
+//                            modifier = Modifier
+//                                .size(42.dp)
+//                                .background(White.copy(.9f), CircleShape)
+//                                .clickable {},
+//                            contentAlignment = Alignment.Center
+//                        ) {
+//                            Icon(
+//                                painter = painterResource(R.drawable.save_icon),
+//                                contentDescription = null,
+//                                modifier = Modifier.size(20.dp)
+//                            )
+//                        }
+//
+//                        Spacer(Modifier.width(8.dp))
 
                         Box(
                             modifier = Modifier
@@ -142,7 +144,7 @@ fun EventScreen(
                         .background(Color(0xff1d6ef2), RoundedCornerShape(50))
                         .padding(horizontal = 14.dp, vertical = 6.dp)
                 ) {
-                    Text("Technology", color = White)
+                    Text(eventDetails?.event?.category ?: "Default", color = White)
                 }
             }
         }
@@ -272,7 +274,7 @@ fun EventScreen(
                         fontSize = 18.sp
                     )
 
-                    Text("450 going", color = Color.Gray)
+                    Text("${eventDetails?.event?.participants ?: 0} going", color = Color.Gray)
                 }
 
                 Spacer(Modifier.height(10.dp))
@@ -293,7 +295,7 @@ fun EventScreen(
                     }
 
                     Spacer(Modifier.width(8.dp))
-                    Text("+447 others", color = Color.Gray)
+                    Text("+${eventDetails?.event?.participants ?: 0} others", color = Color.Gray)
                 }
 
                 Spacer(Modifier.height(18.dp))
@@ -319,53 +321,53 @@ fun EventScreen(
 
                 /* BUTTONS */
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-
-                    Button(
-                        onClick = {},
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = LLBlue
-                        )
-                    ) {
-                        Text("✓ Registered", color = Blue)
-                    }
-
-                    Spacer(Modifier.width(12.dp))
-
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .background(Color(0xffeef2f7), RoundedCornerShape(14.dp))
-                            .clickable {},
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.chat_dots_svgrepo_com),
-                            contentDescription = null,
-                            tint = Color(0xff5c6b80),
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
-                    Spacer(Modifier.width(8.dp))
-
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .background(Color(0xffeef2f7), RoundedCornerShape(14.dp))
-                            .clickable {},
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.heart_svgrepo_com),
-                            contentDescription = null,
-                            tint = Color(0xff5c6b80),
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//
+//                    Button(
+//                        onClick = {},
+//                        modifier = Modifier.weight(1f),
+//                        shape = RoundedCornerShape(16.dp),
+//                        colors = ButtonDefaults.buttonColors(
+//                            containerColor = LLBlue
+//                        )
+//                    ) {
+//                        Text("Registered", color = Blue)
+//                    }
+//
+//                    Spacer(Modifier.width(12.dp))
+//
+//                    Box(
+//                        modifier = Modifier
+//                            .size(40.dp)
+//                            .background(Color(0xffeef2f7), RoundedCornerShape(14.dp))
+//                            .clickable {},
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Icon(
+//                            painter = painterResource(R.drawable.chat_dots_svgrepo_com),
+//                            contentDescription = null,
+//                            tint = Color(0xff5c6b80),
+//                            modifier = Modifier.size(20.dp)
+//                        )
+//                    }
+//
+//                    Spacer(Modifier.width(8.dp))
+//
+//                    Box(
+//                        modifier = Modifier
+//                            .size(40.dp)
+//                            .background(Color(0xffeef2f7), RoundedCornerShape(14.dp))
+//                            .clickable {},
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Icon(
+//                            painter = painterResource(R.drawable.heart_svgrepo_com),
+//                            contentDescription = null,
+//                            tint = Color(0xff5c6b80),
+//                            modifier = Modifier.size(20.dp)
+//                        )
+//                    }
+//                }
             }
         }
     }

@@ -208,7 +208,7 @@ fun MainScreen(
                             // Set the size of the clickable area
                         ) {
                             AsyncImage(
-                                model = "${RetrofitClient.BASE_URL}${profile?.data?.profile_image?.removePrefix("/")}",
+                                model = if(profile?.data?.profile_image == null) R.drawable.profile_image_placeholder else "${RetrofitClient.BASE_URL}${profile?.data?.profile_image?.removePrefix("/")}",
                                 contentDescription = "Profile Image",
                                 // This crops the image into a square before clipping to a circle
 

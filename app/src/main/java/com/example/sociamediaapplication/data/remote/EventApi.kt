@@ -1,11 +1,13 @@
 package com.example.sociamediaapplication.data.remote
 
+import com.example.sociamediaapplication.model.request.EventInterestedRequest
 import com.example.sociamediaapplication.model.response.EventCategoriesResponse
 import com.example.sociamediaapplication.model.response.EventDetailsResponse
 import com.example.sociamediaapplication.model.response.EventsResponse
 import com.example.sociamediaapplication.model.response.MyEventsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -40,7 +42,7 @@ interface EventApi {
         @Part("location_name") location_name: RequestBody,
         @Part("description")description: RequestBody,
         @Part("start_time") start_time: RequestBody,
-        @Part("end_time") end_time: RequestBody,
+//        @Part("end_time") end_time: RequestBody,
         @Part("category_id") category_id: RequestBody,
         @Part cover_image: MultipartBody.Part,
     )
@@ -68,5 +70,12 @@ interface EventApi {
     suspend fun fetchCategories(
         @Header("Authorization") token: String
     ): EventCategoriesResponse
+
+    @POST("api/events/{eventId}/rsvp")
+    suspend fun interestedInEvent(
+        @Header("Authorization") token: String,
+        @Path("eventId") id: Int,
+        @Body request: EventInterestedRequest
+    )
 
 }

@@ -3,6 +3,7 @@ package com.example.sociamediaapplication.data.remote
 import com.example.sociamediaapplication.model.request.PostReactionRequest
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.BasicResponse2
+import com.example.sociamediaapplication.model.response.GlobalPostsResponse
 import com.example.sociamediaapplication.model.response.GroupPostDetailsResponse
 import com.example.sociamediaapplication.model.response.LikePostResponse
 import com.example.sociamediaapplication.model.response.LikeResponse
@@ -83,6 +84,11 @@ interface PostApi {
         @Header("Authorization") token: String,
         @Path("userId") id: Int
     ): List<PostResponse>
+
+    @GET("api/posts/all")
+    suspend fun getAllPostsGloabal(
+        @Header("Authorization") token: String
+    ): GlobalPostsResponse
 
     @Multipart
     @POST("api/posts/create")

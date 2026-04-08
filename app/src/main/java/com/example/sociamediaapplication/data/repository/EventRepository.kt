@@ -5,6 +5,7 @@ import android.net.Uri
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.uriToFile
+import com.example.sociamediaapplication.model.request.EventInterestedRequest
 import com.example.sociamediaapplication.model.response.EventCategoriesResponse
 import com.example.sociamediaapplication.model.response.EventDetailsResponse
 import com.example.sociamediaapplication.model.response.EventsResponse
@@ -37,7 +38,7 @@ class EventRepository(
         location_name: RequestBody,
         description: RequestBody,
         start_time: RequestBody,
-        end_time: RequestBody,
+//        end_time: RequestBody,
         cover_image_uri: Uri,
         category_id: RequestBody
     ){
@@ -59,7 +60,7 @@ class EventRepository(
 
         val titleBody = title
 
-        return api.createEvent(token, title, location_name, description, start_time, end_time, category_id, imagePart)
+        return api.createEvent(token, title, location_name, description, start_time, category_id, imagePart)
     }
 
     suspend fun updateEvent(
@@ -110,6 +111,12 @@ class EventRepository(
         val token = "Bearer ${tokenManager.getToken()}"
 
         return api.fetchEventDetails(token, eventId)
+    }
+
+    suspend fun interestedInEvent(id: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.interestedInEvent(token, id, EventInterestedRequest("interested"))
     }
 
 

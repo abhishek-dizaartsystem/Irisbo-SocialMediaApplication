@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
-import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LLBlue
@@ -43,7 +42,8 @@ fun EventItem(
     interestedPeople: Int = 405,
     isInterested: Boolean = true,
     onEventClick: () -> Unit = {},
-    image: String? = null
+    image: String? = null,
+    onInterested: () -> Unit = {}
 ){
     Card(
         colors = CardDefaults.cardColors(
@@ -62,7 +62,7 @@ fun EventItem(
                 contentAlignment = Alignment.BottomStart
             ) {
                 AsyncImage(
-                    model = "${RetrofitClient.BASE_URL}uploads/$image" ?: R.drawable.conference,
+                    model = image ?: R.drawable.conference,
                     contentDescription = "",
                     modifier = Modifier.aspectRatio(2.2f),
                     contentScale = ContentScale.Crop
@@ -144,7 +144,7 @@ fun EventItem(
                     )
                 }
                 Button(
-                    onClick = {},
+                    onClick = onInterested,
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (isInterested)LLBlue else Blue

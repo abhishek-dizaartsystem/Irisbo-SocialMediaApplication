@@ -37,22 +37,35 @@ import com.example.sociamediaapplication.model.FeedPost
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.White
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.sociamediaapplication.data.preferences.TokenManager
+import com.example.sociamediaapplication.data.repository.PostRepository
+import com.example.sociamediaapplication.viewmodel.PostViewModel
+import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
 import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.view.navigation.Routes
 
 @Composable
 fun HomeScreen2(
     mainNavController: NavController = rememberNavController()
-){
+) {
 
-    val posts = remember {
-        mutableStateListOf(
-            FeedPost("1", "John", "Vintage vibes", isFollowing = false, isLiked = false, likes = 20),
-            FeedPost("2", "Kartik", "Hello world", isFollowing = true, isLiked = false, likes = 45),
-            FeedPost("3", "Aman", "Compose is powerful", isFollowing = false,isLiked = false, likes = 12),
-            FeedPost("4", "Rohit", "Summer time", isFollowing = false, isLiked = false, likes = 9)
-        )
+    val context = LocalContext.current.applicationContext
+    val tokenManager = remember { TokenManager(context) }
+    val postRepository = remember { PostRepository(tokenManager) }
+    val postFactory = remember { PostViewModelFactory(postRepository) }
+    val postViewModel: PostViewModel = viewModel(factory = postFactory)
+
+    val posts by postViewModel.globalPosts.collectAsState()
+
+    LaunchedEffect(Unit) {
+        postViewModel.loadGlobalPosts()
     }
+
 
     LazyColumn(
         modifier = Modifier
@@ -163,25 +176,18 @@ fun HomeScreen2(
                 )
             ) {
                 Post(
-                    caption = post.caption,
-                    isFollowing = post.isFollowing,
-                    onFollow = {
-                        posts[index] = post.copy(
-                            isFollowing = !post.isFollowing
-                        )
-                    },
-                    postLikes = post.likes,
-                    isLiked = post.isLiked,
-
-                    onLiked = {
-                        posts[index] = post.copy(
-                            isLiked = !post.isLiked,
-                            likes = if (post.isLiked)
-                                post.likes - 1
-                            else
-                                post.likes + 1
-                        )
-                    }
+                    uName = post.username ?: "",
+                    caption = post.caption ?: "",
+                    mediaList = post.media,
+                    postLikes = post.likes_count ?: 0,
+                    profileImageUrl = post.profile_image,
+                    isLiked = post.user_reaction == "like",
+                    onLiked = { postViewModel.toggleGlobalLike(post) },
+                    onFollow = {},
+                    onPostProfileClick = {},
+                    onSaved = { postViewModel.toggleGlobalSave(post) },
+                    isSaved = post.is_saved,
+                    createdAt = post.created_at
                 )
             }
 

@@ -64,6 +64,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.convertToBackendFormat
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -419,8 +420,8 @@ fun CreateEventScreen(
                                 title = name,
                                 description = description,
                                 location_name = if(isVirtualEvent) "" else location,
-                                start_time = "$selectedDate $selectedTime",
-                                end_time = "",
+                                start_time = convertToBackendFormat(selectedDate, selectedTime),
+//                                end_time = "",
                                 cover_image_uri = coverPhoto?: "".toUri(),
                                 category_id = selectedCategoryId
                             )

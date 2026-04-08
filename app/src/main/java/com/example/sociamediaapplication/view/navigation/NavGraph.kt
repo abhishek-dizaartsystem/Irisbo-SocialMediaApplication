@@ -103,6 +103,8 @@ fun AppNavGraph() {
         }
 
         composable(Routes.Main.route) {
+
+
             MainScreen(
                 mainNavController = navController,
                 authViewModel = authViewModel,   // ✅ pass it,
