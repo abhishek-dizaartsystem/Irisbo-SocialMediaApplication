@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.repository.PageRepository
 import com.example.sociamediaapplication.model.response.PageCategoriesResponse
+import com.example.sociamediaapplication.model.response.PageDetails
 import com.example.sociamediaapplication.model.response.PageFollowersResponse
 import com.example.sociamediaapplication.model.response.PagePostsResponse
 import com.example.sociamediaapplication.model.response.PagesResponse
@@ -42,6 +43,9 @@ class PageViewModel(
     private val _categories = MutableStateFlow<PageCategoriesResponse?>(null)
     val categories: StateFlow<PageCategoriesResponse?> = _categories
 
+    private val _pagedetails = MutableStateFlow<PageDetails?>(null)
+    val pageDetails: StateFlow<PageDetails?> = _pagedetails
+
 
     fun loadPages(){
         viewModelScope.launch {
@@ -63,7 +67,7 @@ class PageViewModel(
             try {
                 Log.d("PAGE_POSTS", "Fetching posts for pageId=$pageId")
                 val response = repository.fetchPagePosts(pageId)
-                Log.d("PAGE_POSTS", "Fetched ${response.data.size} posts, success=${response.success}")
+//                Log.d("PAGE_POSTS", "Fetched ${response.data.size} posts, success=${response.success}")
                 _pagePosts.value = response
             } catch (e: Exception) {
                 Log.e("PAGE_POSTS", "Error fetching page posts: ${e.message}", e)
@@ -127,6 +131,16 @@ class PageViewModel(
                 loadPages()
             } catch (e: Exception) {
                 Log.e("UNFOLLOW_PAGE", "Error unfollowing page: ${e.message}", e)
+            }
+        }
+    }
+
+    fun loadPageDetails(pageId: Int){
+        viewModelScope.launch {
+            try {
+                _pagedetails.value = repository.fetchPageDetails(pageId)
+            } catch(e: Exception){
+                Log.e("PAGEVM_DEBUG", e.message.toString())
             }
         }
     }

@@ -4,5 +4,11 @@ import com.example.sociamediaapplication.model.RazorpayOrder
 
 data class CreateOrderResponse(
     val success: Boolean,
-    val order: RazorpayOrder
+    val data: RazorPayResponse
+)
+
+data class RazorPayResponse(
+    val razorpay_order_id: String,
+    val amount: Int,
+    val currency: String
 )

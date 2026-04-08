@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,20 +33,36 @@ class MainActivity : ComponentActivity(), PaymentResultWithDataListener {
         paymentData: PaymentData?
     ) {
 
-        val orderId = paymentData?.orderId
-        val paymentId = paymentData?.paymentId
-        val signature = paymentData?.signature
+        try {
+            val json = paymentData?.data
 
-        if (orderId != null && paymentId != null && signature != null) {
+            Log.d("RAZORPAY_DEBUG", paymentData?.data.toString())
 
-            paymentViewModel.verifyPayment(
-                orderId,
-                paymentId,
-                signature
-            )
+            val orderId = json?.getString("razorpay_order_id")
+            val paymentId = json?.getString("razorpay_payment_id")
+            val signature = json?.getString("razorpay_signature")
 
-        } else {
-            Toast.makeText(this, "Missing payment data", Toast.LENGTH_SHORT).show()
+            Log.d("RAZORPAY_DEBUG", "OrderId = ${ orderId ?: "No data" }")
+            Log.d("RAZORPAY_DEBUG", "PaymentID = ${paymentId?:" No data"}")
+            Log.d("RAZORPAY_DEBUG", "Signature = ${signature?:" No data"}")
+
+            if (orderId != null && paymentId != null && signature != null) {
+
+                paymentViewModel.verifyPayment(
+                    orderId,
+                    paymentId,
+                    signature,
+                    "upi"
+                )
+
+                Toast.makeText(this, "Payment Success ✅", Toast.LENGTH_SHORT).show()
+
+            } else {
+                Toast.makeText(this, "Missing payment data", Toast.LENGTH_SHORT).show()
+            }
+
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error parsing payment data", Toast.LENGTH_SHORT).show()
         }
     }
 

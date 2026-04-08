@@ -23,3 +23,8 @@ data class PageResponse(
     val is_following: Int,
     val user_role: String?
 )
+
+data class PageDetails(
+    val success: Boolean,
+    val data: PageResponse
+)

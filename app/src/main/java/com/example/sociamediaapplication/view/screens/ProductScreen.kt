@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.screens
 
 import android.graphics.Bitmap
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -794,7 +795,8 @@ fun ProductScreen(
                             viewModel.dislikeReviewReply(productReviews?.reviews?.get(review)?.id ?: 0)
                         },
                         onReviewDeleted = {
-                            viewModel.deleteProductReview(productReviews?.reviews?.get(review)?.id ?: 0)
+                            Log.d("DELETEREVIEW_DEBUG", productReviews?.reviews?.get(review)?.id.toString())
+                            viewModel.deleteProductReview(productReviews?.reviews?.get(review)?.id ?: 0, productDetails?.data?.id ?: 0)
                         }
                     )
 

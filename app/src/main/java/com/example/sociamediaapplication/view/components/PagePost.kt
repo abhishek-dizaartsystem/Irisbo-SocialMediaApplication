@@ -53,11 +53,7 @@ fun PagePost(
     sincePosted: String = "1m",
     isVerified: Boolean = false,
     caption: String = "",
-    mediaList: List<Int>? = listOf(
-        (R.drawable.rectangle_6),
-        (R.drawable.rectangle_5),
-        (R.drawable.rectangle_24)
-    ),
+    mediaList: List<Int>? = emptyList(),
     isFollowing: Boolean = false,
     postLikes: Int = 20,
     onLiked: () -> Unit = {},
@@ -100,7 +96,7 @@ fun PagePost(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            if(size!=null){
+            if(mediaList?.isNotEmpty() == true){
                 Box(
                     modifier = Modifier.aspectRatio(1f)
                 ){

@@ -40,7 +40,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.data.utils.formatPostTime
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -49,36 +51,30 @@ import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.PagePost
+import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.viewmodel.PageViewModel
 
 @Composable
 fun PageScreen(
     painter: Painter = painterResource(R.drawable.react_laptop),
-    pageId: String = "1",
+    pageId: Int = 1,
     navController: NavController = rememberNavController(),
     viewModel: PageViewModel = viewModel()
 ){
 
     val pagePosts by viewModel.pagePosts.collectAsState()
 
-    LaunchedEffect(pageId) {
-        Log.d("PAGE_SCREEN", "LaunchedEffect triggered, pageId='$pageId'")
-        val id = pageId.toIntOrNull()
-        if (id != null) {
-            Log.d("PAGE_SCREEN", "Calling loadPagePosts with id=$id")
-            viewModel.loadPagePosts(id)
-        } else {
-            Log.e("PAGE_SCREEN", "pageId is not a valid Int: '$pageId'")
-        }
-    }
+    val pageDetails by viewModel.pageDetails.collectAsState()
+
 
     LazyColumn(
         modifier = Modifier.background(BackgroundColor)
     ) {
         item {
             Box(){
-                Image(
-                    painter = painter,
+                AsyncImage(
+                    model = if(pageDetails?.data?.cover_image == null) R.drawable.cover_image_placeholder
+                    else correctUrl(pageDetails?.data?.cover_image),
                     contentDescription = "",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -159,8 +155,9 @@ fun PageScreen(
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-                                Image(
-                                    painter = painter,
+                                AsyncImage(
+                                    model = if(pageDetails?.data?.profile_image == null) R.drawable.profile_image_placeholder
+                                    else correctUrl(pageDetails?.data?.profile_image),
                                     contentDescription = "",
                                     modifier = Modifier
                                         .size(60.dp)
@@ -171,18 +168,18 @@ fun PageScreen(
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                     Text(
-                                        text = "React Developers($pageId)",
+                                        text = pageDetails?.data?.name ?: "null",
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        "Technology",
+                                        pageDetails?.data?.category_name ?: "Default",
                                         color = GreyTxt,
                                         fontSize = 14.sp
                                     )
 
                                         Text(
-                                            "28K followers",
+                                            "${pageDetails?.data?.followers_count} followers",
                                             color = GreyTxt,
                                             fontSize = 14.sp
                                         )
@@ -190,7 +187,7 @@ fun PageScreen(
                                 }
                             }
                             Text(
-                                text = "Stunning photography, tips & tricks, and gear reviews.",
+                                text = pageDetails?.data?.bio ?: "null bio",
                                 color = GreyTxt,
                                 fontSize = 16.sp
                             )
@@ -200,7 +197,7 @@ fun PageScreen(
                             ) {
                                 Button(
                                     onClick = {
-                                        val id = pageId.toIntOrNull()
+                                        val id = pageId
                                         if (id != null) {
                                             viewModel.followPage(id)
                                         }
@@ -211,11 +208,15 @@ fun PageScreen(
                                     modifier = Modifier.weight(1f)
                                 ) {
                                     Icon(
-                                        painter = painterResource(R.drawable.heart_svgrepo_com),
+                                        painter = if(pageDetails?.data?.is_following == 0)
+                                            painterResource(R.drawable.heart_svgrepo_com)
+                                        else
+                                            painterResource((R.drawable.heart_filled_svgrepo_com)),
                                         contentDescription = "",
                                         modifier = Modifier.size(20.dp)
                                     )
-                                    Text("  Like")
+                                    Text(
+                                        if(pageDetails?.data?.is_following == 0)"  Like" else " Liked")
                                 }
                                 Button(
                                     onClick = {},
@@ -224,8 +225,15 @@ fun PageScreen(
                                     ),
                                     modifier = Modifier.weight(1f)
                                 ) {
+
+                                    Icon(
+                                        painter = painterResource(R.drawable.share_svgrepo_com),
+                                        contentDescription = "",
+                                        modifier = Modifier.size(20.dp),
+                                        tint = Blue
+                                    )
                                     Text(
-                                        "Follow",
+                                        " Share",
                                         color = Blue
                                     )
                                 }
@@ -236,15 +244,15 @@ fun PageScreen(
             }
         }
 
-        items(pagePosts?.data ?: emptyList()) { post ->
+        items(pagePosts?.posts ?: emptyList()) { post ->
             Column(
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
-                PagePost(
+                Post(
                     uName = post.username,
                     caption = post.caption,
-                    sincePosted = formatPostTime(post.created_at),
-                    mediaList = null
+                    createdAt = formatPostTime(post.created_at),
+                    mediaList = post.media
                 )
             }
 

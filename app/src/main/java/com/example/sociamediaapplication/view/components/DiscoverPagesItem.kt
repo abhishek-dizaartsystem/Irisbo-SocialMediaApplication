@@ -41,7 +41,7 @@ fun DiscoverPagesItem(
     memberCount: Int = 14,
     category: String = "Technology",
     isLiked: Boolean = false,
-    onPageClick: (String) -> Unit = {},
+    onPageClick: (Int) -> Unit = {},
     onFollow: () -> Unit = {},
     id: Int = 0
 ){
@@ -50,7 +50,7 @@ fun DiscoverPagesItem(
             .fillMaxWidth()
             .padding(4.dp)
             .clickable{
-                onPageClick(id.toString())
+                onPageClick(id)
             },
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(

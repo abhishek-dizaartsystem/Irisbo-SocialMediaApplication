@@ -186,6 +186,7 @@ class MarketplaceViewModel(
     ){
         viewModelScope.launch {
             try {
+                Log.d("AddReview_DEBUG", "prodID = $productId\nrating = $rating\ncomment = $comment")
                 repository.addReview(productId, rating, comment)
                 loadProductReviews(productId)
             }catch (e: Exception){
@@ -197,11 +198,12 @@ class MarketplaceViewModel(
     }
 
     fun deleteProductReview(
-        productId: Int,
+        reviewId: Int,
+        productId: Int
     ){
         viewModelScope.launch {
             try{
-                repository.deleteReview(productId)
+                repository.deleteReview(reviewId)
                 loadProductReviews(productId)
             }catch (e: Exception){
                 Log.e("DELETE_REVIEW_DEBUG", e.message.toString())

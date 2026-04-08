@@ -52,6 +52,7 @@ import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.data.utils.formatPostTime
 import com.example.sociamediaapplication.data.utils.isVideo
 import com.example.sociamediaapplication.ui.theme.Black
@@ -257,7 +258,7 @@ fun Post(
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            if(size!=null){
+            if(mediaList?.isNotEmpty() == true){
                 Box(
                     modifier = Modifier.aspectRatio(1f)
                 ){
@@ -285,21 +286,12 @@ fun Post(
 
                             is String -> {
 
-                                val fullUrl =
-                                    if (media.startsWith("http")) {
-                                        media // already full URL
-                                    } else {
-                                        "${RetrofitClient.BASE_URL}uploads/$media"
-                                    }
+                                val fullUrl = correctUrl(media)
 
                                 if (isVideo(media)) {
 
                                     AutoVideo(
-                                        url =
-                                            if(type == "group post")
-                                                "${RetrofitClient.BASE_URL}$media"
-                                            else
-                                                fullUrl,
+                                        url = fullUrl,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .aspectRatio(1f)
@@ -308,11 +300,7 @@ fun Post(
                                 } else {
 
                                     AsyncImage(
-                                        model =
-                                            if (type == "group post")
-                                                "${RetrofitClient.BASE_URL}$media"
-                                            else
-                                                fullUrl,
+                                        model = fullUrl,
                                         contentDescription = null,
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier

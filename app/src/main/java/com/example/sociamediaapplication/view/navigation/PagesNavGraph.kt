@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -57,14 +58,25 @@ fun PagesNavGraph(
         composable(
             route = PagesRoutes.Page.route,
             arguments = listOf(
-                navArgument("pageId"){ type = NavType.StringType}
+                navArgument("pageId"){ type = NavType.IntType}
             )
         ) {backStackEntry->
 
-            val pageId = backStackEntry.arguments?.getString("pageId")
+            val pageId = backStackEntry.arguments?.getInt("pageId")
+
+            LaunchedEffect(pageId) {
+                Log.d("PAGE_SCREEN", "LaunchedEffect triggered, pageId='$pageId'")
+                if (pageId != null) {
+                    Log.d("PAGE_SCREEN", "Calling loadPagePosts with id=$pageId")
+                    pageViewModel.loadPagePosts(pageId)
+                    pageViewModel.loadPageDetails(pageId)
+                } else {
+                    Log.e("PAGE_SCREEN", "pageId is not a valid Int: '$pageId'")
+                }
+            }
 
             PageScreen(
-                pageId = pageId ?: "",
+                pageId = pageId?:0,
                 navController = navController,
                 viewModel = pageViewModel
             )

@@ -115,10 +115,10 @@ class MarketplaceRepository(
     }
 
     suspend fun deleteReview(
-        productId: Int,
+        reviewId: Int,
     ): AddReviewResponse{
         val token = "Bearer ${tokenManager.getToken()}"
-        val response = api.deleteReview(token, productId)
+        val response = api.deleteReview(token, reviewId)
 
         return response
     }

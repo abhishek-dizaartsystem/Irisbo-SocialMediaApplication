@@ -86,7 +86,7 @@ fun MarketNavGraph(
         }
         composable(MarketRoutes.CheckOut.route){
             LaunchedEffect(Unit) {
-
+                paymentViewModel.fetchAddresses()
             }
             CheckOutScreen(
                 viewModel = viewModel,

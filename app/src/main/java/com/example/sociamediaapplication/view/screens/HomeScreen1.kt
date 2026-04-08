@@ -47,17 +47,12 @@ fun HomeScreen1() {
         items(posts.size) {index->
             var post = posts[index]
 
-            LaunchedEffect(post) {
-                post.media = post.media?.map { mediaItem->
-                    correctUrl(mediaItem)
-                }
-            }
             Post(
                 uName = post.username ?: "",
                 caption = post.caption ?: "",
                 mediaList = post.media,
                 postLikes = post.likes_count ?: 0,
-                profileImageUrl = post.profile_image,
+                profileImageUrl = correctUrl(post.profile_image),
                 isLiked = post.user_reaction == "like",
                 onLiked = { postViewModel.toggleGlobalLike(post) },
                 onFollow = {},

@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.model.response.PageFollower
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
@@ -72,7 +73,7 @@ fun ManagePagesItem(
     isPostApproval: Boolean = true,
     onPostApprovalToggle: () -> Unit = {},
     onDelete: () -> Unit = {},
-    onPageClick: (String) -> Unit = {},
+    onPageClick: (Int) -> Unit = {},
     onEditPageClick: (Int) -> Unit = {},
     onShowMembers: (Int) -> Unit = {},
     pageFollowers: List<PageFollower> = emptyList()
@@ -225,10 +226,10 @@ fun ManagePagesItem(
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             AsyncImage(
-                                                model = if (follower.profile_image.isNotEmpty())
-                                                    "${RetrofitClient.BASE_URL}${follower.profile_image}"
+                                                model = if (follower.profile_image == null)
+                                                    R.drawable.profile_image_placeholder
                                                 else
-                                                    R.drawable.rectangle_36__2_,
+                                                    correctUrl(follower.profile_image),
                                                 contentDescription = "",
                                                 modifier = Modifier
                                                     .size(50.dp)
@@ -730,7 +731,7 @@ fun ManagePagesItem(
                                             fontSize = 16.sp)
                                     },
                                     onClick = {
-                                        onPageClick(pageId.toString())
+                                        onPageClick(pageId)
                                     },
                                     leadingIcon = {
                                         Icon(

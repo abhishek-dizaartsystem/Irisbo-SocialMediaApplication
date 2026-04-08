@@ -198,7 +198,7 @@ interface ProductApi {
         @Body request: ReviewReactionTypeRequest
     ): BasicResponse2
 
-    @POST("api/products/{id}/reply")
+    @POST("api/marketplace/reviews/{id}/reply")
     suspend fun addReviewReply(
         @Header("Authorization") token: String,
         @Path("id") id: Int,

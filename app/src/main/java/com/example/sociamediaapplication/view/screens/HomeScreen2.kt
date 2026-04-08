@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.repository.PostRepository
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
 import com.example.sociamediaapplication.view.components.Post
@@ -180,7 +181,7 @@ fun HomeScreen2(
                     caption = post.caption ?: "",
                     mediaList = post.media,
                     postLikes = post.likes_count ?: 0,
-                    profileImageUrl = post.profile_image,
+                    profileImageUrl = correctUrl(post.profile_image),
                     isLiked = post.user_reaction == "like",
                     onLiked = { postViewModel.toggleGlobalLike(post) },
                     onFollow = {},

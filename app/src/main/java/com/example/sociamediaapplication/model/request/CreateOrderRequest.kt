@@ -1,7 +1,7 @@
 package com.example.sociamediaapplication.model.request
 
 data class CreateOrderRequest(
-    val items: List<OrderItem>
+    val order_id: Int
 )
 
 data class OrderItem(

@@ -58,7 +58,7 @@ import com.example.sociamediaapplication.viewmodel.PageViewModel
 fun PagesScreen(
     bnavController: NavController = rememberNavController(),
     navController: NavController = rememberNavController(),
-    onPageClick: (String)-> Unit = {},
+    onPageClick: (Int)-> Unit = {},
     onEditPageClick: (Int) -> Unit = {},
     viewModel: PageViewModel = viewModel()
 ){

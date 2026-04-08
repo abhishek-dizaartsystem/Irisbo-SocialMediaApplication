@@ -3,10 +3,10 @@ package com.example.sociamediaapplication.view.navigation
 sealed class PagesRoutes(val route: String) {
     object Pages: PagesRoutes("pages")
     object Page: PagesRoutes("page/{pageId}"){
-        fun createRoute(pageId: String) = "page/$pageId"
+        fun createRoute(pageId: Int) = "page/$pageId"
     }
     object CreatePage: PagesRoutes("createPage")
     object EditPage: PagesRoutes("editPage/{pageId}"){
-        fun createRoute(pageId: String) = "page/$pageId"
+        fun createRoute(pageId: Int) = "page/$pageId"
     }
 }

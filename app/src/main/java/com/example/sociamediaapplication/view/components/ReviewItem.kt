@@ -97,7 +97,7 @@ fun ReviewItem(
                 Row(verticalAlignment = Alignment.CenterVertically) {
 
                     Image(
-                        painter = painterResource(profileImage),
+                        painter = painterResource(R.drawable.profile_image_placeholder),
                         contentDescription = null,
                         modifier = Modifier
                             .size(48.dp)

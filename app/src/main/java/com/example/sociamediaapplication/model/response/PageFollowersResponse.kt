@@ -9,7 +9,7 @@ data class PageFollowersResponse(
 data class PageFollower(
     val id: Int,
     val username: String,
-    val profile_image: String
+    val profile_image: String?
 )
 
 data class PageFollowersPagination(
