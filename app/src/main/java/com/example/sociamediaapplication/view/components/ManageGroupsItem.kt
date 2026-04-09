@@ -67,7 +67,7 @@ import com.example.sociamediaapplication.viewmodel.GroupViewModel
 fun ManageGroupsItem(
     isPrivate: Boolean = true,
     name: String = "React Developers",
-    image: String = "https://picsum.photos/200",
+    image: String? = null,
     total_members: Int = 100,
     category: String = "Technology",
     viewModel: GroupViewModel = viewModel(),
@@ -333,7 +333,7 @@ fun ManageGroupsItem(
             }
     ){
         AsyncImage(
-            model = image,
+            model = if(image == null) R.drawable.cover_image_placeholder else correctUrl(image),
             contentDescription = "",
             modifier = Modifier
                 .fillMaxWidth()
@@ -369,7 +369,7 @@ fun ManageGroupsItem(
                             horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             AsyncImage(
-                                model = image,
+                                model = if(image == null) R.drawable.cover_image_placeholder else correctUrl(image),
                                 contentDescription = "",
                                 modifier = Modifier
                                     .size(50.dp)

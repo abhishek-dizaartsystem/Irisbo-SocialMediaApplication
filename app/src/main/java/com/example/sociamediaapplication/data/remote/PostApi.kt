@@ -65,7 +65,7 @@ interface PostApi {
     //OLD APIS
 
     @Multipart
-    @POST("api/groups/{group_id}/create")
+    @POST("api/groups/{group_id}/posts")
     suspend fun createGroupPost(
         @Header("Authorization") token: String,
         @Path("group_id") groupId: Int,

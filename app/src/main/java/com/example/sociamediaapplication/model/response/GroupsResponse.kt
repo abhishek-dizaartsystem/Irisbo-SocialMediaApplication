@@ -14,7 +14,7 @@ data class GroupResponse(
     val id: Int,
     val name: String,
     val slug: String,
-    val cover_image: String,
+    val cover_image: String?,
     val privacy: String,
     val created_at: String,
     val member_count: Int

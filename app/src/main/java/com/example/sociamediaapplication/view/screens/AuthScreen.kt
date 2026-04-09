@@ -135,7 +135,7 @@ fun AuthScreen(
                 }
 
                 Text(
-                    text = "Social Media App",
+                    text = "Irisbo",
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     modifier = Modifier.padding(top = 16.dp)

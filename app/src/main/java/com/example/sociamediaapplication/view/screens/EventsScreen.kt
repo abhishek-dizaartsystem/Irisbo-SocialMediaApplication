@@ -259,7 +259,7 @@ fun EventsScreen(
 
                             },
                             interestedPeople = event.participants,
-                            image = correctUrl2(event.cover_image),
+                            image = event.cover_image,
                             time = formatToTime(event.start_time?: "12:30 PM")
                         )
                     }

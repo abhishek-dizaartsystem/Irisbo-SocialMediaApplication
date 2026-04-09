@@ -74,7 +74,7 @@ fun EventScreen(
             Box {
 
                 AsyncImage(
-                    model = correctUrl2(eventDetails?.event?.cover_image),
+                    model = if(eventDetails?.event?.cover_image == null) R.drawable.cover_image_placeholder else correctUrl2(eventDetails?.event?.cover_image),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()

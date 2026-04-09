@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    const val BASE_URL = "http://192.168.1.19:3000/"//"https://gerry-unsturdy-wickedly.ngrok-free.dev/" // for emulator
+    const val BASE_URL = "https://nonfortuitously-extragalactic-floyd.ngrok-free.dev/"//"https://gerry-unsturdy-wickedly.ngrok-free.dev/" // for emulator
 
 
     private val retrofit: Retrofit by lazy {
@@ -55,6 +55,10 @@ object RetrofitClient {
 
     val jobApi: JobApi by lazy {
         retrofit.create(JobApi::class.java)
+    }
+
+    val friendApi: FriendApi by lazy {
+        retrofit.create(FriendApi::class.java)
     }
 
 }

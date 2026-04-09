@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.sociamediaapplication.model.FeedPost
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,13 +22,9 @@ import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
 import com.example.sociamediaapplication.view.components.Post
 
 @Composable
-fun HomeScreen1() {
+fun HomeScreen1(postViewModel: PostViewModel) {
 
-    val context = LocalContext.current.applicationContext
-    val tokenManager = remember { TokenManager(context) }
-    val postRepository = remember { PostRepository(tokenManager) }
-    val postFactory = remember { PostViewModelFactory(postRepository) }
-    val postViewModel: PostViewModel = viewModel(factory = postFactory)
+
 
     val posts by postViewModel.globalPosts.collectAsState()
 
@@ -67,8 +61,4 @@ fun HomeScreen1() {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun HomeScreen1Preview(){
-    HomeScreen1()
-}
+

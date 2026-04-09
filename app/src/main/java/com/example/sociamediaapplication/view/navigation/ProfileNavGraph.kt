@@ -30,16 +30,13 @@ fun ProfileNavGraph(
     authViewModel: AuthViewModel,
     mainNavController: NavController,
     profileViewModel: ProfileViewModel,
-    uploadViewModel: UploadViewModel
+    uploadViewModel: UploadViewModel,
+    postViewModel: PostViewModel
 ){
     val navController = rememberNavController()
 
     val context = LocalContext.current.applicationContext
     val tokenManager = remember { TokenManager(context) }
-
-    val postRepository = remember { PostRepository(tokenManager) }
-    val postFactory = remember { PostViewModelFactory(postRepository) }
-    val postViewModel: PostViewModel = viewModel(factory = postFactory)
 
     val posts by postViewModel.posts.collectAsState()
 
@@ -111,7 +108,8 @@ fun ProfileNavGraph(
                 mainNavController = mainNavController,
                 authViewModel = authViewModel,
                 profileViewModel = profileViewModel,
-                uploadViewModel = uploadViewModel
+                uploadViewModel = uploadViewModel,
+                postViewModel = postViewModel
             )
         }
     }

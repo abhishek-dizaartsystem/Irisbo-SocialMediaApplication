@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +32,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
-import com.example.sociamediaapplication.model.FeedPost
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.White
@@ -52,14 +50,10 @@ import com.example.sociamediaapplication.view.navigation.Routes
 
 @Composable
 fun HomeScreen2(
-    mainNavController: NavController = rememberNavController()
+    mainNavController: NavController = rememberNavController(),
+    postViewModel: PostViewModel
 ) {
 
-    val context = LocalContext.current.applicationContext
-    val tokenManager = remember { TokenManager(context) }
-    val postRepository = remember { PostRepository(tokenManager) }
-    val postFactory = remember { PostViewModelFactory(postRepository) }
-    val postViewModel: PostViewModel = viewModel(factory = postFactory)
 
     val posts by postViewModel.globalPosts.collectAsState()
 
@@ -196,8 +190,3 @@ fun HomeScreen2(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun HomeScreen2Preview(){
-    HomeScreen2()
-}

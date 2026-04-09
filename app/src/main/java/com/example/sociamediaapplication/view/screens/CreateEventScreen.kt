@@ -187,30 +187,17 @@ fun CreateEventScreen(
                                 .aspectRatio(2f),
                             shape = RoundedCornerShape(0.dp)
                         ) {
-                            when(coverPhoto){
-                                is Int->{
-                                    Image(
-                                        painter = painterResource(coverPhoto as Int),
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .aspectRatio(2f)
-                                            .clip(RoundedCornerShape(12.dp)),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                }
-                                is Uri->{
-                                    AsyncImage(
-                                        model = coverPhoto as Uri,
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .aspectRatio(2f)
-                                            .clip(RoundedCornerShape(12.dp)),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                }
-                            }
+
+                            AsyncImage(
+                                model = coverPhoto ?: R.drawable.cover_image_placeholder,
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .aspectRatio(2f)
+                                    .clip(RoundedCornerShape(12.dp)),
+                                contentScale = ContentScale.Crop
+                            )
+
 
                         }
 

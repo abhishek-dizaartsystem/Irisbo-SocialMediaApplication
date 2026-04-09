@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -19,13 +20,15 @@ import com.example.sociamediaapplication.view.screens.GroupDetailsScreen
 import com.example.sociamediaapplication.view.screens.GroupsScreen
 import com.example.sociamediaapplication.view.screens.UploadScreen
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
+import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
 import com.example.sociamediaapplication.viewmodel.factory.GroupViewModelFactory
 
 @Composable
 fun GroupsNavGraph(
     bNavController: NavController = rememberNavController(),
-    uploadViewModel: UploadViewModel
+    uploadViewModel: UploadViewModel,
+    postViewModel: PostViewModel
 ){
     val navController = rememberNavController()
 
@@ -86,6 +89,12 @@ fun GroupsNavGraph(
                 navController = navController,
                 viewModel = groupViewModel,
                 isCreator = isCreator == true,
+                onLike = {post, id->
+                    postViewModel.toggleLike(post, id)
+
+                    Log.d("GroupVM RELOAD", "groupId = $groupId")
+                    groupViewModel.loadGroupPosts(groupId?:0,1, 10)
+                }
             )
         }
 

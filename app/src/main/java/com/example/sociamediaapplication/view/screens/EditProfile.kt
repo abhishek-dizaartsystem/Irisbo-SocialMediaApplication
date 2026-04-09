@@ -46,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.model.request.EditProfileRequest
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -184,8 +185,16 @@ fun EditProfileScreen(
                             containerColor = LBlue
                         )
                     ) {
+                        val profileImage =  if(profileUri == null) {
+                            if (profile?.data?.profile_image == null)
+                                R.drawable.profile_image_placeholder
+                            else
+                                correctUrl(profile?.data?.profile_image)
+                        }else{
+                            profileUri
+                        }
                         AsyncImage(
-                            model = if(profileUri == null) R.drawable.profile_image_placeholder else "${RetrofitClient.BASE_URL}${profile?.data?.profile_image?.removePrefix("/")}",
+                            model = profileImage,
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -235,8 +244,16 @@ fun EditProfileScreen(
                         contentAlignment = Alignment.BottomEnd
                     ) {
 
+                        val coverImage =  if(coverUri == null) {
+                            if (profile?.data?.cover_img == null)
+                                R.drawable.cover_image_placeholder
+                            else
+                                correctUrl(profile?.data?.cover_img)
+                        }else{
+                            coverUri
+                        }
                         AsyncImage(
-                            model = if(coverUri == null) R.drawable.cover_image_placeholder else "${RetrofitClient.BASE_URL}${profile?.data?.cover_img?.removePrefix("/")}",
+                            model = coverImage,
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl2
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LLBlue
@@ -62,7 +63,7 @@ fun EventItem(
                 contentAlignment = Alignment.BottomStart
             ) {
                 AsyncImage(
-                    model = image ?: R.drawable.conference,
+                    model = if(image == null) correctUrl2(image) else R.drawable.cover_image_placeholder,
                     contentDescription = "",
                     modifier = Modifier.aspectRatio(2.2f),
                     contentScale = ContentScale.Crop

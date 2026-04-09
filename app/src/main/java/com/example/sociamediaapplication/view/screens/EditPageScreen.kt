@@ -53,6 +53,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -181,9 +182,9 @@ fun EditPageScreen(
                                         contentScale = ContentScale.Crop
                                     )
                                 }
-                                is Uri->{
+                                is String->{
                                     AsyncImage(
-                                        model = coverPhoto as Uri,
+                                        model = correctUrl(coverPhoto as String),
                                         contentDescription = "",
                                         modifier = Modifier
                                             .fillMaxWidth()

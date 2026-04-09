@@ -323,7 +323,7 @@ fun GroupsScreen(
                                         //onEditClick = onEditClick,
                                         viewModel = viewModel,
                                         total_members = group.member_count,
-                                        image = correctUrl(group.cover_image)
+                                        image = group.cover_image
                                         )
                                 }
 
@@ -341,7 +341,7 @@ fun GroupsScreen(
                                     groupId = group.id,
                                     name = group.name,
                                     memberCount = group.member_count,
-                                    image = correctUrl(group.cover_image),
+                                    image = group.cover_image,
                                     isPrivate = group.privacy != "public",
                                     onGroupClick = onGroupClick,
                                     onLeave = {
@@ -358,7 +358,7 @@ fun GroupsScreen(
                                 groupId = group.id,
                                 name = group.name,
                                 memberCount = group.member_count,
-                                image = correctUrl(group.cover_image),
+                                image = group.cover_image,
                                 onGroupClick = onGroupClick ,
                                 onJoin = {
                                     viewModel.joinGroup(group.id)

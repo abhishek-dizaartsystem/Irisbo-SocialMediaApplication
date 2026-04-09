@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LBlue
@@ -36,7 +37,7 @@ import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
 fun GroupsItem(
-    image: String = "https://example.com/covers/tech-news.jpg",
+    image: String? = null,
     name: String = "React Developers",
     memberCount: Int = 14,
     groupId: Int = 2,
@@ -68,7 +69,7 @@ fun GroupsItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 AsyncImage(
-                    model = image,
+                    model = if(image == null) R.drawable.cover_image_placeholder else correctUrl(image),
                     contentDescription = "",
                     modifier = Modifier
                         .size(60.dp)

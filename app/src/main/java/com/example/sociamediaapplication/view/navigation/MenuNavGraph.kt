@@ -16,6 +16,7 @@ import com.example.sociamediaapplication.view.screens.MonetizationScreen
 import com.example.sociamediaapplication.view.screens.UserVideosScreen
 import com.example.sociamediaapplication.view.screens.VideoAnalyticsScreen
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
+import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
 
@@ -24,7 +25,8 @@ fun MenuNavGraph(
     mainNavController: NavController,
     authViewModel: AuthViewModel,
     profileViewModel: ProfileViewModel,
-    uploadViewModel: UploadViewModel
+    uploadViewModel: UploadViewModel,
+    postViewModel: PostViewModel
 ){
     val navController = rememberNavController()
 
@@ -88,7 +90,8 @@ fun MenuNavGraph(
         composable(MenuRoutes.Groups.route) {
             GroupsNavGraph(
                 navController,
-                uploadViewModel = uploadViewModel
+                uploadViewModel = uploadViewModel,
+                postViewModel = postViewModel
             )
         }
         composable(MenuRoutes.UserVideos.route) {
@@ -126,7 +129,8 @@ fun MenuNavGraph(
                 mainNavController = mainNavController,
                 authViewModel = authViewModel,
                 profileViewModel = profileViewModel,
-                uploadViewModel = uploadViewModel
+                uploadViewModel = uploadViewModel,
+                postViewModel = postViewModel
             )
         }
 

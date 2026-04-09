@@ -626,15 +626,15 @@ fun ProfileScreen(
 
 
 
-                ReelsScreen(
-                    reels = myReels,
-                    loading = false,
-                    startIndex = startIndex,   // 🔥 NEW PARAM
-                    onLike = onReelLike,
-                    onSave = onReelSave,
-                    profileImage = profile?.data?.profile_image,
-                    userName = profile?.data?.username
-                )
+        ReelsScreen(
+            reels = myReels,
+            loading = false,
+            startIndex = startIndex,   // 🔥 NEW PARAM
+            onLike = onReelLike,
+            onSave = onReelSave,
+            profileImage = profile?.data?.profile_image,
+            userName = profile?.data?.username
+        )
 
 
 

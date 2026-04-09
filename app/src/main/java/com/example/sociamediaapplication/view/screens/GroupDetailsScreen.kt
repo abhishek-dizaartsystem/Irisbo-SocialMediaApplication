@@ -40,9 +40,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
-import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.model.FeedPost
+import com.example.sociamediaapplication.model.response.PostResponse
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -58,6 +58,7 @@ fun GroupDetailsScreen(
     navController: NavController = rememberNavController(),
     viewModel: GroupViewModel = viewModel(),
     isCreator: Boolean = false,
+    onLike: (PostResponse, Int) -> Unit = {post, id->},
 ){
 
     val groupDetails by viewModel.groupDetails.collectAsState()
@@ -80,7 +81,7 @@ fun GroupDetailsScreen(
         item {
             Box(){
                 AsyncImage(
-                    model = correctUrl(groupDetails?.group?.cover_image),
+                    model = if(groupDetails?.group?.cover_image == null) R.drawable.cover_image_placeholder else correctUrl(groupDetails?.group?.cover_image),
                     contentDescription = "",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -166,7 +167,7 @@ fun GroupDetailsScreen(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 AsyncImage(
-                                    model = correctUrl(groupDetails?.group?.cover_image),
+                                    model = if(groupDetails?.group?.cover_image == null) R.drawable.cover_image_placeholder else correctUrl(groupDetails?.group?.cover_image),
                                     contentDescription = "",
                                     modifier = Modifier
                                         .size(60.dp)
@@ -200,50 +201,50 @@ fun GroupDetailsScreen(
                                 color = GreyTxt,
                                 fontSize = 16.sp
                             )
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Button(
-                                    onClick = {
-                                        if(isCreator){
-                                            groupDetails?.group?.id?.let { groupId ->
-                                                navController.navigate(
-                                                    GroupsRoutes.CreateGroupPost.createRoute(groupId)
-                                                )
-                                            }
-                                        }else{
-                                        }
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Blue
-                                    ),
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxWidth()
-                                ) {
-                                    Text(
-                                        if(isCreator) "Add post" else "Join Group"
-                                    )
-                                }
-                                Button(
-                                    onClick = {
-                                        navController.navigate(
-                                            route = GroupsRoutes.EditGroup.createRoute(groupDetails?.group?.id?: 1)
-                                        )
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Blue
-                                    ),
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxWidth()
-                                ) {
-                                    Text(
-                                        if(isCreator) "Edit Group" else "Leave Group"
-                                    )
-                                }
-                            }
+//                            Row(
+//                                modifier = Modifier.fillMaxWidth(),
+//                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+//                            ) {
+//                                Button(
+//                                    onClick = {
+//                                        if(isCreator){
+//                                            groupDetails?.group?.id?.let { groupId ->
+//                                                navController.navigate(
+//                                                    GroupsRoutes.CreateGroupPost.createRoute(groupId)
+//                                                )
+//                                            }
+//                                        }else{
+//                                        }
+//                                    },
+//                                    colors = ButtonDefaults.buttonColors(
+//                                        containerColor = Blue
+//                                    ),
+//                                    modifier = Modifier
+//                                        .weight(1f)
+//                                        .fillMaxWidth()
+//                                ) {
+//                                    Text(
+//                                        if(isCreator) "Add post" else "Join Group"
+//                                    )
+//                                }
+//                                Button(
+//                                    onClick = {
+//                                        navController.navigate(
+//                                            route = GroupsRoutes.EditGroup.createRoute(groupDetails?.group?.id?: 1)
+//                                        )
+//                                    },
+//                                    colors = ButtonDefaults.buttonColors(
+//                                        containerColor = Blue
+//                                    ),
+//                                    modifier = Modifier
+//                                        .weight(1f)
+//                                        .fillMaxWidth()
+//                                ) {
+//                                    Text(
+//                                        if(isCreator) "Edit Group" else "Leave Group"
+//                                    )
+//                                }
+//                            }
                         }
                     }
                 }
@@ -257,14 +258,33 @@ fun GroupDetailsScreen(
                 Post(
                     uName = post.username,
                     caption = post.caption,
-                    postLikes = post.likes_count,
+                    postLikes = post.likes,
                     isLiked = post.is_liked,
                     isSaved = post.is_saved,
-                    profileImageUrl = "${RetrofitClient.BASE_URL}${post.profile_img}",
-                    mediaList = post.media_files,
+                    profileImageUrl = correctUrl(post.profile_image),
+                    mediaList = post.media,
                     onSaved = {},
                     type = "group post",
-                    onLiked = {},
+                    onLiked = {
+                        onLike(
+                            PostResponse(
+                                id = post.id,
+                                user_id = post.user_id,
+                                caption = post.caption,
+                                media = post.media,
+                                media_type = post.mediaType,
+                                likes_count = post.likes,
+                                tags = post.tags ,
+                                created_at = post.created_at,
+                                username = post.username,
+                                profile_image = post.profile_image,
+                                user_reaction = post.user_reaction,
+                                is_saved = post.is_saved
+                            ),
+                            post.id
+                        )
+
+                    },
                     onFollow = {},
                     createdAt = post.created_at,
                     onDelete = {

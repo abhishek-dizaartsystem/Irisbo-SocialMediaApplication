@@ -15,6 +15,7 @@ import com.example.sociamediaapplication.data.repository.AuthRepository
 import com.example.sociamediaapplication.data.repository.GroupRepository
 import com.example.sociamediaapplication.data.repository.ReelRepository
 import com.example.sociamediaapplication.view.screens.AuthScreen
+import com.example.sociamediaapplication.view.screens.ComingSoonScreen
 import com.example.sociamediaapplication.view.screens.MainScreen
 import com.example.sociamediaapplication.view.screens.ReelsScreen
 import com.example.sociamediaapplication.view.screens.SplashScreen
@@ -116,21 +117,23 @@ fun AppNavGraph() {
             StatusEditorScreen()
         }
 
-        composable(Routes.Reels.route) {
-            LaunchedEffect(Unit) {
-                reelViewModel.loadReels()
-            }
-            ReelsScreen(
-                loading = loading,
-                reels = reels,
-                onLike = {
-                    reelViewModel.toggleLike(it)
-                },
-                onSave = {
-                    reelViewModel.toggleSave(it)
-                }
-            )
-        }
+//        composable(Routes.Reels.route) {
+//            LaunchedEffect(Unit) {
+//                reelViewModel.loadReels()
+//            }
+//            ReelsScreen(
+//                loading = loading,
+//                reels = reels,
+//                onLike = {
+//                    reelViewModel.toggleLike(it)
+//                },
+//                onSave = {
+//                    reelViewModel.toggleSave(it)
+//                }
+//            )
+
+//            ComingSoonScreen()
+//        }
 
     }
 }

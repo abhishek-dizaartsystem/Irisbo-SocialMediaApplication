@@ -59,8 +59,10 @@ import com.example.sociamediaapplication.view.navigation.MenuNavGraph
 import com.example.sociamediaapplication.view.navigation.Routes
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
+import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
+import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ProfileViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.UploadViewModelFactory
 
@@ -93,6 +95,10 @@ fun MainScreen(
     val profileRepository = remember { ProfileRepository(tokenManager) }
     val profileFactory = remember { ProfileViewModelFactory(profileRepository) }
     val profileViewModel: ProfileViewModel = viewModel(factory = profileFactory)
+
+    val postRepository = remember { PostRepository(tokenManager) }
+    val postFactory = remember { PostViewModelFactory(postRepository) }
+    val postViewModel: PostViewModel = viewModel(factory = postFactory)
 
     val profile by profileViewModel.profile.collectAsState()
 
@@ -252,7 +258,8 @@ fun MainScreen(
                         }
                         IconButton(
                             onClick = {
-                                mainNavController.navigate(Routes.Reels.route)
+//                                mainNavController.navigate(Routes.Reels.route)
+                                navController.navigate(MainRoutes.Reels.route)
                             },
                             modifier = Modifier
                                 .clip(RoundedCornerShape(0.dp))
@@ -301,7 +308,9 @@ fun MainScreen(
         ) {
 
             composable(MainRoutes.Home1.route) {
-                HomeScreen1()
+                HomeScreen1(
+                    postViewModel = postViewModel
+                )
             }
 
             composable(MainRoutes.Search.route) {
@@ -309,7 +318,8 @@ fun MainScreen(
             }
 
             composable(MainRoutes.Reels.route) {
-                ReelsScreen()
+//                ReelsScreen()
+                ComingSoonScreen()
             }
 
             composable(MainRoutes.Add.route){
@@ -324,7 +334,10 @@ fun MainScreen(
             }
 
             composable(MainRoutes.Profile.route) {
-                HomeScreen2(mainNavController)
+                HomeScreen2(
+                    mainNavController,
+                    postViewModel = postViewModel
+                )
             }
 
             composable(MainRoutes.Category.route){
@@ -336,7 +349,8 @@ fun MainScreen(
                     mainNavController,
                     authViewModel = authViewModel,
                     profileViewModel = profileViewModel,
-                    uploadViewModel = uploadViewModel
+                    uploadViewModel = uploadViewModel,
+                    postViewModel = postViewModel
                 )
             }
 
@@ -345,7 +359,7 @@ fun MainScreen(
             }
 
             composable(MainRoutes.Home2.route){
-                HomeScreen2()
+                HomeScreen2(postViewModel = postViewModel)
             }
         }
     }
