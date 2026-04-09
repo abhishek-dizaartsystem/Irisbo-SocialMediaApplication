@@ -151,29 +151,56 @@ class MarketplaceViewModel(
 
     fun likeReview(reviewId: Int){
         viewModelScope.launch {
-            repository.reactToReview(reviewId, "like")
-            loadProductReviews(productDetails.value!!.data.id)
+            try {
+                repository.reactToReview(reviewId, "like")
+                loadProductReviews(productDetails.value!!.data.id)
+                Log.d("ReviewReact_DEBUG", "Successful liked review")
+            }catch(e: Exception){
+                Log.e("ReviewReact_DEBUG", e.message.toString())
+            }
+
         }
     }
 
     fun dislikeReview(reviewId: Int){
         viewModelScope.launch {
-            repository.reactToReview(reviewId, "dislike")
-            loadProductReviews(productDetails.value!!.data.id)
+            try {
+                repository.reactToReview(reviewId, "dislike")
+                loadProductReviews(productDetails.value!!.data.id)
+                Log.d("ReviewReact_DEBUG", "Successful disliked review")
+            }catch(e: Exception){
+                Log.e("ReviewReact_DEBUG", e.message.toString())
+            }
+
         }
     }
 
-    fun likeReviewReply(reviewId: Int){
+    fun likeReviewReply(replyId: Int){
         viewModelScope.launch {
-            repository.reactToReviewReply(reviewId, "like")
-            loadProductReviews(productDetails.value!!.data.id)
+            try {
+                Log.d("ReviewReact_DEBUG", "replyId = $replyId")
+                repository.reactToReviewReply(replyId, "like")
+                loadProductReviews(productDetails.value!!.data.id)
+                Log.d("ReviewReact_DEBUG", "Successful liked review reply")
+            }catch(e: Exception){
+                Log.e("ReviewReact_DEBUG", e.message.toString())
+            }
+
         }
     }
 
-    fun dislikeReviewReply(reviewId: Int){
+    fun dislikeReviewReply(replyId: Int){
         viewModelScope.launch {
-            repository.reactToReviewReply(reviewId, "dislike")
-            loadProductReviews(productDetails.value!!.data.id)
+            try {
+
+                Log.d("ReviewReact_DEBUG", "replyId = $replyId")
+                repository.reactToReviewReply(replyId, "dislike")
+                loadProductReviews(productDetails.value!!.data.id)
+                Log.d("ReviewReact_DEBUG", "Successful disliked review reply")
+            }catch(e: Exception){
+                Log.e("ReviewReact_DEBUG", e.message.toString())
+            }
+
         }
     }
 

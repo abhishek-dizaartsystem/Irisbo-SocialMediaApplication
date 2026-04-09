@@ -105,7 +105,7 @@ fun ProductScreen(
         skipPartiallyExpanded = true
     )
 
-    val reviewsList = productReviews?.reviews ?: emptyList()
+    val reviewsList = productReviews?.data?.reviews ?: emptyList()
 
     val s5 = reviewsList.count { it.rating == 5 }
     val s4 = reviewsList.count { it.rating == 4 }
@@ -421,7 +421,7 @@ fun ProductScreen(
                                 modifier = Modifier.size(20.dp)
                             )
                             Text(
-                                text = "(${productReviews?.summary?.total_reviews} reviews)",
+                                text = "(${productReviews?.data?.summary?.total_reviews} reviews)",
                                 fontSize = 18.sp,
                                 color = GreyTxt
                             )
@@ -506,7 +506,7 @@ fun ProductScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Reviews (${productReviews?.summary?.total_reviews})",
+                                text = "Reviews (${productReviews?.data?.summary?.total_reviews})",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp,
                                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -549,7 +549,7 @@ fun ProductScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Text(
-                                        text = "${productReviews?.summary?.average_rating}",
+                                        text = "${productReviews?.data?.summary?.average_rating}",
                                         fontSize = 28.sp,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -588,7 +588,7 @@ fun ProductScreen(
                                     }
 
                                     Text(
-                                        text = "${productReviews?.summary?.total_reviews} reviews",
+                                        text = "${productReviews?.data?.summary?.total_reviews} reviews",
                                         fontSize = 16.sp,
                                         color = GreyTxt
                                     )
@@ -621,7 +621,7 @@ fun ProductScreen(
 
                                         CustomProgressBar2(
                                             value = s5.toFloat(),
-                                            maxValue = productReviews?.summary?.total_reviews?.toFloat() ?: 0f,
+                                            maxValue = productReviews?.data?.summary?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)   // 🔥 THIS IS THE KEY
                                         )
 
@@ -655,7 +655,7 @@ fun ProductScreen(
                                         Spacer(Modifier.width(8.dp))
                                         CustomProgressBar2(
                                             value = s4.toFloat(),
-                                            maxValue = productReviews?.summary?.total_reviews?.toFloat() ?: 0f,
+                                            maxValue = productReviews?.data?.summary?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Spacer(Modifier.width(8.dp))
@@ -686,7 +686,7 @@ fun ProductScreen(
                                         Spacer(Modifier.width(8.dp))
                                         CustomProgressBar2(
                                             value = s3.toFloat(),
-                                            maxValue = productReviews?.summary?.total_reviews?.toFloat() ?: 0f,
+                                            maxValue = productReviews?.data?.summary?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Spacer(Modifier.width(8.dp))
@@ -717,7 +717,7 @@ fun ProductScreen(
                                         Spacer(Modifier.width(8.dp))
                                         CustomProgressBar2(
                                             value = s2.toFloat(),
-                                            maxValue = productReviews?.summary?.total_reviews?.toFloat() ?: 0f,
+                                            maxValue = productReviews?.data?.summary?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Spacer(Modifier.width(8.dp))
@@ -748,7 +748,7 @@ fun ProductScreen(
                                         Spacer(Modifier.width(8.dp))
                                         CustomProgressBar2(
                                             value = s1.toFloat(),
-                                            maxValue = productReviews?.summary?.total_reviews?.toFloat() ?: 0f,
+                                            maxValue = productReviews?.data?.summary?.total_reviews?.toFloat() ?: 0f,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Spacer(Modifier.width(8.dp))
@@ -765,38 +765,38 @@ fun ProductScreen(
                     }
                 }
 
-                items(productReviews?.reviews?.size ?: 0){review->
+                items(productReviews?.data?.reviews?.size ?: 0){review->
                     ReviewItem(
-                        name = productReviews?.reviews?.get(review)?.reviewer_username ?: "",
+                        name = productReviews?.data?.reviews?.get(review)?.reviewer_username ?: "",
                         timeAgo = formatPostTime(
-                            productReviews?.reviews?.get(review)?.created_at ?: ""
+                            productReviews?.data?.reviews?.get(review)?.created_at ?: ""
                         ),
-                        rating = productReviews?.reviews?.get(review)?.rating ?: 3,
-                        reviewText = productReviews?.reviews?.get(review)?.review ?: "",
+                        rating = productReviews?.data?.reviews?.get(review)?.rating ?: 3,
+                        reviewText = productReviews?.data?.reviews?.get(review)?.review ?: "",
                         profileImage = R.drawable.rectangle_36__2_,
-                        vendor_reply = productReviews?.reviews?.get(review)?.reply ?: "",
-                        vendor_reply_at = formatPostTime(productReviews?.reviews?.get(review)?.reply_created_at ?: ""),
-                        review_likes = productReviews?.reviews?.get(review)?.review_likes ?: 0,
-                        review_dislikes = productReviews?.reviews?.get(review)?.review_dislikes ?: 0,
-                        reply_likes = productReviews?.reviews?.get(review)?.reply_likes ?: 0,
-                        reply_dislikes = productReviews?.reviews?.get(review)?.reply_dislikes ?: 0,
-                        user_review_reaction = productReviews?.reviews?.get(review)?.user_review_reaction?: null,
-                        user_reply_reaction = productReviews?.reviews?.get(review)?.user_reply_reaction?: null,
+                        vendor_reply = productReviews?.data?.reviews?.get(review)?.reply ?: "",
+                        vendor_reply_at = formatPostTime(productReviews?.data?.reviews?.get(review)?.reply_created_at ?: ""),
+                        review_likes = productReviews?.data?.reviews?.get(review)?.review_like_count ?: 0,
+                        review_dislikes = productReviews?.data?.reviews?.get(review)?.review_dislike_count ?: 0,
+                        reply_likes = productReviews?.data?.reviews?.get(review)?.review_reply_like_count ?: 0,
+                        reply_dislikes = productReviews?.data?.reviews?.get(review)?.review_reply_dislike_count ?: 0,
+                        user_review_reaction = productReviews?.data?.reviews?.get(review)?.user_review_reaction,
+                        user_reply_reaction = productReviews?.data?.reviews?.get(review)?.user_review_reply_reaction,
                         onReviewLiked = {
-                            viewModel.likeReview(productReviews?.reviews?.get(review)?.id ?: 0)
+                            viewModel.likeReview(productReviews?.data?.reviews?.get(review)?.id ?: 0)
                         },
                         onReviewDisliked = {
-                            viewModel.dislikeReview(productReviews?.reviews?.get(review)?.id ?: 0)
+                            viewModel.dislikeReview(productReviews?.data?.reviews?.get(review)?.id ?: 0)
                         },
                         onReplyLiked = {
-                            viewModel.likeReviewReply(productReviews?.reviews?.get(review)?.id ?: 0)
+                            viewModel.likeReviewReply(productReviews?.data?.reviews?.get(review)?.reply_id?: 0)
                         },
                         onReplyDisliked = {
-                            viewModel.dislikeReviewReply(productReviews?.reviews?.get(review)?.id ?: 0)
+                            viewModel.dislikeReviewReply(productReviews?.data?.reviews?.get(review)?.reply_id ?: 0)
                         },
                         onReviewDeleted = {
-                            Log.d("DELETEREVIEW_DEBUG", productReviews?.reviews?.get(review)?.id.toString())
-                            viewModel.deleteProductReview(productReviews?.reviews?.get(review)?.id ?: 0, productDetails?.data?.id ?: 0)
+                            Log.d("DELETEREVIEW_DEBUG", productReviews?.data?.reviews?.get(review)?.id.toString())
+                            viewModel.deleteProductReview(productReviews?.data?.reviews?.get(review)?.id ?: 0, productDetails?.data?.id ?: 0)
                         }
                     )
 

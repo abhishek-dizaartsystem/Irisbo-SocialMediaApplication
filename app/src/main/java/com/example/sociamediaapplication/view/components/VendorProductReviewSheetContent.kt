@@ -45,7 +45,7 @@ fun VendorProductReviewSheetContent(
 
         Spacer(Modifier.height(16.dp))
 
-        reviews?.reviews?.forEach { review ->
+        reviews?.data?.reviews?.forEach { review ->
 
             VendorReviewReplyItem(
                 name = review.reviewer_username,

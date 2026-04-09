@@ -151,11 +151,26 @@ interface ProductApi {
         @Query("limit") limit: Int
     ): SearchProductResponse
 
+    @POST("api/marketplace/reviews/{id}/reply")
+    suspend fun addReviewReply(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: ReplyReviewRequest
+    ): BasicResponse2
 
+    @POST("api/marketplace/reviews/{id}/react")
+    suspend fun reactToReview(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: ReviewReactionTypeRequest
+    ): BasicResponse2
 
-
-
-
+    @POST("api/marketplace/reviews/reply/{id}/react")
+    suspend fun reactToReviewReply(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: ReviewReactionTypeRequest
+    ): BasicResponse2
 
 
 
@@ -184,26 +199,21 @@ interface ProductApi {
 //    ): SearchProductResponse
 
 
-    @POST("api/products/{id}/react")
-    suspend fun reactToReview(
-        @Header("Authorization") token: String,
-        @Path("id") id: Int,
-        @Body request: ReviewReactionTypeRequest
-    ): BasicResponse2
+//    @POST("api/products/{id}/react")
+//    suspend fun reactToReview(
+//        @Header("Authorization") token: String,
+//        @Path("id") id: Int,
+//        @Body request: ReviewReactionTypeRequest
+//    ): BasicResponse2
 
-    @POST("api/products/{id}/reply/react")
-    suspend fun reactToReviewReply(
-        @Header("Authorization") token: String,
-        @Path("id") id: Int,
-        @Body request: ReviewReactionTypeRequest
-    ): BasicResponse2
+//    @POST("api/products/{id}/reply/react")
+//    suspend fun reactToReviewReply(
+//        @Header("Authorization") token: String,
+//        @Path("id") id: Int,
+//        @Body request: ReviewReactionTypeRequest
+//    ): BasicResponse2
 
-    @POST("api/marketplace/reviews/{id}/reply")
-    suspend fun addReviewReply(
-        @Header("Authorization") token: String,
-        @Path("id") id: Int,
-        @Body request: ReplyReviewRequest
-    ): BasicResponse2
+
 
 //    @POST("api/products/{id}/review")
 //    suspend fun addReview(

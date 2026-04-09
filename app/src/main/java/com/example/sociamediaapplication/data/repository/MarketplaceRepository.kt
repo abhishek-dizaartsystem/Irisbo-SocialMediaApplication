@@ -98,9 +98,9 @@ class MarketplaceRepository(
         return api.reactToReview(token, reviewId, ReviewReactionTypeRequest(reactionType))
     }
 
-    suspend fun reactToReviewReply(reviewId: Int, reactionType: String): BasicResponse2{
+    suspend fun reactToReviewReply(replyId: Int, reactionType: String): BasicResponse2{
         val token = "Bearer ${tokenManager.getToken()}"
-        return api.reactToReviewReply(token, reviewId, ReviewReactionTypeRequest(reactionType))
+        return api.reactToReviewReply(token, replyId, ReviewReactionTypeRequest(reactionType))
     }
 
     suspend fun addReview(
