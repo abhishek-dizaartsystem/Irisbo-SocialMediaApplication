@@ -1,14 +1,19 @@
 package com.example.sociamediaapplication.data.remote
 
+import androidx.room.Delete
+import androidx.room.DeleteColumn
 import com.example.sociamediaapplication.model.request.CreateJobRequest
 import com.example.sociamediaapplication.model.request.JobApplyRequest
+import com.example.sociamediaapplication.model.response.ApplicantsResponse
 import com.example.sociamediaapplication.model.response.ApplicationsResponse
+import com.example.sociamediaapplication.model.response.BasicResponse2
 import com.example.sociamediaapplication.model.response.JobDetailsResponse
 import com.example.sociamediaapplication.model.response.JobMetadataResponse
 import com.example.sociamediaapplication.model.response.JobsResponse
 import com.example.sociamediaapplication.model.response.PublicJobsResponse
 import com.example.sociamediaapplication.model.response.SavedJobsResponse
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -57,5 +62,23 @@ interface JobApi {
         @Path("id") id: Int,
         @Body request: JobApplyRequest
     )
+
+    @POST("api/jobs/{jobId}/save")
+    suspend fun saveJob(
+        @Header("Authorization") token: String,
+        @Path("jobId") id: Int
+    ): BasicResponse2
+
+    @DELETE("api/jobs/{jobId}/save")
+    suspend fun unsaveJob(
+        @Header("Authorization") token: String,
+        @Path("jobId") id: Int
+    ): BasicResponse2
+
+    @GET("api/jobs/{jobId}/applicants")
+    suspend fun getApplicants(
+        @Header("Authorization") token: String,
+        @Path("jobId") id: Int
+    ): ApplicantsResponse
 
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.JobRepository
+import com.example.sociamediaapplication.model.response.ApplicantsResponse
 import com.example.sociamediaapplication.model.response.ApplicationsResponse
 import com.example.sociamediaapplication.model.response.JobDetailsResponse
 import com.example.sociamediaapplication.model.response.JobMetadataResponse
@@ -35,6 +36,9 @@ class JobViewModel(
 
     private val _jobDetails = MutableStateFlow<JobDetailsResponse?>(null)
     val jobDetails: StateFlow<JobDetailsResponse?> = _jobDetails
+
+    private val _jobApplicants = MutableStateFlow<ApplicantsResponse?>(null)
+    val jobApplicants: StateFlow<ApplicantsResponse?> = _jobApplicants
 
     fun loadPublicJobs(){
         viewModelScope.launch {
@@ -172,6 +176,35 @@ class JobViewModel(
                     linkedin_url
                 )
             }catch (e: Exception){
+                Log.e("JobViewModel", e.message, e)
+            }
+        }
+    }
+
+    fun saveJobToggle(jobId: Int, isSaved: Boolean){
+        viewModelScope.launch {
+            try {
+                if (isSaved) {
+                    repository.unsaveJob(jobId)
+                } else {
+                    repository.saveJob(jobId)
+                }
+
+                // Refresh saved jobs list after toggle
+
+                loadPublicJobs()
+
+            } catch (e: Exception){
+                Log.e("JobViewModel", e.message, e)
+            }
+        }
+    }
+
+    fun loadJobApplicants(jobId: Int){
+        viewModelScope.launch {
+            try {
+                _jobApplicants.value = repository.getApplicants(jobId)
+            } catch (e: Exception){
                 Log.e("JobViewModel", e.message, e)
             }
         }

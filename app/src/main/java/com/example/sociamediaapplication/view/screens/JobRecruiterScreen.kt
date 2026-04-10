@@ -160,7 +160,10 @@ fun JobRecruiterScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            LazyColumn() {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 items(myJobs?.data ?: emptyList()){job->
                     JobItem(
                         title = job.title,

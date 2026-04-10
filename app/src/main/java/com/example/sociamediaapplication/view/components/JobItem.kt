@@ -57,6 +57,7 @@ fun JobItem(
     isApplied: Boolean = false,
     onJobClick: () -> Unit = {},
     onApplyClick: () -> Unit = {},
+    onSaveToggle: () -> Unit = {},
 ){
     Card(
         modifier = Modifier
@@ -105,7 +106,7 @@ fun JobItem(
                 }
 
                 IconButton(
-                    onClick = {},
+                    onClick = onSaveToggle,
                     modifier = Modifier
                         .padding(2.dp)
                         .size(30.dp)

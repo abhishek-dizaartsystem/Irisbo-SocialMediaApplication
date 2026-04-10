@@ -295,7 +295,14 @@ fun JobsScreen(
                             isSaved = if(job.is_saved == 1) true else false,
                             isApplied = if(job.has_applied == 1) true else false,
                             onJobClick = { onJobClick(job.id) },
-                            onApplyClick = { onApplyClick(job.id) }
+                            onApplyClick = { onApplyClick(job.id) },
+                            onSaveToggle = {
+                                viewModel.saveJobToggle(
+                                    job.id,
+                                    job.is_saved == 1
+                                )
+
+                            }
                         )
                     }
                 }
@@ -311,8 +318,7 @@ fun JobsScreen(
                             officeType = job.workplace_type,
                             isSaved = true,
                             onJobClick = { onJobClick(job.id) },
-                            onApplyClick = { onApplyClick(job.id) }
-                        )
+                        ) { onApplyClick(job.id) }
                     }
                 }
                 else{

@@ -4,7 +4,9 @@ import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.model.request.CreateJobRequest
 import com.example.sociamediaapplication.model.request.JobApplyRequest
+import com.example.sociamediaapplication.model.response.ApplicantsResponse
 import com.example.sociamediaapplication.model.response.ApplicationsResponse
+import com.example.sociamediaapplication.model.response.BasicResponse2
 import com.example.sociamediaapplication.model.response.JobDetailsResponse
 import com.example.sociamediaapplication.model.response.JobMetadataResponse
 import com.example.sociamediaapplication.model.response.JobsResponse
@@ -132,4 +134,21 @@ class JobRepository(
         )
     }
 
+    suspend fun saveJob(id: Int): BasicResponse2{
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.saveJob(token, id)
+    }
+
+    suspend fun unsaveJob(id: Int): BasicResponse2{
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.unsaveJob(token, id)
+    }
+
+    suspend fun getApplicants(id: Int): ApplicantsResponse{
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.getApplicants(token, id)
+    }
 }
