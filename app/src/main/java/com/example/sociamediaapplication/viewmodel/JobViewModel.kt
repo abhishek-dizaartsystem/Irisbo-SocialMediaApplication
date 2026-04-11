@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.JobRepository
+import com.example.sociamediaapplication.model.response.ApplicantDetailsResponse
 import com.example.sociamediaapplication.model.response.ApplicantsResponse
+import com.example.sociamediaapplication.model.response.ApplicationMetadataResponse
 import com.example.sociamediaapplication.model.response.ApplicationsResponse
 import com.example.sociamediaapplication.model.response.JobDetailsResponse
 import com.example.sociamediaapplication.model.response.JobMetadataResponse
@@ -34,11 +36,17 @@ class JobViewModel(
     private val _jobMetadata = MutableStateFlow<JobMetadataResponse?>(null)
     val jobMetadata: StateFlow<JobMetadataResponse?> = _jobMetadata
 
+    private val _applicationMetadata = MutableStateFlow<ApplicationMetadataResponse?>(null)
+    val applicationMetadata: StateFlow<ApplicationMetadataResponse?> = _applicationMetadata
+
     private val _jobDetails = MutableStateFlow<JobDetailsResponse?>(null)
     val jobDetails: StateFlow<JobDetailsResponse?> = _jobDetails
 
     private val _jobApplicants = MutableStateFlow<ApplicantsResponse?>(null)
     val jobApplicants: StateFlow<ApplicantsResponse?> = _jobApplicants
+
+    private val _applicant = MutableStateFlow<ApplicantDetailsResponse?>(null)
+    val applicant: StateFlow<ApplicantDetailsResponse?> = _applicant
 
     fun loadPublicJobs(){
         viewModelScope.launch {
@@ -203,7 +211,57 @@ class JobViewModel(
     fun loadJobApplicants(jobId: Int){
         viewModelScope.launch {
             try {
+                Log.d("JobViewModel", "jobId = $jobId")
                 _jobApplicants.value = repository.getApplicants(jobId)
+            } catch (e: Exception){
+                Log.e("JobViewModel", e.message, e)
+            }
+        }
+    }
+
+    fun loadApplicationMetadata(){
+        viewModelScope.launch {
+            try {
+                _applicationMetadata.value = repository.getApplicationMetadata()
+            }catch (e: Exception){
+                Log.e("JobViewModel", e.message, e)
+            }
+        }
+    }
+
+    fun loadApplicantDetails(
+        jobId: Int,
+        applicantId: Int
+    ){
+        viewModelScope.launch {
+            try {
+                _applicant.value = repository.getApplicantDetails(jobId, applicantId)
+            } catch (e: Exception){
+                Log.e("JobViewModel", e.message, e)
+            }
+        }
+    }
+
+    fun updateApplicationStatus(
+        jobId: Int,
+        applicationId: Int,
+        applicantId: Int,
+        status: String
+    ){
+        viewModelScope.launch {
+            try {
+                repository.updateApplicantStatus(jobId, applicationId, status)
+                loadApplicantDetails(jobId, applicantId)
+            } catch (e: Exception){
+                Log.e("JobViewModel", e.message, e)
+            }
+        }
+    }
+
+    fun deleteJob(jobId: Int){
+        viewModelScope.launch {
+            try {
+                repository.deleteJob(jobId)
             } catch (e: Exception){
                 Log.e("JobViewModel", e.message, e)
             }

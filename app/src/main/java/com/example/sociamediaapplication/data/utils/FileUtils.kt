@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.data.utils
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import com.example.sociamediaapplication.data.remote.RetrofitClient
@@ -86,6 +87,13 @@ fun correctUrl2(url: String?): String{
 
             return "${RetrofitClient.BASE_URL}uploads/${correct_url?.last()}"
         }
+    }
+}
+
+fun openUrl(context: Context, url: String?) {
+    if (!url.isNullOrEmpty()) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(intent)
     }
 }
 

@@ -39,7 +39,6 @@ import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
-import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.viewmodel.JobViewModel
@@ -60,7 +59,8 @@ data class Job(
 fun JobRecruiterScreen(
     navController: NavHostController = rememberNavController(),
     viewModel: JobViewModel = viewModel(),
-    onCreateClick: ()-> Unit = {}
+    onCreateClick: () -> Unit = {},
+    onJobClick: (Int) -> Unit = {}
 ) {
 
     val myJobs by viewModel.myJobs.collectAsState()
@@ -170,7 +170,9 @@ fun JobRecruiterScreen(
                         postedAt = formatToDate(job.created_at),
                         status = if(job.status == "open") "Active" else "Closed",
                         views = job.views_count,
-                        applicants = job.applications_count
+                        applicants = job.applications_count,
+                        onJobClicked = { onJobClick(job.id) },
+//                        onDeleteJob = { viewModel.deleteJob(job.id) }
                     )
                 }
             }
@@ -257,9 +259,17 @@ fun StatCard(value: String, label: String) {
 
 // -------------------- JOB ITEM --------------------
 @Composable
-fun JobItem(title: String, postedAt: String, status: String, views: Int, applicants: Int) {
+fun JobItem(
+    title: String,
+    postedAt: String,
+    status: String,
+    views: Int,
+    applicants: Int,
+    onJobClicked: () -> Unit = {}
+) {
 
     Card(
+        onClick = onJobClicked,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(2.dp),

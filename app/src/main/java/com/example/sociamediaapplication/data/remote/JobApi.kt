@@ -4,7 +4,10 @@ import androidx.room.Delete
 import androidx.room.DeleteColumn
 import com.example.sociamediaapplication.model.request.CreateJobRequest
 import com.example.sociamediaapplication.model.request.JobApplyRequest
+import com.example.sociamediaapplication.model.request.UpdateApplicationStatusRequest
+import com.example.sociamediaapplication.model.response.ApplicantDetailsResponse
 import com.example.sociamediaapplication.model.response.ApplicantsResponse
+import com.example.sociamediaapplication.model.response.ApplicationMetadataResponse
 import com.example.sociamediaapplication.model.response.ApplicationsResponse
 import com.example.sociamediaapplication.model.response.BasicResponse2
 import com.example.sociamediaapplication.model.response.JobDetailsResponse
@@ -16,6 +19,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -80,5 +84,31 @@ interface JobApi {
         @Header("Authorization") token: String,
         @Path("jobId") id: Int
     ): ApplicantsResponse
+
+    @GET("api/jobs/applications/meta")
+    suspend fun getApplicationMetadata(
+        @Header("Authorization") token: String
+    ): ApplicationMetadataResponse
+
+    @GET("api/jobs/{jobId}/applications/{applicantId}")
+    suspend fun getApplicantDetails(
+        @Header("Authorization") token: String,
+        @Path("jobId") jobId: Int,
+        @Path("applicantId") applicantId: Int
+    ): ApplicantDetailsResponse
+
+    @PATCH("api/jobs/{jobId}/applications/{applicationId}/status")
+    suspend fun updateApplicationStatus(
+        @Header("Authorization") token: String,
+        @Path("jobId") jobId: Int,
+        @Path("applicationId")applicationId: Int,
+        @Body request: UpdateApplicationStatusRequest
+    )
+
+    @DELETE("api/jobs/{jobId}")
+    suspend fun deleteJob(
+        @Header("Authorization") token: String,
+        @Path("jobId") jobId: Int
+    )
 
 }

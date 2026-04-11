@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -13,6 +14,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.repository.JobRepository
+import com.example.sociamediaapplication.view.screens.ApplicantScreen
+import com.example.sociamediaapplication.view.screens.ApplicantsScreen
 import com.example.sociamediaapplication.view.screens.CreateJobScreen
 import com.example.sociamediaapplication.view.screens.JobApplyScreen
 import com.example.sociamediaapplication.view.screens.JobRecruiterScreen
@@ -98,6 +101,12 @@ fun JobsNavGraph(bNavController: NavHostController) {
                 viewModel,
                 onCreateClick = {
                     navController.navigate(JobsRoutes.CreateJob.route)
+                },
+                onJobClick = {id->
+                    Log.d("JOBNAVGRAPH", "jobId = $id")
+                    navController.navigate(
+                        JobsRoutes.Applicants.createRoute(id)
+                    )
                 }
             )
         }
@@ -126,6 +135,59 @@ fun JobsNavGraph(bNavController: NavHostController) {
                 navController = navController,
                 viewModel = viewModel,
                 id = id
+            )
+
+        }
+
+        composable(
+            route = JobsRoutes.Applicants.route,
+            arguments = listOf(
+                navArgument("jobId"){ type = NavType.IntType}
+            )
+        ) { backStackEntry->
+
+            val jobId = backStackEntry.arguments?.getInt("jobId")
+
+            LaunchedEffect(Unit) {
+                viewModel.loadJobApplicants(jobId?:0)
+            }
+
+            ApplicantsScreen(
+                navController = navController,
+                viewModel = viewModel,
+                jobId = jobId,
+                onApplicantClick = {applicantId ->
+
+                    Log.d("JobNAVGRAPH", "applicantId = $applicantId")
+                    navController.navigate(
+                        JobsRoutes.Applicant.createRoute(applicantId, jobId?:0)
+                    )
+                }
+            )
+        }
+
+        composable(
+            route = JobsRoutes.Applicant.route,
+            arguments = listOf(
+                navArgument("applicantId"){type = NavType.IntType},
+                navArgument("jobId"){type = NavType.IntType}
+            )
+        ) {backStackEntry->
+
+            val applicantId = backStackEntry.arguments?.getInt("applicantId")
+            val jobId = backStackEntry.arguments?.getInt("jobId")
+
+
+            Log.d("JobNAVGRAPH", "applicantId = $applicantId\njobId = $jobId")
+
+            LaunchedEffect(Unit) {
+                viewModel.loadApplicantDetails(jobId?:0, applicantId?:0)
+                viewModel.loadApplicationMetadata()
+            }
+
+            ApplicantScreen(
+                navController,
+                viewModel
             )
 
         }

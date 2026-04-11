@@ -11,4 +11,12 @@ sealed class JobsRoutes(val route: String){
     object ApplyForJob: JobsRoutes("apply/{id}"){
         fun createRoute(id: Int) = "apply/$id"
     }
+
+    object Applicants: JobsRoutes("job/applicants/{jobId}"){
+        fun createRoute(jobId: Int) = "job/applicants/$jobId"
+    }
+
+    object Applicant: JobsRoutes("applicant/{jobId}/{applicantId}"){
+        fun createRoute(applicantId: Int, jobId: Int) = "applicant/$jobId/$applicantId"
+    }
 }
