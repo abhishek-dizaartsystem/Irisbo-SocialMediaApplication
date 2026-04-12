@@ -39,6 +39,7 @@ import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
+import com.example.sociamediaapplication.ui.theme.Red
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.viewmodel.JobViewModel
@@ -172,7 +173,7 @@ fun JobRecruiterScreen(
                         views = job.views_count,
                         applicants = job.applications_count,
                         onJobClicked = { onJobClick(job.id) },
-//                        onDeleteJob = { viewModel.deleteJob(job.id) }
+                        onDeleteJob = { viewModel.deleteJob(job.id) }
                     )
                 }
             }
@@ -265,7 +266,8 @@ fun JobItem(
     status: String,
     views: Int,
     applicants: Int,
-    onJobClicked: () -> Unit = {}
+    onJobClicked: () -> Unit = {},
+    onDeleteJob: () -> Unit
 ) {
 
     Card(
@@ -316,28 +318,50 @@ fun JobItem(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                painter = painterResource(R.drawable.eye_outlined_svgrepo_com),
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = GreyTxt
+                            )
+                            Text("$views views", color = Color.Gray, modifier = Modifier.padding(start = 4.dp))
+                        }
 
-                Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(R.drawable.eye_outlined_svgrepo_com),
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = GreyTxt
-                        )
-                        Text("$views views", color = Color.Gray, modifier = Modifier.padding(start = 4.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                painter = painterResource(R.drawable.team_3),
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = GreyTxt
+                            )
+                            Text("$applicants applicants", color = Color.Gray, modifier = Modifier.padding(start = 4.dp))
+                        }
                     }
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(R.drawable.team_3),
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = GreyTxt
-                        )
-                        Text("$applicants applicants", color = Color.Gray, modifier = Modifier.padding(start = 4.dp))
+                    Row() {
+                        IconButton(
+                            onClick = onDeleteJob,
+                            modifier = Modifier.size(20.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.delete_svgrepo_com),
+                                contentDescription = null,
+                                tint = Red,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
                     }
+
                 }
+
 
 
             }
