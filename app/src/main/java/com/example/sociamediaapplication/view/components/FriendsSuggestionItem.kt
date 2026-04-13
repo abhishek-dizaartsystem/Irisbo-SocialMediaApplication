@@ -1,6 +1,5 @@
 package com.example.sociamediaapplication.view.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +28,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.White
@@ -38,7 +39,9 @@ import com.example.sociamediaapplication.ui.theme.White
 fun FriendsSuggestionItem(
     painter: Painter = painterResource(R.drawable.rectangle_36__2_),
     name: String = "Aakash",
-    mutualsCount: String = "4 mutuals",
+    mutualsCount: Int = 4,
+    profileImage: String? = null,
+    sendFriendRequest: () -> Unit = {}
 ){
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -60,8 +63,8 @@ fun FriendsSuggestionItem(
                 Box(
                     contentAlignment = Alignment.BottomEnd
                 ){
-                    Image(
-                        painter = painter,
+                    AsyncImage(
+                        model = if(profileImage == null) R.drawable.profile_image_placeholder else correctUrl(profileImage),
                         contentDescription = "",
                         modifier = Modifier
                             .size(60.dp)
@@ -83,7 +86,7 @@ fun FriendsSuggestionItem(
                         )
                     }
                     Text(
-                        text = mutualsCount,
+                        text = "$mutualsCount mutuals",
                         fontSize = 14.sp,
                         color = GreyTxt
                     )
@@ -91,7 +94,7 @@ fun FriendsSuggestionItem(
             }
             Row() {
                 IconButton(
-                    onClick = {},
+                    onClick = sendFriendRequest,
                     modifier = Modifier
                         .width(80.dp)
                         .padding(end = 8.dp),

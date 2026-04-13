@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
@@ -44,17 +47,21 @@ import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.view.components.FriendRequestItem
-import com.example.sociamediaapplication.view.components.FriendsItem
 import com.example.sociamediaapplication.view.components.FriendsSuggestionItem
+import com.example.sociamediaapplication.viewmodel.FriendViewModel
 
 @Composable
 fun FriendsScreen(
-    navController: NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
+    viewModel: FriendViewModel = viewModel()
 ){
+    val suggestedUsers by viewModel.suggestedUsers.collectAsState()
 
     var searchTxt by remember { mutableStateOf("") }
 
     var optionSelected by remember { mutableStateOf("Requests") }
+
+    var optionSelected2 by remember { mutableStateOf("sent") }
 
     Scaffold(
         topBar = {
@@ -256,14 +263,49 @@ fun FriendsScreen(
                     }
 
                 }
-                items(10){
-                    if(optionSelected=="All Friends"){
-                        FriendsItem()
-                    }else if(optionSelected=="Requests"){
-                        FriendRequestItem()
-                    }else{
-                        FriendsSuggestionItem()
+                if(optionSelected=="All Friends"){
+//                    FriendsItem()
+                }else if(optionSelected=="Requests"){
+                    item {
+                        Row() {
+                            Button(
+                                onClick = {
+                                    optionSelected2 = "sent"
+                                }
+                            ) {
+                                Text("Sent")
+                            }
+                            Button(
+                                onClick = {
+                                    optionSelected2 = "received"
+                                }
+                            ) {
+                                Text("Received")
+                            }
+                        }
                     }
+                    if(optionSelected2 == "sent"){
+                        items(4){
+                            FriendRequestItem()
+                        }
+                    }else{
+                        items(3){
+
+                        }
+                    }
+
+                }else{
+                    items(suggestedUsers?.data ?: emptyList()){user->
+                        FriendsSuggestionItem(
+                            name = user.username,
+                            mutualsCount = user.mutual_friends_count,
+                            profileImage = user.profile_image,
+                            sendFriendRequest = {
+                                viewModel.sendFriendRequest(user.id)
+                            }
+                        )
+                    }
+
                 }
             }
         }
