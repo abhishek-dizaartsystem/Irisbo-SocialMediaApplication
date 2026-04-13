@@ -262,8 +262,21 @@ class JobViewModel(
         viewModelScope.launch {
             try {
                 repository.deleteJob(jobId)
+                Log.d("JobViewModel", "Job Deleted successfully")
+                loadMyJobs()
             } catch (e: Exception){
                 Log.e("JobViewModel", e.message, e)
+            }
+        }
+    }
+
+    fun withdrawApplication(jobId: Int){
+        viewModelScope.launch {
+            try {
+                Log.d("JobViewModel", jobId.toString())
+                repository.withdrawApplication(jobId)
+            }catch (e: Exception){
+                Log.e("JobViewModel", e.message.toString())
             }
         }
     }

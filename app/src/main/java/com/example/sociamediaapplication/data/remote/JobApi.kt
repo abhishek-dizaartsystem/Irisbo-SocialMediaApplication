@@ -111,4 +111,10 @@ interface JobApi {
         @Path("jobId") jobId: Int
     )
 
+    @DELETE("api/jobs/{jobId}/apply")
+    suspend fun withdrawApplication(
+        @Header("Authorization") token: String,
+        @Path("jobId") jobId: Int
+    )
+
 }

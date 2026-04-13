@@ -119,12 +119,6 @@ fun JobsScreen(
                         )
                     }
 
-
-
-
-
-
-
                 }
 
                 Row(
@@ -326,7 +320,11 @@ fun JobsScreen(
                         ApplicationItem(
                             position = application.title,
                             companyName = application.display_company_name,
-                            appliedOn = formatToDate(application.applied_at)
+                            appliedOn = formatToDate(application.applied_at),
+                            onWithdraw = {
+                                viewModel.withdrawApplication(application.job_id)
+                            },
+                            status = application.status
                         )
                     }
                 }

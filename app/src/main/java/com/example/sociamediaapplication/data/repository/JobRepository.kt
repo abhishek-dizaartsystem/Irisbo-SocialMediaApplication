@@ -188,4 +188,12 @@ class JobRepository(
 
         api.deleteJob(token, jobId)
     }
+
+    suspend fun withdrawApplication(
+        jobId: Int
+    ){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        api.withdrawApplication(token, jobId)
+    }
 }
