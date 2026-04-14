@@ -18,6 +18,14 @@ class FriendViewModel(
 
     private val _suggestedUsers = MutableStateFlow<SuggestedUsersResponse?>(null)
     val suggestedUsers: StateFlow<SuggestedUsersResponse?> = _suggestedUsers
+    private val _receivedRequests = MutableStateFlow<ReceivedRequestResponse?>(null)
+    val receivedRequests: StateFlow<ReceivedRequestResponse?> = _receivedRequests
+    private val _sentRequests = MutableStateFlow<ReceivedRequestResponse?>(null)
+    val sentRequests: StateFlow<ReceivedRequestResponse?> = _receivedRequests
+    private val _friendshipStatus = MutableStateFlow<FriendStatusResponse?>(null)
+    val friendshipStatus: StateFlow<FriendStatusResponse?> = _friendshipStatus
+    private val _myFriends = MutableStateFlow<MyFriendsResponse?>(null)
+    val myFriends: StateFlow<MyFriendsResponse?> = _myFriends
 
     fun loadSuggestedUsers(){
         viewModelScope.launch {
@@ -40,8 +48,6 @@ class FriendViewModel(
         }
     }
 
-    private val _receivedRequests = MutableStateFlow<ReceivedRequestResponse?>(null)
-    val receivedRequests: StateFlow<ReceivedRequestResponse?> = _receivedRequests
 
     fun getReceivedRequests(){
         viewModelScope.launch {
@@ -53,8 +59,6 @@ class FriendViewModel(
         }
     }
 
-    private val _sentRequests = MutableStateFlow<ReceivedRequestResponse?>(null)
-    val sentRequests: StateFlow<ReceivedRequestResponse?> = _receivedRequests
 
     fun getSentRequests(){
         viewModelScope.launch {
@@ -66,8 +70,6 @@ class FriendViewModel(
         }
     }
 
-    private val _friendshipStatus = MutableStateFlow<FriendStatusResponse?>(null)
-    val friendshipStatus: StateFlow<FriendStatusResponse?> = _friendshipStatus
 
     fun getFriendshipStatus(userId: Int){
         viewModelScope.launch {
@@ -79,13 +81,55 @@ class FriendViewModel(
         }
     }
 
-    private val _myFriends = MutableStateFlow<MyFriendsResponse?>(null)
-    val myFriends: StateFlow<MyFriendsResponse?> = _myFriends
 
     fun getMyFriends(){
         viewModelScope.launch {
             try {
                 _myFriends.value = repository.getMyFriends()
+            }catch(e: Exception){
+                Log.e("FriendVM_DEBUG", e.message.toString())
+            }
+        }
+    }
+
+    fun acceptRequest(userId: Int){
+
+        viewModelScope.launch {
+            try {
+                repository.acceptRequest(userId)
+            }catch(e: Exception){
+                Log.e("FriendVM_DEBUG", e.message.toString())
+            }
+        }
+    }
+
+    fun rejectRequest(userId: Int){
+
+        viewModelScope.launch {
+            try {
+                repository.rejectRequest(userId)
+            }catch(e: Exception){
+                Log.e("FriendVM_DEBUG", e.message.toString())
+            }
+        }
+    }
+
+    fun unfriendUser(userId: Int){
+
+        viewModelScope.launch {
+            try {
+                repository.unfriendUser(userId)
+            }catch(e: Exception){
+                Log.e("FriendVM_DEBUG", e.message.toString())
+            }
+        }
+    }
+
+    fun cancelRequest(userId: Int){
+
+        viewModelScope.launch {
+            try {
+                repository.cancelRequest(userId)
             }catch(e: Exception){
                 Log.e("FriendVM_DEBUG", e.message.toString())
             }

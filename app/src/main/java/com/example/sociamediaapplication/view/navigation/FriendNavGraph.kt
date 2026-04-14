@@ -35,6 +35,9 @@ fun FriendNavGraph(bNavController: NavHostController) {
 
             LaunchedEffect(Unit) {
                 friendViewModel.loadSuggestedUsers()
+                friendViewModel.getMyFriends()
+                friendViewModel.getReceivedRequests()
+                friendViewModel.getSentRequests()
             }
 
             FriendsScreen(

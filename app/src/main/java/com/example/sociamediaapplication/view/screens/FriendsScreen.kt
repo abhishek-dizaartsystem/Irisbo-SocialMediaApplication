@@ -47,6 +47,7 @@ import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.view.components.FriendRequestItem
+import com.example.sociamediaapplication.view.components.FriendsItem
 import com.example.sociamediaapplication.view.components.FriendsSuggestionItem
 import com.example.sociamediaapplication.viewmodel.FriendViewModel
 
@@ -56,6 +57,9 @@ fun FriendsScreen(
     viewModel: FriendViewModel = viewModel()
 ){
     val suggestedUsers by viewModel.suggestedUsers.collectAsState()
+    val receivedRequests by viewModel.receivedRequests.collectAsState()
+    val sentRequests by viewModel.sentRequests.collectAsState()
+    val myFriends by viewModel.myFriends.collectAsState()
 
     var searchTxt by remember { mutableStateOf("") }
 
@@ -265,6 +269,16 @@ fun FriendsScreen(
                 }
                 if(optionSelected=="All Friends"){
 //                    FriendsItem()
+                    items(myFriends?.data ?: emptyList()){item->
+                        FriendsItem(
+                            name = item.username,
+//                            mutualsCount = item.mutuals_count        //Not Present,
+                            profileImage = item.profile_image,
+                            onUnfriend = {
+                                viewModel.unfriendUser(item.id)
+                            }
+                        )
+                    }
                 }else if(optionSelected=="Requests"){
                     item {
                         Row() {
@@ -285,12 +299,30 @@ fun FriendsScreen(
                         }
                     }
                     if(optionSelected2 == "sent"){
-                        items(4){
-                            FriendRequestItem()
+                        items(sentRequests?.data ?: emptyList()){item->
+                            FriendRequestItem(
+                                name = item.username,
+//                                    mutualsCount = item.mutuals_count        //Not Present,
+                                onCancelRequest = {
+                                    viewModel.cancelRequest(item.id)
+                                },
+                                isSentType = true,
+                                profileImage = item.profile_image
+                            )
                         }
                     }else{
-                        items(3){
-
+                        items(receivedRequests?.data ?: emptyList()){item->
+                            FriendRequestItem(
+                                name = item.username,
+//                                mutualsCount = item.mutuals_count        //Not Present,
+                                profileImage = item.profile_image,
+                                onAccept = {
+                                    viewModel.acceptRequest(item.id)
+                                },
+                                onReject = {
+                                    viewModel.rejectRequest(item.id)
+                                }
+                            )
                         }
                     }
 
@@ -302,7 +334,7 @@ fun FriendsScreen(
                             profileImage = user.profile_image,
                             sendFriendRequest = {
                                 viewModel.sendFriendRequest(user.id)
-                            }
+                            },
                         )
                     }
 

@@ -1,6 +1,5 @@
 package com.example.sociamediaapplication.view.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -29,12 +30,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
+import com.example.sociamediaapplication.ui.theme.LRed
+import com.example.sociamediaapplication.ui.theme.Red
 import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
@@ -42,6 +47,11 @@ fun FriendRequestItem(
     painter: Painter = painterResource(R.drawable.rectangle_36__2_),
     name: String = "Arjun",
     mutualsCount: String = "4 mutuals",
+    profileImage: String? = null,
+    onAccept: () -> Unit = {},
+    onReject: () -> Unit = {},
+    isSentType: Boolean = false,
+    onCancelRequest: () -> Unit = {}
 ){
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -63,8 +73,8 @@ fun FriendRequestItem(
                 Box(
                     contentAlignment = Alignment.BottomEnd
                 ){
-                    Image(
-                        painter = painter,
+                    AsyncImage(
+                        model = if(profileImage == null) R.drawable.profile_image_placeholder else correctUrl(profileImage),
                         contentDescription = "",
                         modifier = Modifier
                             .size(60.dp)
@@ -92,79 +102,89 @@ fun FriendRequestItem(
                     )
                 }
             }
-            Row() {
-                IconButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .size(44.dp)
-                        .padding(end = 8.dp)
-                        .aspectRatio(1f),
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = Blue
-                    ),
-                    shape = RoundedCornerShape(8.dp)
+            if(isSentType){
+                Button(
+                    onClick = onCancelRequest,
+                    colors = ButtonDefaults.buttonColors(LRed)
                 ) {
-                    Box(){
-                        Icon(
-                            painter = painterResource(R.drawable.profile_1335_svgrepo_com),
-                            contentDescription = "",
-                            tint = White,
-                            modifier = Modifier
-                                .size(14.dp)
-                        )
-                        Column(
-                            modifier = Modifier.padding(start = 12.dp, top = 2.dp)
-                        ) {
+                    Text("Cancel Request", color = Red)
+                }
+            }else{
+                Row() {
+                    IconButton(
+                        onClick = onAccept,
+                        modifier = Modifier
+                            .size(44.dp)
+                            .padding(end = 8.dp)
+                            .aspectRatio(1f),
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = Blue
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Box(){
                             Icon(
-                                painter = painterResource(R.drawable.tick_svgrepo_com),
+                                painter = painterResource(R.drawable.profile_1335_svgrepo_com),
                                 contentDescription = "",
                                 tint = White,
-                                modifier = Modifier.size(10.dp)
+                                modifier = Modifier
+                                    .size(14.dp)
                             )
+                            Column(
+                                modifier = Modifier.padding(start = 12.dp, top = 2.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.tick_svgrepo_com),
+                                    contentDescription = "",
+                                    tint = White,
+                                    modifier = Modifier.size(10.dp)
+                                )
+                            }
+
                         }
 
                     }
-
-                }
-                IconButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .size(44.dp)
-                        .padding(end = 8.dp)
-                        .border(
-                            width = 1.dp,
-                            color = Grey,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .aspectRatio(1f),
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = LGrey
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Box(){
-                        Icon(
-                            painter = painterResource(R.drawable.profile_1335_svgrepo_com),
-                            contentDescription = "",
-                            tint = Black,
-                            modifier = Modifier
-                                .size(14.dp)
-                        )
-                        Column(
-                            modifier = Modifier.padding(start = 12.dp, top = 2.dp)
-                        ) {
+                    IconButton(
+                        onClick = onReject,
+                        modifier = Modifier
+                            .size(44.dp)
+                            .padding(end = 8.dp)
+                            .border(
+                                width = 1.dp,
+                                color = Grey,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .aspectRatio(1f),
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = LGrey
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Box(){
                             Icon(
-                                painter = painterResource(R.drawable.cross_svgrepo_com),
+                                painter = painterResource(R.drawable.profile_1335_svgrepo_com),
                                 contentDescription = "",
                                 tint = Black,
-                                modifier = Modifier.size(10.dp)
+                                modifier = Modifier
+                                    .size(14.dp)
                             )
+                            Column(
+                                modifier = Modifier.padding(start = 12.dp, top = 2.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.cross_svgrepo_com),
+                                    contentDescription = "",
+                                    tint = Black,
+                                    modifier = Modifier.size(10.dp)
+                                )
+                            }
+
                         }
 
                     }
-
                 }
             }
+
 
         }
     }

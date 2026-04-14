@@ -6,8 +6,10 @@ import com.example.sociamediaapplication.model.response.FriendStatusResponse
 import com.example.sociamediaapplication.model.response.MyFriendsResponse
 import com.example.sociamediaapplication.model.response.ReceivedRequestResponse
 import com.example.sociamediaapplication.model.response.SuggestedUsersResponse
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 class FriendRepository(
@@ -49,6 +51,30 @@ class FriendRepository(
         val token = "Bearer ${tokenManager.getToken()}"
 
         return api.getMyFriends(token)
+    }
+
+    suspend fun acceptRequest(userId: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.acceptRequest(token, userId)
+    }
+
+    suspend fun rejectRequest(userId: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.rejectRequest(token, userId)
+    }
+
+    suspend fun unfriendUser(userId: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.unfriendUser(token, userId)
+    }
+
+    suspend fun cancelRequest(userId: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.cancelRequest(token, userId)
     }
 
 }

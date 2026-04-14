@@ -2,7 +2,7 @@ package com.example.sociamediaapplication.model.response
 
 data class MyFriendsResponse(
     val success: Boolean,
-    val data: MyFriends
+    val data: List<MyFriends>
 )
 
 data class MyFriends(

@@ -2,7 +2,7 @@ package com.example.sociamediaapplication.model.response
 
 data class ReceivedRequestResponse(
     val success: Boolean,
-    val data: ReceivedRequest
+    val data: List<ReceivedRequest>
 )
 
 data class ReceivedRequest(

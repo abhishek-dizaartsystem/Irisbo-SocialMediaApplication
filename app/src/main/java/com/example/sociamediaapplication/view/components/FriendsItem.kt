@@ -4,12 +4,17 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -27,7 +32,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl
+import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.Green
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.White
@@ -37,7 +45,9 @@ fun FriendsItem(
     painter: Painter = painterResource(R.drawable.rectangle_36__2_),
     name: String = "Kartik",
     mutualsCount: String = "4 mutuals",
-    isOnline: Boolean = true
+    isOnline: Boolean = true,
+    profileImage: String? = null,
+    onUnfriend: ()-> Unit = {}
 ){
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -59,8 +69,8 @@ fun FriendsItem(
                 Box(
                     contentAlignment = Alignment.BottomEnd
                 ){
-                    Image(
-                        painter = painter,
+                    AsyncImage(
+                        model = if(profileImage == null) R.drawable.profile_image_placeholder else correctUrl(profileImage),
                         contentDescription = "",
                         modifier = Modifier
                             .size(60.dp)
@@ -111,17 +121,30 @@ fun FriendsItem(
                     )
                 }
             }
-            IconButton(
-                onClick = {},
-                modifier = Modifier
-                    .size(30.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.chat_dots_svgrepo_com),
-                    contentDescription = "",
-                    tint = GreyTxt
-                )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                IconButton(
+                    onClick = {},
+                    modifier = Modifier
+                        .size(30.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.chat_dots_svgrepo_com),
+                        contentDescription = "",
+                        tint = GreyTxt
+                    )
+                }
+
+                Button(
+                    onClick = onUnfriend,
+                    contentPadding = PaddingValues(0.dp),
+                    modifier = Modifier.width(70.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(Blue)
+                ) {
+                    Text("Unfriend")
+                }
             }
+
 
         }
     }
