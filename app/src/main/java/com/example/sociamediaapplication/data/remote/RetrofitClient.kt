@@ -61,4 +61,8 @@ object RetrofitClient {
         retrofit.create(FriendApi::class.java)
     }
 
+    val storyApi: StoryApi by lazy {
+        retrofit.create(StoryApi::class.java)
+    }
+
 }
