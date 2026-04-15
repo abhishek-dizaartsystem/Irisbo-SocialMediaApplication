@@ -33,7 +33,7 @@ fun AppNavGraph() {
 
     val navController = rememberNavController()
 
-    val context = LocalContext.current
+    val context = LocalContext.current.applicationContext
 
     val tokenManager = remember { TokenManager(context) }
     val repository = remember { AuthRepository(tokenManager) }

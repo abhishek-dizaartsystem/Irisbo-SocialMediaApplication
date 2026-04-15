@@ -26,7 +26,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -58,7 +57,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
-import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.data.utils.correctUrl2
 import com.example.sociamediaapplication.data.utils.getFrameFromUrl
 import com.example.sociamediaapplication.data.utils.isVideo
@@ -72,9 +70,11 @@ import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LBlue
+import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.view.components.Post
+import com.example.sociamediaapplication.viewmodel.FriendViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -92,7 +92,11 @@ fun ProfileScreen(
     onReelSave: (Reel) -> Unit = {},
     onPostLike: (PostResponse) -> Unit = {},
     onPostSave: (PostResponse) -> Unit = {},
-    myReels: List<Reel> = emptyList()
+    myReels: List<Reel> = emptyList(),
+    isUser: Boolean = true,
+    onChatClick: () -> Unit = {},
+    friendViewModel: FriendViewModel = viewModel(),
+    userId : Int? = 0
 ){
 
 
@@ -105,6 +109,7 @@ fun ProfileScreen(
 
 
     val profile by viewModel.profile.collectAsState()
+    val friendshipStatus by friendViewModel.friendshipStatus.collectAsState()
     val context = LocalContext.current
 
 
@@ -241,77 +246,132 @@ fun ProfileScreen(
                 .padding(horizontal = 8.dp)
                 .padding(top = 8.dp, bottom = 20.dp)
         ) {
-            Button(
-                onClick = {
-                    onEditStatus()
-                },
-                modifier = Modifier
-                    .fillMaxWidth(0.37f)
-                    .padding(horizontal = 4.dp),
-                shape = RoundedCornerShape(50.dp),
-                contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Blue)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.add_svgrepo_com),
-                    contentDescription = "",
-                    modifier = Modifier.size(30.dp)
-                )
-                Text(
-                    text = "Add Status",
-                    fontSize = 16.sp
-                )
+            if(isUser){
+                Button(
+                    onClick = {
+                        onEditStatus()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(0.37f)
+                        .padding(horizontal = 4.dp),
+                    shape = RoundedCornerShape(50.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Blue)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.add_svgrepo_com),
+                        contentDescription = "",
+                        modifier = Modifier.size(30.dp)
+                    )
+                    Text(
+                        text = "Add Status",
+                        fontSize = 16.sp
+                    )
+                }
+                Button(
+                    onClick = {
+                        onEditProfile()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(0.55f)
+                        .padding(end = 4.dp),
+                    shape = RoundedCornerShape(50.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = GreyBtn),
+                    border = BorderStroke(1.dp, Grey)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.edit_svgrepo_com__1_),
+                        contentDescription = "",
+                        modifier = Modifier.size(20.dp),
+                        tint = Black
+                    )
+                    Text(
+                        text = "Edit Profile",
+                        fontSize = 16.sp,
+                        color = Black,
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+                Button(
+                    onClick = {
+                        onMenu()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 4.dp),
+                    shape = RoundedCornerShape(50.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = GreyBtn),
+                    border = BorderStroke(1.dp, Grey)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.menu_navigation_grid_1528_svgrepo_com),
+                        contentDescription = "",
+                        modifier = Modifier.size(15.dp),
+                        tint = Black
+                    )
+                    Text(
+                        text = "Menu",
+                        fontSize = 16.sp,
+                        color = Black,
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+            }else{
+                Button(
+                    onClick = {
+                        if(friendshipStatus?.data?.status == "pending"){
+                            friendViewModel.cancelRequest(userId?:0)
+                        }else{
+                            friendViewModel.sendFriendRequest(userId?:0)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(horizontal = 4.dp),
+                    shape = RoundedCornerShape(50.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if(friendshipStatus?.data?.status == "pending") LLBlue else Blue
+                    ),
+                    enabled = friendshipStatus?.data?.status != "blocked"
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.add_svgrepo_com),
+                        contentDescription = "",
+                        modifier = Modifier.size(30.dp)
+                    )
+                    Text(
+                        text = if(friendshipStatus?.data?.status == "pending") "Requested" else "Follow",
+                        fontSize = 16.sp
+                    )
+                }
+                Button(
+                    onClick = {
+                        onChatClick()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(horizontal = 4.dp),
+                    shape = RoundedCornerShape(50.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = GreyBtn)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.chat_dots_svgrepo_com),
+                        contentDescription = "",
+                        modifier = Modifier.size(30.dp)
+                    )
+                    Text(
+                        text = "Message",
+                        fontSize = 16.sp
+                    )
+                }
             }
-            Button(
-                onClick = {
-                    onEditProfile()
-                },
-                modifier = Modifier
-                    .fillMaxWidth(0.55f)
-                    .padding(end = 4.dp),
-                shape = RoundedCornerShape(50.dp),
-                contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = GreyBtn),
-                border = BorderStroke(1.dp, Grey)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.edit_svgrepo_com__1_),
-                    contentDescription = "",
-                    modifier = Modifier.size(20.dp),
-                    tint = Black
-                )
-                Text(
-                    text = "Edit Profile",
-                    fontSize = 16.sp,
-                    color = Black,
-                    modifier = Modifier.padding(start = 4.dp)
-                )
-            }
-            Button(
-                onClick = {
-                    onMenu()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 4.dp),
-                shape = RoundedCornerShape(50.dp),
-                contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = GreyBtn),
-                border = BorderStroke(1.dp, Grey)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.menu_navigation_grid_1528_svgrepo_com),
-                    contentDescription = "",
-                    modifier = Modifier.size(15.dp),
-                    tint = Black
-                )
-                Text(
-                    text = "Menu",
-                    fontSize = 16.sp,
-                    color = Black,
-                    modifier = Modifier.padding(start = 4.dp)
-                )
-            }
+
         }
         //Posts or Reels
 

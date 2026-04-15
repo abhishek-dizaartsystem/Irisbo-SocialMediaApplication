@@ -9,6 +9,7 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.Path
 
 interface ProfileApi {
     @Multipart
@@ -45,4 +46,12 @@ interface ProfileApi {
         @Part cover_img: MultipartBody.Part?
     ): BasicResponse
 
+
+    //New APIs
+
+    @GET("api/users/{userId}")
+    suspend fun getPublicProfile(
+        @Header("Authorization") token: String,
+        @Path("userId") userId: Int
+    ): ProfileResponse
 }

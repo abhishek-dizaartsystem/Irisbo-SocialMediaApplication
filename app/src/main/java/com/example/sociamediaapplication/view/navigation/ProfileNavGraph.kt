@@ -13,16 +13,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.data.preferences.TokenManager
-import com.example.sociamediaapplication.data.repository.PostRepository
 import com.example.sociamediaapplication.data.repository.ReelRepository
 import com.example.sociamediaapplication.view.screens.EditProfileScreen
 import com.example.sociamediaapplication.view.screens.ProfileScreen
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
+import com.example.sociamediaapplication.viewmodel.FriendViewModel
 import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
-import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 
 @Composable
@@ -31,7 +30,9 @@ fun ProfileNavGraph(
     mainNavController: NavController,
     profileViewModel: ProfileViewModel,
     uploadViewModel: UploadViewModel,
-    postViewModel: PostViewModel
+    postViewModel: PostViewModel,
+    friendViewModel: FriendViewModel,
+    reelViewModel: ReelsViewModel
 ){
     val navController = rememberNavController()
 
@@ -40,9 +41,6 @@ fun ProfileNavGraph(
 
     val posts by postViewModel.posts.collectAsState()
 
-    val reelRepository = remember { ReelRepository(tokenManager) }
-    val reelFactory = remember { ReelsViewModelFactory(reelRepository) }
-    val reelViewModel: ReelsViewModel = viewModel(factory = reelFactory)
 
     val myReels by reelViewModel.myReels.collectAsState()
 
@@ -64,18 +62,17 @@ fun ProfileNavGraph(
             ProfileScreen(
                 viewModel = profileViewModel,
                 posts = posts,
-                myReels = myReels,
-                onReelLike = {
-                    reelViewModel.toggleLikeMyReels(it)
-                },
-                onEditStatus = {
-                    mainNavController.navigate(Routes.EditStatus.route)
-                },
                 onEditProfile = {
                     navController.navigate(ProfileRoutes.EditProfile.route)
                 },
                 onMenu = {
                     navController.navigate(ProfileRoutes.Menu.route)
+                },
+                onEditStatus = {
+                    mainNavController.navigate(Routes.EditStatus.route)
+                },
+                onReelLike = {
+                    reelViewModel.toggleLikeMyReels(it)
                 },
                 onReelSave = {
                     reelViewModel.toggleSaveMyReels(it)
@@ -85,7 +82,9 @@ fun ProfileNavGraph(
                 },
                 onPostSave = {
                     postViewModel.toggleSave(it, profile?.data?.id ?: 0)
-                }
+                },
+                myReels = myReels,
+                friendViewModel = friendViewModel
             )
         }
         composable(ProfileRoutes.EditProfile.route){
@@ -109,7 +108,9 @@ fun ProfileNavGraph(
                 authViewModel = authViewModel,
                 profileViewModel = profileViewModel,
                 uploadViewModel = uploadViewModel,
-                postViewModel = postViewModel
+                postViewModel = postViewModel,
+                friendViewModel = friendViewModel,
+                reelViewModel = reelViewModel
             )
         }
     }

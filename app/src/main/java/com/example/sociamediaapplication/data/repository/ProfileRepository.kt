@@ -112,4 +112,10 @@ class ProfileRepository(
         api.uploadCoverImage("Bearer $token", body)
     }
 
+    suspend fun getPublicProfile(userId: Int): ProfileResponse{
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.getPublicProfile(token, userId)
+    }
+
 }

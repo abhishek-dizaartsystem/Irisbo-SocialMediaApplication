@@ -38,13 +38,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.repository.FriendRepository
 import com.example.sociamediaapplication.data.repository.PostRepository
 import com.example.sociamediaapplication.data.repository.ProfileRepository
 import com.example.sociamediaapplication.data.repository.ReelRepository
@@ -56,14 +59,17 @@ import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.view.navigation.ChatsNavGraph
 import com.example.sociamediaapplication.view.navigation.MainRoutes
 import com.example.sociamediaapplication.view.navigation.MenuNavGraph
-import com.example.sociamediaapplication.view.navigation.Routes
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
+import com.example.sociamediaapplication.viewmodel.FriendViewModel
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
 import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
+import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
+import com.example.sociamediaapplication.viewmodel.factory.FriendsViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ProfileViewModelFactory
+import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.UploadViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,6 +93,8 @@ fun MainScreen(
     val repository = remember { PostRepository(tokenManager) }
 
     val reelRepository = remember { ReelRepository(tokenManager) }
+    val reelFactory = remember { ReelsViewModelFactory(reelRepository) }
+    val reelViewModel: ReelsViewModel = viewModel(factory = reelFactory)
 
     val factory = remember { UploadViewModelFactory(repository, reelRepository) }
 
@@ -99,6 +107,10 @@ fun MainScreen(
     val postRepository = remember { PostRepository(tokenManager) }
     val postFactory = remember { PostViewModelFactory(postRepository) }
     val postViewModel: PostViewModel = viewModel(factory = postFactory)
+
+    val friendRepository = remember { FriendRepository(tokenManager) }
+    val friendViewModelFactory = remember { FriendsViewModelFactory(friendRepository) }
+    val friendViewModel: FriendViewModel = viewModel(factory = friendViewModelFactory)
 
     val profile by profileViewModel.profile.collectAsState()
 
@@ -202,7 +214,7 @@ fun MainScreen(
                     ) {
                         IconButton(
                             onClick = {
-                                navController.navigate(MainRoutes.Profile.route)
+                                navController.navigate(MainRoutes.Home2.route)
                             },
                             modifier = Modifier
                                 .border(
@@ -333,10 +345,31 @@ fun MainScreen(
                 ChatsNavGraph()
             }
 
-            composable(MainRoutes.Profile.route) {
-                HomeScreen2(
-                    mainNavController,
-                    postViewModel = postViewModel
+            composable(
+                route = MainRoutes.PublicProfile.route,
+                arguments = listOf(
+                    navArgument("userId"){type = NavType.IntType}
+                )
+            ) {backStackEntry->
+
+                val userId = backStackEntry.arguments?.getInt("userId")
+
+                LaunchedEffect(Unit) {
+                    friendViewModel.getFriendshipStatus(userId?:0)
+                    postViewModel.loadPosts(userId?:0)
+                }
+
+                val posts by postViewModel.posts.collectAsState()
+                val reels by reelViewModel.reels.collectAsState()
+
+                ProfileScreen(
+                    isUser = false,
+                    viewModel = profileViewModel,
+                    onChatClick = {
+                        navController.navigate(MainRoutes.Chats.route)
+                    },
+                    friendViewModel = friendViewModel,
+                    posts = posts
                 )
             }
 
@@ -350,7 +383,9 @@ fun MainScreen(
                     authViewModel = authViewModel,
                     profileViewModel = profileViewModel,
                     uploadViewModel = uploadViewModel,
-                    postViewModel = postViewModel
+                    postViewModel = postViewModel,
+                    friendViewModel = friendViewModel,
+                    reelViewModel = reelViewModel
                 )
             }
 
@@ -359,8 +394,12 @@ fun MainScreen(
             }
 
             composable(MainRoutes.Home2.route){
-                HomeScreen2(postViewModel = postViewModel)
+                HomeScreen2(
+                    mainNavController,
+                    postViewModel = postViewModel
+                )
             }
+
         }
     }
 }

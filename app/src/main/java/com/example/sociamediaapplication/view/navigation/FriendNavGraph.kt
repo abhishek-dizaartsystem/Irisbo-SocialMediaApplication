@@ -16,16 +16,12 @@ import com.example.sociamediaapplication.viewmodel.FriendViewModel
 import com.example.sociamediaapplication.viewmodel.factory.FriendsViewModelFactory
 
 @Composable
-fun FriendNavGraph(bNavController: NavHostController) {
+fun FriendNavGraph(bNavController: NavHostController, friendViewModel: FriendViewModel) {
     val navController = rememberNavController()
 
     val context = LocalContext.current.applicationContext
 
     val tokenManager = remember { TokenManager(context) }
-
-    val friendRepository = remember { FriendRepository(tokenManager) }
-    val friendViewModelFactory = remember { FriendsViewModelFactory(friendRepository) }
-    val friendViewModel: FriendViewModel = viewModel(factory = friendViewModelFactory)
 
     NavHost(
         navController = navController,

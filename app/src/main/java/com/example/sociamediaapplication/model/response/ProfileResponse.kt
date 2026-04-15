@@ -9,7 +9,7 @@ data class ProfileModel(
     val id: Int,
     val name: String,
     val username: String,
-    val email: String,
+    val email: String?,
     val bio: String?,
     val education: String?,
     val work: String?,

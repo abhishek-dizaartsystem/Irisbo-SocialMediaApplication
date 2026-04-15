@@ -9,6 +9,7 @@ import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.repository.ProfileRepository
 import com.example.sociamediaapplication.model.request.EditProfileRequest
 import com.example.sociamediaapplication.model.response.ProfileResponse
+import com.example.sociamediaapplication.view.navigation.MainRoutes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -29,6 +30,9 @@ class ProfileViewModel(
     init {
         loadProfile()
     }
+
+//    private val _publicProfile = MutableStateFlow<ProfileResponse?>(null)
+//    val publicProfile: StateFlow<ProfileResponse?> = _publicProfile
 
     /**
      * Converts backend image path to full usable URL
@@ -150,6 +154,16 @@ class ProfileViewModel(
                 _error.value = e.message ?: "Cover upload failed"
             } finally {
                 _isLoading.value = false
+            }
+        }
+    }
+
+    fun loadPublicProfile(userId: Int){
+        viewModelScope.launch {
+            try {
+                _profile.value = repository.getPublicProfile(userId)
+            }catch (e: Exception){
+                Log.e("ProfileViewModel", e.message.toString())
             }
         }
     }
