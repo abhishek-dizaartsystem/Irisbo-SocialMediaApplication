@@ -83,8 +83,7 @@ fun ProfileNavGraph(
                 onPostSave = {
                     postViewModel.toggleSave(it, profile?.data?.id ?: 0)
                 },
-                myReels = myReels,
-                friendViewModel = friendViewModel
+                myReels = myReels
             )
         }
         composable(ProfileRoutes.EditProfile.route){

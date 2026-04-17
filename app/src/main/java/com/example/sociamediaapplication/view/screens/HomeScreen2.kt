@@ -20,13 +20,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -38,20 +36,16 @@ import com.example.sociamediaapplication.ui.theme.White
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.sociamediaapplication.data.preferences.TokenManager
-import com.example.sociamediaapplication.data.repository.PostRepository
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.viewmodel.PostViewModel
-import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
 import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.view.navigation.Routes
 
 @Composable
 fun HomeScreen2(
     mainNavController: NavController = rememberNavController(),
-    postViewModel: PostViewModel
+    postViewModel: PostViewModel,
+    onOtherProfileClick: (Int) -> Unit = {}
 ) {
 
 
@@ -175,14 +169,13 @@ fun HomeScreen2(
                     caption = post.caption ?: "",
                     mediaList = post.media,
                     postLikes = post.likes_count ?: 0,
-                    profileImageUrl = correctUrl(post.profile_image),
-                    isLiked = post.user_reaction == "like",
                     onLiked = { postViewModel.toggleGlobalLike(post) },
-                    onFollow = {},
-                    onPostProfileClick = {},
                     onSaved = { postViewModel.toggleGlobalSave(post) },
                     isSaved = post.is_saved,
-                    createdAt = post.created_at
+                    isLiked = post.user_reaction == "like",
+                    profileImageUrl = correctUrl(post.profile_image),
+                    createdAt = post.created_at,
+                    onOtherProfileClick = { onOtherProfileClick(post.user_id) }
                 )
             }
 

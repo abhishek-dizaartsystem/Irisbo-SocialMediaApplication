@@ -5,26 +5,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.sociamediaapplication.data.preferences.TokenManager
-import com.example.sociamediaapplication.data.repository.PostRepository
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.viewmodel.PostViewModel
-import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
 import com.example.sociamediaapplication.view.components.Post
 
 @Composable
-fun HomeScreen1(postViewModel: PostViewModel) {
-
-
+fun HomeScreen1(
+    postViewModel: PostViewModel,
+    onOtherProfileClick: (Int) -> Unit = {}
+) {
 
     val posts by postViewModel.globalPosts.collectAsState()
 
@@ -50,10 +44,12 @@ fun HomeScreen1(postViewModel: PostViewModel) {
                 isLiked = post.user_reaction == "like",
                 onLiked = { postViewModel.toggleGlobalLike(post) },
                 onFollow = {},
-                onPostProfileClick = {},
                 onSaved = { postViewModel.toggleGlobalSave(post) },
                 isSaved = post.is_saved,
-                createdAt = post.created_at
+                createdAt = post.created_at,
+                onOtherProfileClick = {
+                    onOtherProfileClick(post.user_id)
+                }
             )
 
             Spacer(modifier = Modifier.height(12.dp))

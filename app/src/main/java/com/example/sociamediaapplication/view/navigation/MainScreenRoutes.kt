@@ -12,7 +12,7 @@ sealed class MainRoutes(val route: String) {
     object Notifications: MainRoutes("notifications")
     object Home2: MainRoutes("home2")
     object Videos: MainRoutes("videos")
-    object PublicProfile: MainRoutes("profile/{userId}"){
+    object OtherProfile: MainRoutes("profile/{userId}"){
         fun createRoute(userId: Int) = "profile/$userId"
     }
 

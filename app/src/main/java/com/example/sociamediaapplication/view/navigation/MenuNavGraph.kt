@@ -107,10 +107,10 @@ fun MenuNavGraph(
             PagesNavGraph(bNavController = navController)
         }
         composable(MenuRoutes.Friends.route) {
-//            FriendNavGraph(
-//                navController,
-//                friendViewModel = friendViewModel
-//            )
+            FriendNavGraph(
+                navController,
+                friendViewModel = friendViewModel
+            )
         }
         composable(MenuRoutes.Events.route) {
             EventNavGraph(bNavController = navController,)

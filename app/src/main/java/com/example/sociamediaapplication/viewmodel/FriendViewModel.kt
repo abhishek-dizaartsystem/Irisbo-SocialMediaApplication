@@ -21,7 +21,7 @@ class FriendViewModel(
     private val _receivedRequests = MutableStateFlow<ReceivedRequestResponse?>(null)
     val receivedRequests: StateFlow<ReceivedRequestResponse?> = _receivedRequests
     private val _sentRequests = MutableStateFlow<ReceivedRequestResponse?>(null)
-    val sentRequests: StateFlow<ReceivedRequestResponse?> = _receivedRequests
+    val sentRequests: StateFlow<ReceivedRequestResponse?> = _sentRequests
     private val _friendshipStatus = MutableStateFlow<FriendStatusResponse?>(null)
     val friendshipStatus: StateFlow<FriendStatusResponse?> = _friendshipStatus
     private val _myFriends = MutableStateFlow<MyFriendsResponse?>(null)
@@ -53,6 +53,7 @@ class FriendViewModel(
         viewModelScope.launch {
             try {
                 _receivedRequests.value = repository.getReceivedRequests()
+                Log.d("FriendVM_DEBUG", receivedRequests.value.toString())
             }catch(e: Exception){
                 Log.e("FriendVM_DEBUG", e.message.toString())
             }
@@ -64,6 +65,7 @@ class FriendViewModel(
         viewModelScope.launch {
             try {
                 _sentRequests.value = repository.getSentRequests()
+                Log.d("FriendVM_DEBUG", sentRequests.value.toString())
             }catch(e: Exception){
                 Log.e("FriendVM_DEBUG", e.message.toString())
             }
@@ -75,6 +77,7 @@ class FriendViewModel(
         viewModelScope.launch {
             try {
                 _friendshipStatus.value = repository.getFriendshipStatus(userId)
+                Log.d("FriendVM_DEBUG", "FriendStatus = ${friendshipStatus.value}")
             }catch(e: Exception){
                 Log.e("FriendVM_DEBUG", e.message.toString())
             }

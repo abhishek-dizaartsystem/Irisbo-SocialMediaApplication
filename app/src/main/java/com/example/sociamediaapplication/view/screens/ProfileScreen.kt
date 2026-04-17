@@ -70,11 +70,9 @@ import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LBlue
-import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.view.components.Post
-import com.example.sociamediaapplication.viewmodel.FriendViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -84,7 +82,7 @@ import kotlinx.coroutines.withContext
 fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel(),
     posts: List<PostResponse> = emptyList(),
-//    reels: List<Reel> = emptyList(),
+    reels: List<Reel> = emptyList(),
     onEditProfile: () -> Unit = {},
     onMenu: () -> Unit = {},
     onEditStatus: () -> Unit = {},
@@ -93,9 +91,8 @@ fun ProfileScreen(
     onPostLike: (PostResponse) -> Unit = {},
     onPostSave: (PostResponse) -> Unit = {},
     myReels: List<Reel> = emptyList(),
-    isUser: Boolean = true,
     onChatClick: () -> Unit = {},
-    friendViewModel: FriendViewModel = viewModel(),
+//    friendViewModel: FriendViewModel = viewModel(),
     userId : Int? = 0
 ){
 
@@ -109,7 +106,7 @@ fun ProfileScreen(
 
 
     val profile by viewModel.profile.collectAsState()
-    val friendshipStatus by friendViewModel.friendshipStatus.collectAsState()
+//    val friendshipStatus by friendViewModel.friendshipStatus.collectAsState()
     val context = LocalContext.current
 
 
@@ -246,131 +243,78 @@ fun ProfileScreen(
                 .padding(horizontal = 8.dp)
                 .padding(top = 8.dp, bottom = 20.dp)
         ) {
-            if(isUser){
-                Button(
-                    onClick = {
-                        onEditStatus()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(0.37f)
-                        .padding(horizontal = 4.dp),
-                    shape = RoundedCornerShape(50.dp),
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Blue)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.add_svgrepo_com),
-                        contentDescription = "",
-                        modifier = Modifier.size(30.dp)
-                    )
-                    Text(
-                        text = "Add Status",
-                        fontSize = 16.sp
-                    )
-                }
-                Button(
-                    onClick = {
-                        onEditProfile()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(0.55f)
-                        .padding(end = 4.dp),
-                    shape = RoundedCornerShape(50.dp),
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = GreyBtn),
-                    border = BorderStroke(1.dp, Grey)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.edit_svgrepo_com__1_),
-                        contentDescription = "",
-                        modifier = Modifier.size(20.dp),
-                        tint = Black
-                    )
-                    Text(
-                        text = "Edit Profile",
-                        fontSize = 16.sp,
-                        color = Black,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
-                Button(
-                    onClick = {
-                        onMenu()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 4.dp),
-                    shape = RoundedCornerShape(50.dp),
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = GreyBtn),
-                    border = BorderStroke(1.dp, Grey)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.menu_navigation_grid_1528_svgrepo_com),
-                        contentDescription = "",
-                        modifier = Modifier.size(15.dp),
-                        tint = Black
-                    )
-                    Text(
-                        text = "Menu",
-                        fontSize = 16.sp,
-                        color = Black,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
-            }else{
-                Button(
-                    onClick = {
-                        if(friendshipStatus?.data?.status == "pending"){
-                            friendViewModel.cancelRequest(userId?:0)
-                        }else{
-                            friendViewModel.sendFriendRequest(userId?:0)
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(horizontal = 4.dp),
-                    shape = RoundedCornerShape(50.dp),
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if(friendshipStatus?.data?.status == "pending") LLBlue else Blue
-                    ),
-                    enabled = friendshipStatus?.data?.status != "blocked"
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.add_svgrepo_com),
-                        contentDescription = "",
-                        modifier = Modifier.size(30.dp)
-                    )
-                    Text(
-                        text = if(friendshipStatus?.data?.status == "pending") "Requested" else "Follow",
-                        fontSize = 16.sp
-                    )
-                }
-                Button(
-                    onClick = {
-                        onChatClick()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(horizontal = 4.dp),
-                    shape = RoundedCornerShape(50.dp),
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = GreyBtn)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.chat_dots_svgrepo_com),
-                        contentDescription = "",
-                        modifier = Modifier.size(30.dp)
-                    )
-                    Text(
-                        text = "Message",
-                        fontSize = 16.sp
-                    )
-                }
+            Button(
+                onClick = {
+                    onEditStatus()
+                },
+                modifier = Modifier
+                    .fillMaxWidth(0.37f)
+                    .padding(horizontal = 4.dp),
+                shape = RoundedCornerShape(50.dp),
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Blue)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.add_svgrepo_com),
+                    contentDescription = "",
+                    modifier = Modifier.size(30.dp)
+                )
+                Text(
+                    text = "Add Status",
+                    fontSize = 16.sp
+                )
             }
+            Button(
+                onClick = {
+                    onEditProfile()
+                },
+                modifier = Modifier
+                    .fillMaxWidth(0.55f)
+                    .padding(end = 4.dp),
+                shape = RoundedCornerShape(50.dp),
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = GreyBtn),
+                border = BorderStroke(1.dp, Grey)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.edit_svgrepo_com__1_),
+                    contentDescription = "",
+                    modifier = Modifier.size(20.dp),
+                    tint = Black
+                )
+                Text(
+                    text = "Edit Profile",
+                    fontSize = 16.sp,
+                    color = Black,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+            Button(
+                onClick = {
+                    onMenu()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 4.dp),
+                shape = RoundedCornerShape(50.dp),
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = GreyBtn),
+                border = BorderStroke(1.dp, Grey)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.menu_navigation_grid_1528_svgrepo_com),
+                    contentDescription = "",
+                    modifier = Modifier.size(15.dp),
+                    tint = Black
+                )
+                Text(
+                    text = "Menu",
+                    fontSize = 16.sp,
+                    color = Black,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+
 
         }
         //Posts or Reels
@@ -670,14 +614,12 @@ fun ProfileScreen(
                 caption = post.caption ?: "",
                 mediaList = post.media,
                 postLikes = post.likes_count ?: 0,
-                profileImageUrl = post.profile_image,
-                isLiked = post.user_reaction == "like",
                 onLiked = { onPostLike(post) },
-                onFollow = {},
-                onPostProfileClick = {},
                 onSaved = { onPostSave(post) },
                 isSaved = post.is_saved,
-                createdAt = post.created_at
+                isLiked = post.user_reaction == "like",
+                profileImageUrl = post.profile_image,
+                createdAt = post.created_at,
             )
         }
     }

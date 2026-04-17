@@ -11,5 +11,6 @@ data class MyFriends(
     val name: String,
     val username: String,
     val profile_image: String,
-    val friends_since: String
+    val friends_since: String,
+    val mutual_friends_count: Int
 )

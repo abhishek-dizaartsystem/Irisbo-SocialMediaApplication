@@ -105,11 +105,6 @@ fun FriendsScreen(
                         color = Transparent
                     )
 
-
-
-
-
-
                 }
 
                 Row(
@@ -179,6 +174,7 @@ fun FriendsScreen(
                         Button(
                             onClick = {
                                 optionSelected = "All Friends"
+                                viewModel.getMyFriends()
                             },
                             modifier = Modifier.fillMaxWidth(0.33f),
                             colors = ButtonDefaults.buttonColors(
@@ -198,6 +194,8 @@ fun FriendsScreen(
                         Button(
                             onClick = {
                                 optionSelected = "Requests"
+                                viewModel.getReceivedRequests()
+                                viewModel.getSentRequests()
                             },
                             modifier = Modifier.fillMaxWidth(0.5f),
                             colors = ButtonDefaults.buttonColors(
@@ -217,6 +215,7 @@ fun FriendsScreen(
                         Button(
                             onClick = {
                                 optionSelected = "Suggestions"
+                                viewModel.loadSuggestedUsers()
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
@@ -272,55 +271,79 @@ fun FriendsScreen(
                     items(myFriends?.data ?: emptyList()){item->
                         FriendsItem(
                             name = item.username,
-//                            mutualsCount = item.mutuals_count        //Not Present,
+                            mutualsCount = "${item.mutual_friends_count} mututals",       //Not Present,
                             profileImage = item.profile_image,
                             onUnfriend = {
                                 viewModel.unfriendUser(item.id)
+                                viewModel.getMyFriends()
                             }
                         )
                     }
                 }else if(optionSelected=="Requests"){
                     item {
-                        Row() {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             Button(
                                 onClick = {
                                     optionSelected2 = "sent"
-                                }
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    if(optionSelected2 == "sent")Grey else Transparent
+                                )
                             ) {
-                                Text("Sent")
+                                Text("Sent", color = Black)
                             }
                             Button(
                                 onClick = {
                                     optionSelected2 = "received"
-                                }
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    if(optionSelected2 == "received")Grey else Transparent
+                                )
                             ) {
-                                Text("Received")
+                                Text("Received", color = Black)
                             }
                         }
                     }
                     if(optionSelected2 == "sent"){
+                        item {
+                            Text(
+                                "Sent Friend Requests"
+                            )
+                        }
                         items(sentRequests?.data ?: emptyList()){item->
                             FriendRequestItem(
                                 name = item.username,
-//                                    mutualsCount = item.mutuals_count        //Not Present,
+                                mutualsCount = "${item.mutual_friends_count} mutuals",        //Not Present,
                                 onCancelRequest = {
                                     viewModel.cancelRequest(item.id)
+                                    viewModel.getSentRequests()
                                 },
                                 isSentType = true,
                                 profileImage = item.profile_image
                             )
                         }
                     }else{
+                        item {
+                            Text(
+                                "Recieved Friend Requests"
+                            )
+                        }
                         items(receivedRequests?.data ?: emptyList()){item->
                             FriendRequestItem(
                                 name = item.username,
-//                                mutualsCount = item.mutuals_count        //Not Present,
+                                mutualsCount = "${item.mutual_friends_count} mutuals",    //Not Present,
                                 profileImage = item.profile_image,
                                 onAccept = {
                                     viewModel.acceptRequest(item.id)
+                                    viewModel.getReceivedRequests()
                                 },
                                 onReject = {
                                     viewModel.rejectRequest(item.id)
+                                    viewModel.getReceivedRequests()
                                 }
                             )
                         }
@@ -334,6 +357,7 @@ fun FriendsScreen(
                             profileImage = user.profile_image,
                             sendFriendRequest = {
                                 viewModel.sendFriendRequest(user.id)
+                                viewModel.loadSuggestedUsers()
                             },
                         )
                     }

@@ -18,6 +18,9 @@ class PostViewModel(
     private val _posts = MutableStateFlow<List<PostResponse>>(emptyList())
     val posts: StateFlow<List<PostResponse>> = _posts
 
+    private val _otherProfilePosts = MutableStateFlow<List<PostResponse>>(emptyList())
+    val otherProfilePosts: StateFlow<List<PostResponse>> = _otherProfilePosts
+
     private val _globalPosts = MutableStateFlow<List<PostResponse>>(emptyList())
     val globalPosts: StateFlow<List<PostResponse>> = _globalPosts
 
@@ -40,6 +43,19 @@ class PostViewModel(
             _loading.value = true
             try {
                 _posts.value = repository.getPosts(id)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    fun loadOthersPosts(id: Int){
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                _otherProfilePosts.value = repository.getPosts(id)
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {

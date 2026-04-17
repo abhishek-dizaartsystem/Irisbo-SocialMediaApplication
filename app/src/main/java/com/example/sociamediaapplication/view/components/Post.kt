@@ -3,6 +3,7 @@ package com.example.sociamediaapplication.view.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,7 +52,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
-import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.data.utils.formatPostTime
 import com.example.sociamediaapplication.data.utils.isVideo
@@ -79,10 +79,11 @@ fun Post(
     onDelete: () -> Unit = {},
     isSaved: Boolean = false,
     isLiked: Boolean = false,
-    onPostProfileClick: ()-> Unit = {},
+    onPostProfileClick: () -> Unit = {},
     profileImageUrl: String? = null,
     createdAt: String = "",
-    type: String = "post"
+    type: String = "post",
+    onOtherProfileClick: () -> Unit = {}
 ){
 
     val sincePosted = remember(createdAt) {
@@ -118,7 +119,7 @@ fun Post(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
                         onClick = {
-                            onPostProfileClick()
+                            onOtherProfileClick()
                         },
                         modifier = Modifier
                             .size(50.dp) // Set the size of the clickable area
@@ -148,7 +149,10 @@ fun Post(
                             Text(
                                 text = uName,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp
+                                fontSize = 20.sp,
+                                modifier = Modifier.clickable{
+                                    onOtherProfileClick()
+                                }
                             )
                             if(isVerified){
                                 Icon(

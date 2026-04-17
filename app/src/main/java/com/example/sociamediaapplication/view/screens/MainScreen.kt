@@ -320,8 +320,21 @@ fun MainScreen(
         ) {
 
             composable(MainRoutes.Home1.route) {
+                val profile by profileViewModel.profile.collectAsState()
                 HomeScreen1(
-                    postViewModel = postViewModel
+                    postViewModel = postViewModel,
+                    onOtherProfileClick = {userId->
+                        if(profile?.data?.id == userId){
+                            navController.navigate(MainRoutes.Menu.route)
+                        }else{
+                            navController.navigate(
+                                MainRoutes.OtherProfile.createRoute(userId)
+                            )
+
+
+                        }
+
+                    }
                 )
             }
 
@@ -346,7 +359,7 @@ fun MainScreen(
             }
 
             composable(
-                route = MainRoutes.PublicProfile.route,
+                route = MainRoutes.OtherProfile.route,
                 arguments = listOf(
                     navArgument("userId"){type = NavType.IntType}
                 )
@@ -357,19 +370,21 @@ fun MainScreen(
                 LaunchedEffect(Unit) {
                     friendViewModel.getFriendshipStatus(userId?:0)
                     postViewModel.loadPosts(userId?:0)
+                    profileViewModel.loadPublicProfile(userId?:0)
+                    postViewModel.loadPosts(userId?:0)
                 }
 
-                val posts by postViewModel.posts.collectAsState()
+                val posts by postViewModel.otherProfilePosts.collectAsState()
                 val reels by reelViewModel.reels.collectAsState()
 
-                ProfileScreen(
-                    isUser = false,
-                    viewModel = profileViewModel,
+                OtherProfileScreen(
                     onChatClick = {
                         navController.navigate(MainRoutes.Chats.route)
                     },
                     friendViewModel = friendViewModel,
-                    posts = posts
+                    profileViewModel = profileViewModel,
+                    posts = posts,
+                    reels = reels
                 )
             }
 
@@ -396,7 +411,16 @@ fun MainScreen(
             composable(MainRoutes.Home2.route){
                 HomeScreen2(
                     mainNavController,
-                    postViewModel = postViewModel
+                    postViewModel = postViewModel,
+                    onOtherProfileClick = {userId->
+                        if(profile?.data?.id == userId){
+                            navController.navigate(MainRoutes.Menu.route)
+                        }else{
+                            navController.navigate(
+                                MainRoutes.OtherProfile.createRoute(userId)
+                            )
+                        }
+                    }
                 )
             }
 

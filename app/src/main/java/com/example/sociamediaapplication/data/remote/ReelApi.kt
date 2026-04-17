@@ -70,4 +70,10 @@ interface ReelApi {
         @Header("Authorization") token: String,
         @Body request: UpdateReelRequest
     )
+
+    @GET("api/reels/{userId}/reels")
+    suspend fun getUserReels(
+        @Header("Authorization") token: String,
+        @Path("userId") userId: Int
+    ): ReelListResponse
 }

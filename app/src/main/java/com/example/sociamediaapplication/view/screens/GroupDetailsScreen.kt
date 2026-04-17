@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -45,12 +43,10 @@ import com.example.sociamediaapplication.model.FeedPost
 import com.example.sociamediaapplication.model.response.PostResponse
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
-import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.DTransparentBlack
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.Post
-import com.example.sociamediaapplication.view.navigation.GroupsRoutes
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
 
 @Composable
@@ -258,13 +254,8 @@ fun GroupDetailsScreen(
                 Post(
                     uName = post.username,
                     caption = post.caption,
-                    postLikes = post.likes,
-                    isLiked = post.is_liked,
-                    isSaved = post.is_saved,
-                    profileImageUrl = correctUrl(post.profile_image),
                     mediaList = post.media,
-                    onSaved = {},
-                    type = "group post",
+                    postLikes = post.likes,
                     onLiked = {
                         onLike(
                             PostResponse(
@@ -285,11 +276,14 @@ fun GroupDetailsScreen(
                         )
 
                     },
-                    onFollow = {},
-                    createdAt = post.created_at,
                     onDelete = {
                         viewModel.deleteGroupPost(post.id)
-                    }
+                    },
+                    isSaved = post.is_saved,
+                    isLiked = post.is_liked,
+                    profileImageUrl = correctUrl(post.profile_image),
+                    createdAt = post.created_at,
+                    type = "group post",
                 )
             }
 

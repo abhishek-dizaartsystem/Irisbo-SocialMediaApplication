@@ -29,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,8 +44,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.utils.correctUrl
+import com.example.sociamediaapplication.model.response.PostResponse
+import com.example.sociamediaapplication.model.response.Reel
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -54,10 +60,20 @@ import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.White
+import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.view.components.ZoomableImageDialog
+import com.example.sociamediaapplication.viewmodel.FriendViewModel
+import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 
 @Composable
-fun OtherProfileScreen(){
+fun OtherProfileScreen(
+    onChatClick: () -> Unit = {},
+    friendViewModel: FriendViewModel = viewModel(),
+    posts: List<PostResponse> = emptyList(),
+    reels: List<Reel> = emptyList(),
+    profileViewModel: ProfileViewModel = viewModel(),
+    userId: Int = 0
+) {
 
     var postSelected by remember { mutableStateOf(true) }
 
@@ -65,6 +81,10 @@ fun OtherProfileScreen(){
 
     var showImage by remember { mutableStateOf(false) }
     var selectedImage by remember { mutableStateOf<Any?>(null) }
+
+    val profile by profileViewModel.otherProfile.collectAsState()
+
+    val friendshipStatus by friendViewModel.friendshipStatus.collectAsState()
 
 
     Column(
@@ -81,14 +101,20 @@ fun OtherProfileScreen(){
         ) {
             Column(modifier = Modifier.height(220.dp)) {
                 AsyncImage(
-                    model = R.drawable.rectangle_24,
+                    model = if(profile?.data?.cover_img == null)
+                        R.drawable.rectangle_24
+                    else
+                        correctUrl(profile?.data?.cover_img),
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(2f)
                         .clickable {
-                        selectedImage = R.drawable.rectangle_24
+                        selectedImage = if(profile?.data?.cover_img == null)
+                            R.drawable.rectangle_24
+                        else
+                            correctUrl(profile?.data?.cover_img)
                         showImage = true
                     }
                 )
@@ -108,17 +134,24 @@ fun OtherProfileScreen(){
                             modifier = Modifier.size(134.dp),
                             colors = IconButtonDefaults.iconButtonColors(
                                 containerColor = White
-                            )
+                            ),
+                            shape = HexagonShape
                         ) {
                             AsyncImage(
-                                model = R.drawable.rectangle_5,
+                                model = if(profile?.data?.profile_image == null )
+                                    R.drawable.profile_image_placeholder
+                                else
+                                    correctUrl(profile?.data?.profile_image),
                                 contentDescription = "Profile Image",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .size(130.dp)
-                                    .clip(CircleShape)
+                                    .clip(HexagonShape)
                                     .clickable {
-                                        selectedImage = R.drawable.rectangle_5
+                                        selectedImage = if(profile?.data?.profile_image == null )
+                                            R.drawable.profile_image_placeholder
+                                        else
+                                            correctUrl(profile?.data?.profile_image)
                                         showImage = true
                                     }
                             )
@@ -139,12 +172,12 @@ fun OtherProfileScreen(){
             }
         }
         Text(
-            text = "John Doe",
+            text = profile?.data?.name?:"",
             fontSize = 25.sp,
             modifier = Modifier.padding(start = 16.dp)
         )
         Text(
-            text = "Bio",
+            text = profile?.data?.bio?:"",
             fontSize = 15.sp,
             modifier = Modifier.padding(start = 16.dp)
         )
@@ -155,6 +188,14 @@ fun OtherProfileScreen(){
         ){
             Button(
                 onClick = {
+                    if(
+                        friendshipStatus?.data?.status == "pending" ||
+                        friendshipStatus?.data?.status == "accepted"
+                    ){
+
+                    }else{
+                        friendViewModel.sendFriendRequest(userId)
+                    }
 
                 },
                 modifier = Modifier
@@ -162,17 +203,25 @@ fun OtherProfileScreen(){
                     .padding(horizontal = 4.dp),
                 shape = RoundedCornerShape(50.dp),
                 contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Blue)
+                colors = ButtonDefaults.buttonColors(containerColor = Blue),
+                enabled = friendshipStatus?.data?.status != "blocked"
             ){
                 Text(
-                    text = "Follow",
+                    text = if(
+                        friendshipStatus?.data?.status == "pending" ||
+                        friendshipStatus?.data?.status == "accepted"
+                    ){
+                        "Unfollow"
+                    }else{
+                        "Follow"
+                    },
                     fontSize = 16.sp
                 )
             }
             Spacer(Modifier.width(8.dp))
             Button(
                 onClick = {
-
+                    onChatClick()
                 },
                 modifier = Modifier
                     .weight(1f)

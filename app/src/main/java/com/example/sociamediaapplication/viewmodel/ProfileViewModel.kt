@@ -21,6 +21,9 @@ class ProfileViewModel(
     private val _profile = MutableStateFlow<ProfileResponse?>(null)
     val profile: StateFlow<ProfileResponse?> = _profile
 
+    private val _otherProfile = MutableStateFlow<ProfileResponse?>(null)
+    val otherProfile: StateFlow<ProfileResponse?> = _otherProfile
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
@@ -161,7 +164,7 @@ class ProfileViewModel(
     fun loadPublicProfile(userId: Int){
         viewModelScope.launch {
             try {
-                _profile.value = repository.getPublicProfile(userId)
+                _otherProfile.value = repository.getPublicProfile(userId)
             }catch (e: Exception){
                 Log.e("ProfileViewModel", e.message.toString())
             }

@@ -86,6 +86,9 @@ class ReelsViewModel(
     private val _myReels = MutableStateFlow<List<Reel>>(emptyList())
     val myReels: StateFlow<List<Reel>> = _myReels
 
+    private val _otherProfileReels = MutableStateFlow<List<Reel>>(emptyList())
+    val otherProfileReels: StateFlow<List<Reel>> = _otherProfileReels
+
     init {
         //loadReels()
     }
@@ -110,6 +113,22 @@ class ReelsViewModel(
                 _myReels.value = repository.getMyReels()
 
                 Log.d("loadMyReels_DEBUG", repository.getMyReels().toString())
+            }catch (e: Exception) {
+                _error.value = e.message
+                Log.e("ReelsViewModel", e.message.toString())
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    fun loadUserReels(userId: Int){
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                _otherProfileReels.value = repository.getUserReels(userId)
+
+                Log.d("loadMyReels_DEBUG", otherProfileReels.value.toString())
             }catch (e: Exception) {
                 _error.value = e.message
                 Log.e("ReelsViewModel", e.message.toString())

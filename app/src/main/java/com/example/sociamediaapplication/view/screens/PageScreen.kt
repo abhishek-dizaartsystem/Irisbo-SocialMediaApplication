@@ -1,7 +1,5 @@
 package com.example.sociamediaapplication.view.screens
 
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +23,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -50,7 +47,6 @@ import com.example.sociamediaapplication.ui.theme.DTransparentBlack
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.White
-import com.example.sociamediaapplication.view.components.PagePost
 import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.viewmodel.PageViewModel
 
@@ -251,8 +247,8 @@ fun PageScreen(
                 Post(
                     uName = post.username,
                     caption = post.caption,
+                    mediaList = post.media,
                     createdAt = formatPostTime(post.created_at),
-                    mediaList = post.media
                 )
             }
 

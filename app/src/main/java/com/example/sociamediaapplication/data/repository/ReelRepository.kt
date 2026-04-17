@@ -126,4 +126,10 @@ class ReelRepository(
 
         return api.updateReelCaption(token, UpdateReelRequest(caption))
     }
+
+    suspend fun getUserReels(userId: Int): List<Reel>{
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.getUserReels(token, userId).data.reels
+    }
 }
