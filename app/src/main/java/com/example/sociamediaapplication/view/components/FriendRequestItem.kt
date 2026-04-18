@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -51,7 +51,8 @@ fun FriendRequestItem(
     onAccept: () -> Unit = {},
     onReject: () -> Unit = {},
     isSentType: Boolean = false,
-    onCancelRequest: () -> Unit = {}
+    onCancelRequest: () -> Unit = {},
+    onOtherProfileClick: () -> Unit = {}
 ){
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -79,7 +80,10 @@ fun FriendRequestItem(
                         modifier = Modifier
                             .size(60.dp)
                             .aspectRatio(1f)
-                            .clip(CircleShape),
+                            .clip(HexagonShape)
+                            .clickable{
+                                onOtherProfileClick()
+                            },
                         contentScale = ContentScale.Crop
                     )
                 }
@@ -92,7 +96,11 @@ fun FriendRequestItem(
                             text = name,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(end = 4.dp)
+                            modifier = Modifier
+                                .padding(end = 4.dp)
+                                .clickable{
+                                    onOtherProfileClick()
+                                }
                         )
                     }
                     Text(

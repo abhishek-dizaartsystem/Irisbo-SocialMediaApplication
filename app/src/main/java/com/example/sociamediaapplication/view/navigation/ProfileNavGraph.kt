@@ -7,13 +7,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.data.preferences.TokenManager
-import com.example.sociamediaapplication.data.repository.ReelRepository
 import com.example.sociamediaapplication.view.screens.EditProfileScreen
 import com.example.sociamediaapplication.view.screens.ProfileScreen
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
@@ -22,7 +21,6 @@ import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
-import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 
 @Composable
 fun ProfileNavGraph(
@@ -32,7 +30,8 @@ fun ProfileNavGraph(
     uploadViewModel: UploadViewModel,
     postViewModel: PostViewModel,
     friendViewModel: FriendViewModel,
-    reelViewModel: ReelsViewModel
+    reelViewModel: ReelsViewModel,
+    mainNavController2: NavHostController
 ){
     val navController = rememberNavController()
 
@@ -109,7 +108,8 @@ fun ProfileNavGraph(
                 uploadViewModel = uploadViewModel,
                 postViewModel = postViewModel,
                 friendViewModel = friendViewModel,
-                reelViewModel = reelViewModel
+                reelViewModel = reelViewModel,
+                mainNavController2 = mainNavController2
             )
         }
     }

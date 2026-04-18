@@ -224,5 +224,61 @@ class PostViewModel(
         }
     }
 
+    fun toggleOtherProfilePostLike(post: PostResponse, id: Int){
+        val currentlyLiked = post.user_reaction == "like"
+
+        _otherProfilePosts.value = _otherProfilePosts.value.map {
+            if(it.id == post.id){
+                it.copy(
+                    user_reaction = if (currentlyLiked) "dislike" else "like",
+                    likes_count = if (currentlyLiked) it.likes_count - 1 else it.likes_count + 1
+                )
+            }else it
+        }
+        viewModelScope.launch {
+            try {
+                val response = if (currentlyLiked) {
+                    repository.unlikePost(post.id)
+                } else {
+                    repository.likePost(post.id)
+                }
+                Log.e("Post_like", response.toString())
+                Log.e("Post_like", response.data.user_reaction.reaction)
+                // ✅ Sync with backend truth
+                _otherProfilePosts.value = _otherProfilePosts.value.map {
+                    if (it.id == post.id) {
+                        it.copy(
+                            user_reaction = response.data.user_reaction.reaction,
+                            likes_count = response.data.counts.likes
+                        )
+
+                    } else it
+                }
+
+            } catch (e: Exception) {
+                // 🔥 rollback on failure
+                loadPosts(id)
+            }
+        }
+    }
+
+    fun toggleOtherProfileSave(post: PostResponse, id: Int){
+        viewModelScope.launch {
+            try {
+                val response = if(post.is_saved) repository.unsavePost(post.id) else repository.savePost(post.id)
+
+                _otherProfilePosts.value = _otherProfilePosts.value.map {
+                    if(it.id == post.id) {
+                        it.copy(
+                            is_saved = if(response.message.contains("unsaved successfully")) false else true
+                        )
+                    }else it
+                }
+            }catch (e: Exception){
+                loadPosts(id)
+            }
+        }
+    }
+
 }
 

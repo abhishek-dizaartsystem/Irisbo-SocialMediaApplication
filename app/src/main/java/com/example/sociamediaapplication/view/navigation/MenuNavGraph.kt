@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -29,7 +30,8 @@ fun MenuNavGraph(
     uploadViewModel: UploadViewModel,
     postViewModel: PostViewModel,
     friendViewModel: FriendViewModel,
-    reelViewModel: ReelsViewModel
+    reelViewModel: ReelsViewModel,
+    mainNavController2: NavHostController
 ){
     val navController = rememberNavController()
 
@@ -109,7 +111,8 @@ fun MenuNavGraph(
         composable(MenuRoutes.Friends.route) {
             FriendNavGraph(
                 navController,
-                friendViewModel = friendViewModel
+                friendViewModel = friendViewModel,
+                mainNavController2 = mainNavController2
             )
         }
         composable(MenuRoutes.Events.route) {
@@ -138,7 +141,8 @@ fun MenuNavGraph(
                 uploadViewModel = uploadViewModel,
                 postViewModel = postViewModel,
                 friendViewModel = friendViewModel,
-                reelViewModel = reelViewModel
+                reelViewModel = reelViewModel,
+                mainNavController2 = mainNavController2
             )
         }
 

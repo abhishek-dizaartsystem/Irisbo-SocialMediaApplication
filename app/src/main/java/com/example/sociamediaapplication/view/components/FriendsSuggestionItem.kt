@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,7 +41,8 @@ fun FriendsSuggestionItem(
     name: String = "Aakash",
     mutualsCount: Int = 4,
     profileImage: String? = null,
-    sendFriendRequest: () -> Unit = {}
+    sendFriendRequest: () -> Unit = {},
+    onOtherProfileClick: () -> Unit = {}
 ){
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -61,7 +62,7 @@ fun FriendsSuggestionItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
-                    contentAlignment = Alignment.BottomEnd
+                    contentAlignment = Alignment.BottomEnd,
                 ){
                     AsyncImage(
                         model = if(profileImage == null) R.drawable.profile_image_placeholder else correctUrl(profileImage),
@@ -69,7 +70,10 @@ fun FriendsSuggestionItem(
                         modifier = Modifier
                             .size(60.dp)
                             .aspectRatio(1f)
-                            .clip(CircleShape),
+                            .clip(HexagonShape)
+                            .clickable{
+                                onOtherProfileClick()
+                            },
                         contentScale = ContentScale.Crop
                     )
                 }
@@ -82,7 +86,11 @@ fun FriendsSuggestionItem(
                             text = name,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(end = 4.dp)
+                            modifier = Modifier
+                                .padding(end = 4.dp)
+                                .clickable{
+                                    onOtherProfileClick()
+                                }
                         )
                     }
                     Text(

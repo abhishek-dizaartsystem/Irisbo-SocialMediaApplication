@@ -1,6 +1,8 @@
 package com.example.sociamediaapplication.view.screens
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -29,6 +32,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,17 +42,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.correctUrl
+import com.example.sociamediaapplication.data.utils.correctUrl2
+import com.example.sociamediaapplication.data.utils.getFrameFromUrl
+import com.example.sociamediaapplication.data.utils.isVideo
 import com.example.sociamediaapplication.model.response.PostResponse
 import com.example.sociamediaapplication.model.response.Reel
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
@@ -59,11 +69,15 @@ import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LBlue
+import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.HexagonShape
+import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.view.components.ZoomableImageDialog
 import com.example.sociamediaapplication.viewmodel.FriendViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun OtherProfileScreen(
@@ -72,12 +86,20 @@ fun OtherProfileScreen(
     posts: List<PostResponse> = emptyList(),
     reels: List<Reel> = emptyList(),
     profileViewModel: ProfileViewModel = viewModel(),
+    onReelLike: (Reel) -> Unit = {},
+    onReelSave: (Reel) -> Unit = {},
+    onPostLike: (PostResponse) -> Unit = {},
+    onPostSave: (PostResponse) -> Unit = {},
     userId: Int = 0
 ) {
 
     var postSelected by remember { mutableStateOf(true) }
 
     val userPosts = remember { List(15) { R.drawable.rectangle_24 } }
+
+    var selectedReelIndex by remember { mutableStateOf<Int?>(null) }
+
+    var selectedPostId by remember { mutableStateOf<Int?>(null) }
 
     var showImage by remember { mutableStateOf(false) }
     var selectedImage by remember { mutableStateOf<Any?>(null) }
@@ -111,12 +133,12 @@ fun OtherProfileScreen(
                         .fillMaxWidth()
                         .aspectRatio(2f)
                         .clickable {
-                        selectedImage = if(profile?.data?.cover_img == null)
-                            R.drawable.rectangle_24
-                        else
-                            correctUrl(profile?.data?.cover_img)
-                        showImage = true
-                    }
+                            selectedImage = if (profile?.data?.cover_img == null)
+                                R.drawable.rectangle_24
+                            else
+                                correctUrl(profile?.data?.cover_img)
+                            showImage = true
+                        }
                 )
             }
             Row(
@@ -148,7 +170,7 @@ fun OtherProfileScreen(
                                     .size(130.dp)
                                     .clip(HexagonShape)
                                     .clickable {
-                                        selectedImage = if(profile?.data?.profile_image == null )
+                                        selectedImage = if (profile?.data?.profile_image == null)
                                             R.drawable.profile_image_placeholder
                                         else
                                             correctUrl(profile?.data?.profile_image)
@@ -188,14 +210,32 @@ fun OtherProfileScreen(
         ){
             Button(
                 onClick = {
-                    if(
-                        friendshipStatus?.data?.status == "pending" ||
-                        friendshipStatus?.data?.status == "accepted"
-                    ){
-
-                    }else{
-                        friendViewModel.sendFriendRequest(userId)
+                    when(friendshipStatus?.data?.status){
+                        "friends"-> {
+                            friendViewModel.unfriendUser(userId)
+                        }
+                        "pending_sent"-> {
+                            friendViewModel.cancelRequest(userId)
+                        }
+                        "pending_received"-> {
+                            friendViewModel.acceptRequest(userId)
+                        }
+                        "blocked"-> {
+                            //No action
+                        }
+                        "none"-> {
+                            friendViewModel.sendFriendRequest(userId)
+                        }
+                        else -> ""
                     }
+//                    if(
+//                        friendshipStatus?.data?.status == "pending" ||
+//                        friendshipStatus?.data?.status == "accepted"
+//                    ){
+//
+//                    }else{
+//                        friendViewModel.sendFriendRequest(userId)
+//                    }
 
                 },
                 modifier = Modifier
@@ -203,19 +243,30 @@ fun OtherProfileScreen(
                     .padding(horizontal = 4.dp),
                 shape = RoundedCornerShape(50.dp),
                 contentPadding = PaddingValues(0.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Blue),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if(friendshipStatus?.data?.status == "none") Blue else LLBlue
+                ),
                 enabled = friendshipStatus?.data?.status != "blocked"
             ){
                 Text(
-                    text = if(
-                        friendshipStatus?.data?.status == "pending" ||
-                        friendshipStatus?.data?.status == "accepted"
-                    ){
-                        "Unfollow"
-                    }else{
-                        "Follow"
+                    text = when(friendshipStatus?.data?.status){
+                        "friends"-> "Unfollow"
+                        "pending_sent"->"Cancel Request"
+                        "pending_received"->"Accept"
+                        "blocked"->"Follow"
+                        "none"-> "Follow"
+                        else -> ""
                     },
-                    fontSize = 16.sp
+                    color = if(friendshipStatus?.data?.status == "none") White else Black
+//                        if(
+//                        friendshipStatus?.data?.status == "pending" ||
+//                        friendshipStatus?.data?.status == "accepted"
+//                    ){
+//                        "Unfollow"
+//                    }else{
+//                        "Follow"
+//                    },
+//                    fontSize = 16.sp
                 )
             }
             Spacer(Modifier.width(8.dp))
@@ -366,20 +417,146 @@ fun OtherProfileScreen(
                 }
             }
             if (postSelected) {
-                items(userPosts) { postImage ->
-                    AsyncImage(
-                        model = postImage,
-                        contentDescription = "Post",
+                items(
+                    items = posts,
+                    key = { it.id } // 🔥 improves performance
+                ) { post ->
+
+                    val context = LocalContext.current
+
+                    val firstMedia = post.media?.firstOrNull()
+
+                    val mediaUrl = firstMedia?.let {
+                        if (it.startsWith("http")) it
+                        else "${RetrofitClient.BASE_URL}uploads/$it"
+                    }
+
+                    val isVideoPost = firstMedia?.let { isVideo(it) } == true
+
+                    // ✅ State for video frame
+                    var videoFrame by remember { mutableStateOf<Bitmap?>(null) }
+
+                    // ✅ Load frame in background (NO ANR 🚀)
+                    LaunchedEffect(mediaUrl) {
+                        if (mediaUrl != null && isVideoPost) {
+                            videoFrame = withContext(Dispatchers.IO) {
+                                getFrameFromUrl(context, mediaUrl)
+                            }
+                        } else {
+                            videoFrame = null
+                        }
+                    }
+
+                    Box(
                         modifier = Modifier
-                            .aspectRatio(1f) // Makes it a perfect square
-                            .fillMaxWidth(),
-                        contentScale = ContentScale.Crop
-                    )
+                            .aspectRatio(1f)
+                            .fillMaxWidth()
+                            .clickable { selectedPostId = post.id }
+                    ){
+                        when{
+                            isVideoPost && videoFrame != null ->{
+                                Image(
+                                    bitmap = videoFrame!!.asImageBitmap(),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+
+                                // ▶ play icon
+                                Icon(
+                                    painter = painterResource(R.drawable.play_svgrepo_com),
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .size(26.dp)
+                                )
+                            }
+                            isVideoPost -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.DarkGray)
+                                )
+                            }
+
+                            // 🖼 IMAGE
+                            mediaUrl != null -> {
+                                AsyncImage(
+                                    model = mediaUrl,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+
+                            // ⚠️ fallback
+                            else -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.LightGray)
+                                )
+                            }
+                        }
+                    }
                 }
             }else {
-                item(span = { GridItemSpan(maxLineSpan) }){
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Reels content goes here")
+                itemsIndexed(reels){ index, reel ->
+
+                    val context = LocalContext.current
+
+                    var thumbnail by remember { mutableStateOf<Bitmap?>(null) }
+
+                    LaunchedEffect(reel.video_url) {
+                        if (isVideo(reel.video_url)) {
+                            thumbnail = withContext(Dispatchers.IO) {
+                                getFrameFromUrl(context, correctUrl2(reel.video_url))
+                            }
+                        } else {
+                            thumbnail = null
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .aspectRatio(0.5f)
+                            .fillMaxWidth()
+                            .clickable { selectedReelIndex = index }
+                    ) {
+
+                        AsyncImage(
+                            model = correctUrl2(reel.video_url),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+
+                        val currentThumbnail = thumbnail
+
+                        if (currentThumbnail != null) {
+                            Image(
+                                bitmap = currentThumbnail.asImageBitmap(),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.DarkGray)
+                            )
+                        }
+
+                        Icon(
+                            painter = painterResource(R.drawable.play_svgrepo_com),
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(26.dp)
+                        )
                     }
                 }
                 // Placeholder for Reels
@@ -398,6 +575,45 @@ fun OtherProfileScreen(
             image = selectedImage!!,
             onDismiss = { showImage = false }
         )
+    }
+
+    selectedPostId?.let { id ->
+
+        val post = posts.firstOrNull(){it.id == id}?:return@let
+        Dialog(
+            onDismissRequest = { selectedPostId = null }
+        ) {
+            Post(
+                uName = post.username ?: "",
+                caption = post.caption ?: "",
+                mediaList = post.media,
+                postLikes = post.likes_count ?: 0,
+                onLiked = { onPostLike(post) },
+                onSaved = { onPostSave(post) },
+                isSaved = post.is_saved,
+                isLiked = post.user_reaction == "like",
+                profileImageUrl = post.profile_image,
+                createdAt = post.created_at,
+            )
+        }
+    }
+    selectedReelIndex?.let { startIndex ->
+
+
+
+
+        ReelsScreen(
+            reels = reels,
+            loading = false,
+            startIndex = startIndex,   // 🔥 NEW PARAM
+            onLike = onReelLike,
+            onSave = onReelSave,
+            profileImage = profile?.data?.profile_image,
+            userName = profile?.data?.username
+        )
+
+
+
     }
 }
 

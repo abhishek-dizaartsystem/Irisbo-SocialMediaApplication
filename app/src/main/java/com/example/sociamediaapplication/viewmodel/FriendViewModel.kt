@@ -38,13 +38,33 @@ class FriendViewModel(
     }
     
     fun sendFriendRequest(userId: Int){
+//        _friendshipStatus.value = FriendStatusResponse(
+//            data = _friendshipStatus.value?.data?.copy(status = "pending_sent")
+//        )
+        updateStatusLocally("pending_sent")
         viewModelScope.launch { 
             try {
                 repository.sendFriendRequest(userId)
                 loadSuggestedUsers()
             }catch(e: Exception){
+                getFriendshipStatus(userId)
                 Log.e("FriendVM_DEBUG", e.message.toString())
             }
+        }
+    }
+
+    fun updateStatusLocally(newStatus: String) {
+        val current = _friendshipStatus.value
+
+        if (current != null) {
+            _friendshipStatus.value = current.copy(
+                data = current.data.copy(
+                    status = newStatus,
+                    friendship = current.data.friendship.copy(
+                        status = newStatus
+                    )
+                )
+            )
         }
     }
 
@@ -97,43 +117,50 @@ class FriendViewModel(
 
     fun acceptRequest(userId: Int){
 
+        updateStatusLocally("friends")
+
         viewModelScope.launch {
             try {
                 repository.acceptRequest(userId)
             }catch(e: Exception){
+                getFriendshipStatus(userId)
                 Log.e("FriendVM_DEBUG", e.message.toString())
             }
         }
     }
 
     fun rejectRequest(userId: Int){
-
+        updateStatusLocally("none")
         viewModelScope.launch {
             try {
                 repository.rejectRequest(userId)
             }catch(e: Exception){
+                getFriendshipStatus(userId)
                 Log.e("FriendVM_DEBUG", e.message.toString())
             }
         }
     }
 
     fun unfriendUser(userId: Int){
-
+        updateStatusLocally("none")
         viewModelScope.launch {
             try {
                 repository.unfriendUser(userId)
+
             }catch(e: Exception){
+                getFriendshipStatus(userId)
                 Log.e("FriendVM_DEBUG", e.message.toString())
             }
         }
     }
 
     fun cancelRequest(userId: Int){
-
+        updateStatusLocally("none")
         viewModelScope.launch {
             try {
                 repository.cancelRequest(userId)
             }catch(e: Exception){
+                getFriendshipStatus(userId)
                 Log.e("FriendVM_DEBUG", e.message.toString())
             }
         }

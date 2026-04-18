@@ -54,7 +54,8 @@ import com.example.sociamediaapplication.viewmodel.FriendViewModel
 @Composable
 fun FriendsScreen(
     navController: NavController = rememberNavController(),
-    viewModel: FriendViewModel = viewModel()
+    viewModel: FriendViewModel = viewModel(),
+    onOtherProfileClick: (Int) -> Unit = {}
 ){
     val suggestedUsers by viewModel.suggestedUsers.collectAsState()
     val receivedRequests by viewModel.receivedRequests.collectAsState()
@@ -276,6 +277,9 @@ fun FriendsScreen(
                             onUnfriend = {
                                 viewModel.unfriendUser(item.id)
                                 viewModel.getMyFriends()
+                            },
+                            onOtherProfileClick = {
+                                onOtherProfileClick(item.id)
                             }
                         )
                     }
@@ -318,12 +322,15 @@ fun FriendsScreen(
                             FriendRequestItem(
                                 name = item.username,
                                 mutualsCount = "${item.mutual_friends_count} mutuals",        //Not Present,
+                                profileImage = item.profile_image,
+                                isSentType = true,
                                 onCancelRequest = {
                                     viewModel.cancelRequest(item.id)
                                     viewModel.getSentRequests()
                                 },
-                                isSentType = true,
-                                profileImage = item.profile_image
+                                onOtherProfileClick = {
+                                    onOtherProfileClick(item.id)
+                                }
                             )
                         }
                     }else{
@@ -344,6 +351,9 @@ fun FriendsScreen(
                                 onReject = {
                                     viewModel.rejectRequest(item.id)
                                     viewModel.getReceivedRequests()
+                                },
+                                onOtherProfileClick = {
+                                    onOtherProfileClick(item.id)
                                 }
                             )
                         }
@@ -359,6 +369,9 @@ fun FriendsScreen(
                                 viewModel.sendFriendRequest(user.id)
                                 viewModel.loadSuggestedUsers()
                             },
+                            onOtherProfileClick = {
+                                onOtherProfileClick(user.id)
+                            }
                         )
                     }
 

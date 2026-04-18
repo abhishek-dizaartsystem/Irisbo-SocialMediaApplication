@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.screens
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -367,15 +368,16 @@ fun MainScreen(
 
                 val userId = backStackEntry.arguments?.getInt("userId")
 
-                LaunchedEffect(Unit) {
+                LaunchedEffect(userId) {
+                    Log.d("UID", "uid = $userId")
                     friendViewModel.getFriendshipStatus(userId?:0)
-                    postViewModel.loadPosts(userId?:0)
+                    postViewModel.loadOthersPosts(userId?:0)
                     profileViewModel.loadPublicProfile(userId?:0)
-                    postViewModel.loadPosts(userId?:0)
+                    reelViewModel.loadUserReels(userId?:0)
                 }
 
                 val posts by postViewModel.otherProfilePosts.collectAsState()
-                val reels by reelViewModel.reels.collectAsState()
+                val reels by reelViewModel.otherProfileReels.collectAsState()
 
                 OtherProfileScreen(
                     onChatClick = {
@@ -384,7 +386,20 @@ fun MainScreen(
                     friendViewModel = friendViewModel,
                     profileViewModel = profileViewModel,
                     posts = posts,
-                    reels = reels
+                    reels = reels,
+                    onReelLike = {
+                        reelViewModel.toggleLikeMyReels(it)
+                    },
+                    onReelSave = {
+                        reelViewModel.toggleSaveMyReels(it)
+                    },
+                    onPostLike = {
+                        postViewModel.toggleOtherProfilePostLike(it, profile?.data?.id ?: 0)
+                    },
+                    onPostSave = {
+                        postViewModel.toggleOtherProfileSave(it, profile?.data?.id ?: 0)
+                    },
+                    userId = userId?:0
                 )
             }
 
@@ -395,6 +410,7 @@ fun MainScreen(
             composable(MainRoutes.Menu.route){
                 MenuNavGraph(
                     mainNavController,
+                    mainNavController2 = navController,
                     authViewModel = authViewModel,
                     profileViewModel = profileViewModel,
                     uploadViewModel = uploadViewModel,
