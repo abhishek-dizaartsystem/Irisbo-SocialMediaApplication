@@ -331,8 +331,6 @@ fun MainScreen(
                             navController.navigate(
                                 MainRoutes.OtherProfile.createRoute(userId)
                             )
-
-
                         }
 
                     }
@@ -388,10 +386,10 @@ fun MainScreen(
                     posts = posts,
                     reels = reels,
                     onReelLike = {
-                        reelViewModel.toggleLikeMyReels(it)
+                        reelViewModel.toggleLikeUserReels(it)
                     },
                     onReelSave = {
-                        reelViewModel.toggleSaveMyReels(it)
+                        reelViewModel.toggleSaveUserReels(it)
                     },
                     onPostLike = {
                         postViewModel.toggleOtherProfilePostLike(it, profile?.data?.id ?: 0)

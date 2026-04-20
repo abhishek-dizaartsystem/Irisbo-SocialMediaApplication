@@ -3,6 +3,8 @@ package com.example.sociamediaapplication.view.navigation
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,6 +23,7 @@ import com.example.sociamediaapplication.view.screens.GroupsScreen
 import com.example.sociamediaapplication.view.screens.UploadScreen
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
 import com.example.sociamediaapplication.viewmodel.PostViewModel
+import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
 import com.example.sociamediaapplication.viewmodel.factory.GroupViewModelFactory
 
@@ -28,7 +31,9 @@ import com.example.sociamediaapplication.viewmodel.factory.GroupViewModelFactory
 fun GroupsNavGraph(
     bNavController: NavController = rememberNavController(),
     uploadViewModel: UploadViewModel,
-    postViewModel: PostViewModel
+    postViewModel: PostViewModel,
+    mainNavController2: NavController,
+    profileViewModel: ProfileViewModel
 ){
     val navController = rememberNavController()
 
@@ -76,6 +81,7 @@ fun GroupsNavGraph(
             val groupId = backStackEntry.arguments?.getInt("groupId")
             val isCreator = backStackEntry.arguments?.getBoolean("isCreator")
 
+            val profile by profileViewModel.profile.collectAsState()
 
             LaunchedEffect(groupId){
                 groupId?.let {
@@ -94,6 +100,18 @@ fun GroupsNavGraph(
 
                     Log.d("GroupVM RELOAD", "groupId = $groupId")
                     groupViewModel.loadGroupPosts(groupId?:0,1, 10)
+                },
+                onOtherProfileClick = {userId->
+                    if(profile?.data?.id == userId){
+                        mainNavController2.navigate(MainRoutes.Menu.route)
+                    }else{
+                        mainNavController2.navigate(
+                            MainRoutes.OtherProfile.createRoute(userId)
+                        )
+
+
+                    }
+
                 }
             )
         }

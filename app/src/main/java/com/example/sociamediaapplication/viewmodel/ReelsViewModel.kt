@@ -325,6 +325,107 @@ class ReelsViewModel(
         }
     }
 
+    fun toggleLikeUserReels(reel: Reel) {
+
+        val currentList = _otherProfileReels.value
+
+        val index = currentList.indexOfFirst { it.id == reel.id }
+        if (index == -1) return
+
+        val currentReel = currentList[index]
+
+        val currentlyLiked = currentReel.is_liked == 1
+
+        // ✅ Optimistic update
+        val optimisticReel = currentReel.copy(
+            is_liked = if (currentlyLiked) 0 else 1,
+            likes_count = if (currentlyLiked)
+                currentReel.likes_count - 1
+            else
+                currentReel.likes_count + 1
+        )
+
+        _otherProfileReels.value = currentList.toMutableList().apply {
+            set(index, optimisticReel)
+        }
+
+        viewModelScope.launch {
+            try {
+                val response = if (currentlyLiked) {
+                    repository.unlikeReel(reel.id)
+                } else {
+                    repository.likeReel(reel.id)
+                }
+
+                // ✅ REAL backend state
+                val isLikedFromApi =
+                    response.user_reaction.reaction == "like"
+
+                val updatedReel = currentReel.copy(
+                    is_liked = if (isLikedFromApi) 1 else 0,
+                    likes_count = response.counts.likes
+                )
+
+                _otherProfileReels.value = _otherProfileReels.value.toMutableList().apply {
+                    set(index, updatedReel)
+                }
+
+            } catch (e: Exception) {
+
+                // ❌ rollback
+                _otherProfileReels.value = _otherProfileReels.value.toMutableList().apply {
+                    set(index, currentReel)
+                }
+            }
+        }
+    }
+
+    fun toggleSaveUserReels(reel: Reel) {
+
+        Log.d("DEBUG_SAVE", "Profile toggleSave called for id = ${reel.id}")
+
+        val currentList = _otherProfileReels.value
+
+        val index = currentList.indexOfFirst { it.id == reel.id }
+        if (index == -1) {
+            Log.e("DEBUG_SAVE", "Reel not found in myReels")
+            return
+        }
+
+        val currentReel = currentList[index]
+
+        val currentlySaved = currentReel.is_saved == 1
+        val updatedReel = currentReel.copy(
+            is_saved = if (currentlySaved) 0 else 1
+        )
+
+        // ✅ Optimistic UI update (Profile list)
+        _otherProfileReels.value = currentList.toMutableList().apply {
+            set(index, updatedReel)
+        }
+
+        viewModelScope.launch {
+            try {
+                if (currentlySaved) {
+                    Log.d("DEBUG_SAVE", "UNSAVE API (Profile)")
+                    repository.unsaveReel(reel.id)
+                } else {
+                    Log.d("DEBUG_SAVE", "SAVE API (Profile)")
+                    repository.saveReel(reel.id)
+                }
+
+            } catch (e: Exception) {
+
+                Log.e("DEBUG_SAVE", "API FAILED: ${e.message}")
+
+                // ❌ rollback ONLY this item
+                _otherProfileReels.value = _otherProfileReels.value.toMutableList().apply {
+                    set(index, currentReel)
+                }
+            }
+        }
+    }
+
 
 
 }

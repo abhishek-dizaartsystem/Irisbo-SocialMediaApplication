@@ -54,7 +54,8 @@ fun GroupDetailsScreen(
     navController: NavController = rememberNavController(),
     viewModel: GroupViewModel = viewModel(),
     isCreator: Boolean = false,
-    onLike: (PostResponse, Int) -> Unit = {post, id->},
+    onLike: (PostResponse, Int) -> Unit = { post, id -> },
+    onOtherProfileClick: (Int) -> Unit = {},
 ){
 
     val groupDetails by viewModel.groupDetails.collectAsState()
@@ -284,6 +285,9 @@ fun GroupDetailsScreen(
                     profileImageUrl = correctUrl(post.profile_image),
                     createdAt = post.created_at,
                     type = "group post",
+                    onOtherProfileClick = {
+                        onOtherProfileClick(post.user_id)
+                    }
                 )
             }
 

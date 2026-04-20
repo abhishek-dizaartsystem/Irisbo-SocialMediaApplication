@@ -96,7 +96,9 @@ fun MenuNavGraph(
             GroupsNavGraph(
                 navController,
                 uploadViewModel = uploadViewModel,
-                postViewModel = postViewModel
+                postViewModel = postViewModel,
+                mainNavController2 = mainNavController2,
+                profileViewModel = profileViewModel
             )
         }
         composable(MenuRoutes.UserVideos.route) {

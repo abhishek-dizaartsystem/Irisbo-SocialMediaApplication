@@ -79,7 +79,6 @@ fun Post(
     onDelete: () -> Unit = {},
     isSaved: Boolean = false,
     isLiked: Boolean = false,
-    onPostProfileClick: () -> Unit = {},
     profileImageUrl: String? = null,
     createdAt: String = "",
     type: String = "post",
