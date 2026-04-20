@@ -134,7 +134,7 @@ fun OtherProfileScreen(
                         .aspectRatio(2f)
                         .clickable {
                             selectedImage = if (profile?.data?.cover_img == null)
-                                R.drawable.rectangle_24
+                                R.drawable.cover_image_placeholder
                             else
                                 correctUrl(profile?.data?.cover_img)
                             showImage = true

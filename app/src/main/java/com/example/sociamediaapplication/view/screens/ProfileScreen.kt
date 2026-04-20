@@ -57,6 +57,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.data.utils.correctUrl2
 import com.example.sociamediaapplication.data.utils.getFrameFromUrl
 import com.example.sociamediaapplication.data.utils.isVideo
@@ -73,6 +74,7 @@ import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.view.components.Post
+import com.example.sociamediaapplication.view.components.ZoomableImageDialog
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -96,6 +98,8 @@ fun ProfileScreen(
     userId : Int? = 0
 ){
 
+    var showImage by remember { mutableStateOf(false) }
+    var selectedImage by remember { mutableStateOf<Any?>(null) }
 
     //option
     var postSelected by remember { mutableStateOf(true) }
@@ -152,6 +156,13 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(2f)
+                        .clickable {
+                            selectedImage = if (profile?.data?.cover_img == null)
+                                R.drawable.cover_image_placeholder
+                            else
+                                correctUrl(profile?.data?.cover_img)
+                            showImage = true
+                        }
                 )
             }
             Row(
@@ -179,6 +190,13 @@ fun ProfileScreen(
                                 modifier = Modifier
                                     .size(130.dp)
                                     .clip(HexagonShape)
+                                    .clickable {
+                                        selectedImage = if (profile?.data?.profile_image == null)
+                                            R.drawable.profile_image_placeholder
+                                        else
+                                            correctUrl(profile?.data?.profile_image)
+                                        showImage = true
+                                    }
                             )
 
                         }
@@ -603,6 +621,13 @@ fun ProfileScreen(
         }
 
     }
+    if (showImage && selectedImage != null) {
+        ZoomableImageDialog(
+            image = selectedImage!!,
+            onDismiss = { showImage = false }
+        )
+    }
+
     selectedPostId?.let { id ->
 
         val post = posts.firstOrNull(){it.id == id}?:return@let
