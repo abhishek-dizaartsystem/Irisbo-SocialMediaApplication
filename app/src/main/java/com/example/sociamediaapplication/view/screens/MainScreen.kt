@@ -52,6 +52,7 @@ import com.example.sociamediaapplication.data.repository.FriendRepository
 import com.example.sociamediaapplication.data.repository.PostRepository
 import com.example.sociamediaapplication.data.repository.ProfileRepository
 import com.example.sociamediaapplication.data.repository.ReelRepository
+import com.example.sociamediaapplication.data.repository.StoryRepository
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -66,11 +67,13 @@ import com.example.sociamediaapplication.viewmodel.GroupViewModel
 import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
+import com.example.sociamediaapplication.viewmodel.StoryViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
 import com.example.sociamediaapplication.viewmodel.factory.FriendsViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ProfileViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
+import com.example.sociamediaapplication.viewmodel.factory.StoryViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.UploadViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,6 +115,10 @@ fun MainScreen(
     val friendRepository = remember { FriendRepository(tokenManager) }
     val friendViewModelFactory = remember { FriendsViewModelFactory(friendRepository) }
     val friendViewModel: FriendViewModel = viewModel(factory = friendViewModelFactory)
+
+    val storyRepository = remember { StoryRepository(tokenManager) }
+    val storyViewModelFactory = remember { StoryViewModelFactory(storyRepository) }
+    val storyViewModel: StoryViewModel = viewModel(factory = storyViewModelFactory)
 
     val profile by profileViewModel.profile.collectAsState()
 
@@ -423,6 +430,11 @@ fun MainScreen(
             }
 
             composable(MainRoutes.Home2.route){
+
+                LaunchedEffect(Unit) {
+                    storyViewModel.getFriendsStories()
+                }
+
                 HomeScreen2(
                     mainNavController,
                     postViewModel = postViewModel,
@@ -434,6 +446,34 @@ fun MainScreen(
                                 MainRoutes.OtherProfile.createRoute(userId)
                             )
                         }
+                    },
+                    storyViewModel = storyViewModel,
+                    onStoryClick = {userId->
+                        navController.navigate(
+                            MainRoutes.StoryView.createRoute(userId)
+                        )
+                    }
+                )
+            }
+
+            composable(
+                route = MainRoutes.StoryView.route,
+                arguments = listOf(
+                    navArgument("userId"){type = NavType.IntType}
+                )
+            ) {backStackEntry ->
+                val userId = backStackEntry.arguments?.getInt("userId")
+
+                LaunchedEffect(userId) {
+                    storyViewModel.getSingleUserStories(userId?:0)
+                }
+
+                ViewStoryScreen(
+                    storyViewModel = storyViewModel,
+                    onFinished = {storyId->
+                        Log.d("MainScreen", "finished video")
+                        storyViewModel.markStoryViewed(storyId)
+                        navController.popBackStack()
                     }
                 )
             }

@@ -13,7 +13,8 @@ data class StoryData(
 
 data class DataUser(
     val id: Int,
-    val name: String
+    val name: String,
+    val profile_image: String?
 )
 
 data class DataStory(

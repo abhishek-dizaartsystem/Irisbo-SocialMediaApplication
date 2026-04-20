@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -36,20 +37,26 @@ import com.example.sociamediaapplication.ui.theme.White
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.view.navigation.Routes
+import com.example.sociamediaapplication.viewmodel.StoryViewModel
 
 @Composable
 fun HomeScreen2(
     mainNavController: NavController = rememberNavController(),
     postViewModel: PostViewModel,
-    onOtherProfileClick: (Int) -> Unit = {}
+    storyViewModel: StoryViewModel,
+    onOtherProfileClick: (Int) -> Unit = {},
+    onStoryClick: (Int) -> Unit = {}
 ) {
 
 
     val posts by postViewModel.globalPosts.collectAsState()
+
+    val stories by storyViewModel.stories.collectAsState()
 
     LaunchedEffect(Unit) {
         postViewModel.loadGlobalPosts()
@@ -113,15 +120,22 @@ fun HomeScreen2(
                         }
                     }
                 }
-                items(4) {
+                items(stories?.data ?: emptyList()) {user->
                     Column(
                         modifier = Modifier
                             .height(220.dp)
                             .aspectRatio(0.5f)
+                            .clickable{
+                                storyViewModel.getSingleUserStories(user.user.id)
+                                onStoryClick(user.user.id)
+                            }
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
-                            Image(
-                                painter = painterResource(R.drawable.rectangle_6),
+                            AsyncImage(
+                                model = if(user.user.profile_image == null)
+                                    painterResource(R.drawable.rectangle_6)
+                                else
+                                    correctUrl(user.user.profile_image),
                                 contentDescription = "",
                                 modifier = Modifier
                                     .height(220.dp)
@@ -131,23 +145,28 @@ fun HomeScreen2(
                             Column(
                                 modifier = Modifier.padding(12.dp)
                             ){
-                                Image(
-                                    painter = painterResource(R.drawable.scene1),
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(CircleShape)
-                                        .aspectRatio(1f)
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    AsyncImage(
+                                        model = if (user.user.profile_image == null)
+                                            painterResource(R.drawable.rectangle_6)
+                                        else
+                                            correctUrl(user.user.profile_image),
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                            .aspectRatio(1f)
 
-                                        .border(
-                                            2.dp,
-                                            Blue,
-                                            CircleShape
-                                        ),
-                                    contentScale = ContentScale.Crop
+                                            .border(
+                                                2.dp,
+                                                Blue,
+                                                CircleShape
+                                            ),
+                                        contentScale = ContentScale.Crop
 
 
-                                )
+                                    )
+                                }
                             }
                         }
                     }

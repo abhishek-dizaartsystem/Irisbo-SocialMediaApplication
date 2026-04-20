@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.view.View
+import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.StoryRepository
@@ -12,6 +13,8 @@ import com.example.sociamediaapplication.model.response.MyStoriesResponse
 import com.example.sociamediaapplication.model.response.SingleUserStoryResponse
 import com.example.sociamediaapplication.model.response.StoryViewerResponse
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -22,13 +25,25 @@ class StoryViewModel(
     private val repository: StoryRepository
 ): ViewModel() {
 
+    private val _stories = MutableStateFlow<FriendStoriesResponse?>(null)
+    val stories: StateFlow<FriendStoriesResponse?> = _stories
+
+    private val _myStories = MutableStateFlow<MyStoriesResponse?>(null)
+    val myStories: StateFlow<MyStoriesResponse?> = _myStories
+
+    private val _storyViewers = MutableStateFlow<StoryViewerResponse?>(null)
+    val storyViewers: StateFlow<StoryViewerResponse?> = _storyViewers
+
+    private val _userStories = MutableStateFlow<SingleUserStoryResponse?>(null)
+    val userStories: StateFlow<SingleUserStoryResponse?> = _userStories
+
     fun getFriendsStories(){
 
         viewModelScope.launch {
             try {
-                repository.getFriendsStories()
+                _stories.value = repository.getFriendsStories()
             }catch (e: Exception){
-                Log.e("StoryViewModel", e.message.toString())
+                Log.e("StoryViewModel", "get friends stories" + e.message.toString())
             }
         }
     }
@@ -38,7 +53,7 @@ class StoryViewModel(
             try {
                 repository.createStory(context, imageUri)
             }catch (e: Exception){
-                    Log.e("StoryViewModel", e.message.toString())
+                    Log.e("StoryViewModel", "create story" + e.message.toString())
                 }
             }
     }
@@ -47,9 +62,9 @@ class StoryViewModel(
 
         viewModelScope.launch {
             try {
-                repository.getMyStories()
+                _myStories.value = repository.getMyStories()
             }catch (e: Exception){
-                Log.e("StoryViewModel", e.message.toString())
+                Log.e("StoryViewModel", "get my stories" + e.message.toString())
             }
         }
     }
@@ -58,9 +73,11 @@ class StoryViewModel(
 
         viewModelScope.launch {
             try {
-                repository.getSingleUserStories(userId)
+                _userStories.value = repository.getSingleUserStories(userId)
+                Log.d("StoryViewModel", "get single user stories = ${_userStories.value}")
+
             }catch (e: Exception){
-                Log.e("StoryViewModel", e.message.toString())
+                Log.e("StoryViewModel", "get single user stories" + e.message.toString())
             }
         }
     }
@@ -71,8 +88,9 @@ class StoryViewModel(
         viewModelScope.launch {
             try {
                 repository.markStoryViewed(storyId)
+                Log.d("StoryViewModel", "marked viewed = $storyId")
             }catch (e: Exception){
-                Log.e("StoryViewModel", e.message.toString())
+                Log.e("StoryViewModel", "mark story viewed" + e.message.toString())
             }
         }
     }
@@ -81,9 +99,9 @@ class StoryViewModel(
 
         viewModelScope.launch {
             try {
-                repository.getStoryViewers(storyId)
+                _storyViewers.value = repository.getStoryViewers(storyId)
             }catch (e: Exception){
-                Log.e("StoryViewModel", e.message.toString())
+                Log.e("StoryViewModel", "get story viewers" + e.message.toString())
             }
         }
     }
@@ -93,7 +111,7 @@ class StoryViewModel(
             try {
                 repository.deleteStory(storyId)
             }catch (e: Exception){
-                Log.e("StoryViewModel", e.message.toString())
+                Log.e("StoryViewModel", "delete story" + e.message.toString())
             }
         }
     }

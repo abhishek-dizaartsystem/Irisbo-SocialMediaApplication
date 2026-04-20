@@ -4,7 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -97,3 +101,32 @@ fun openUrl(context: Context, url: String?) {
     }
 }
 
+suspend fun getVideoDuration(context: Context, url: String): Long {
+    return suspendCancellableCoroutine { cont ->
+
+        val player = ExoPlayer.Builder(context).build()
+        val mediaItem = MediaItem.fromUri(url)
+
+        player.setMediaItem(mediaItem)
+
+        val listener = object : Player.Listener {
+            override fun onPlaybackStateChanged(state: Int) {
+                if (state == Player.STATE_READY) {
+                    val duration = player.duration
+                    player.release()
+
+                    if (!cont.isCompleted) {
+                        cont.resume(duration) {}
+                    }
+                }
+            }
+        }
+
+        player.addListener(listener)
+        player.prepare()
+
+        cont.invokeOnCancellation {
+            player.release()
+        }
+    }
+}

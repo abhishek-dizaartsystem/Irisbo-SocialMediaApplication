@@ -13,12 +13,14 @@ data class StoryData2(
 data class SingleUserStory(
     val id: Int,
     val user_id: Int,
-    val mediaUrl: String,
+    val name: String,
+    val profile_image: String,
+    val media_url: String,
     val media_type: String,
     val caption: String?,
     val created_at: String,
     val expires_at: String,
-    val viewed: Boolean,
+    val viewed: Int,
     val views_count: Int
 )
 
