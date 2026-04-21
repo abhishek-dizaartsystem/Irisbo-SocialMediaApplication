@@ -1,11 +1,10 @@
 package com.example.sociamediaapplication.view.screens
 
-import android.content.Context
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,8 +22,6 @@ import com.example.sociamediaapplication.view.components.AutoVideo
 import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.viewmodel.StoryViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
 import kotlin.math.min
 
 @Composable
@@ -34,67 +31,75 @@ fun ViewStoryScreen(
 ) {
 
     val context = LocalContext.current
-
     val userStories by storyViewModel.userStories.collectAsState()
     val stories = userStories?.data?.stories ?: emptyList()
 
     if (stories.isEmpty()) return
 
     var currentIndex by remember { mutableStateOf(0) }
-    var progress by remember { mutableStateOf(0f) }
     var videoDuration by remember { mutableStateOf<Long?>(null) }
     var isExiting by remember { mutableStateOf(false) }
 
     val currentStory = stories[currentIndex]
-    val mediaUrl = correctUrl2(currentStory.media_url)
+    val mediaUrl = remember(currentIndex) {
+        correctUrl2(currentStory.media_url)
+    }
 
-    // 🔥 LOAD VIDEO DURATION (safe + cancellable)
-    LaunchedEffect(currentIndex, isExiting) {
-        if (isExiting) return@LaunchedEffect
+    val progressAnim = remember { Animatable(0f) }
+    var isAnimating by remember { mutableStateOf(false) }
 
+    // 🔥 Load video duration
+    LaunchedEffect(currentIndex) {
         videoDuration = null
-
         if (currentStory.media_type == "video") {
             videoDuration = getVideoDuration(context, mediaUrl)
         }
     }
 
-    // 🔥 TIMER + AUTO NEXT
-    LaunchedEffect(currentIndex, videoDuration, isExiting) {
+    // 🔥 Duration logic (IMPORTANT)
+    val durationMillis = when {
+        currentStory.media_type == "video" -> {
+            val actual = videoDuration ?: 60_000L
+            min(actual, 60_000L)
+        }
+        else -> 20_000L
+    }
+
+    // 🔥 Progress animation (NO FLICKER)
+    LaunchedEffect(currentIndex, durationMillis) {
 
         if (isExiting) return@LaunchedEffect
 
-        progress = 0f
+        isAnimating = false
 
-        val durationMillis = when {
-            currentStory.media_type == "video" -> {
-                val actual = videoDuration ?: 60_000L
-                min(actual, 60_000L)
+        progressAnim.stop()
+        progressAnim.snapTo(0f)
+
+        isAnimating = true
+
+        progressAnim.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(durationMillis.toInt())
+        )
+    }
+
+    // 🔥 Navigation + video stop logic
+    LaunchedEffect(currentIndex, durationMillis) {
+
+        if (isExiting) return@LaunchedEffect
+
+        delay(durationMillis)
+
+        if (!isExiting) {
+            if (currentIndex < stories.lastIndex) {
+                currentIndex++   // 🔥 triggers recomposition → video stops
+            } else {
+                isExiting = true
+                onFinished(currentStory.id)
             }
-            else -> 20_000L
-        }
-
-        val step = 50L
-        val totalSteps = durationMillis / step
-
-        repeat(totalSteps.toInt()) {
-
-            if (isExiting) return@LaunchedEffect
-
-            delay(step)
-            progress += 1f / totalSteps
-            progress = min(progress, 1f)
-        }
-
-        if (currentIndex < stories.lastIndex) {
-            currentIndex++
-        } else {
-            isExiting = true   // 🔥 STOP EVERYTHING
-            onFinished(currentStory.id)
         }
     }
 
-    // 🔥 PREVENT UI RECOMPOSITION DURING EXIT
     if (isExiting) return
 
     Column(
@@ -120,23 +125,25 @@ fun ViewStoryScreen(
 
             val isVideo = currentStory.media_type == "video"
 
-            // 🔥 MEDIA
-            if (isVideo) {
-                AutoVideo(
-                    url = mediaUrl,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(9f / 16f)
-                )
-            } else {
-                AsyncImage(
-                    model = mediaUrl,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(9f / 16f),
-                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
-                )
+            // 🔥 KEY FIX: force video recreation (prevents looping carryover)
+            key(currentIndex) {
+                if (isVideo) {
+                    AutoVideo(
+                        url = mediaUrl,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(9f / 16f)
+                    )
+                } else {
+                    AsyncImage(
+                        model = mediaUrl,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(9f / 16f),
+                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                    )
+                }
             }
 
             // 🔥 OVERLAY
@@ -149,17 +156,19 @@ fun ViewStoryScreen(
                     modifier = Modifier.padding(top = 12.dp)
                 ) {
 
-                    // 🔥 PROGRESS BARS
-                    LazyRow(
+                    // 🔥 PROGRESS BAR
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 6.dp)
                     ) {
-                        items(stories.size) { index ->
+                        stories.forEachIndexed { index, _ ->
 
                             val barProgress = when {
                                 index < currentIndex -> 1f
-                                index == currentIndex -> progress
+                                index == currentIndex -> {
+                                    if (isAnimating) progressAnim.value else 0f
+                                }
                                 else -> 0f
                             }
 
@@ -177,14 +186,19 @@ fun ViewStoryScreen(
                                 )
                             }
 
-                            Spacer(modifier = Modifier.width(4.dp))
+                            if (index != stories.lastIndex) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                            }
                         }
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
+                    val profileImage = remember(stories) {
+                        correctUrl(stories[0].profile_image)
+                    }
                     AsyncImage(
-                        model = correctUrl(stories[0].profile_image),
+                        model = profileImage,
                         contentDescription = null,
                         modifier = Modifier
                             .padding(start = 12.dp)

@@ -14,6 +14,7 @@ import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.repository.AuthRepository
 import com.example.sociamediaapplication.data.repository.GroupRepository
 import com.example.sociamediaapplication.data.repository.ReelRepository
+import com.example.sociamediaapplication.data.repository.StoryRepository
 import com.example.sociamediaapplication.view.screens.AuthScreen
 import com.example.sociamediaapplication.view.screens.ComingSoonScreen
 import com.example.sociamediaapplication.view.screens.MainScreen
@@ -24,9 +25,11 @@ import com.example.sociamediaapplication.viewmodel.AuthUiState
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
+import com.example.sociamediaapplication.viewmodel.StoryViewModel
 import com.example.sociamediaapplication.viewmodel.factory.AuthViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.GroupViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
+import com.example.sociamediaapplication.viewmodel.factory.StoryViewModelFactory
 
 @Composable
 fun AppNavGraph() {
@@ -49,6 +52,11 @@ fun AppNavGraph() {
     val groupRepository = remember { GroupRepository(tokenManager) }
     val groupFactory = remember { GroupViewModelFactory(groupRepository) }
     val groupViewModel: GroupViewModel = viewModel(factory = groupFactory)
+
+
+    val storyRepository = remember { StoryRepository(tokenManager) }
+    val storyViewModelFactory = remember { StoryViewModelFactory(storyRepository) }
+    val storyViewModel: StoryViewModel = viewModel(factory = storyViewModelFactory)
 
 
     val reels by reelViewModel.reels.collectAsState()
@@ -109,12 +117,15 @@ fun AppNavGraph() {
             MainScreen(
                 mainNavController = navController,
                 authViewModel = authViewModel,   // ✅ pass it,
-                groupViewModel = groupViewModel
+                groupViewModel = groupViewModel,
+                storyViewModel = storyViewModel
             )
         }
 
         composable(Routes.EditStatus.route) {
-            StatusEditorScreen()
+            StatusEditorScreen(
+                storyViewModel = storyViewModel
+            )
         }
 
 //        composable(Routes.Reels.route) {

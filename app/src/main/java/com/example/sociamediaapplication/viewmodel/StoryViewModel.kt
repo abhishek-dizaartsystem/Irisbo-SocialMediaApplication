@@ -48,14 +48,25 @@ class StoryViewModel(
         }
     }
 
-    fun createStory(context: Context, imageUri: Uri) {
+    fun createStory(
+        context: Context,
+        imageUri: Uri,
+        onSuccess: () -> Unit = {}
+    ) {
         viewModelScope.launch {
             try {
                 repository.createStory(context, imageUri)
-            }catch (e: Exception){
-                    Log.e("StoryViewModel", "create story" + e.message.toString())
-                }
+
+                // 🔥 refresh data after upload
+                getMyStories()
+                getFriendsStories()
+
+                onSuccess()
+
+            } catch (e: Exception) {
+                Log.e("StoryViewModel", "create story " + e.message.toString())
             }
+        }
     }
 
     fun getMyStories(){

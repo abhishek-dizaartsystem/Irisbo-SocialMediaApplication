@@ -2,8 +2,13 @@ package com.example.sociamediaapplication.data.utils
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Rect
 import android.net.Uri
 import android.util.Log
+import android.view.View
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -15,6 +20,7 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import java.io.FileOutputStream
 
 fun uriToFile(uri: Uri, context: Context): File {
 
@@ -82,12 +88,12 @@ fun correctUrl2(url: String?): String{
     }else{
         if(url?.startsWith("http") == true){
 
-            Log.d("correctUrl_DEBUG", "$url")
+            Log.d("correctUrl2_DEBUG", "$url")
             return url
         } else{
             val correct_url = url?.split("\\")
 
-            Log.d("correctUrl_DEBUG", "${RetrofitClient.BASE_URL}uploads/${correct_url?.last()}")
+            Log.d("correctUrl2_DEBUG", "${RetrofitClient.BASE_URL}uploads/${correct_url?.last()}")
 
             return "${RetrofitClient.BASE_URL}uploads/${correct_url?.last()}"
         }
@@ -129,4 +135,44 @@ suspend fun getVideoDuration(context: Context, url: String): Long {
             player.release()
         }
     }
+}
+
+fun captureViewBitmap(view: View): Bitmap {
+    val bitmap = Bitmap.createBitmap(
+        view.width,
+        view.height,
+        Bitmap.Config.ARGB_8888
+    )
+    val canvas = Canvas(bitmap)
+    view.draw(canvas)
+    return bitmap
+}
+
+fun captureCanvasBitmap(view: View, rect: Rect): Bitmap {
+    val fullBitmap = Bitmap.createBitmap(
+        view.width,
+        view.height,
+        Bitmap.Config.ARGB_8888
+    )
+
+    val canvas = Canvas(fullBitmap)
+    view.draw(canvas)
+
+    return Bitmap.createBitmap(
+        fullBitmap,
+        rect.left,
+        rect.top,
+        rect.width(),
+        rect.height()
+    )
+}
+
+fun bitmapToUri(context: Context, bitmap: Bitmap): Uri {
+    val file = File(context.cacheDir, "story_${System.currentTimeMillis()}.png")
+
+    FileOutputStream(file).use { out ->
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+    }
+
+    return file.toUri()
 }

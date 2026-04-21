@@ -21,12 +21,14 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.sociamediaapplication.model.editor.EditorLayer
 import com.example.sociamediaapplication.model.editor.ImageLayer
 import com.example.sociamediaapplication.model.editor.TextLayer
@@ -88,8 +90,13 @@ fun EditorLayerRenderer(
     ) {
         when (layer) {
             is ImageLayer -> {
+                val context = LocalContext.current
+
                 AsyncImage(
-                    model = layer.imageUri,
+                    model = ImageRequest.Builder(context)
+                        .data(layer.imageUri)
+                        .allowHardware(false) // 🔥 CRITICAL FIX
+                        .build(),
                     contentDescription = null,
                     modifier = Modifier
                         .wrapContentSize()

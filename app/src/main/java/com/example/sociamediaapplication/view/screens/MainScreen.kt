@@ -81,7 +81,8 @@ import com.example.sociamediaapplication.viewmodel.factory.UploadViewModelFactor
 fun MainScreen(
     mainNavController: NavController,
     authViewModel: AuthViewModel = viewModel(),
-    groupViewModel: GroupViewModel = viewModel()
+    groupViewModel: GroupViewModel = viewModel(),
+    storyViewModel: StoryViewModel = viewModel()
 ){
 
 
@@ -116,9 +117,6 @@ fun MainScreen(
     val friendViewModelFactory = remember { FriendsViewModelFactory(friendRepository) }
     val friendViewModel: FriendViewModel = viewModel(factory = friendViewModelFactory)
 
-    val storyRepository = remember { StoryRepository(tokenManager) }
-    val storyViewModelFactory = remember { StoryViewModelFactory(storyRepository) }
-    val storyViewModel: StoryViewModel = viewModel(factory = storyViewModelFactory)
 
     val profile by profileViewModel.profile.collectAsState()
 

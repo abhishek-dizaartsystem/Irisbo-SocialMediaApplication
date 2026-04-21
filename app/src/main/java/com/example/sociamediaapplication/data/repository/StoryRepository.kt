@@ -46,11 +46,11 @@ class StoryRepository(
             inputStream.close()
         }
 
-        val requestBody = fileBytes.toRequestBody("image/*".toMediaTypeOrNull())
+        val requestBody = fileBytes.toRequestBody("image/png".toMediaTypeOrNull())
 
         val part = MultipartBody.Part.createFormData(
-            "image",
-            "story_${System.currentTimeMillis()}.jpg",
+            "media",
+            "story_${System.currentTimeMillis()}.png",
             requestBody
         )
 

@@ -24,7 +24,7 @@ interface StoryApi {
     @POST("api/stories")
     suspend fun createStory(
         @Header("Authorization") token: String,
-        @Part image: MultipartBody.Part
+        @Part media: MultipartBody.Part
     )
 
     @GET("api/stories/me")
