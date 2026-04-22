@@ -19,6 +19,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
@@ -42,13 +43,18 @@ fun EditorLayerRenderer(
     onTransform: (Offset, Float, Float) -> Unit,
     onSizeMeasured: (IntSize) -> Unit,
     onTextChange: (String) -> Unit,
-    onTextColorChange: (Color) -> Unit
+    onTextColorChange: (Color) -> Unit,
+    onDragStart: (String) -> Unit,
+    onDrag: (Offset) -> Unit,
+    onDragEnd: (String, Offset) -> Unit,
 ) {
     val currentLayer by rememberUpdatedState(layer)
 
 
+    var isDragging = false
 
     Box(
+
         modifier = Modifier
             .wrapContentSize()
             .onSizeChanged {
@@ -68,15 +74,40 @@ fun EditorLayerRenderer(
                 )
             }
             .pointerInput(currentLayer.id) {
+
+
+
                 detectTransformGestures { _, pan, zoom, rotation ->
-                    Log.d("PAN_DEBUG", "pan=$pan scale=${currentLayer.scale}")
                     val newScale = currentLayer.scale * zoom
-
                     val newOffset = currentLayer.offset + (pan)
-
                     val newRotation = currentLayer.rotation + rotation
 
                     onTransform(newOffset, newScale, newRotation)
+
+                    // 🔥 Detect drag start
+                    if (!isDragging && pan != Offset.Zero) {
+                        isDragging = true
+                        onDragStart(currentLayer.id)
+                    }
+
+                    // 🔥 During drag
+                    if (isDragging) {
+                        onDrag(newOffset)
+                    }
+                }
+            }
+            .pointerInput(currentLayer.id + "_end") {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+
+                        if (event.changes.all { it.changedToUp() }) {
+
+                            isDragging = false   // 🔥 THIS LINE FIXES YOUR BUG
+
+                            onDragEnd(currentLayer.id, currentLayer.offset)
+                        }
+                    }
                 }
             }
                 .pointerInput(currentLayer.id + "_tap") {

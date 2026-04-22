@@ -247,5 +247,16 @@ class StatusEditorViewModel : ViewModel() {
         }
     }
 
+    fun removeLayer(id: String) {
+        _layers.update { current ->
+            current.filter { it.id != id }
+        }
+
+        // Optional: clear selection if deleted
+        if (_selectedLayerId.value == id) {
+            _selectedLayerId.value = null
+        }
+    }
+
     fun generateId(): String = UUID.randomUUID().toString()
 }

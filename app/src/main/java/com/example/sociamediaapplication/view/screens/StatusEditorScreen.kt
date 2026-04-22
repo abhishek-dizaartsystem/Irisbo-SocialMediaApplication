@@ -5,7 +5,9 @@ import android.net.Uri
 import android.view.View
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -56,6 +59,10 @@ import com.example.sociamediaapplication.view.components.ToolIcon
 import com.example.sociamediaapplication.view.components.editor.EditorLayerRenderer
 import com.example.sociamediaapplication.viewmodel.StatusEditorViewModel
 import com.example.sociamediaapplication.viewmodel.StoryViewModel
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Offset
 
 @Composable
 fun StatusEditorScreen(
@@ -90,6 +97,24 @@ fun StatusEditorScreen(
     var canvasBounds by remember { mutableStateOf<Rect?>(null) }
 
     var isExporting by remember { mutableStateOf(false) }
+
+    var isDrawingMode by remember { mutableStateOf(false) }
+
+    var paths by remember { mutableStateOf(listOf<Pair<Path, Color>>()) }
+    var currentPath by remember { mutableStateOf<Path?>(null) }
+    var currentColor by remember { mutableStateOf(Color.White) }
+
+    var redraw by remember { mutableStateOf(0) }
+
+    var draggingLayerId by remember { mutableStateOf<String?>(null) }
+    var currentDragOffset by remember { mutableStateOf(Offset.Zero) }
+
+    //Helper functions
+    fun undoLastPath() {
+        if (paths.isNotEmpty()) {
+            paths = paths.dropLast(1)
+        }
+    }
 
     LaunchedEffect(isExporting) {
 
@@ -131,9 +156,36 @@ fun StatusEditorScreen(
                 .onSizeChanged {
                     viewModel.setCanvasSize(it)
                 }
-                .pointerInput(Unit) {
-                    detectTapGestures {
-                        viewModel.selectLayer(null)
+                .pointerInput(isDrawingMode) {
+
+                    if (isDrawingMode) {
+
+                        detectDragGestures(
+                            onDragStart = { offset ->
+                                currentPath = Path().apply {
+                                    moveTo(offset.x, offset.y)
+                                }
+                            },
+                            onDrag = { change, _ ->
+                                change.consume()
+
+                                currentPath?.lineTo(change.position.x, change.position.y)
+
+                                redraw++   // 🔥 FORCE recomposition EVERY frame
+                            },
+                            onDragEnd = {
+                                currentPath?.let {
+                                    paths = paths + (it to currentColor)
+                                }
+                                currentPath = null
+                            }
+                        )
+
+                    } else {
+
+                        detectTapGestures {
+                            viewModel.selectLayer(null)
+                        }
                     }
                 }
                 .onGloballyPositioned {coords ->
@@ -176,9 +228,52 @@ fun StatusEditorScreen(
                         },
                         onTextColorChange = { color ->
                             viewModel.updateTextColor(layer.id, color)
+                        },
+                        onDragStart = { id ->
+                            draggingLayerId = id
+                        },
+
+                        onDrag = { offset ->
+                            currentDragOffset = offset
+                        },
+
+                        onDragEnd = { id, offset ->
+
+                            val screenHeight = view.height
+
+                            val isInDeleteZone = offset.y > screenHeight * 0.75f
+
+                            if (isInDeleteZone) {
+                                viewModel.removeLayer(id)   // 🔥 DELETE HERE
+                            }
+
+                            draggingLayerId = null
                         }
                     )
                 }
+
+            Canvas(modifier = Modifier.fillMaxSize()) {
+
+                redraw
+
+                // Draw previous paths
+                paths.forEach { (path, color) ->
+                    drawPath(
+                        path = path,
+                        color = color,
+                        style = Stroke(width = 8f)
+                    )
+                }
+
+                // Draw current path
+                currentPath?.let {
+                    drawPath(
+                        path = it,
+                        color = currentColor,
+                        style = Stroke(width = 8f)
+                    )
+                }
+            }
         }
 
         if(!isExporting){
@@ -208,7 +303,9 @@ fun StatusEditorScreen(
                     )
 
                     ToolIcon(R.drawable.edit_1_svgrepo_com,
-                        onClick = {}
+                        onClick = {
+                            isDrawingMode = !isDrawingMode
+                        }
                     )
                     ToolIcon(R.drawable.sticker_add_svgrepo_com,
                         onClick = {}
@@ -223,7 +320,24 @@ fun StatusEditorScreen(
                         onClick = {}
                     )
 
+                }
 
+
+                if (isDrawingMode) {
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp, start = 24.dp, end = 24.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ){
+                        ToolIcon(
+                            icon = R.drawable.undo_left_round_svgrepo_com, // use any undo icon
+                            onClick = {
+                                undoLastPath()
+                            }
+                        )
+                    }
 
                 }
 
@@ -298,6 +412,23 @@ fun StatusEditorScreen(
                     .padding(bottom = 40.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
+
+                if (draggingLayerId != null) {
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .size(36.dp)
+                            .background(Color.Red, shape = CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.delete_svgrepo_com),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+
                 Button(
                     onClick = {
                         isExporting = true
@@ -341,8 +472,13 @@ fun StatusEditorScreen(
 //            Spacer(Modifier.width(20.dp))
 //            ToolIcon(R.drawable.photo_svgrepo_com)
 //        }
+
     }
+
+
+
 }
+
 
 
 
