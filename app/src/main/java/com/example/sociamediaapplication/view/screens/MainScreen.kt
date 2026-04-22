@@ -345,8 +345,22 @@ fun MainScreen(
             }
 
             composable(MainRoutes.Reels.route) {
-//                ReelsScreen()
-                ComingSoonScreen()
+
+                LaunchedEffect(Unit) {
+                    reelViewModel.loadReels()
+                }
+
+                val reels by reelViewModel.reels.collectAsState()
+
+                ReelsScreen(
+                    reels = reels,
+                    onLike = {
+                        reelViewModel.toggleLike(it)
+                    },
+                    onSave = {
+                        reelViewModel.toggleSave(it)
+                    }
+                )
             }
 
             composable(MainRoutes.Add.route){

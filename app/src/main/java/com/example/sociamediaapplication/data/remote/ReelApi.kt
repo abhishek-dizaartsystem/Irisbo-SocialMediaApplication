@@ -22,7 +22,7 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ReelApi {
-    @GET("api/reels/all")
+    @GET("api/reels")
     suspend fun getAllReels(
         @Header("Authorization") token: String
     ): ReelListResponse

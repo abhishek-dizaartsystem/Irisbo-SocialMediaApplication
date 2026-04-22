@@ -98,8 +98,12 @@ class ReelsViewModel(
             _loading.value = true
             try {
                 _reels.value = repository.getReels()
+
+
+                Log.d("loadMyReels_DEBUG", "${_myReels.value}")
             } catch (e: Exception) {
                 _error.value = e.message
+                Log.e("ReelsViewModel", e.message.toString())
             } finally {
                 _loading.value = false
             }
@@ -138,37 +142,91 @@ class ReelsViewModel(
         }
     }
 
+//    fun toggleLike(reel: Reel) {
+//
+//        // 🔥 optimistic update
+//        _reels.value = _reels.value.map {
+//            if (it.id == reel.id) {
+//                it.copy(
+//                    is_liked = if(it.is_liked == 1) 0 else 1,
+//                    likes_count =
+//                        if (it.is_liked == 0) it.likes_count - 1
+//                        else it.likes_count + 1
+//                )
+//            } else it
+//        }
+//
+//        viewModelScope.launch {
+//            try {
+////                val response = repository.toggleLike(reel.id)
+//
+//                // 🔥 sync with backend truth
+//                _reels.value = _reels.value.map {
+//                    if (it.id == reel.id) {
+//                        it.copy(
+////                            is_liked = response.liked,
+////                            likes_count = response.likes_count
+//                        )
+//                    } else it
+//                }
+//
+//            } catch (e: Exception) {
+//                // 🔥 rollback on failure
+//                loadReels()
+//            }
+//        }
+//    }
+
     fun toggleLike(reel: Reel) {
 
-        // 🔥 optimistic update
-        _reels.value = _reels.value.map {
-            if (it.id == reel.id) {
-                it.copy(
-                    is_liked = if(it.is_liked == 1) 0 else 1,
-                    likes_count =
-                        if (it.is_liked == 0) it.likes_count - 1
-                        else it.likes_count + 1
-                )
-            } else it
+        val currentList = _reels.value
+
+        val index = currentList.indexOfFirst { it.id == reel.id }
+        if (index == -1) return
+
+        val currentReel = currentList[index]
+        val currentlyLiked = currentReel.is_liked == 1
+
+        // ✅ Optimistic update
+        val updatedReel = currentReel.copy(
+            is_liked = if (currentlyLiked) 0 else 1,
+            likes_count = if (currentlyLiked)
+                currentReel.likes_count - 1
+            else
+                currentReel.likes_count + 1
+        )
+
+        _reels.value = currentList.toMutableList().apply {
+            set(index, updatedReel)
         }
 
         viewModelScope.launch {
             try {
-//                val response = repository.toggleLike(reel.id)
+                val response = if (currentlyLiked) {
+                    repository.unlikeReel(reel.id)
+                } else {
+                    repository.likeReel(reel.id)
+                }
 
-                // 🔥 sync with backend truth
-                _reels.value = _reels.value.map {
-                    if (it.id == reel.id) {
-                        it.copy(
-//                            is_liked = response.liked,
-//                            likes_count = response.likes_count
-                        )
-                    } else it
+                // ✅ Sync with backend truth
+                val isLikedFromApi =
+                    response.user_reaction.reaction == "like"
+
+                val finalReel = currentReel.copy(
+                    is_liked = if (isLikedFromApi) 1 else 0,
+                    likes_count = response.counts.likes
+                )
+
+                _reels.value = _reels.value.toMutableList().apply {
+                    set(index, finalReel)
                 }
 
             } catch (e: Exception) {
-                // 🔥 rollback on failure
-                loadReels()
+
+                // ❌ Rollback
+                _reels.value = _reels.value.toMutableList().apply {
+                    set(index, currentReel)
+                }
             }
         }
     }
@@ -228,6 +286,47 @@ class ReelsViewModel(
         }
     }
 
+//    fun toggleSave(reel: Reel) {
+//
+//        val currentList = _reels.value
+//
+//        val index = currentList.indexOfFirst { it.id == reel.id }
+//        if (index == -1) return
+//
+//        val currentReel = currentList[index]
+//
+//        val currentlySaved = currentReel.is_saved == 1
+//        val updatedReel = currentReel.copy(
+//            is_saved = if (currentlySaved) 0 else 1
+//        )
+//
+//        // ✅ Optimistic UI update
+//        _reels.value = currentList.toMutableList().apply {
+//            set(index, updatedReel)
+//        }
+//
+//        viewModelScope.launch {
+//            try {
+//                if (currentlySaved) {
+//                    repository.unsaveReel(reel.id)
+//                    Log.d("ReelsViewModel", "UNSAVE API CALLED")
+//                } else {
+//                    repository.saveReel(reel.id)
+//                    Log.d("ReelsViewModel", "SAVE API CALLED")
+//                }
+//
+//            } catch (e: Exception) {
+//
+//                Log.e("ReelsViewModel", "Save failed: ${e.message}")
+//
+//                // ❌ Rollback ONLY this item
+//                _reels.value = _reels.value.toMutableList().apply {
+//                    set(index, currentReel)
+//                }
+//            }
+//        }
+//    }
+
     fun toggleSave(reel: Reel) {
 
         val currentList = _reels.value
@@ -236,13 +335,13 @@ class ReelsViewModel(
         if (index == -1) return
 
         val currentReel = currentList[index]
-
         val currentlySaved = currentReel.is_saved == 1
+
+        // ✅ Optimistic update
         val updatedReel = currentReel.copy(
             is_saved = if (currentlySaved) 0 else 1
         )
 
-        // ✅ Optimistic UI update
         _reels.value = currentList.toMutableList().apply {
             set(index, updatedReel)
         }
@@ -251,17 +350,15 @@ class ReelsViewModel(
             try {
                 if (currentlySaved) {
                     repository.unsaveReel(reel.id)
-                    Log.d("ReelsViewModel", "UNSAVE API CALLED")
                 } else {
                     repository.saveReel(reel.id)
-                    Log.d("ReelsViewModel", "SAVE API CALLED")
                 }
+
+                // (Optional) If backend returns state → update here
 
             } catch (e: Exception) {
 
-                Log.e("ReelsViewModel", "Save failed: ${e.message}")
-
-                // ❌ Rollback ONLY this item
+                // ❌ Rollback
                 _reels.value = _reels.value.toMutableList().apply {
                     set(index, currentReel)
                 }
@@ -426,7 +523,12 @@ class ReelsViewModel(
         }
     }
 
+    private val _startIndex = MutableStateFlow(0)
+    val startIndex: StateFlow<Int> = _startIndex
 
+    fun setStartIndex(index: Int) {
+        _startIndex.value = index
+    }
 
 }
 
