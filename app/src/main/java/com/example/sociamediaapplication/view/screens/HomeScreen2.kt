@@ -1,6 +1,5 @@
 package com.example.sociamediaapplication.view.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,9 +38,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.data.utils.correctUrl
+import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.view.components.Post
 import com.example.sociamediaapplication.view.navigation.Routes
+import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.StoryViewModel
 
 @Composable
@@ -50,11 +51,15 @@ fun HomeScreen2(
     postViewModel: PostViewModel,
     storyViewModel: StoryViewModel,
     onOtherProfileClick: (Int) -> Unit = {},
-    onStoryClick: (Int) -> Unit = {}
+    onStoryClick: (Int) -> Unit = {},
+    profileViewModel: ProfileViewModel,
+    onUserStoryClick: () -> Unit
 ) {
 
 
     val posts by postViewModel.globalPosts.collectAsState()
+
+    val profile by profileViewModel.profile.collectAsState()
 
     val stories by storyViewModel.stories.collectAsState()
 
@@ -82,12 +87,15 @@ fun HomeScreen2(
                             .height(220.dp)
                             .aspectRatio(0.5f)
                             .clickable{
-                                mainNavController.navigate(Routes.EditStatus.route)
+                                onUserStoryClick()
                             }
                     ) {
                         Box(modifier = Modifier.fillMaxSize()){
-                            Image(
-                                painter = painterResource(R.drawable.rectangle_5),
+                            AsyncImage(
+                                model = if(profile?.data?.profile_image == null)
+                                    R.drawable.profile_image_placeholder
+                                else
+                                    correctUrl(profile?.data?.profile_image),
                                 contentDescription = "",
                                 modifier = Modifier
                                     .height(220.dp)
@@ -100,10 +108,14 @@ fun HomeScreen2(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Column(
-                                    modifier = Modifier.background(
-                                        color = Blue,
-                                        shape = RoundedCornerShape(50.dp)
-                                    )
+                                    modifier = Modifier
+                                        .background(
+                                            color = Blue,
+                                            shape = RoundedCornerShape(50.dp)
+                                        )
+                                        .clickable{
+                                            mainNavController.navigate(Routes.EditStatus.route)
+                                        }
                                 ) {
                                     Icon(
                                         painter = painterResource(R.drawable.add_svgrepo_com),
@@ -154,13 +166,13 @@ fun HomeScreen2(
                                         contentDescription = "",
                                         modifier = Modifier
                                             .size(40.dp)
-                                            .clip(CircleShape)
+                                            .clip(HexagonShape)
                                             .aspectRatio(1f)
 
                                             .border(
                                                 2.dp,
                                                 Blue,
-                                                CircleShape
+                                                HexagonShape
                                             ),
                                         contentScale = ContentScale.Crop
 

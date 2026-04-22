@@ -52,7 +52,6 @@ import com.example.sociamediaapplication.data.repository.FriendRepository
 import com.example.sociamediaapplication.data.repository.PostRepository
 import com.example.sociamediaapplication.data.repository.ProfileRepository
 import com.example.sociamediaapplication.data.repository.ReelRepository
-import com.example.sociamediaapplication.data.repository.StoryRepository
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
@@ -73,7 +72,6 @@ import com.example.sociamediaapplication.viewmodel.factory.FriendsViewModelFacto
 import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ProfileViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
-import com.example.sociamediaapplication.viewmodel.factory.StoryViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.UploadViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -450,7 +448,11 @@ fun MainScreen(
                         navController.navigate(
                             MainRoutes.StoryView.createRoute(userId)
                         )
-                    }
+                    },
+                    onUserStoryClick = {
+                        navController.navigate(MainRoutes.StoryViewUser.route)
+                    },
+                    profileViewModel = profileViewModel
                 )
             }
 
@@ -468,11 +470,31 @@ fun MainScreen(
 
                 ViewStoryScreen(
                     storyViewModel = storyViewModel,
-                    onFinished = {storyId->
+                    onFinished = {
                         Log.d("MainScreen", "finished video")
-                        storyViewModel.markStoryViewed(storyId)
                         navController.popBackStack()
-                    }
+                    },
+                    profileViewModel = profileViewModel,
+                    navController = navController
+                )
+            }
+            composable(
+                route = MainRoutes.StoryViewUser.route,
+            ) {
+
+                LaunchedEffect(Unit) {
+                    storyViewModel.getMyStories()
+                }
+
+                ViewStoryScreen(
+                    storyViewModel = storyViewModel,
+                    isUserStory = true,
+                    onFinished = {
+                        Log.d("MainScreen", "finished video")
+                        navController.popBackStack()
+                    },
+                    profileViewModel = profileViewModel,
+                    navController = navController
                 )
             }
 

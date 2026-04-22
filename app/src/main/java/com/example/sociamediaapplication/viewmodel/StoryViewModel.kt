@@ -74,6 +74,7 @@ class StoryViewModel(
         viewModelScope.launch {
             try {
                 _myStories.value = repository.getMyStories()
+                Log.d("StoryViewModel", "get my stories = ${_myStories.value}")
             }catch (e: Exception){
                 Log.e("StoryViewModel", "get my stories" + e.message.toString())
             }

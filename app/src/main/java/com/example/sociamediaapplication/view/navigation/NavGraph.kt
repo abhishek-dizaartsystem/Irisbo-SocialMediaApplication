@@ -124,7 +124,10 @@ fun AppNavGraph() {
 
         composable(Routes.EditStatus.route) {
             StatusEditorScreen(
-                storyViewModel = storyViewModel
+                storyViewModel = storyViewModel,
+                onUploadSuccess = {
+                    navController.popBackStack()
+                }
             )
         }
 

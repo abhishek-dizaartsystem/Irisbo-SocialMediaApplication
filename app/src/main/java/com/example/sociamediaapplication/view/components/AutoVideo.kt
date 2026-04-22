@@ -2,6 +2,7 @@ package com.example.sociamediaapplication.view.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -13,7 +14,9 @@ import androidx.media3.ui.PlayerView
 @Composable
 fun AutoVideo(
     url: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isPaused: Boolean = false          // 🆕 add this param
+
 ) {
     val context = LocalContext.current
 
@@ -26,6 +29,10 @@ fun AutoVideo(
             volume = 1f
             prepare()
         }
+    }
+
+    LaunchedEffect(isPaused) {
+        if (isPaused) player.pause() else player.play()
     }
 
     DisposableEffect(Unit) {

@@ -19,4 +19,6 @@ sealed class MainRoutes(val route: String) {
         fun createRoute(userId: Int) = "story/$userId"
     }
 
+    object StoryViewUser: MainRoutes("story/user")
+
 }

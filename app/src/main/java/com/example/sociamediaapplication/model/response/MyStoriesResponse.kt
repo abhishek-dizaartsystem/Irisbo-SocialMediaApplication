@@ -7,7 +7,7 @@ data class MyStoriesResponse(
 
 data class MyStory(
     val id: Int,
-    val mediaUrl: String,
+    val media_url: String,
     val media_type: String,
     val caption: String?,
     val created_at: String,
