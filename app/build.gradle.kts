@@ -77,4 +77,8 @@ dependencies {
     implementation("androidx.media3:media3-ui:1.3.1")
     implementation("com.razorpay:checkout:1.6.40")
 
+    implementation("io.socket:socket.io-client:2.1.0") {
+        exclude(group = "org.json", module = "json")
+    }
+
 }
