@@ -7,7 +7,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -28,13 +31,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,42 +53,77 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl
+import com.example.sociamediaapplication.data.utils.formatToTime
 import com.example.sociamediaapplication.model.ChatMessage
 import com.example.sociamediaapplication.ui.theme.Black
+import com.example.sociamediaapplication.ui.theme.Green
 import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.view.components.ChatBubble
+import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.viewmodel.ChatViewModel
+import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import java.io.File
 
-
-val messages = listOf(
-    ChatMessage("Hye Abhishek this side", true),
-    ChatMessage("Hello I am Kartik", false),
-    ChatMessage("Send me the required documents", true),
-    ChatMessage("Okay I'll provide u asap", false),
-    ChatMessage("Thanks", true)
-)
+//
+//val messages = listOf(
+//    ChatMessage("Hye Abhishek this side", true),
+//    ChatMessage("Hello I am Kartik", false),
+//    ChatMessage("Send me the required documents", true),
+//    ChatMessage("Okay I'll provide u asap", false),
+//    ChatMessage("Thanks", true)
+//)
 
 
 
 @Composable
 fun ChatScreen(
-    userId: String = "Somu",
     navController: NavController,
-    viewModel: ChatViewModel = viewModel()
+    chatViewModel: ChatViewModel = viewModel(),
+    profileViewModel: ProfileViewModel = viewModel()
 ){
     
     var typeMessage by remember { mutableStateOf("") }
     var showAttachmentMenu by remember { mutableStateOf(false) }
 
+    val messages by chatViewModel.messages.collectAsState()
+    val profile by profileViewModel.profile.collectAsState()
+
+    val conversationDetails by chatViewModel.conversationDetails.collectAsState()
+    val onlineUsers by chatViewModel.onlineUsers.collectAsState()
+    val lastSeenMap by chatViewModel.lastSeenMap.collectAsState()
+
+    val friendId = conversationDetails?.data?.other_user_id
+
+    val isOnline = friendId != null && onlineUsers.contains(friendId)
+
+    val statusText = when {
+        isOnline -> "Online"
+        friendId != null && lastSeenMap[friendId] != null ->
+            "Last seen ${formatToTime(lastSeenMap[friendId]!!)}"
+        else -> "Offline"
+    }
+
+
+
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(messages?.messages?.size) {
+        val size = messages?.messages?.size ?: 0
+        if (size > 0) {
+            listState.animateScrollToItem(size - 1)
+        }
+    }
+
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) {uri: Uri?->
         uri?.let{
-            viewModel.addImage(it)
+            chatViewModel.addImage(it)
         }
     }
 
@@ -89,7 +131,7 @@ fun ChatScreen(
         contract = ActivityResultContracts.GetContent()
     ) {uri: Uri?->
         uri?.let{
-            viewModel.addVideo(it)
+            chatViewModel.addVideo(it)
         }
     }
 
@@ -125,7 +167,7 @@ fun ChatScreen(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
         if (success && photoUri != null) {
-            viewModel.addImage(photoUri!!)
+            chatViewModel.addImage(photoUri!!)
         }
     }
 
@@ -135,7 +177,7 @@ fun ChatScreen(
         contract = ActivityResultContracts.CaptureVideo()
     ) { success ->
         if (success && videoUri != null) {
-            viewModel.addVideo(videoUri!!)
+            chatViewModel.addVideo(videoUri!!)
         }
     }
 
@@ -180,13 +222,26 @@ fun ChatScreen(
                             tint = Black
                         )
                     }
-                    Icon(
-                        painter = painterResource(R.drawable.dot_small_svgrepo_com),
-                        contentDescription = "",
-                        modifier = Modifier.size(40.dp)
-                    )
+                    Box() {
+                        AsyncImage(
+                            model = if(conversationDetails?.data?.other_user_profile_image == null)
+                                        R.drawable.profile_image_placeholder
+                                    else
+                                        correctUrl(conversationDetails?.data?.other_user_profile_image),
+                            contentDescription = null,
+                            modifier = Modifier.size(40.dp).aspectRatio(1f).clip(HexagonShape),
+                            contentScale = ContentScale.Crop
+                        )
+                        Icon(
+                            painter = painterResource(R.drawable.dot_small_svgrepo_com),
+                            contentDescription = "",
+                            modifier = Modifier.size(40.dp),
+                            tint = if (isOnline) Green else Black
+                        )
+                    }
+
                     Text(
-                        text = userId,
+                        text = conversationDetails?.data?.other_user_name ?: "null",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -270,7 +325,15 @@ fun ChatScreen(
                     shape = RoundedCornerShape(50.dp),
                     trailingIcon = {
                         IconButton(
-                            onClick = {},
+                            onClick = {
+                                if (typeMessage.isNotBlank()) {
+                                    chatViewModel.sendMessage(
+                                        conversationId = messages?.conversationId ?: 0,
+                                        text = typeMessage
+                                    )
+                                    typeMessage = ""
+                                }
+                            },
                             modifier = Modifier.padding(end = 4.dp)
                         ) {
                             Icon(
@@ -369,13 +432,23 @@ fun ChatScreen(
         }
     ) {innerPadding->
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .background(LBlue)
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            items(messages){msg->
-                ChatBubble(msg)
+            items(messages?.messages ?: emptyList()){msg->
+                ChatBubble(
+                    message = ChatMessage(
+                        message = msg.content,
+                        isUser = msg.sender_id == profile?.data?.id,
+                        msgTime = msg.created_at
+                    ),
+                    onDeleteClick = {
+                        chatViewModel.deleteMessage(msg.id)
+                    }
+                )
             }
         }
     }

@@ -48,6 +48,7 @@ import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.repository.ChatRepository
 import com.example.sociamediaapplication.data.repository.FriendRepository
 import com.example.sociamediaapplication.data.repository.PostRepository
 import com.example.sociamediaapplication.data.repository.ProfileRepository
@@ -61,6 +62,7 @@ import com.example.sociamediaapplication.view.navigation.ChatsNavGraph
 import com.example.sociamediaapplication.view.navigation.MainRoutes
 import com.example.sociamediaapplication.view.navigation.MenuNavGraph
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
+import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.FriendViewModel
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
 import com.example.sociamediaapplication.viewmodel.PostViewModel
@@ -68,6 +70,7 @@ import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.StoryViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
+import com.example.sociamediaapplication.viewmodel.factory.ChatViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.FriendsViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ProfileViewModelFactory
@@ -115,11 +118,16 @@ fun MainScreen(
     val friendViewModelFactory = remember { FriendsViewModelFactory(friendRepository) }
     val friendViewModel: FriendViewModel = viewModel(factory = friendViewModelFactory)
 
+    val chatRepository = remember { ChatRepository(tokenManager) }
+    val chatViewModelFactory = remember { ChatViewModelFactory(chatRepository) }
+    val chatViewModel: ChatViewModel = viewModel(factory = chatViewModelFactory)
 
     val profile by profileViewModel.profile.collectAsState()
 
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile()
+
+        chatViewModel.observePresence()
     }
 
 
@@ -371,7 +379,10 @@ fun MainScreen(
             }
 
             composable(MainRoutes.Chats.route) {
-                ChatsNavGraph()
+                ChatsNavGraph(
+                    chatViewModel = chatViewModel,
+                    profileViewModel = profileViewModel
+                )
             }
 
             composable(

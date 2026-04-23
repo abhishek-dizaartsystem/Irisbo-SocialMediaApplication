@@ -25,7 +25,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LBlue
@@ -33,12 +35,12 @@ import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
 fun ChatThumbnail(
-    onChatClick: (String)-> Unit,
-    userId:String,
+    onChatClick: ()-> Unit,
+    userId:Int,
     friendName: String,
     recentMsg: String,
     msgTime: String,
-    friendProfilePhoto: Painter,
+    friendProfilePhoto: String?,
     seen: Boolean = true
 ){
     Column(
@@ -49,7 +51,7 @@ fun ChatThumbnail(
             )
             .padding(horizontal = 12.dp)
             .clickable(
-                onClick = { onChatClick(userId) }
+                onClick = { onChatClick() }
             )
     ) {
         Spacer(modifier = Modifier.height(8.dp))
@@ -60,8 +62,11 @@ fun ChatThumbnail(
                 onClick = { },
                 modifier = Modifier.size(50.dp)
             ) {
-                Image(
-                    painter = friendProfilePhoto,
+                AsyncImage(
+                    model = if(friendProfilePhoto == null)
+                        R.drawable.profile_image_placeholder
+                    else
+                        correctUrl(friendProfilePhoto),
                     contentDescription = "Profile Image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -112,8 +117,8 @@ fun ChatTHumbnailPreview(){
         friendName = "Kartik",
         recentMsg = "Hello",
         msgTime = "fri at 5:40A.M",
-        friendProfilePhoto = painterResource(R.drawable.rectangle_24),
+        friendProfilePhoto = "painterResource(R.drawable.rectangle_24)",
         seen = false,
-        userId = "1"
+        userId = 1
     )
 }

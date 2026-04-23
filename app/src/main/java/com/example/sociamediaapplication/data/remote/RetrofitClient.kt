@@ -65,4 +65,8 @@ object RetrofitClient {
         retrofit.create(StoryApi::class.java)
     }
 
+    val chatApi: ChatApi by lazy {
+        retrofit.create(ChatApi::class.java)
+    }
+
 }

@@ -1,32 +1,48 @@
 package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.formatToTime
 import com.example.sociamediaapplication.model.ChatMessage
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 
 
 @Composable
-fun ChatBubble(message: ChatMessage) {
+fun ChatBubble(
+    message: ChatMessage,
+    onDeleteClick: () -> Unit = {}
+) {
+
+    var showMenu by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -35,7 +51,16 @@ fun ChatBubble(message: ChatMessage) {
             Arrangement.End else Arrangement.Start
     ) {
         Box(
-            contentAlignment = Alignment.BottomEnd
+            contentAlignment = Alignment.BottomEnd,
+            modifier = Modifier
+                .widthIn(min = 60.dp)
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onLongPress = {
+                            showMenu = true
+                        }
+                    )
+                }
         ){
             Box(
                 modifier = Modifier
@@ -46,8 +71,8 @@ fun ChatBubble(message: ChatMessage) {
                             Color(0xFFB3E5FC),  // friend bubble
                         shape = RoundedCornerShape(16.dp)
                     )
-                    .padding(12.dp)
-                    .widthIn(max = 260.dp)
+                    .padding(14.dp)
+                    .widthIn(min = 60.dp, max = 260.dp)
             ) {
                 Text(
                     text = message.message,
@@ -60,7 +85,7 @@ fun ChatBubble(message: ChatMessage) {
                     .padding(bottom = 1.dp, end = 10.dp)
             ) {
                 Text(
-                    text = "12:44",
+                    text = formatToTime(message.msgTime),
                     fontSize = 10.sp,
                     modifier = Modifier.padding(end = 2.dp)
                 )
@@ -74,6 +99,19 @@ fun ChatBubble(message: ChatMessage) {
                 }
 
             }
+
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Delete") },
+                    onClick = {
+                        showMenu = false
+                        onDeleteClick()
+                    }
+                )
+            }
         }
 
     }
@@ -84,6 +122,6 @@ fun ChatBubble(message: ChatMessage) {
 @Composable
 fun ChatBubblePreview(){
     ChatBubble(
-        ChatMessage("Hello Kartik", true)
+        ChatMessage("Hello Kartik", true, "12:44")
     )
 }
