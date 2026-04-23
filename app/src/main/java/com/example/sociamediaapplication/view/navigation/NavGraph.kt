@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.sociamediaapplication.data.preferences.SocketManager
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.repository.AuthRepository
 import com.example.sociamediaapplication.data.repository.GroupRepository
@@ -62,10 +63,21 @@ fun AppNavGraph() {
     val reels by reelViewModel.reels.collectAsState()
     val loading by reelViewModel.loading.collectAsState()
 
+    val token = remember { tokenManager.getToken() }
+
     LaunchedEffect(authState) {
         if (authState is AuthUiState.LoggedOut) {
             navController.navigate(Routes.Auth.route)
             authViewModel.resetState()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (repository.isLoggedIn()) {
+            val token = tokenManager.getToken()
+            if (!token.isNullOrEmpty()) {
+                SocketManager.connect(token)
+            }
         }
     }
 
