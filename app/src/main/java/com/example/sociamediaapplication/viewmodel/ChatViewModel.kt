@@ -43,6 +43,8 @@ class ChatViewModel(
 
     private var _isListening = false
 
+    private var _isListeningConversations = false
+
     fun deleteMessage(messageId: Int) {
         val socket = SocketManager.getSocket()
 
@@ -72,6 +74,42 @@ class ChatViewModel(
                 _messages.value = current.copy(
                     messages = updatedList
                 )
+            }
+        }
+    }
+
+    fun observeConversationUpdates() {
+
+        if (_isListeningConversations) return
+        _isListeningConversations = true
+
+        val socket = SocketManager.getSocket()
+
+        socket?.on("conversation:updated") { args ->
+            val data = args[0] as JSONObject
+            val summaryJson = data.getJSONObject("data")
+
+            val updatedConversationId = summaryJson.optInt("conversation_id", -1)
+
+            viewModelScope.launch {
+                val current = _conversations.value ?: return@launch
+
+                val updatedList = current.conversations.map { conv ->
+                    if (conv.conversation_id == updatedConversationId) {
+                        val lastMsg = summaryJson.optJSONObject("last_message")
+                        conv.copy(
+                            last_message_id = lastMsg?.optInt("id") ?: conv.last_message_id,
+                            content = lastMsg?.optString("content") ?: conv.content,
+                            last_message_at = lastMsg?.optString("created_at") ?: conv.last_message_at,
+                            last_sender_id = lastMsg?.optInt("sender_id") ?: conv.last_sender_id
+                        )
+                    } else conv
+                }
+
+                // Bubble updated conversation to top
+                val reordered = updatedList.sortedByDescending { it.last_message_at }
+
+                _conversations.value = current.copy(conversations = reordered)
             }
         }
     }
@@ -200,6 +238,53 @@ class ChatViewModel(
                 _conversationDetails.value = repository.getConversationDetails(conversationId)
             }catch (e: Exception){
                 Log.e("Chat_VM", e.message.toString())
+            }
+        }
+    }
+
+    fun markConversationRead(conversationId: Int){
+        viewModelScope.launch {
+            try {
+                repository.markConversationRead(conversationId)
+            } catch (e: Exception){
+                Log.e("Chat_VM", e.message.toString())
+            }
+        }
+    }
+
+    fun markConversationReadSocket(conversationId: Int) {
+        val socket = SocketManager.getSocket()
+        val json = JSONObject()
+        json.put("conversationId", conversationId)
+        socket?.emit("conversation:read", json)
+    }
+
+    private var _isListeningReadUpdates = false
+
+    fun observeReadUpdates() {
+
+        if(_isListeningReadUpdates) return
+        _isListeningReadUpdates = true
+
+        val socket = SocketManager.getSocket()
+
+        socket?.on("conversation:read:update") { args ->
+            val data = args[0] as JSONObject
+            val payload = data.getJSONObject("data")
+
+            val updatedConversationId = payload.optInt("conversationId", -1)
+            val lastReadMessageId = payload.optInt("last_read_message_id", -1)
+
+            viewModelScope.launch {
+                val current = _conversations.value ?: return@launch
+
+                val updatedList = current.conversations.map { conv ->
+                    if (conv.conversation_id == updatedConversationId) {
+                        conv.copy(last_read_message_id = lastReadMessageId)
+                    } else conv
+                }
+
+                _conversations.value = current.copy(conversations = updatedList)
             }
         }
     }

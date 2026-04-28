@@ -5,6 +5,7 @@ import com.example.sociamediaapplication.model.response.ConversationsResponse
 import com.example.sociamediaapplication.model.response.MessagesResponse
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ChatApi {
@@ -26,4 +27,9 @@ interface ChatApi {
         @Path("conversationId") conversationId: Int
     ): ConversationDetailsResponse
 
+    @PUT("api/chat/{conversationId}/read")
+    suspend fun markConversationRead(
+        @Header("Authorization") token : String,
+        @Path("conversationId") conversationId: Int
+    )
 }

@@ -28,4 +28,10 @@ class ChatRepository(
 
         return api.getConversationDetails(token, conversationId)
     }
+
+    suspend fun markConversationRead(conversationId: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.markConversationRead(token, conversationId)
+    }
 }

@@ -2,6 +2,9 @@ package com.example.sociamediaapplication.view.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.media3.common.util.Log
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -27,8 +30,12 @@ fun ChatsNavGraph(
     ){
         composable(ChatsRoutes.ChatsList.route) {
 
+//            val profile by profileViewModel.profile.collectAsState()
+
             LaunchedEffect(Unit) {
                 chatViewModel.fetchConversations()
+                chatViewModel.observeConversationUpdates()
+                chatViewModel.observeReadUpdates() // 👈 add this
             }
 
             ChatsScreen(
