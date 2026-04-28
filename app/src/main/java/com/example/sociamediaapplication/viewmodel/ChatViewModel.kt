@@ -45,6 +45,28 @@ class ChatViewModel(
 
     private var _isListeningConversations = false
 
+    private var currentPage = 1
+    private var isLoadingMore = false
+    private var hasMore = true
+
+    private val _scrollToBottom = MutableStateFlow(false)
+    val scrollToBottom: StateFlow<Boolean> = _scrollToBottom
+
+    fun notifyScrollToBottom() {
+        _scrollToBottom.value = true
+    }
+
+    fun consumeScrollToBottom() {
+        _scrollToBottom.value = false
+    }
+
+    private val _prependedCount = MutableStateFlow(0)
+    val prependedCount: StateFlow<Int> = _prependedCount
+
+    fun consumePrependedCount() {
+        _prependedCount.value = 0
+    }
+
     fun deleteMessage(messageId: Int) {
         val socket = SocketManager.getSocket()
 
@@ -184,6 +206,8 @@ class ChatViewModel(
                 _messages.value = current.copy(
                     messages = current.messages + newMsg
                 )
+
+                notifyScrollToBottom()
             }
         }
     }
@@ -222,12 +246,62 @@ class ChatViewModel(
         }
     }
 
-    fun fetchMessages(conversationId: Int){
+    fun fetchMessages(conversationId: Int) {
+        currentPage = 1
+        hasMore = true
+
         viewModelScope.launch {
             try {
-                _messages.value = repository.getMessages(conversationId)
-            }catch (e: Exception){
+                val response = repository.getMessages(conversationId, currentPage)
+
+                Log.d("FetchMsg_DEBUG", response.pagination.toString())
+
+                hasMore = response.pagination.page < response.pagination.totalPages
+                _messages.value = response
+            } catch (e: Exception) {
                 Log.e("Chat_VM", e.message.toString())
+            }
+        }
+    }
+
+    fun loadMoreMessages(conversationId: Int) {
+        if (isLoadingMore || !hasMore) return
+
+        isLoadingMore = true
+        currentPage++
+
+        viewModelScope.launch {
+            try {
+                Log.d("LoadMore_DEBUG", currentPage.toString())
+                Log.d("LoadMore_DEBUG", conversationId.toString())
+                val response = repository.getMessages(conversationId, currentPage)
+
+                val current = _messages.value ?: return@launch
+
+                // 🔥 IMPORTANT: prepend older messages
+                val combined = response.messages + current.messages
+
+                val unique = combined.distinctBy { it.id }
+
+                _messages.value = current.copy(
+                    messages = unique
+                )
+
+                val addedCount = unique.size - current.messages.size
+                if (addedCount > 0) {
+                    _prependedCount.value = addedCount
+                }
+
+                // optional: stop if no more pages
+                if (response.messages.isEmpty()) {
+                    hasMore = false
+                }
+
+            } catch (e: Exception) {
+                currentPage--  // rollback
+                Log.e("Chat_VM", e.message.toString())
+            } finally {
+                isLoadingMore = false
             }
         }
     }

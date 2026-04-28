@@ -17,10 +17,10 @@ class ChatRepository(
         return api.getConversations(token)
     }
 
-    suspend fun getMessages(conversationId: Int): MessagesResponse{
+    suspend fun getMessages(conversationId: Int, page: Int): MessagesResponse{
         val token = "Bearer ${tokenManager.getToken()}"
 
-        return api.getMessages(token, conversationId)
+        return api.getMessages(token, conversationId, page)
     }
 
     suspend fun getConversationDetails(conversationId: Int): ConversationDetailsResponse{

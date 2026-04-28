@@ -7,6 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ChatApi {
 
@@ -18,7 +19,8 @@ interface ChatApi {
     @GET("api/chat/{conversationId}/messages")
     suspend fun getMessages(
         @Header("Authorization") token : String,
-        @Path("conversationId") conversationId: Int
+        @Path("conversationId") conversationId: Int,
+        @Query("page") page: Int
     ): MessagesResponse
 
     @GET("api/chat/{conversationId}")

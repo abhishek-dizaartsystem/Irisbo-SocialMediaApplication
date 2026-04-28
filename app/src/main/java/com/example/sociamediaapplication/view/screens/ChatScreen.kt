@@ -38,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -85,7 +86,8 @@ import java.io.File
 fun ChatScreen(
     navController: NavController,
     chatViewModel: ChatViewModel = viewModel(),
-    profileViewModel: ProfileViewModel = viewModel()
+    profileViewModel: ProfileViewModel = viewModel(),
+    conversationId: Int? = 0
 ){
     
     var typeMessage by remember { mutableStateOf("") }
@@ -102,6 +104,8 @@ fun ChatScreen(
 
     val isOnline = friendId != null && onlineUsers.contains(friendId)
 
+
+
     val statusText = when {
         isOnline -> "Online"
         friendId != null && lastSeenMap[friendId] != null ->
@@ -112,13 +116,27 @@ fun ChatScreen(
 
 
     val listState = rememberLazyListState()
+    var previousSize by remember { mutableStateOf(0) }
 
-    LaunchedEffect(messages?.messages?.size) {
-        val size = messages?.messages?.size ?: 0
-        if (size > 0) {
-            listState.animateScrollToItem(size - 1)
-        }
-    }
+//    LaunchedEffect(messages?.messages?.size) {
+//
+//        val newSize = messages?.messages?.size ?: 0
+//
+//        if (newSize > previousSize) {
+//
+//            val addedItems = newSize - previousSize
+//
+//            if (listState.firstVisibleItemIndex <= 2) {
+//                // 🔥 user is near top → preserve scroll (pagination)
+//                listState.scrollToItem(addedItems)
+//            } else {
+//                // 🔥 new message → scroll to bottom
+//                listState.animateScrollToItem(newSize - 1)
+//            }
+//        }
+//
+//        previousSize = newSize
+//    }
 
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -193,8 +211,8 @@ fun ChatScreen(
             takePictureLauncher.launch(photoUri!!)
         }
     }
-
-    val conversationId = conversationDetails?.data?.conversation_id
+//
+//    val conversationId = conversationDetails?.data?.conversation_id
 
     DisposableEffect(conversationId) {
         onDispose {
@@ -202,6 +220,58 @@ fun ChatScreen(
                 chatViewModel.markConversationReadSocket(conversationId)
             }
         }
+    }
+
+//
+//    LaunchedEffect(listState) {
+//        snapshotFlow { listState.firstVisibleItemIndex }
+//            .collect { index ->
+//
+//                if (index <= 2) {
+//                    chatViewModel.loadMoreMessages(conversationId?:0)
+//                }
+//            }
+//    }
+
+    val prependedCount by chatViewModel.prependedCount.collectAsState()
+    val scrollToBottom by chatViewModel.scrollToBottom.collectAsState()
+
+// 1. Initial load — instant jump, no animation
+    LaunchedEffect(messages?.conversationId) {
+        val size = messages?.messages?.size ?: 0
+        if (size > 0) {
+            listState.scrollToItem(size - 1)
+        }
+    }
+
+// 2. New message arrived — smooth scroll to bottom
+    LaunchedEffect(scrollToBottom) {
+        if (scrollToBottom) {
+            val size = messages?.messages?.size ?: 0
+            if (size > 0) {
+                listState.animateScrollToItem(size - 1)
+            }
+            chatViewModel.consumeScrollToBottom()
+        }
+    }
+
+// 3. Older messages prepended — lock viewport, no jump
+    LaunchedEffect(prependedCount) {
+        if (prependedCount > 0) {
+            // With keyed items, LazyColumn maintains position automatically
+            // Just consume the signal — no manual scroll needed
+            chatViewModel.consumePrependedCount()
+        }
+    }
+
+// 4. Pagination trigger — only when truly at the top
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .collect { index ->
+                if (index == 0) {
+                    chatViewModel.loadMoreMessages(conversationId ?: 0)
+                }
+            }
     }
 
 
@@ -447,7 +517,10 @@ fun ChatScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            items(messages?.messages ?: emptyList()){msg->
+            items(
+                items = messages?.messages ?: emptyList(),
+                key = { msg -> msg.id }  // 👈 add this
+            ){msg->
                 ChatBubble(
                     message = ChatMessage(
                         message = msg.content,
@@ -467,6 +540,6 @@ fun ChatScreen(
 @Composable
 fun ChatScreenPreview(){
     ChatScreen(
-        navController = rememberNavController()
+        navController = rememberNavController(),
     )
 }

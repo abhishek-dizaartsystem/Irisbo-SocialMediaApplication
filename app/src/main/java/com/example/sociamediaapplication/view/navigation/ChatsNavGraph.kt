@@ -2,9 +2,6 @@ package com.example.sociamediaapplication.view.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.media3.common.util.Log
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -78,7 +75,8 @@ fun ChatsNavGraph(
             ChatScreen(
                 navController = navController,
                 chatViewModel = chatViewModel,
-                profileViewModel = profileViewModel
+                profileViewModel = profileViewModel,
+                conversationId = conversationId
             )
         }
     }
