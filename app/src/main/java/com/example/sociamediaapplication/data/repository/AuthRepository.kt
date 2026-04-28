@@ -44,16 +44,20 @@ class AuthRepository(
     }
 
     suspend fun logout(): AuthResponse {
+
+        println("Logout repository")
         val token = tokenManager.getToken()
 
         // If token already missing → just clear + return
         if (token.isNullOrEmpty()) {
             tokenManager.clearToken()
+
             return AuthResponse("Already logged out", null)
         }
 
         val response = api.logout("Bearer $token")
         tokenManager.clearToken()
+        println("token cleared")
         return response
     }
 

@@ -60,7 +60,9 @@ fun SettingsNavGraph(
                 onLanguage = { navController.navigate(SettingsRoutes.Language.route) },
                 onHelpCenter = { navController.navigate(SettingsRoutes.HelpCenter.route) },
                 onLogout = {
+                    println("Logout Clicked")
                     authViewModel.logout()
+                    println("Logout Clicked")
                 },
                 profileViewModel = profileViewModel
             )

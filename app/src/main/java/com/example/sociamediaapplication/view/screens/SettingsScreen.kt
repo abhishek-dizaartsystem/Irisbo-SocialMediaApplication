@@ -657,6 +657,7 @@ fun SettingsScreen(
                             onClick = {
                                 println("Logout Clicked")
                                 onLogout()
+                                println("Logout Clicked")
                             },
                             contentPadding = PaddingValues(0.dp),
                             shape = RoundedCornerShape(0.dp),

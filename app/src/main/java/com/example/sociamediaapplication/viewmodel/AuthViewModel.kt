@@ -78,7 +78,10 @@ class AuthViewModel(
             try {
                 _authState.value = AuthUiState.Loading
 
+                println("Logout Clicked")
                 val response = repository.logout()
+
+                println("Logout Called")
 
                 Log.d("AUTH_DEBUG", "${response.message}")
                 Log.d("AUTH_DEBUG", "${response.token}")
@@ -87,6 +90,7 @@ class AuthViewModel(
                     AuthUiState.Success(response.message?:"")
 
             } catch (e: Exception) {
+                Log.e("AuthVM_DEBUG", e.message.toString())
                 _authState.value =
                     AuthUiState.Error(e.message ?: "Logout failed")
             }
