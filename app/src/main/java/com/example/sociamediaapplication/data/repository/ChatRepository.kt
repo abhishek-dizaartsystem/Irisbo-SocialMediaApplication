@@ -88,4 +88,10 @@ class ChatRepository(
             parts,
         )
     }
+
+    suspend fun startConversation(userId: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.startConversation(token, userId)
+    }
 }

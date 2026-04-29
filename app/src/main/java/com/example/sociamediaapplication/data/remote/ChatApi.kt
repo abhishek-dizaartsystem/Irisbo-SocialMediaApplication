@@ -48,4 +48,11 @@ interface ChatApi {
         @Path("conversationId") conversationId: Int,
         @Part files: List<MultipartBody.Part>,
     ): MessageResponse
+
+
+    @POST("api/chat/start/{userId}")
+    suspend fun startConversation(
+        @Header("Authorization") token: String,
+        @Path("userId") userId: Int
+    )
 }

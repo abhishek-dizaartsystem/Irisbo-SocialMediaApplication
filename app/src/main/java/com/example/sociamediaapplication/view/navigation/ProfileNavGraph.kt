@@ -109,7 +109,7 @@ fun ProfileNavGraph(
                 postViewModel = postViewModel,
                 friendViewModel = friendViewModel,
                 reelViewModel = reelViewModel,
-                mainNavController2 = mainNavController2
+                mainNavController2 = mainNavController2,
             )
         }
     }

@@ -493,4 +493,14 @@ class ChatViewModel(
         }
     }
 
+    fun startConversation(userId: Int){
+        viewModelScope.launch {
+            try {
+                repository.startConversation(userId)
+            }catch (e: Exception){
+                Log.e("ChatVM_DEBUG", e.message.toString())
+            }
+        }
+    }
+
 }

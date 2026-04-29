@@ -49,13 +49,15 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.view.components.FriendRequestItem
 import com.example.sociamediaapplication.view.components.FriendsItem
 import com.example.sociamediaapplication.view.components.FriendsSuggestionItem
+import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.FriendViewModel
 
 @Composable
 fun FriendsScreen(
     navController: NavController = rememberNavController(),
     viewModel: FriendViewModel = viewModel(),
-    onOtherProfileClick: (Int) -> Unit = {}
+    onOtherProfileClick: (Int) -> Unit = {},
+    chatViewModel: ChatViewModel = viewModel()
 ){
     val suggestedUsers by viewModel.suggestedUsers.collectAsState()
     val receivedRequests by viewModel.receivedRequests.collectAsState()
@@ -280,6 +282,9 @@ fun FriendsScreen(
                             },
                             onOtherProfileClick = {
                                 onOtherProfileClick(item.id)
+                            },
+                            onStartChatClick = {
+                                chatViewModel.startConversation(item.id)
                             }
                         )
                     }

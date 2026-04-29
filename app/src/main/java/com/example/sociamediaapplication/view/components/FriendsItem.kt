@@ -47,7 +47,8 @@ fun FriendsItem(
     isOnline: Boolean = true,
     profileImage: String? = null,
     onUnfriend: () -> Unit = {},
-    onOtherProfileClick: () -> Unit = {}
+    onOtherProfileClick: () -> Unit = {},
+    onStartChatClick: () -> Unit = {}
 ){
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -130,7 +131,9 @@ fun FriendsItem(
             }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 IconButton(
-                    onClick = {},
+                    onClick = {
+                        onStartChatClick()
+                    },
                     modifier = Modifier
                         .size(30.dp)
                 ) {

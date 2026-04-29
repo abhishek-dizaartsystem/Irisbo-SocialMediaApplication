@@ -11,13 +11,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.view.screens.FriendsScreen
+import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.FriendViewModel
 
 @Composable
 fun FriendNavGraph(
     bNavController: NavHostController,
     friendViewModel: FriendViewModel,
-    mainNavController2: NavController
+    mainNavController2: NavController,
+    chatViewModel: ChatViewModel
 ) {
     val navController = rememberNavController()
 
@@ -43,7 +45,8 @@ fun FriendNavGraph(
                 viewModel = friendViewModel,
                 onOtherProfileClick = {userId->
                     mainNavController2.navigate(MainRoutes.OtherProfile.createRoute(userId))
-                }
+                },
+                chatViewModel = chatViewModel
             )
         }
     }
