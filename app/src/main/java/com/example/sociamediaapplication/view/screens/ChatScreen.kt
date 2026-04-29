@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,10 +58,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
-import com.example.sociamediaapplication.data.preferences.SocketManager
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.data.utils.formatToTime
 import com.example.sociamediaapplication.model.ChatMessage
+import com.example.sociamediaapplication.model.MediaType
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Green
 import com.example.sociamediaapplication.ui.theme.LBlue
@@ -168,6 +169,8 @@ fun ChatScreen(
 
     var photoUri by remember { mutableStateOf<Uri?>(null) }
     var videoUri by remember { mutableStateOf<Uri?>(null) }
+
+    val mediaList by chatViewModel.mediaList.collectAsState()
 
     fun createMediaUri(extension: String): Uri {
         val file = File.createTempFile(
@@ -363,155 +366,221 @@ fun ChatScreen(
             }
         },
         bottomBar = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .background(color = LGrey)
-                    .padding(all = 4.dp)
-                    .fillMaxWidth()
-            ) {
-                Row() {
-                    IconButton(
-                        onClick = {}
+
+            Column() {
+                // 🔥 MEDIA PREVIEW SECTION
+                if (mediaList.isNotEmpty()) {
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.sticker_add_svgrepo_com),
-                            contentDescription = "",
-                            modifier = Modifier.size(50.dp)
-                        )
-                    }
-                    IconButton(
-                        onClick = { showAttachmentMenu = true }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.attachment_svgrepo_com),
-                            contentDescription = "",
-                            modifier = Modifier.size(30.dp)
-                        )
+                        mediaList.forEach { media ->
+
+                            Box(
+                                modifier = Modifier.padding(end = 8.dp)
+                            ) {
+
+                                AsyncImage(
+                                    model = media.uri,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(70.dp)
+                                        .clip(RoundedCornerShape(12.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+
+                                // ❌ REMOVE BUTTON (important UX)
+                                IconButton(
+                                    onClick = {
+                                        chatViewModel.removeMedia(media)
+                                    },
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .size(20.dp)
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.cross_svgrepo_com),
+                                        contentDescription = null
+                                    )
+                                }
+
+                                // 🎥 VIDEO LABEL
+                                if (media.mediaType == MediaType.VIDEO) {
+                                    Text(
+                                        text = "🎥",
+                                        modifier = Modifier.align(Alignment.BottomStart)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 
-                TextField(
-                    value = typeMessage,
-                    onValueChange = {newMessage->
-                        typeMessage = newMessage
-                    },
-                    placeholder = {
-                        Text("Type")
-                    },
-                    colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Transparent,
-                        unfocusedIndicatorColor = Transparent,
-                        disabledIndicatorColor = Transparent
-                    ),
-                    shape = RoundedCornerShape(50.dp),
-                    trailingIcon = {
+                // 🔥 EXISTING INPUT BAR (unchanged but wrapped)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .background(color = LGrey)
+                        .padding(all = 4.dp)
+                        .fillMaxWidth()
+                ) {
+                    Row() {
                         IconButton(
-                            onClick = {
-                                if (typeMessage.isNotBlank()) {
-                                    chatViewModel.sendMessage(
-                                        conversationId = messages?.conversationId ?: 0,
-                                        text = typeMessage
-                                    )
-                                    typeMessage = ""
-                                }
-                            },
-                            modifier = Modifier.padding(end = 4.dp)
+                            onClick = {}
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.send_svgrepo_com),
+                                painter = painterResource(R.drawable.sticker_add_svgrepo_com),
                                 contentDescription = "",
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .rotate(15f)
+                                modifier = Modifier.size(50.dp)
                             )
                         }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                DropdownMenu(
-                    expanded = showAttachmentMenu,
-                    onDismissRequest = { showAttachmentMenu = false }
-                ) {
+                        IconButton(
+                            onClick = { showAttachmentMenu = true }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.attachment_svgrepo_com),
+                                contentDescription = "",
+                                modifier = Modifier.size(30.dp)
+                            )
+                        }
+                    }
 
-                    DropdownMenuItem(
-                        text = { Text("Camera") },
-                        onClick = {
-                            showAttachmentMenu = false
+                    TextField(
+                        value = typeMessage,
+                        onValueChange = {newMessage->
+                            typeMessage = newMessage
+                        },
+                        placeholder = {
+                            Text("Type")
+                        },
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Transparent,
+                            unfocusedIndicatorColor = Transparent,
+                            disabledIndicatorColor = Transparent
+                        ),
+                        shape = RoundedCornerShape(50.dp),
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
 
-                            if (
-                                ContextCompat.checkSelfPermission(
-                                    context,
-                                    Manifest.permission.CAMERA
-                                ) == PackageManager.PERMISSION_GRANTED
+                                    when {
+
+                                        mediaList.isNotEmpty() -> {
+                                            chatViewModel.sendMedia(
+                                                context,
+                                                conversationId!!
+                                            )
+                                        }
+
+                                        typeMessage.isNotBlank() -> {
+                                            chatViewModel.sendMessage(
+                                                conversationId = messages?.conversationId ?: 0,
+                                                text = typeMessage
+                                            )
+                                            typeMessage = ""
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.padding(end = 4.dp)
                             ) {
-                                photoUri = createMediaUri(".jpg")
-                                takePictureLauncher.launch(photoUri!!)
-                            } else {
-                                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                                Icon(
+                                    painter = painterResource(R.drawable.send_svgrepo_com),
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .size(30.dp)
+                                        .rotate(15f)
+                                )
                             }
                         },
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(R.drawable.camera_svgrepo_com),
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        },
-                        modifier = Modifier.height(30.dp)
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    HorizontalDivider()
-                    DropdownMenuItem(
-                        text = { Text("Photo") },
-                        onClick = {
-                            showAttachmentMenu = false
-                            imagePicker.launch("image/*")
-                        },
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(R.drawable.photo_svgrepo_com),
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        },
-                        modifier = Modifier.height(30.dp)
-                    )
-                    HorizontalDivider()
-                    DropdownMenuItem(
-                        text = { Text("Video") },
-                        onClick = {
-                            showAttachmentMenu = false
-                            videoPicker.launch("video/*")
-                        },
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(R.drawable.video_svgrepo_com),
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        },
-                        modifier = Modifier.height(30.dp)
-                    )
-                    HorizontalDivider()
-                    DropdownMenuItem(
-                        text = { Text("Document") },
-                        onClick = {
-                            showAttachmentMenu = false
-                        },
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(R.drawable.page_svgrepo_com),
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        },
-                        modifier = Modifier.height(30.dp)
-                    )
+                    DropdownMenu(
+                        expanded = showAttachmentMenu,
+                        onDismissRequest = { showAttachmentMenu = false }
+                    ) {
+
+                        DropdownMenuItem(
+                            text = { Text("Camera") },
+                            onClick = {
+                                showAttachmentMenu = false
+
+                                if (
+                                    ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.CAMERA
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    photoUri = createMediaUri(".jpg")
+                                    takePictureLauncher.launch(photoUri!!)
+                                } else {
+                                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                                }
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.camera_svgrepo_com),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            },
+                            modifier = Modifier.height(30.dp)
+                        )
+                        HorizontalDivider()
+                        DropdownMenuItem(
+                            text = { Text("Photo") },
+                            onClick = {
+                                showAttachmentMenu = false
+                                imagePicker.launch("image/*")
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.photo_svgrepo_com),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            },
+                            modifier = Modifier.height(30.dp)
+                        )
+                        HorizontalDivider()
+                        DropdownMenuItem(
+                            text = { Text("Video") },
+                            onClick = {
+                                showAttachmentMenu = false
+                                videoPicker.launch("video/*")
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.video_svgrepo_com),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            },
+                            modifier = Modifier.height(30.dp)
+                        )
+                        HorizontalDivider()
+                        DropdownMenuItem(
+                            text = { Text("Document") },
+                            onClick = {
+                                showAttachmentMenu = false
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.page_svgrepo_com),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            },
+                            modifier = Modifier.height(30.dp)
+                        )
+                    }
+
+
                 }
-
-
             }
+
         }
     ) {innerPadding->
         LazyColumn(
@@ -525,6 +594,7 @@ fun ChatScreen(
                 items = messages?.messages ?: emptyList(),
                 key = { msg -> msg.id }  // 👈 add this
             ){msg->
+
                 ChatBubble(
                     message = ChatMessage(
                         message = msg.content,
@@ -536,7 +606,8 @@ fun ChatScreen(
                             msg.id <= (otherUserLastReadMessageId ?: 0),
                     onDeleteClick = {
                         chatViewModel.deleteMessage(msg.id)
-                    }
+                    },
+                    attachments = msg.attachments
                 )
             }
         }

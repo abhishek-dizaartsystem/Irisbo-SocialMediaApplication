@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.viewmodel
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -457,6 +458,38 @@ class ChatViewModel(
                     _otherUserLastReadMessageId.value = lastReadMessageId
                 }
             }
+        }
+    }
+
+    fun sendMedia(context: Context, conversationId: Int) {
+        viewModelScope.launch {
+            try {
+
+                val response = repository.sendMediaMessage(
+                    context,
+                    conversationId,
+                    mediaList.value
+                )
+
+                // 🔥 update UI instantly
+                _messages.update { current ->
+                    current?.copy(
+                        messages = current.messages + response
+                    )
+                }
+
+                _mediaList.value = emptyList()
+                notifyScrollToBottom()
+
+            } catch (e: Exception) {
+                Log.e("MEDIA_SEND", e.message.toString())
+            }
+        }
+    }
+
+    fun removeMedia(media: UploadMedia) {
+        _mediaList.update { current ->
+            current - media
         }
     }
 
