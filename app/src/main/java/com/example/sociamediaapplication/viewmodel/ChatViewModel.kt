@@ -50,6 +50,10 @@ class ChatViewModel(
     private val _scrollToBottom = MutableStateFlow(false)
     val scrollToBottom: StateFlow<Boolean> = _scrollToBottom
 
+    private val _otherUserLastReadMessageId = MutableStateFlow<Int?>(null)
+    val otherUserLastReadMessageId: StateFlow<Int?> = _otherUserLastReadMessageId
+
+
     fun notifyScrollToBottom() {
         _scrollToBottom.value = true
     }
@@ -319,6 +323,7 @@ class ChatViewModel(
     fun fetchMessages(conversationId: Int) {
         currentPage = 1
         hasMore = true
+        _otherUserLastReadMessageId.value = null
 
         viewModelScope.launch {
             try {
@@ -376,11 +381,18 @@ class ChatViewModel(
         }
     }
 
-    fun fetchConversationDetails(conversationId: Int){
+    fun fetchConversationDetails(conversationId: Int) {
         viewModelScope.launch {
             try {
-                _conversationDetails.value = repository.getConversationDetails(conversationId)
-            }catch (e: Exception){
+                val response = repository.getConversationDetails(conversationId)
+                _conversationDetails.value = response
+
+                // Seed initial read state so ticks are correct on open
+                response.data.last_read_message_id.let {
+                    _otherUserLastReadMessageId.value = it
+                }
+
+            } catch (e: Exception) {
                 Log.e("Chat_VM", e.message.toString())
             }
         }
@@ -405,12 +417,16 @@ class ChatViewModel(
 
     private var _isListeningReadUpdates = false
 
-    fun observeReadUpdates() {
+    fun observeReadUpdates(currentUserId: Int, currentConversationId: Int) {
+        if (currentUserId == 0) return // don't register until profile is loaded
 
-        if(_isListeningReadUpdates) return
-        _isListeningReadUpdates = true
-
+        // Re-register if already listening to pick up correct userId
         val socket = SocketManager.getSocket()
+        socket?.off("conversation:read:update")
+        _isListeningReadUpdates = false
+
+        if (_isListeningReadUpdates) return
+        _isListeningReadUpdates = true
 
         socket?.on("conversation:read:update") { args ->
             val data = args[0] as JSONObject
@@ -418,17 +434,28 @@ class ChatViewModel(
 
             val updatedConversationId = payload.optInt("conversationId", -1)
             val lastReadMessageId = payload.optInt("last_read_message_id", -1)
+            val readByUserId = payload.optInt("userId", -1)
 
             viewModelScope.launch {
-                val current = _conversations.value ?: return@launch
-
-                val updatedList = current.conversations.map { conv ->
-                    if (conv.conversation_id == updatedConversationId) {
-                        conv.copy(last_read_message_id = lastReadMessageId)
-                    } else conv
+                // Always update conversations list for ChatsScreen
+                val current = _conversations.value
+                if (current != null) {
+                    val updatedList = current.conversations.map { conv ->
+                        if (conv.conversation_id == updatedConversationId) {
+                            conv.copy(last_read_message_id = lastReadMessageId)
+                        } else conv
+                    }
+                    _conversations.value = current.copy(conversations = updatedList)
                 }
 
-                _conversations.value = current.copy(conversations = updatedList)
+                // Only update tick state if:
+                // 1. It's the current open conversation
+                // 2. The reader is NOT the current user (i.e. the other person read it)
+                if (updatedConversationId == currentConversationId &&
+                    readByUserId != currentUserId
+                ) {
+                    _otherUserLastReadMessageId.value = lastReadMessageId
+                }
             }
         }
     }

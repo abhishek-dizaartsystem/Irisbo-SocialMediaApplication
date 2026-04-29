@@ -33,11 +33,14 @@ import com.example.sociamediaapplication.data.utils.formatToTime
 import com.example.sociamediaapplication.model.ChatMessage
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
+import com.example.sociamediaapplication.ui.theme.DGrey
+import com.example.sociamediaapplication.ui.theme.GreyBtn
 
 
 @Composable
 fun ChatBubble(
     message: ChatMessage,
+    isRead: Boolean = false,       // 👈 add this
     onDeleteClick: () -> Unit = {}
 ) {
 
@@ -94,7 +97,7 @@ fun ChatBubble(
                         painter = painterResource(R.drawable.double_check_svgrepo_com),
                         contentDescription = null,
                         modifier = Modifier.size(12.dp),
-                        tint = Blue
+                        tint = if (isRead) Blue else DGrey
                     )
                 }
 

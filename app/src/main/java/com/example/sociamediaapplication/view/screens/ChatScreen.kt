@@ -90,7 +90,7 @@ fun ChatScreen(
     profileViewModel: ProfileViewModel = viewModel(),
     conversationId: Int? = 0
 ){
-    
+
     var typeMessage by remember { mutableStateOf("") }
     var showAttachmentMenu by remember { mutableStateOf(false) }
 
@@ -105,6 +105,7 @@ fun ChatScreen(
 
     val isOnline = friendId != null && onlineUsers.contains(friendId)
 
+    val otherUserLastReadMessageId by chatViewModel.otherUserLastReadMessageId.collectAsState()
 
 
     val statusText = when {
@@ -530,6 +531,9 @@ fun ChatScreen(
                         isUser = msg.sender_id == profile?.data?.id,
                         msgTime = msg.created_at
                     ),
+                    isRead = msg.sender_id == profile?.data?.id &&
+                            otherUserLastReadMessageId != null &&
+                            msg.id <= (otherUserLastReadMessageId ?: 0),
                     onDeleteClick = {
                         chatViewModel.deleteMessage(msg.id)
                     }

@@ -32,9 +32,10 @@ fun ChatsNavGraph(
             val profile by profileViewModel.profile.collectAsState()
 
             LaunchedEffect(Unit) {
+                val uid = profile?.data?.id ?: return@LaunchedEffect
                 chatViewModel.fetchConversations()
-                chatViewModel.observeConversationUpdates(profile?.data?.id ?: 0)
-                chatViewModel.observeReadUpdates() // 👈 add this
+                chatViewModel.observeConversationUpdates(uid)
+                chatViewModel.observeReadUpdates(uid, 0) // 0 = no active conversation
             }
 
             ChatsScreen(
@@ -56,24 +57,21 @@ fun ChatsNavGraph(
 
             val conversationId = backStackEntry.arguments?.getInt("conversationId")
             val profile by profileViewModel.profile.collectAsState()
-            LaunchedEffect(conversationId) {
-                chatViewModel.fetchMessages(conversationId?:0)
+            LaunchedEffect(conversationId, profile?.data?.id) {
+                val uid = profile?.data?.id ?: return@LaunchedEffect
+                val convId = conversationId ?: return@LaunchedEffect
 
-                chatViewModel.fetchConversationDetails(conversationId?:0)
-
-
+                chatViewModel.fetchMessages(convId)
+                chatViewModel.fetchConversationDetails(convId)
 
                 val socket = SocketManager.getSocket()
-
                 val json = JSONObject()
-                json.put("conversationId", conversationId)
-
+                json.put("conversationId", convId)
                 socket?.emit("conversation:join", json)
 
-                // 🔥 ADD THIS LINE
-                chatViewModel.observeSocketMessages(conversationId ?: 0, profile?.data?.id ?: 0)
-
-                chatViewModel.observeDeleteMessages(conversationId ?: 0)
+                chatViewModel.observeSocketMessages(convId, uid)
+                chatViewModel.observeDeleteMessages(convId)
+                chatViewModel.observeReadUpdates(uid, convId) // 👈 re-register with conversation context
             }
 
             ChatScreen(
