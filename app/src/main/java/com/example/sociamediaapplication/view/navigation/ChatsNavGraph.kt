@@ -73,7 +73,7 @@ fun ChatsNavGraph(
                 // 🔥 ADD THIS LINE
                 chatViewModel.observeSocketMessages(conversationId ?: 0, profile?.data?.id ?: 0)
 
-                chatViewModel.observeDeleteMessages()
+                chatViewModel.observeDeleteMessages(conversationId ?: 0)
             }
 
             ChatScreen(

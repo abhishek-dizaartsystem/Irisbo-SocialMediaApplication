@@ -74,26 +74,81 @@ class ChatViewModel(
         socket?.emit("message:delete", json)
     }
 
-    fun observeDeleteMessages() {
+//    fun observeDeleteMessages() {
+//        val socket = SocketManager.getSocket()
+//
+//        socket?.on("message:deleted") { args ->
+//
+//            val data = args[0] as JSONObject
+//            val deletedMessage = data.getJSONObject("data")
+//
+//            val deletedId = deletedMessage.optInt("message_id")
+//
+//            viewModelScope.launch {
+//                val current = _messages.value ?: return@launch
+//
+//                val updatedList = current.messages.filter {
+//                    it.id != deletedId
+//                }
+//
+//                _messages.value = current.copy(
+//                    messages = updatedList
+//                )
+//            }
+//        }
+//    }
+
+    fun observeDeleteMessages(conversationId: Int) {
+
         val socket = SocketManager.getSocket()
+
+        // 🔥 remove old listener (CRITICAL)
+        socket?.off("message:deleted")
 
         socket?.on("message:deleted") { args ->
 
             val data = args[0] as JSONObject
             val deletedMessage = data.getJSONObject("data")
 
-            val deletedId = deletedMessage.optInt("message_id")
+            val deletedId = deletedMessage.optInt("messageId")
+            val msgConversationId = deletedMessage.optInt("conversationId")
 
             viewModelScope.launch {
-                val current = _messages.value ?: return@launch
 
-                val updatedList = current.messages.filter {
-                    it.id != deletedId
+                // 🔥 update ChatScreen messages
+                val currentMessages = _messages.value
+                if (currentMessages != null && msgConversationId == conversationId) {
+
+                    val updatedList = currentMessages.messages.filter {
+                        it.id != deletedId
+                    }
+
+                    _messages.value = currentMessages.copy(
+                        messages = updatedList
+                    )
                 }
 
-                _messages.value = current.copy(
-                    messages = updatedList
-                )
+                // 🔥 update ChatsScreen (IMPORTANT)
+                val currentConversations = _conversations.value
+                if (currentConversations != null) {
+
+                    val updatedConvs = currentConversations.conversations.map { conv ->
+
+                        if (conv.conversation_id == msgConversationId &&
+                            conv.last_message_id == deletedId
+                        ) {
+                            // 🔥 last message was deleted → clear preview
+                            conv.copy(
+                                content = "Message deleted",
+                                last_message_id = null
+                            )
+                        } else conv
+                    }
+
+                    _conversations.value = currentConversations.copy(
+                        conversations = updatedConvs
+                    )
+                }
             }
         }
     }
