@@ -41,8 +41,6 @@ class ChatViewModel(
     private val _lastSeenMap = MutableStateFlow<Map<Int, String>>(emptyMap())
     val lastSeenMap: StateFlow<Map<Int, String>> = _lastSeenMap
 
-    private var _isListening = false
-
     private var _isListeningConversations = false
 
     private var currentPage = 1
@@ -158,10 +156,11 @@ class ChatViewModel(
     }
 
     fun observeSocketMessages(conversationId: Int) {
-        if (_isListening) return
-        _isListening = true
 
         val socket = SocketManager.getSocket()
+
+        // 🔥 REMOVE previous listener
+        socket?.off("message:new")
 
         socket?.on("message:new") { args ->
 

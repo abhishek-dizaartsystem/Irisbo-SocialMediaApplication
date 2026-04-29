@@ -57,6 +57,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.preferences.SocketManager
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.data.utils.formatToTime
 import com.example.sociamediaapplication.model.ChatMessage
@@ -219,6 +220,8 @@ fun ChatScreen(
             if (conversationId != null && conversationId > 0) {
                 chatViewModel.markConversationReadSocket(conversationId)
             }
+//            SocketManager.getSocket()?.off("message:new")
+
         }
     }
 
