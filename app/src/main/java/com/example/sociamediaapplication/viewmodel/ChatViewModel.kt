@@ -98,7 +98,7 @@ class ChatViewModel(
         }
     }
 
-    fun observeConversationUpdates() {
+    fun observeConversationUpdates(uid: Int) {
 
         if (_isListeningConversations) return
         _isListeningConversations = true
@@ -106,27 +106,43 @@ class ChatViewModel(
         val socket = SocketManager.getSocket()
 
         socket?.on("conversation:updated") { args ->
+
             val data = args[0] as JSONObject
             val summaryJson = data.getJSONObject("data")
 
             val updatedConversationId = summaryJson.optInt("conversation_id", -1)
 
+            val lastMsg = summaryJson.optJSONObject("last_message")
+            val senderId = lastMsg?.optInt("sender_id", -1)
+
             viewModelScope.launch {
+
                 val current = _conversations.value ?: return@launch
 
                 val updatedList = current.conversations.map { conv ->
+
                     if (conv.conversation_id == updatedConversationId) {
-                        val lastMsg = summaryJson.optJSONObject("last_message")
+
+                        // 🔥 KEY LOGIC
+                        val shouldMarkUnread = senderId != uid
+
                         conv.copy(
                             last_message_id = lastMsg?.optInt("id") ?: conv.last_message_id,
                             content = lastMsg?.optString("content") ?: conv.content,
                             last_message_at = lastMsg?.optString("created_at") ?: conv.last_message_at,
-                            last_sender_id = lastMsg?.optInt("sender_id") ?: conv.last_sender_id
+                            last_sender_id = senderId,
+
+                            // 🔥 THIS FIXES YOUR ISSUE
+                            last_read_message_id = if (shouldMarkUnread) {
+                                conv.last_read_message_id   // keep old → unread
+                            } else {
+                                lastMsg?.optInt("id")       // mark read instantly
+                            }
                         )
+
                     } else conv
                 }
 
-                // Bubble updated conversation to top
                 val reordered = updatedList.sortedByDescending { it.last_message_at }
 
                 _conversations.value = current.copy(conversations = reordered)
@@ -155,7 +171,7 @@ class ChatViewModel(
         }
     }
 
-    fun observeSocketMessages(conversationId: Int) {
+    fun observeSocketMessages(conversationId: Int, uid: Int) {
 
         val socket = SocketManager.getSocket()
 

@@ -2,6 +2,8 @@ package com.example.sociamediaapplication.view.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -27,11 +29,11 @@ fun ChatsNavGraph(
     ){
         composable(ChatsRoutes.ChatsList.route) {
 
-//            val profile by profileViewModel.profile.collectAsState()
+            val profile by profileViewModel.profile.collectAsState()
 
             LaunchedEffect(Unit) {
                 chatViewModel.fetchConversations()
-                chatViewModel.observeConversationUpdates()
+                chatViewModel.observeConversationUpdates(profile?.data?.id ?: 0)
                 chatViewModel.observeReadUpdates() // 👈 add this
             }
 
@@ -53,11 +55,13 @@ fun ChatsNavGraph(
         ) { backStackEntry ->
 
             val conversationId = backStackEntry.arguments?.getInt("conversationId")
-
+            val profile by profileViewModel.profile.collectAsState()
             LaunchedEffect(conversationId) {
                 chatViewModel.fetchMessages(conversationId?:0)
 
                 chatViewModel.fetchConversationDetails(conversationId?:0)
+
+
 
                 val socket = SocketManager.getSocket()
 
@@ -67,7 +71,7 @@ fun ChatsNavGraph(
                 socket?.emit("conversation:join", json)
 
                 // 🔥 ADD THIS LINE
-                chatViewModel.observeSocketMessages(conversationId ?: 0)
+                chatViewModel.observeSocketMessages(conversationId ?: 0, profile?.data?.id ?: 0)
 
                 chatViewModel.observeDeleteMessages()
             }
