@@ -10,6 +10,7 @@ import com.example.sociamediaapplication.model.response.ConversationDetailsRespo
 import com.example.sociamediaapplication.model.response.ConversationsResponse
 import com.example.sociamediaapplication.model.response.MessageResponse
 import com.example.sociamediaapplication.model.response.MessagesResponse
+import com.example.sociamediaapplication.model.response.StartConversationResponse
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -89,7 +90,7 @@ class ChatRepository(
         )
     }
 
-    suspend fun startConversation(userId: Int){
+    suspend fun startConversation(userId: Int): StartConversationResponse{
         val token = "Bearer ${tokenManager.getToken()}"
 
         return api.startConversation(token, userId)

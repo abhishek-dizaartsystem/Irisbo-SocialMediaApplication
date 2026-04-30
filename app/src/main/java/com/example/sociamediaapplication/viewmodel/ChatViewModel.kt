@@ -493,14 +493,23 @@ class ChatViewModel(
         }
     }
 
+    private val _convoId = MutableStateFlow<Int?>(null)
+    val convoId: StateFlow<Int?> = _convoId
+
     fun startConversation(userId: Int){
         viewModelScope.launch {
             try {
-                repository.startConversation(userId)
+                val response = repository.startConversation(userId)
+
+                _convoId.value = response.data.conversation_id
             }catch (e: Exception){
                 Log.e("ChatVM_DEBUG", e.message.toString())
             }
         }
+    }
+
+    fun clearConvoId() {
+        _convoId.value = null
     }
 
 }

@@ -117,7 +117,8 @@ fun MenuNavGraph(
                 navController,
                 friendViewModel = friendViewModel,
                 mainNavController2 = mainNavController2,
-                chatViewModel = chatViewModel
+                chatViewModel = chatViewModel,
+                profileViewModel = profileViewModel
             )
         }
         composable(MenuRoutes.Events.route) {
@@ -147,7 +148,8 @@ fun MenuNavGraph(
                 postViewModel = postViewModel,
                 friendViewModel = friendViewModel,
                 reelViewModel = reelViewModel,
-                mainNavController2 = mainNavController2
+                mainNavController2 = mainNavController2,
+                chatViewModel = chatViewModel
             )
         }
 

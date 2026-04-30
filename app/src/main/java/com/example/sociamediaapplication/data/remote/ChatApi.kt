@@ -4,6 +4,7 @@ import com.example.sociamediaapplication.model.response.ConversationDetailsRespo
 import com.example.sociamediaapplication.model.response.ConversationsResponse
 import com.example.sociamediaapplication.model.response.MessageResponse
 import com.example.sociamediaapplication.model.response.MessagesResponse
+import com.example.sociamediaapplication.model.response.StartConversationResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.GET
@@ -54,5 +55,5 @@ interface ChatApi {
     suspend fun startConversation(
         @Header("Authorization") token: String,
         @Path("userId") userId: Int
-    )
+    ): StartConversationResponse
 }

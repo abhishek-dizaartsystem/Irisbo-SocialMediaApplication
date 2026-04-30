@@ -16,6 +16,7 @@ import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.view.screens.EditProfileScreen
 import com.example.sociamediaapplication.view.screens.ProfileScreen
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
+import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.FriendViewModel
 import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
@@ -31,7 +32,8 @@ fun ProfileNavGraph(
     postViewModel: PostViewModel,
     friendViewModel: FriendViewModel,
     reelViewModel: ReelsViewModel,
-    mainNavController2: NavHostController
+    mainNavController2: NavHostController,
+    chatViewModel: ChatViewModel
 ){
     val navController = rememberNavController()
 
@@ -110,6 +112,7 @@ fun ProfileNavGraph(
                 friendViewModel = friendViewModel,
                 reelViewModel = reelViewModel,
                 mainNavController2 = mainNavController2,
+                chatViewModel = chatViewModel
             )
         }
     }

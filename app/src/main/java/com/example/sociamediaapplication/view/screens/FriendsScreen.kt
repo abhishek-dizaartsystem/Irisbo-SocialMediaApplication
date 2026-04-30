@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,26 +50,43 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.view.components.FriendRequestItem
 import com.example.sociamediaapplication.view.components.FriendsItem
 import com.example.sociamediaapplication.view.components.FriendsSuggestionItem
+import com.example.sociamediaapplication.view.navigation.ChatsRoutes
+import com.example.sociamediaapplication.view.navigation.FriendRoutes
 import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.FriendViewModel
 
 @Composable
 fun FriendsScreen(
-    navController: NavController = rememberNavController(),
+    bNavController: NavController = rememberNavController(),
     viewModel: FriendViewModel = viewModel(),
     onOtherProfileClick: (Int) -> Unit = {},
-    chatViewModel: ChatViewModel = viewModel()
+    chatViewModel: ChatViewModel = viewModel(),
+    navController: NavController = rememberNavController()
 ){
     val suggestedUsers by viewModel.suggestedUsers.collectAsState()
     val receivedRequests by viewModel.receivedRequests.collectAsState()
     val sentRequests by viewModel.sentRequests.collectAsState()
     val myFriends by viewModel.myFriends.collectAsState()
+    val convoId by chatViewModel.convoId.collectAsState()
 
     var searchTxt by remember { mutableStateOf("") }
 
     var optionSelected by remember { mutableStateOf("Requests") }
 
     var optionSelected2 by remember { mutableStateOf("sent") }
+
+
+    LaunchedEffect(convoId) {
+        convoId?.let { id ->
+
+            navController.navigate(
+                FriendRoutes.Chat.createRoute(id)
+            )
+
+            // 🔥 IMPORTANT: reset after navigation
+            chatViewModel.clearConvoId()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -87,7 +105,7 @@ fun FriendsScreen(
 
                     IconButton(
                         onClick = {
-                            navController.popBackStack()
+                            bNavController.popBackStack()
                         }
                     ) {
                         Icon(
@@ -274,7 +292,7 @@ fun FriendsScreen(
                     items(myFriends?.data ?: emptyList()){item->
                         FriendsItem(
                             name = item.username,
-                            mutualsCount = "${item.mutual_friends_count} mututals",       //Not Present,
+                            mutualsCount = "${item.mutual_friends_count} mutuals",       //Not Present,
                             profileImage = item.profile_image,
                             onUnfriend = {
                                 viewModel.unfriendUser(item.id)
@@ -285,6 +303,9 @@ fun FriendsScreen(
                             },
                             onStartChatClick = {
                                 chatViewModel.startConversation(item.id)
+//                                navController.navigate(
+//                                    FriendRoutes.Chat.createRoute(convoId?:0)
+//                                )
                             }
                         )
                     }
