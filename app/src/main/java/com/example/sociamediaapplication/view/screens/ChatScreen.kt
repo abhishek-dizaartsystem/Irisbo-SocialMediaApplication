@@ -597,9 +597,9 @@ fun ChatScreen(
 
                 ChatBubble(
                     message = ChatMessage(
-                        message = msg.content,
+                        message = msg.content ?: "",
                         isUser = msg.sender_id == profile?.data?.id,
-                        msgTime = msg.created_at
+                        msgTime = msg.created_at ?: "12:00 PM"
                     ),
                     isRead = msg.sender_id == profile?.data?.id &&
                             otherUserLastReadMessageId != null &&

@@ -81,4 +81,6 @@ dependencies {
         exclude(group = "org.json", module = "json")
     }
 
+    implementation("net.engawapg.lib:zoomable:1.6.1")
+
 }

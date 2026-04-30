@@ -474,7 +474,9 @@ class ChatViewModel(
                 // 🔥 update UI instantly
                 _messages.update { current ->
                     current?.copy(
-                        messages = current.messages + response
+                        messages = current.messages + response.copy(
+                            created_at = response.created_at ?: ""
+                        )
                     )
                 }
 
