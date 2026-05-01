@@ -32,6 +32,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import kotlinx.coroutines.delay
+
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -94,6 +107,28 @@ fun ChatScreen(
 
     var typeMessage by remember { mutableStateOf("") }
     var showAttachmentMenu by remember { mutableStateOf(false) }
+
+    var recordingState by remember { mutableStateOf(RecordingState.IDLE) }
+    var dragOffset by remember { mutableStateOf(androidx.compose.ui.geometry.Offset.Zero) }
+    var recordingDuration by remember { mutableStateOf(0) }
+
+    LaunchedEffect(recordingState) {
+        if (recordingState != RecordingState.IDLE) {
+            recordingDuration = 0
+            while(true) {
+                delay(1000)
+                recordingDuration++
+            }
+        } else {
+            recordingDuration = 0
+        }
+    }
+    
+    val formatDuration = { seconds: Int ->
+        val m = seconds / 60
+        val s = seconds % 60
+        java.lang.String.format("%02d:%02d", m, s)
+    }
 
     val messages by chatViewModel.messages.collectAsState()
     val profile by profileViewModel.profile.collectAsState()
@@ -418,85 +453,127 @@ fun ChatScreen(
                     }
                 }
 
-                // 🔥 EXISTING INPUT BAR (unchanged but wrapped)
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .background(color = LGrey)
-                        .padding(all = 4.dp)
-                        .fillMaxWidth()
-                ) {
-                    Row() {
-                        IconButton(
-                            onClick = {}
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.sticker_add_svgrepo_com),
-                                contentDescription = "",
-                                modifier = Modifier.size(50.dp)
-                            )
-                        }
-                        IconButton(
-                            onClick = { showAttachmentMenu = true }
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.attachment_svgrepo_com),
-                                contentDescription = "",
-                                modifier = Modifier.size(30.dp)
-                            )
-                        }
-                    }
-
-                    TextField(
-                        value = typeMessage,
-                        onValueChange = {newMessage->
-                            typeMessage = newMessage
-                        },
-                        placeholder = {
-                            Text("Type")
-                        },
-                        colors = TextFieldDefaults.colors(
-                            focusedIndicatorColor = Transparent,
-                            unfocusedIndicatorColor = Transparent,
-                            disabledIndicatorColor = Transparent
-                        ),
-                        shape = RoundedCornerShape(50.dp),
-                        trailingIcon = {
+                // 🔥 EXISTING INPUT BAR (Wrapped in Box for overlays)
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .background(color = LGrey)
+                            .padding(all = 4.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             IconButton(
-                                onClick = {
-
-                                    when {
-
-                                        mediaList.isNotEmpty() -> {
-                                            chatViewModel.sendMedia(
-                                                context,
-                                                conversationId!!
-                                            )
-                                        }
-
-                                        typeMessage.isNotBlank() -> {
-                                            chatViewModel.sendMessage(
-                                                conversationId = messages?.conversationId ?: 0,
-                                                text = typeMessage
-                                            )
-                                            typeMessage = ""
-                                        }
-                                    }
-                                },
-                                modifier = Modifier.padding(end = 4.dp)
+                                onClick = {}
                             ) {
                                 Icon(
-                                    painter = painterResource(R.drawable.send_svgrepo_com),
+                                    painter = painterResource(R.drawable.sticker_add_svgrepo_com),
                                     contentDescription = "",
-                                    modifier = Modifier
-                                        .size(30.dp)
-                                        .rotate(15f)
+                                    modifier = Modifier.size(50.dp)
                                 )
                             }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                            IconButton(
+                                onClick = { showAttachmentMenu = true }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.attachment_svgrepo_com),
+                                    contentDescription = "",
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
+                        }
+
+                        TextField(
+                            value = typeMessage,
+                            onValueChange = { newMessage ->
+                                typeMessage = newMessage
+                            },
+                            placeholder = {
+                                Text("Type")
+                            },
+                            colors = TextFieldDefaults.colors(
+                                focusedIndicatorColor = Transparent,
+                                unfocusedIndicatorColor = Transparent,
+                                disabledIndicatorColor = Transparent
+                            ),
+                            shape = RoundedCornerShape(50.dp),
+                            modifier = Modifier.weight(1f)
+                        )
+                        
+                        Box(modifier = Modifier.padding(horizontal = 4.dp), contentAlignment = Alignment.Center) {
+                            if (typeMessage.isBlank() && mediaList.isEmpty()) {
+                                Icon(
+                                    painter = painterResource(R.drawable.mic_svgrepo_com),
+                                    contentDescription = "Record Audio",
+                                    modifier = Modifier
+                                        .size(30.dp)
+                                        .pointerInput(Unit) {
+                                            awaitEachGesture {
+                                                val down = awaitFirstDown()
+                                                recordingState = RecordingState.RECORDING
+                                                dragOffset = androidx.compose.ui.geometry.Offset.Zero
+                                                
+                                                var isCanceledOrLocked = false
+                                                
+                                                do {
+                                                    val event = awaitPointerEvent()
+                                                    val position = event.changes.first().position
+                                                    val drag = position - down.position
+                                                    
+                                                    dragOffset = drag
+                                                    
+                                                    if (drag.x < -200f) {
+                                                        recordingState = RecordingState.IDLE
+                                                        isCanceledOrLocked = true
+                                                        break
+                                                    } else if (drag.y < -200f) {
+                                                        recordingState = RecordingState.LOCKED
+                                                        isCanceledOrLocked = true
+                                                        break
+                                                    }
+                                                    
+                                                } while (event.changes.any { it.pressed })
+                                                
+                                                if (!isCanceledOrLocked) {
+                                                    recordingState = RecordingState.IDLE
+                                                }
+                                            }
+                                        },
+                                    tint = Black
+                                )
+                            } else {
+                                IconButton(
+                                    onClick = {
+                                        when {
+                                            mediaList.isNotEmpty() -> {
+                                                chatViewModel.sendMedia(
+                                                    context,
+                                                    conversationId!!
+                                                )
+                                            }
+                                            typeMessage.isNotBlank() -> {
+                                                chatViewModel.sendMessage(
+                                                    conversationId = messages?.conversationId ?: 0,
+                                                    text = typeMessage
+                                                )
+                                                typeMessage = ""
+                                            }
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.send_svgrepo_com),
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .size(30.dp)
+                                            .rotate(15f)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    
                     DropdownMenu(
                         expanded = showAttachmentMenu,
                         onDismissRequest = { showAttachmentMenu = false }
@@ -577,11 +654,85 @@ fun ChatScreen(
                         )
                     }
 
+                    // HOLDING OVERLAY
+                    if (recordingState == RecordingState.RECORDING) {
+                        Row(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .background(color = LGrey)
+                                .padding(end = 50.dp), // leave space for mic
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 16.dp)) {
+                                Icon(
+                                    painter = painterResource(R.drawable.dot_small_svgrepo_com),
+                                    contentDescription = null,
+                                    tint = androidx.compose.ui.graphics.Color.Red,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Text(
+                                    text = formatDuration(recordingDuration),
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(start = 4.dp)
+                                )
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(R.drawable.back_svgrepo_com),
+                                    contentDescription = null,
+                                    tint = androidx.compose.ui.graphics.Color.Gray,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(
+                                    text = " Slide to cancel",
+                                    color = androidx.compose.ui.graphics.Color.Gray
+                                )
+                            }
+                        }
+                    }
+
+                    // LOCKED OVERLAY
+                    if (recordingState == RecordingState.LOCKED) {
+                        Row(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .background(color = LGrey)
+                                .padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            IconButton(onClick = { recordingState = RecordingState.IDLE }) {
+                                Icon(
+                                    painter = painterResource(R.drawable.delete_svgrepo_com),
+                                    contentDescription = "Cancel Recording",
+                                    tint = androidx.compose.ui.graphics.Color.Red
+                                )
+                            }
+
+                            Text(
+                                text = formatDuration(recordingDuration),
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+
+                            AudioWavesAnimation(modifier = Modifier.weight(1f).padding(horizontal = 16.dp))
+
+                            IconButton(
+                                onClick = { recordingState = RecordingState.IDLE }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.send_svgrepo_com),
+                                    contentDescription = "Send Recording",
+                                    modifier = Modifier.size(30.dp).rotate(15f)
+                                )
+                            }
+                        }
+                    }
 
                 }
+                }
             }
-
-        }
     ) {innerPadding->
         LazyColumn(
             state = listState,
@@ -620,4 +771,46 @@ fun ChatScreenPreview(){
     ChatScreen(
         navController = rememberNavController(),
     )
+}
+
+@Composable
+fun AudioWavesAnimation(modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition(label = "audio_waves")
+    
+    val waves = List(8) { index ->
+        infiniteTransition.animateFloat(
+            initialValue = 0.2f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(
+                    durationMillis = 300 + (index * 100),
+                    easing = LinearEasing
+                ),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "wave_$index"
+        )
+    }
+
+    Row(
+        modifier = modifier.height(30.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        waves.forEach { wave ->
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .fillMaxHeight(wave.value)
+                    .clip(RoundedCornerShape(50))
+                    .background(Black)
+            )
+        }
+    }
+}
+
+enum class RecordingState {
+    IDLE,
+    RECORDING,
+    LOCKED
 }
