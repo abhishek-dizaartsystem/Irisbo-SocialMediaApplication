@@ -9,6 +9,7 @@ import com.example.sociamediaapplication.data.preferences.SocketManager
 import com.example.sociamediaapplication.data.repository.ChatRepository
 import com.example.sociamediaapplication.model.MediaType
 import com.example.sociamediaapplication.model.UploadMedia
+import com.example.sociamediaapplication.model.response.Attachment
 import com.example.sociamediaapplication.model.response.Conversation
 import com.example.sociamediaapplication.model.response.ConversationDetailsResponse
 import com.example.sociamediaapplication.model.response.ConversationsResponse
@@ -254,6 +255,29 @@ class ChatViewModel(
 
                 val current = _messages.value ?: return@launch
 
+                val attachmentsArray = messageJson.optJSONArray("attachments")
+
+                val parsedAttachments = mutableListOf<Attachment>()
+
+                if (attachmentsArray != null) {
+                    for (i in 0 until attachmentsArray.length()) {
+                        val obj = attachmentsArray.getJSONObject(i)
+
+                        parsedAttachments.add(
+                            Attachment(
+                                id = obj.optInt("id"),
+                                message_id = obj.optInt("message_id"),
+                                file_url = obj.optString("file_url"),
+                                file_type = obj.optString("file_type"),
+                                mime_type = obj.optString("mime_type"),
+                                original_name = obj.optString("original_name"),
+                                file_size = obj.optInt("file_size"),
+                                created_at = obj.optString("created_at")
+                            )
+                        )
+                    }
+                }
+
                 val newMsg = MessageResponse(
                     id = messageJson.optInt("id", -1),  // safe
                     conversation_id = msgConversationId,
@@ -275,7 +299,7 @@ class ChatViewModel(
                     reply_message_content = null,
                     reply_message_type = null,
                     reply_message_sender_id = null,
-                    attachments = emptyList()
+                    attachments = parsedAttachments
                 )
 
                 _messages.value = current.copy(

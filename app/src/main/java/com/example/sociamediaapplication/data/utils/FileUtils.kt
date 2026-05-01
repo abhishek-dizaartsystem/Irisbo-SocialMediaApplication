@@ -5,7 +5,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Rect
+import android.media.ThumbnailUtils
 import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import androidx.core.net.toUri
@@ -175,4 +177,15 @@ fun bitmapToUri(context: Context, bitmap: Bitmap): Uri {
     }
 
     return file.toUri()
+}
+
+fun getVideoThumbnail(path: String): Bitmap? {
+    return try {
+        ThumbnailUtils.createVideoThumbnail(
+            File(path).toString(),
+            MediaStore.Images.Thumbnails.MINI_KIND
+        )
+    } catch (e: Exception) {
+        null
+    }
 }

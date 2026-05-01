@@ -31,12 +31,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.request.videoFrameMillis
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.data.utils.formatToTime
@@ -57,14 +61,26 @@ fun ChatBubble(
     var showMenu by remember { mutableStateOf(false) }
     var viewerStartIndex by remember { mutableStateOf(0) }
     var showViewer by remember { mutableStateOf(false) }
+    var showVideoPlayer by remember { mutableStateOf(false) }
 
     val imageAttachments = attachments.filter { it.file_type == "image" }
+    val videoAttachments = attachments.filter { it.file_type == "video" }
 
     if (showViewer) {
         ImageViewerDialog(
             attachments = imageAttachments,
             startIndex = viewerStartIndex,
             onDismiss = { showViewer = false }
+        )
+    }
+
+    if (showVideoPlayer && videoAttachments.isNotEmpty()) {
+
+        val video = videoAttachments[0]
+
+        VideoPlayerDialog(
+            videoUrl = correctUrl(video.file_url),
+            onDismiss = { showVideoPlayer = false }
         )
     }
 
@@ -143,6 +159,70 @@ fun ChatBubble(
                                 color = Color.White,
                                 modifier = Modifier.padding(end = 2.dp)
                             )
+                            if (message.isUser) {
+                                Icon(
+                                    painter = painterResource(R.drawable.double_check_svgrepo_com),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(12.dp),
+                                    tint = if (isRead) Blue else DGrey
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (videoAttachments.isNotEmpty()) {
+
+                    val video = videoAttachments[0]
+
+                    Box(
+                        modifier = Modifier
+                            .size(220.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color.Black)
+                            .clickable{
+                                showVideoPlayer = true
+                            }
+                    ) {
+
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(correctUrl(video.file_url))
+                                .videoFrameMillis(1000) // 👈 thumbnail at 1 second
+                                .build(),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+
+                        // ▶️ Play icon overlay
+                        Icon(
+                            painter = painterResource(R.drawable.video_svgrepo_com),
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(40.dp)
+                        )
+
+                        // ⏱ Time + ticks (reuse your existing logic)
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(6.dp)
+                                .background(
+                                    Color.Black.copy(alpha = 0.4f),
+                                    RoundedCornerShape(8.dp)
+                                )
+                                .padding(horizontal = 4.dp, vertical = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = formatToTime(message.msgTime),
+                                fontSize = 10.sp,
+                                color = Color.White
+                            )
+
                             if (message.isUser) {
                                 Icon(
                                     painter = painterResource(R.drawable.double_check_svgrepo_com),
