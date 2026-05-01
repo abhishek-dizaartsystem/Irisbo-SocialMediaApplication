@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,6 +21,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,7 +39,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.request.videoFrameMillis
@@ -49,7 +50,6 @@ import com.example.sociamediaapplication.model.response.Attachment
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.DGrey
-
 
 @Composable
 fun ChatBubble(
@@ -63,8 +63,16 @@ fun ChatBubble(
     var showViewer by remember { mutableStateOf(false) }
     var showVideoPlayer by remember { mutableStateOf(false) }
 
-    val imageAttachments = attachments.filter { it.file_type == "image" }
-    val videoAttachments = attachments.filter { it.file_type == "video" }
+    val safeAttachments = attachments.orEmpty()
+
+    val imageAttachments = safeAttachments.filter { it.file_type == "image" }
+    val videoAttachments = safeAttachments.filter { it.file_type == "video" }
+    val audioAttachments = safeAttachments.filter { it.file_type == "audio" }
+
+    // Audio player state — hoisted here so it's accessible everywhere
+    var isPlaying by remember { mutableStateOf(false) }
+    var mediaPlayer by remember { mutableStateOf<android.media.MediaPlayer?>(null) }
+    var progress by remember { mutableStateOf(0f) }
 
     if (showViewer) {
         ImageViewerDialog(
@@ -75,13 +83,30 @@ fun ChatBubble(
     }
 
     if (showVideoPlayer && videoAttachments.isNotEmpty()) {
-
-        val video = videoAttachments[0]
-
         VideoPlayerDialog(
-            videoUrl = correctUrl(video.file_url),
+            videoUrl = correctUrl(videoAttachments[0].file_url),
             onDismiss = { showVideoPlayer = false }
         )
+    }
+
+    // Release player on dispose
+    DisposableEffect(Unit) {
+        onDispose {
+            mediaPlayer?.release()
+            mediaPlayer = null
+        }
+    }
+
+    // Progress update loop
+    LaunchedEffect(isPlaying) {
+        while (isPlaying) {
+            mediaPlayer?.let {
+                if (it.duration > 0) {
+                    progress = it.currentPosition / it.duration.toFloat()
+                }
+            }
+            kotlinx.coroutines.delay(200)
+        }
     }
 
     val bubbleColor = if (message.isUser) Color(0xFFE0E0E0) else Color(0xFFB3E5FC)
@@ -102,7 +127,8 @@ fun ChatBubble(
             Column(
                 horizontalAlignment = if (message.isUser) Alignment.End else Alignment.Start
             ) {
-                // Image attachment inside bubble shape
+
+                // ── IMAGE ──────────────────────────────────────────────
                 if (imageAttachments.isNotEmpty()) {
                     Box(
                         modifier = Modifier
@@ -124,7 +150,6 @@ fun ChatBubble(
                             contentScale = ContentScale.Crop
                         )
 
-                        // Overlay count if more than 1
                         if (imageAttachments.size > 1) {
                             Box(
                                 modifier = Modifier
@@ -141,7 +166,6 @@ fun ChatBubble(
                             }
                         }
 
-                        // Time + tick inside image bubble bottom-right
                         Row(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
@@ -171,31 +195,25 @@ fun ChatBubble(
                     }
                 }
 
+                // ── VIDEO ──────────────────────────────────────────────
                 if (videoAttachments.isNotEmpty()) {
-
-                    val video = videoAttachments[0]
-
                     Box(
                         modifier = Modifier
                             .size(220.dp)
                             .clip(RoundedCornerShape(16.dp))
                             .background(Color.Black)
-                            .clickable{
-                                showVideoPlayer = true
-                            }
+                            .clickable { showVideoPlayer = true }
                     ) {
-
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data(correctUrl(video.file_url))
-                                .videoFrameMillis(1000) // 👈 thumbnail at 1 second
+                                .data(correctUrl(videoAttachments[0].file_url))
+                                .videoFrameMillis(1000)
                                 .build(),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
 
-                        // ▶️ Play icon overlay
                         Icon(
                             painter = painterResource(R.drawable.video_svgrepo_com),
                             contentDescription = null,
@@ -205,7 +223,6 @@ fun ChatBubble(
                                 .size(40.dp)
                         )
 
-                        // ⏱ Time + ticks (reuse your existing logic)
                         Row(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
@@ -220,9 +237,9 @@ fun ChatBubble(
                             Text(
                                 text = formatToTime(message.msgTime),
                                 fontSize = 10.sp,
-                                color = Color.White
+                                color = Color.White,
+                                modifier = Modifier.padding(end = 2.dp)
                             )
-
                             if (message.isUser) {
                                 Icon(
                                     painter = painterResource(R.drawable.double_check_svgrepo_com),
@@ -235,7 +252,127 @@ fun ChatBubble(
                     }
                 }
 
-                // Text bubble — shown below image if both exist, or alone
+                // ── AUDIO ──────────────────────────────────────────────
+                if (audioAttachments.isNotEmpty()) {
+                    val audio = audioAttachments[0]
+
+                    var totalDuration by remember { mutableStateOf(0) } // in seconds
+                    var remainingSeconds by remember { mutableStateOf(0) }
+
+                    // Format seconds as mm:ss
+                    fun formatAudioTime(seconds: Int): String {
+                        val m = seconds / 60
+                        val s = seconds % 60
+                        return String.format("%02d:%02d", m, s)
+                    }
+
+                    // Countdown while playing
+                    LaunchedEffect(isPlaying) {
+                        if (isPlaying) {
+                            while (isPlaying) {
+                                mediaPlayer?.let {
+                                    if (it.duration > 0) {
+                                        val elapsed = it.currentPosition / 1000
+                                        remainingSeconds = (totalDuration - elapsed).coerceAtLeast(0)
+                                        progress = it.currentPosition / it.duration.toFloat()
+                                    }
+                                }
+                                kotlinx.coroutines.delay(200)
+                            }
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .width(260.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(bubbleColor)
+                            .padding(12.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                painter = painterResource(
+                                    if (isPlaying) R.drawable.pause_svgrepo_com
+                                    else R.drawable.play_svgrepo_com
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clickable {
+                                        if (isPlaying) {
+                                            mediaPlayer?.pause()
+                                            isPlaying = false
+                                        } else {
+                                            if (mediaPlayer == null) {
+                                                mediaPlayer = android.media.MediaPlayer().apply {
+                                                    setDataSource(correctUrl(audio.file_url))
+                                                    prepare()
+                                                    // Grab total duration after prepare
+                                                    totalDuration = (duration / 1000)
+                                                    remainingSeconds = totalDuration
+                                                    // Auto-reset when playback completes
+                                                    setOnCompletionListener {
+                                                        isPlaying = false
+                                                        progress = 0f
+                                                        remainingSeconds = totalDuration
+                                                    }
+                                                }
+                                            } else if (totalDuration == 0) {
+                                                // Already initialized, just get duration
+                                                totalDuration = ((mediaPlayer?.duration ?: 0) / 1000)
+                                                remainingSeconds = totalDuration
+                                            }
+                                            mediaPlayer?.start()
+                                            isPlaying = true
+                                        }
+                                    }
+                            )
+
+                            Spacer(modifier = Modifier.width(10.dp))
+
+                            // Progress bar
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(4.dp)
+                                    .background(Color.Gray.copy(alpha = 0.3f))
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth(progress)
+                                        .height(4.dp)
+                                        .background(Color.Blue)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            // Duration + ticks
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    // Show remaining when playing, total when idle
+                                    text = if (isPlaying || progress > 0f)
+                                        formatAudioTime(remainingSeconds)
+                                    else
+                                        formatAudioTime(totalDuration),
+                                    fontSize = 10.sp,
+                                    color = Color.Gray,
+                                    modifier = Modifier.padding(end = 2.dp)
+                                )
+                                if (message.isUser) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.double_check_svgrepo_com),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(12.dp),
+                                        tint = if (isRead) Blue else DGrey
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // ── TEXT ───────────────────────────────────────────────
                 if (!message.message.isNullOrBlank()) {
                     Box(
                         modifier = Modifier
@@ -251,7 +388,6 @@ fun ChatBubble(
                                 modifier = Modifier.weight(1f, fill = false)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
-                            // Time + tick inline with text
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = formatToTime(message.msgTime),
@@ -271,9 +407,6 @@ fun ChatBubble(
                         }
                     }
                 }
-
-                // Time row only when there's NO text (image-only message)
-                // Already handled inside the image Box above
             }
 
             DropdownMenu(
@@ -291,7 +424,7 @@ fun ChatBubble(
 
 @Preview(showBackground = true)
 @Composable
-fun ChatBubblePreview(){
+fun ChatBubblePreview() {
     ChatBubble(
         ChatMessage("Hello Kartik", true, "12:44"),
     )

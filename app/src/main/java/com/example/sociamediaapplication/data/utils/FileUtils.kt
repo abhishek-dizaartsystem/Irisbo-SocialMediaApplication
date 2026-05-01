@@ -34,7 +34,9 @@ fun uriToFile(uri: Uri, context: Context): File {
         mime.contains("png") -> ".png"
         mime.contains("mp4") -> ".mp4"
         mime.contains("video") -> ".mp4"
-        else -> ".jpg"
+        mime.contains("audio") -> ".m4a"
+        mime.contains("m4a") -> ".m4a"
+        else -> ".m4a"
     }
 
     val file = File(
@@ -43,6 +45,32 @@ fun uriToFile(uri: Uri, context: Context): File {
     )
 
     contentResolver.openInputStream(uri)!!.use { input ->
+        file.outputStream().use { output ->
+            input.copyTo(output)
+        }
+    }
+
+    return file
+}
+
+fun uriToFileWithMime(uri: Uri, mime: String, context: Context): File {
+
+    val extension = when {
+        mime.contains("jpeg") || mime.contains("jpg") -> ".jpg"
+        mime.contains("png") -> ".png"
+        mime.contains("mp4") && mime.contains("video") -> ".mp4"
+        mime.contains("mp3") && mime.contains("audio") -> ".m4a"
+        mime.contains("audio") -> ".m4a"
+        mime.contains("video") -> ".mp4"
+        else -> ".jpg"
+    }
+
+    val file = File(
+        context.cacheDir,
+        "upload_${System.currentTimeMillis()}$extension"
+    )
+
+    context.contentResolver.openInputStream(uri)!!.use { input ->
         file.outputStream().use { output ->
             input.copyTo(output)
         }
@@ -188,4 +216,27 @@ fun getVideoThumbnail(path: String): Bitmap? {
     } catch (e: Exception) {
         null
     }
+}
+
+fun compressImage(context: Context, uri: Uri): Uri {
+    val inputStream = context.contentResolver.openInputStream(uri)
+    val bitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
+
+    val outputFile = File(
+        context.cacheDir,
+        "compressed_${System.currentTimeMillis()}.jpg"
+    )
+
+    val outputStream = outputFile.outputStream()
+
+    bitmap.compress(
+        android.graphics.Bitmap.CompressFormat.JPEG,
+        70, // 🔥 adjust (60–80 best)
+        outputStream
+    )
+
+    outputStream.flush()
+    outputStream.close()
+
+    return Uri.fromFile(outputFile)
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.uriToFile
+import com.example.sociamediaapplication.data.utils.uriToFileWithMime
 import com.example.sociamediaapplication.model.MediaType
 import com.example.sociamediaapplication.model.UploadMedia
 import com.example.sociamediaapplication.model.response.ConversationDetailsResponse
@@ -58,10 +59,21 @@ class ChatRepository(
 
         mediaList.forEach { media ->
 
-            val file = uriToFile(media.uri, context) // 👈 same as your event
 
-            val mime = context.contentResolver.getType(media.uri)
-                ?: if (media.mediaType == MediaType.IMAGE) "image/jpeg" else "video/mp4"
+
+            val mime = when (media.mediaType) {
+                MediaType.IMAGE -> {
+                    context.contentResolver.getType(media.uri) ?: "image/jpeg"
+                }
+                MediaType.VIDEO -> {
+                    context.contentResolver.getType(media.uri) ?: "video/mp4"
+                }
+                MediaType.AUDIO -> {
+                    "audio/mp3"   // ✅ CORRECT MIME
+                }
+            }
+
+            val file = uriToFileWithMime(media.uri, mime, context) // 👈 same as your event
 
             val requestFile = file.asRequestBody(
                 mime.toMediaTypeOrNull()
@@ -77,10 +89,10 @@ class ChatRepository(
         }
 
         // 🔥 message_type (optional but recommended)
-        val messageType = if (mediaList.any { it.mediaType == MediaType.VIDEO }) {
-            "video"
-        } else {
-            "image"
+        val messageType = when {
+            mediaList.any { it.mediaType == MediaType.VIDEO } -> "video"
+            mediaList.any { it.mediaType == MediaType.AUDIO } -> "audio"
+            else -> "image"
         }.toRequestBody("text/plain".toMediaType())
 
         return api.sendMediaMessage(

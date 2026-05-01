@@ -1,21 +1,34 @@
 package com.example.sociamediaapplication.view.screens
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -32,31 +45,23 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
-import kotlinx.coroutines.delay
-
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -71,6 +76,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.AudioRecorder
+import com.example.sociamediaapplication.data.utils.compressImage
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.data.utils.formatToTime
 import com.example.sociamediaapplication.model.ChatMessage
@@ -84,18 +91,10 @@ import com.example.sociamediaapplication.view.components.ChatBubble
 import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
-
-//
-//val messages = listOf(
-//    ChatMessage("Hye Abhishek this side", true),
-//    ChatMessage("Hello I am Kartik", false),
-//    ChatMessage("Send me the required documents", true),
-//    ChatMessage("Okay I'll provide u asap", false),
-//    ChatMessage("Thanks", true)
-//)
-
-
 
 @Composable
 fun ChatScreen(
@@ -103,19 +102,22 @@ fun ChatScreen(
     chatViewModel: ChatViewModel = viewModel(),
     profileViewModel: ProfileViewModel = viewModel(),
     conversationId: Int? = 0
-){
-
+) {
     var typeMessage by remember { mutableStateOf("") }
     var showAttachmentMenu by remember { mutableStateOf(false) }
-
     var recordingState by remember { mutableStateOf(RecordingState.IDLE) }
     var dragOffset by remember { mutableStateOf(androidx.compose.ui.geometry.Offset.Zero) }
     var recordingDuration by remember { mutableStateOf(0) }
 
+    var photoUriString by rememberSaveable { mutableStateOf<String?>(null) }
+    val photoUri = photoUriString?.let { Uri.parse(it) }
+    var videoUri by remember { mutableStateOf<Uri?>(null) }
+    var photoFile by remember { mutableStateOf<File?>(null) }
+
     LaunchedEffect(recordingState) {
         if (recordingState != RecordingState.IDLE) {
             recordingDuration = 0
-            while(true) {
+            while (true) {
                 delay(1000)
                 recordingDuration++
             }
@@ -123,26 +125,23 @@ fun ChatScreen(
             recordingDuration = 0
         }
     }
-    
+
     val formatDuration = { seconds: Int ->
         val m = seconds / 60
         val s = seconds % 60
-        java.lang.String.format("%02d:%02d", m, s)
+        String.format("%02d:%02d", m, s)
     }
 
     val messages by chatViewModel.messages.collectAsState()
     val profile by profileViewModel.profile.collectAsState()
-
     val conversationDetails by chatViewModel.conversationDetails.collectAsState()
     val onlineUsers by chatViewModel.onlineUsers.collectAsState()
     val lastSeenMap by chatViewModel.lastSeenMap.collectAsState()
+    val otherUserLastReadMessageId by chatViewModel.otherUserLastReadMessageId.collectAsState()
+    val mediaList by chatViewModel.mediaList.collectAsState()
 
     val friendId = conversationDetails?.data?.other_user_id
-
     val isOnline = friendId != null && onlineUsers.contains(friendId)
-
-    val otherUserLastReadMessageId by chatViewModel.otherUserLastReadMessageId.collectAsState()
-
 
     val statusText = when {
         isOnline -> "Online"
@@ -151,68 +150,41 @@ fun ChatScreen(
         else -> "Offline"
     }
 
-
-
     val listState = rememberLazyListState()
-    var previousSize by remember { mutableStateOf(0) }
 
-//    LaunchedEffect(messages?.messages?.size) {
-//
-//        val newSize = messages?.messages?.size ?: 0
-//
-//        if (newSize > previousSize) {
-//
-//            val addedItems = newSize - previousSize
-//
-//            if (listState.firstVisibleItemIndex <= 2) {
-//                // 🔥 user is near top → preserve scroll (pagination)
-//                listState.scrollToItem(addedItems)
-//            } else {
-//                // 🔥 new message → scroll to bottom
-//                listState.animateScrollToItem(newSize - 1)
-//            }
-//        }
-//
-//        previousSize = newSize
-//    }
+    val context = LocalContext.current
 
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) {uri: Uri?->
-        uri?.let{
-            chatViewModel.addImage(it)
+    ) { uri: Uri? ->
+        uri?.let {
+            val compressed = compressImage(context, it)
+            chatViewModel.addImage(compressed)
         }
     }
 
     val videoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) {uri: Uri?->
-        uri?.let{
-            chatViewModel.addVideo(it)
-        }
+    ) { uri: Uri? ->
+        uri?.let { chatViewModel.addVideo(it) }
     }
 
-//    val documentPicker = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.GetContent()
-//    ) {uri: Uri? ->
-//        uri?.let{
-//
-//        }
-//    }
+    val recorder = remember { AudioRecorder() }
 
-    val context = LocalContext.current
+    val audioPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (!granted) recordingState = RecordingState.IDLE
+    }
 
-    var photoUri by remember { mutableStateOf<Uri?>(null) }
-    var videoUri by remember { mutableStateOf<Uri?>(null) }
 
-    val mediaList by chatViewModel.mediaList.collectAsState()
 
-    fun createMediaUri(extension: String): Uri {
-        val file = File.createTempFile(
-            "media_${System.currentTimeMillis()}",
-            extension,
-            context.cacheDir
+    fun createMediaUri(): Uri {
+        val file = File(
+            context.cacheDir,
+            "camera_${System.currentTimeMillis()}.jpg"
         )
+
         return FileProvider.getUriForFile(
             context,
             "${context.packageName}.provider",
@@ -220,102 +192,121 @@ fun ChatScreen(
         )
     }
 
-    /* ---------------- PHOTO CAPTURE ---------------- */
+    fun createMedia(): Pair<Uri, File> {
+        val file = File(
+            context.cacheDir,
+            "camera_${System.currentTimeMillis()}.jpg"
+        )
+
+        val uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            file
+        )
+
+        return uri to file
+    }
+
+    val scope = rememberCoroutineScope()
 
     val takePictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
+
+        Log.d("CAMERA_DEBUG", "success=$success uri=$photoUri file=$photoFile")
+
         if (success && photoUri != null) {
-            chatViewModel.addImage(photoUri!!)
+
+            val uri = photoUri!!
+
+            scope.launch {
+                try {
+                    val compressed = withContext(kotlinx.coroutines.Dispatchers.IO) {
+                        compressImage(context, uri)
+                    }
+
+                    chatViewModel.addImage(compressed)
+
+                } catch (e: Exception) {
+                    Log.e("CAMERA_DEBUG", "Compression failed: ${e.message}")
+                }
+            }
+
+        } else {
+            Log.e("CAMERA_DEBUG", "Image capture failed or null uri")
         }
     }
-
-    /* ---------------- VIDEO CAPTURE ---------------- */
 
     val captureVideoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CaptureVideo()
     ) { success ->
-        if (success && videoUri != null) {
-            chatViewModel.addVideo(videoUri!!)
-        }
+        if (success && videoUri != null) chatViewModel.addVideo(videoUri!!)
     }
-
-    /* ---------------- CAMERA PERMISSION ---------------- */
 
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            // Default open photo
-            photoUri = createMediaUri(".jpg")
-            takePictureLauncher.launch(photoUri!!)
+            val (uri, file) = createMedia()
+
+            photoUriString = uri.toString()
+            photoFile = file
+
+            takePictureLauncher.launch(uri)
         }
     }
-//
-//    val conversationId = conversationDetails?.data?.conversation_id
+
+    // Mark read on open
+    LaunchedEffect(conversationId) {
+        if (conversationId != null && conversationId > 0) {
+            chatViewModel.markConversationReadSocket(conversationId)
+        }
+    }
 
     DisposableEffect(conversationId) {
         onDispose {
             if (conversationId != null && conversationId > 0) {
                 chatViewModel.markConversationReadSocket(conversationId)
             }
-//            SocketManager.getSocket()?.off("message:new")
-
         }
     }
 
-//
-//    LaunchedEffect(listState) {
-//        snapshotFlow { listState.firstVisibleItemIndex }
-//            .collect { index ->
-//
-//                if (index <= 2) {
-//                    chatViewModel.loadMoreMessages(conversationId?:0)
-//                }
-//            }
-//    }
+    DisposableEffect(Unit) {
+        onDispose { recorder.cancel() }
+    }
 
     val prependedCount by chatViewModel.prependedCount.collectAsState()
     val scrollToBottom by chatViewModel.scrollToBottom.collectAsState()
 
-// 1. Initial load — instant jump, no animation
+    // 1. Initial load — instant jump
     LaunchedEffect(messages?.conversationId) {
         val size = messages?.messages?.size ?: 0
-        if (size > 0) {
-            listState.scrollToItem(size - 1)
-        }
+        if (size > 0) listState.scrollToItem(size - 1)
     }
 
-// 2. New message arrived — smooth scroll to bottom
+    // 2. New message — smooth scroll
     LaunchedEffect(scrollToBottom) {
         if (scrollToBottom) {
             val size = messages?.messages?.size ?: 0
-            if (size > 0) {
-                listState.animateScrollToItem(size - 1)
-            }
+            if (size > 0) listState.animateScrollToItem(size - 1)
             chatViewModel.consumeScrollToBottom()
         }
     }
 
-// 3. Older messages prepended — lock viewport, no jump
+    // 3. Pagination prepend — key-based, just consume
     LaunchedEffect(prependedCount) {
-        if (prependedCount > 0) {
-            // With keyed items, LazyColumn maintains position automatically
-            // Just consume the signal — no manual scroll needed
-            chatViewModel.consumePrependedCount()
-        }
+        if (prependedCount > 0) chatViewModel.consumePrependedCount()
     }
 
-// 4. Pagination trigger — only when truly at the top
+    // 4. Pagination trigger
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .collect { index ->
-                if (index == 0) {
+                if (index == 0 && (messages?.messages?.size ?: 0) > 0) {
                     chatViewModel.loadMoreMessages(conversationId ?: 0)
                 }
             }
     }
-
 
     Scaffold(
         topBar = {
@@ -325,13 +316,9 @@ fun ChatScreen(
                     .background(color = LGrey),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
-                        onClick = {
-                            navController.popBackStack()
-                        },
+                        onClick = { navController.popBackStack() },
                         colors = IconButtonDefaults.iconButtonColors(containerColor = Transparent),
                         shape = RoundedCornerShape(4.dp),
                         modifier = Modifier.widthIn(30.dp, 70.dp)
@@ -343,14 +330,17 @@ fun ChatScreen(
                             tint = Black
                         )
                     }
-                    Box() {
+                    Box {
                         AsyncImage(
-                            model = if(conversationDetails?.data?.other_user_profile_image == null)
-                                        R.drawable.profile_image_placeholder
-                                    else
-                                        correctUrl(conversationDetails?.data?.other_user_profile_image),
+                            model = if (conversationDetails?.data?.other_user_profile_image == null)
+                                R.drawable.profile_image_placeholder
+                            else
+                                correctUrl(conversationDetails?.data?.other_user_profile_image),
                             contentDescription = null,
-                            modifier = Modifier.size(40.dp).aspectRatio(1f).clip(HexagonShape),
+                            modifier = Modifier
+                                .size(40.dp)
+                                .aspectRatio(1f)
+                                .clip(HexagonShape),
                             contentScale = ContentScale.Crop
                         )
                         Icon(
@@ -360,63 +350,59 @@ fun ChatScreen(
                             tint = if (isOnline) Green else Black
                         )
                     }
-
-                    Text(
-                        text = conversationDetails?.data?.other_user_name ?: "null",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column {
+                        Text(
+                            text = conversationDetails?.data?.other_user_name ?: "null",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = statusText,
+                            fontSize = 12.sp,
+                            color = if (isOnline) Green else Color.Gray
+                        )
+                    }
                 }
-                Row() {
-                    IconButton(
-                        onClick = {}
-                    ) {
+                Row {
+                    IconButton(onClick = {}) {
                         Icon(
                             painter = painterResource(R.drawable.call_svgrepo_com),
                             contentDescription = "",
-                            modifier = Modifier.size(24.dp).rotate(-135f)
+                            modifier = Modifier
+                                .size(24.dp)
+                                .rotate(-135f)
                         )
                     }
-                    IconButton(
-                        onClick = {}
-                    ) {
+                    IconButton(onClick = {}) {
                         Icon(
                             painter = painterResource(R.drawable.video_svgrepo_com),
                             contentDescription = "",
                             modifier = Modifier.size(24.dp)
                         )
                     }
-                    IconButton(
-                        onClick = {}
-                    ) {
+                    IconButton(onClick = {}) {
                         Icon(
                             painter = painterResource(R.drawable.menu_dots_svgrepo_com),
                             contentDescription = "",
-                            modifier = Modifier.size(24.dp).rotate(90f)
+                            modifier = Modifier
+                                .size(24.dp)
+                                .rotate(90f)
                         )
                     }
                 }
-
-
             }
         },
         bottomBar = {
-
-            Column() {
-                // 🔥 MEDIA PREVIEW SECTION
+            Column {
+                // Media preview
                 if (mediaList.isNotEmpty()) {
-
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
                     ) {
                         mediaList.forEach { media ->
-
-                            Box(
-                                modifier = Modifier.padding(end = 8.dp)
-                            ) {
-
+                            Box(modifier = Modifier.padding(end = 8.dp)) {
                                 AsyncImage(
                                     model = media.uri,
                                     contentDescription = null,
@@ -425,12 +411,8 @@ fun ChatScreen(
                                         .clip(RoundedCornerShape(12.dp)),
                                     contentScale = ContentScale.Crop
                                 )
-
-                                // ❌ REMOVE BUTTON (important UX)
                                 IconButton(
-                                    onClick = {
-                                        chatViewModel.removeMedia(media)
-                                    },
+                                    onClick = { chatViewModel.removeMedia(media) },
                                     modifier = Modifier
                                         .align(Alignment.TopEnd)
                                         .size(20.dp)
@@ -440,8 +422,6 @@ fun ChatScreen(
                                         contentDescription = null
                                     )
                                 }
-
-                                // 🎥 VIDEO LABEL
                                 if (media.mediaType == MediaType.VIDEO) {
                                     Text(
                                         text = "🎥",
@@ -453,7 +433,6 @@ fun ChatScreen(
                     }
                 }
 
-                // 🔥 EXISTING INPUT BAR (Wrapped in Box for overlays)
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -464,18 +443,14 @@ fun ChatScreen(
                             .fillMaxWidth()
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            IconButton(
-                                onClick = {}
-                            ) {
+                            IconButton(onClick = {}) {
                                 Icon(
                                     painter = painterResource(R.drawable.sticker_add_svgrepo_com),
                                     contentDescription = "",
                                     modifier = Modifier.size(50.dp)
                                 )
                             }
-                            IconButton(
-                                onClick = { showAttachmentMenu = true }
-                            ) {
+                            IconButton(onClick = { showAttachmentMenu = true }) {
                                 Icon(
                                     painter = painterResource(R.drawable.attachment_svgrepo_com),
                                     contentDescription = "",
@@ -486,12 +461,8 @@ fun ChatScreen(
 
                         TextField(
                             value = typeMessage,
-                            onValueChange = { newMessage ->
-                                typeMessage = newMessage
-                            },
-                            placeholder = {
-                                Text("Type")
-                            },
+                            onValueChange = { typeMessage = it },
+                            placeholder = { Text("Type") },
                             colors = TextFieldDefaults.colors(
                                 focusedIndicatorColor = Transparent,
                                 unfocusedIndicatorColor = Transparent,
@@ -500,8 +471,11 @@ fun ChatScreen(
                             shape = RoundedCornerShape(50.dp),
                             modifier = Modifier.weight(1f)
                         )
-                        
-                        Box(modifier = Modifier.padding(horizontal = 4.dp), contentAlignment = Alignment.Center) {
+
+                        Box(
+                            modifier = Modifier.padding(horizontal = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
                             if (typeMessage.isBlank() && mediaList.isEmpty()) {
                                 Icon(
                                     painter = painterResource(R.drawable.mic_svgrepo_com),
@@ -511,19 +485,30 @@ fun ChatScreen(
                                         .pointerInput(Unit) {
                                             awaitEachGesture {
                                                 val down = awaitFirstDown()
+
+                                                if (ContextCompat.checkSelfPermission(
+                                                        context,
+                                                        Manifest.permission.RECORD_AUDIO
+                                                    ) != PackageManager.PERMISSION_GRANTED
+                                                ) {
+                                                    audioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                                                    return@awaitEachGesture
+                                                }
+
                                                 recordingState = RecordingState.RECORDING
+                                                val audioPath = recorder.start(context)
                                                 dragOffset = androidx.compose.ui.geometry.Offset.Zero
-                                                
+
                                                 var isCanceledOrLocked = false
-                                                
+
                                                 do {
                                                     val event = awaitPointerEvent()
                                                     val position = event.changes.first().position
                                                     val drag = position - down.position
-                                                    
                                                     dragOffset = drag
-                                                    
+
                                                     if (drag.x < -200f) {
+                                                        recorder.cancel()
                                                         recordingState = RecordingState.IDLE
                                                         isCanceledOrLocked = true
                                                         break
@@ -532,11 +517,22 @@ fun ChatScreen(
                                                         isCanceledOrLocked = true
                                                         break
                                                     }
-                                                    
                                                 } while (event.changes.any { it.pressed })
-                                                
+
+                                                // Normal release → send directly without mediaList
                                                 if (!isCanceledOrLocked) {
+                                                    val path = recorder.stop()
                                                     recordingState = RecordingState.IDLE
+
+                                                    path?.let {
+                                                        val uri = Uri.fromFile(File(it))
+                                                        // 👈 sendAudioSilently bypasses _mediaList
+                                                        chatViewModel.sendAudioSilently(
+                                                            context,
+                                                            conversationId!!,
+                                                            uri
+                                                        )
+                                                    }
                                                 }
                                             }
                                         },
@@ -547,10 +543,7 @@ fun ChatScreen(
                                     onClick = {
                                         when {
                                             mediaList.isNotEmpty() -> {
-                                                chatViewModel.sendMedia(
-                                                    context,
-                                                    conversationId!!
-                                                )
+                                                chatViewModel.sendMedia(context, conversationId!!)
                                             }
                                             typeMessage.isNotBlank() -> {
                                                 chatViewModel.sendMessage(
@@ -573,25 +566,28 @@ fun ChatScreen(
                             }
                         }
                     }
-                    
+
                     DropdownMenu(
                         expanded = showAttachmentMenu,
                         onDismissRequest = { showAttachmentMenu = false }
                     ) {
-
                         DropdownMenuItem(
                             text = { Text("Camera") },
                             onClick = {
                                 showAttachmentMenu = false
 
-                                if (
-                                    ContextCompat.checkSelfPermission(
+                                if (ContextCompat.checkSelfPermission(
                                         context,
                                         Manifest.permission.CAMERA
                                     ) == PackageManager.PERMISSION_GRANTED
                                 ) {
-                                    photoUri = createMediaUri(".jpg")
-                                    takePictureLauncher.launch(photoUri!!)
+                                    val (uri, file) = createMedia()
+
+                                    photoUriString = uri.toString()
+                                    photoFile = file
+
+                                    takePictureLauncher.launch(uri)
+
                                 } else {
                                     cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                                 }
@@ -638,37 +634,26 @@ fun ChatScreen(
                             modifier = Modifier.height(30.dp)
                         )
                         HorizontalDivider()
-                        DropdownMenuItem(
-                            text = { Text("Document") },
-                            onClick = {
-                                showAttachmentMenu = false
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.page_svgrepo_com),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            },
-                            modifier = Modifier.height(30.dp)
-                        )
                     }
 
-                    // HOLDING OVERLAY
+                    // Recording overlay
                     if (recordingState == RecordingState.RECORDING) {
                         Row(
                             modifier = Modifier
                                 .matchParentSize()
                                 .background(color = LGrey)
-                                .padding(end = 50.dp), // leave space for mic
+                                .padding(end = 50.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 16.dp)) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(start = 16.dp)
+                            ) {
                                 Icon(
                                     painter = painterResource(R.drawable.dot_small_svgrepo_com),
                                     contentDescription = null,
-                                    tint = androidx.compose.ui.graphics.Color.Red,
+                                    tint = Color.Red,
                                     modifier = Modifier.size(24.dp)
                                 )
                                 Text(
@@ -681,18 +666,15 @@ fun ChatScreen(
                                 Icon(
                                     painter = painterResource(R.drawable.back_svgrepo_com),
                                     contentDescription = null,
-                                    tint = androidx.compose.ui.graphics.Color.Gray,
+                                    tint = Color.Gray,
                                     modifier = Modifier.size(16.dp)
                                 )
-                                Text(
-                                    text = " Slide to cancel",
-                                    color = androidx.compose.ui.graphics.Color.Gray
-                                )
+                                Text(text = " Slide to cancel", color = Color.Gray)
                             }
                         }
                     }
 
-                    // LOCKED OVERLAY
+                    // Locked overlay
                     if (recordingState == RecordingState.LOCKED) {
                         Row(
                             modifier = Modifier
@@ -702,11 +684,14 @@ fun ChatScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            IconButton(onClick = { recordingState = RecordingState.IDLE }) {
+                            IconButton(onClick = {
+                                recorder.cancel()
+                                recordingState = RecordingState.IDLE
+                            }) {
                                 Icon(
                                     painter = painterResource(R.drawable.delete_svgrepo_com),
                                     contentDescription = "Cancel Recording",
-                                    tint = androidx.compose.ui.graphics.Color.Red
+                                    tint = Color.Red
                                 )
                             }
 
@@ -716,24 +701,38 @@ fun ChatScreen(
                                 modifier = Modifier.padding(horizontal = 8.dp)
                             )
 
-                            AudioWavesAnimation(modifier = Modifier.weight(1f).padding(horizontal = 16.dp))
+                            LiveWaveform(
+                                recorder = recorder,
+                                isRecording = recordingState != RecordingState.IDLE
+                            )
 
-                            IconButton(
-                                onClick = { recordingState = RecordingState.IDLE }
-                            ) {
+                            // 👈 Locked send — also uses sendAudioSilently
+                            IconButton(onClick = {
+                                val path = recorder.stop()
+                                recordingState = RecordingState.IDLE
+                                path?.let {
+                                    val uri = Uri.fromFile(File(it))
+                                    chatViewModel.sendAudioSilently(
+                                        context,
+                                        conversationId!!,
+                                        uri
+                                    )
+                                }
+                            }) {
                                 Icon(
                                     painter = painterResource(R.drawable.send_svgrepo_com),
                                     contentDescription = "Send Recording",
-                                    modifier = Modifier.size(30.dp).rotate(15f)
+                                    modifier = Modifier
+                                        .size(30.dp)
+                                        .rotate(15f)
                                 )
                             }
                         }
                     }
-
-                }
                 }
             }
-    ) {innerPadding->
+        }
+    ) { innerPadding ->
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -743,9 +742,8 @@ fun ChatScreen(
         ) {
             items(
                 items = messages?.messages ?: emptyList(),
-                key = { msg -> msg.id }  // 👈 add this
-            ){msg->
-
+                key = { msg -> msg.id }
+            ) { msg ->
                 ChatBubble(
                     message = ChatMessage(
                         message = msg.content ?: "",
@@ -755,28 +753,18 @@ fun ChatScreen(
                     isRead = msg.sender_id == profile?.data?.id &&
                             otherUserLastReadMessageId != null &&
                             msg.id <= (otherUserLastReadMessageId ?: 0),
-                    onDeleteClick = {
-                        chatViewModel.deleteMessage(msg.id)
-                    },
-                    attachments = msg.attachments
+                    onDeleteClick = { chatViewModel.deleteMessage(msg.id) },
+                    attachments = msg.attachments.orEmpty()
                 )
             }
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ChatScreenPreview(){
-    ChatScreen(
-        navController = rememberNavController(),
-    )
-}
-
 @Composable
 fun AudioWavesAnimation(modifier: Modifier = Modifier) {
     val infiniteTransition = rememberInfiniteTransition(label = "audio_waves")
-    
+
     val waves = List(8) { index ->
         infiniteTransition.animateFloat(
             initialValue = 0.2f,
@@ -809,8 +797,56 @@ fun AudioWavesAnimation(modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun LiveWaveform(
+    recorder: AudioRecorder,
+    isRecording: Boolean
+) {
+    val amplitudes = remember { mutableStateListOf<Float>() }
+
+    LaunchedEffect(isRecording) {
+        if (!isRecording) return@LaunchedEffect
+
+        while (isRecording) {
+            val raw = recorder.getAmplitude()
+            // Boost sensitivity: use sqrt scaling + higher floor
+            val amp = if (raw > 0) {
+                (Math.sqrt(raw.toDouble()) / Math.sqrt(32767.0)).toFloat()
+                    .coerceIn(0.05f, 1f)
+            } else 0.05f
+
+            amplitudes.add(amp)
+            if (amplitudes.size > 20) amplitudes.removeAt(0)
+
+            delay(80) // 👈 slightly slower = smoother visual
+        }
+    }
+
+    Row(
+        modifier = Modifier
+            .height(30.dp)
+            .width(80.dp), // fixed width so it doesn't shift layout
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        amplitudes.forEach { amp ->
+            Box(
+                modifier = Modifier
+                    .width(3.dp)
+                    .height((amp * 28).dp.coerceAtLeast(3.dp))
+                    .clip(RoundedCornerShape(50))
+                    .background(Black)
+            )
+            Spacer(modifier = Modifier.width(2.dp))
+        }
+    }
+}
+
 enum class RecordingState {
-    IDLE,
-    RECORDING,
-    LOCKED
+    IDLE, RECORDING, LOCKED
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun ChatScreenPreview() {
+    ChatScreen(navController = rememberNavController())
 }

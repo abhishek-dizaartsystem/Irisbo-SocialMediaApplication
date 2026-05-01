@@ -29,7 +29,7 @@ data class MessageResponse(
     val reply_message_content: String?,
     val reply_message_type: String?,
     val reply_message_sender_id: Int?,
-    val attachments: List<Attachment>        // Not confirmed
+    val attachments: List<Attachment>?  = null
 )
 
 data class Attachment(

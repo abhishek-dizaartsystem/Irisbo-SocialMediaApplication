@@ -9,7 +9,8 @@ data class UploadMedia(
 
 enum class MediaType{
     IMAGE,
-    VIDEO
+    VIDEO,
+    AUDIO
 }
 
 enum class UploadType {
