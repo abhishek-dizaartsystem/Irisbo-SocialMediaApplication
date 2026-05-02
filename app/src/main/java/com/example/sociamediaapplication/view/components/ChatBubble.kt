@@ -256,25 +256,45 @@ fun ChatBubble(
                 if (audioAttachments.isNotEmpty()) {
                     val audio = audioAttachments[0]
 
-                    var totalDuration by remember { mutableStateOf(0) } // in seconds
+                    var totalDuration by remember { mutableStateOf(0) }
                     var remainingSeconds by remember { mutableStateOf(0) }
+                    var isSeeking by remember { mutableStateOf(false) }
+                    var seekPosition by remember { mutableStateOf(0f) }
 
-                    // Format seconds as mm:ss
+                    // Fetch duration on first load without playing
+                    LaunchedEffect(audio.file_url) {
+                        if (totalDuration == 0) {
+                            try {
+                                val probe = android.media.MediaPlayer().apply {
+                                    setDataSource(correctUrl(audio.file_url))
+                                    prepare()
+                                }
+                                totalDuration = probe.duration / 1000
+                                remainingSeconds = totalDuration
+                                probe.release()
+                            } catch (e: Exception) {
+                                // Ignore — duration will show when user plays
+                            }
+                        }
+                    }
+
                     fun formatAudioTime(seconds: Int): String {
                         val m = seconds / 60
                         val s = seconds % 60
                         return String.format("%02d:%02d", m, s)
                     }
 
-                    // Countdown while playing
+                    // Progress + countdown loop
                     LaunchedEffect(isPlaying) {
                         if (isPlaying) {
                             while (isPlaying) {
-                                mediaPlayer?.let {
-                                    if (it.duration > 0) {
-                                        val elapsed = it.currentPosition / 1000
-                                        remainingSeconds = (totalDuration - elapsed).coerceAtLeast(0)
-                                        progress = it.currentPosition / it.duration.toFloat()
+                                if (!isSeeking) {
+                                    mediaPlayer?.let {
+                                        if (it.duration > 0) {
+                                            val elapsed = it.currentPosition / 1000
+                                            remainingSeconds = (totalDuration - elapsed).coerceAtLeast(0)
+                                            progress = it.currentPosition / it.duration.toFloat()
+                                        }
                                     }
                                 }
                                 kotlinx.coroutines.delay(200)
@@ -287,75 +307,109 @@ fun ChatBubble(
                             .width(260.dp)
                             .clip(RoundedCornerShape(20.dp))
                             .background(bubbleColor)
-                            .padding(12.dp)
+                            .padding(horizontal = 12.dp, vertical = 10.dp)
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                painter = painterResource(
-                                    if (isPlaying) R.drawable.pause_svgrepo_com
-                                    else R.drawable.play_svgrepo_com
-                                ),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .clickable {
-                                        if (isPlaying) {
-                                            mediaPlayer?.pause()
-                                            isPlaying = false
-                                        } else {
-                                            if (mediaPlayer == null) {
-                                                mediaPlayer = android.media.MediaPlayer().apply {
-                                                    setDataSource(correctUrl(audio.file_url))
-                                                    prepare()
-                                                    // Grab total duration after prepare
-                                                    totalDuration = (duration / 1000)
-                                                    remainingSeconds = totalDuration
-                                                    // Auto-reset when playback completes
-                                                    setOnCompletionListener {
-                                                        isPlaying = false
-                                                        progress = 0f
-                                                        remainingSeconds = totalDuration
-                                                    }
-                                                }
-                                            } else if (totalDuration == 0) {
-                                                // Already initialized, just get duration
-                                                totalDuration = ((mediaPlayer?.duration ?: 0) / 1000)
-                                                remainingSeconds = totalDuration
-                                            }
-                                            mediaPlayer?.start()
-                                            isPlaying = true
-                                        }
-                                    }
-                            )
-
-                            Spacer(modifier = Modifier.width(10.dp))
-
-                            // Progress bar
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(4.dp)
-                                    .background(Color.Gray.copy(alpha = 0.3f))
+                        Column {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
                             ) {
-                                Box(
+                                // Play / Pause
+                                Icon(
+                                    painter = painterResource(
+                                        if (isPlaying) R.drawable.pause_svgrepo_com
+                                        else R.drawable.play_svgrepo_com
+                                    ),
+                                    contentDescription = null,
                                     modifier = Modifier
-                                        .fillMaxWidth(progress)
-                                        .height(4.dp)
-                                        .background(Color.Blue)
+                                        .size(36.dp)
+                                        .clickable {
+                                            if (isPlaying) {
+                                                mediaPlayer?.pause()
+                                                isPlaying = false
+                                            } else {
+                                                if (mediaPlayer == null) {
+                                                    mediaPlayer = android.media.MediaPlayer().apply {
+                                                        setDataSource(correctUrl(audio.file_url))
+                                                        prepare()
+                                                        totalDuration = (duration / 1000)
+                                                        remainingSeconds = totalDuration
+                                                        setOnCompletionListener {
+                                                            isPlaying = false
+                                                            progress = 0f
+                                                            remainingSeconds = totalDuration
+                                                        }
+                                                    }
+                                                } else if (totalDuration == 0) {
+                                                    totalDuration = ((mediaPlayer?.duration ?: 0) / 1000)
+                                                    remainingSeconds = totalDuration
+                                                }
+                                                mediaPlayer?.start()
+                                                isPlaying = true
+                                            }
+                                        }
                                 )
-                            }
 
-                            Spacer(modifier = Modifier.width(8.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
 
-                            // Duration + ticks
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                // Seek slider — takes remaining space
+                                androidx.compose.material3.Slider(
+                                    value = if (isSeeking) seekPosition else progress,
+                                    onValueChange = { value ->
+                                        isSeeking = true
+                                        seekPosition = value
+                                        if (totalDuration > 0) {
+                                            remainingSeconds = (totalDuration - (value * totalDuration).toInt())
+                                                .coerceAtLeast(0)
+                                        }
+                                    },
+                                    onValueChangeFinished = {
+                                        mediaPlayer?.let { mp ->
+                                            if (mp.duration > 0) {
+                                                val seekTo = (seekPosition * mp.duration).toInt()
+                                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                                    mp.seekTo(seekTo.toLong(), android.media.MediaPlayer.SEEK_CLOSEST)
+                                                } else {
+                                                    mp.seekTo(seekTo)
+                                                }
+                                                progress = seekPosition
+                                                remainingSeconds = (totalDuration - seekTo / 1000).coerceAtLeast(0)
+                                            }
+                                        }
+                                        isSeeking = false
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(24.dp),
+                                    colors = androidx.compose.material3.SliderDefaults.colors(
+                                        thumbColor = if (message.isUser) Color.DarkGray else Color(0xFF0277BD),
+                                        activeTrackColor = if (message.isUser) Color.DarkGray else Color(0xFF0277BD),
+                                        inactiveTrackColor = Color.Gray.copy(alpha = 0.3f)
+                                    )
+                                )
+
+                                Spacer(modifier = Modifier.width(6.dp))
+
+                                // Duration
                                 Text(
-                                    // Show remaining when playing, total when idle
                                     text = if (isPlaying || progress > 0f)
                                         formatAudioTime(remainingSeconds)
                                     else
                                         formatAudioTime(totalDuration),
                                     fontSize = 10.sp,
+                                    color = Color.Gray
+                                )
+                            }
+
+                            // Message send time + read tick — bottom right
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = formatToTime(message.msgTime),
+                                    fontSize = 9.sp,
                                     color = Color.Gray,
                                     modifier = Modifier.padding(end = 2.dp)
                                 )
