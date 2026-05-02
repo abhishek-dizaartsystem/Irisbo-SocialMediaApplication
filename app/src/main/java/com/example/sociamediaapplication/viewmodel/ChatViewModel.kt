@@ -400,23 +400,72 @@ class ChatViewModel(
 
     // Sends images/videos from _mediaList, clears list after, prevents socket duplicate
     fun sendMedia(context: Context, conversationId: Int) {
+
+        val tempId = System.currentTimeMillis().toInt()
+
+        val tempMessage = MessageResponse(
+            id = tempId,
+            conversation_id = conversationId,
+            sender_id = -1,
+            message_type = "media",
+            content = "",
+            reply_to_message_id = null,
+            client_temp_id = tempId.toString(),
+            is_edited = 0,
+            edited_at = null,
+            is_deleted = 0,
+            deleted_at = null,
+            created_at = "",
+            updated_at = "",
+            sender_name = "",
+            sender_username = "",
+            sender_profile_image = "",
+            reply_message_id = null,
+            reply_message_content = null,
+            reply_message_type = null,
+            reply_message_sender_id = null,
+            attachments = mediaList.value.map {
+                Attachment(
+                    id = tempId,
+                    message_id = tempId,
+                    file_url = it.uri.toString(), // 👈 local preview
+                    file_type = it.mediaType.name.lowercase(),
+                    mime_type = "",
+                    original_name = "",
+                    file_size = 0,
+                    created_at = ""
+                )
+            }
+        )
+
+        // 🔥 STEP 1: show instantly
+        _messages.update { current ->
+            current?.copy(messages = current.messages + tempMessage)
+        }
+        notifyScrollToBottom()
+
+        val sendingMedia = mediaList.value
+        _mediaList.value = emptyList()
+
+        // 🔥 STEP 2: API call
         viewModelScope.launch {
             try {
                 val response = repository.sendMediaMessage(
                     context,
                     conversationId,
-                    mediaList.value
+                    sendingMedia
                 )
 
-                // Register id so socket skips it
                 locallyAddedMessageIds.add(response.id)
 
+                // 🔥 STEP 3: replace temp
                 _messages.update { current ->
-                    current?.copy(messages = current.messages + response)
+                    current?.copy(
+                        messages = current.messages.map {
+                            if (it.id == tempId) response else it
+                        }
+                    )
                 }
-
-                _mediaList.value = emptyList() // 👈 clears media list
-                notifyScrollToBottom()
 
             } catch (e: Exception) {
                 Log.e("MEDIA_SEND", e.message.toString())
@@ -426,24 +475,67 @@ class ChatViewModel(
 
     // Sends audio silently — never touches _mediaList so it never shows in picker
     fun sendAudioSilently(context: Context, conversationId: Int, audioUri: Uri) {
+
+        val tempId = System.currentTimeMillis().toInt()
+
+        val tempMessage = MessageResponse(
+            id = tempId,
+            conversation_id = conversationId,
+            sender_id = -1,
+            message_type = "audio",
+            content = "",
+            reply_to_message_id = null,
+            client_temp_id = tempId.toString(),
+            is_edited = 0,
+            edited_at = null,
+            is_deleted = 0,
+            deleted_at = null,
+            created_at = "",
+            updated_at = "",
+            sender_name = "",
+            sender_username = "",
+            sender_profile_image = "",
+            reply_message_id = null,
+            reply_message_content = null,
+            reply_message_type = null,
+            reply_message_sender_id = null,
+            attachments = listOf(
+                Attachment(
+                    id = tempId,
+                    message_id = tempId,
+                    file_url = audioUri.toString(),
+                    file_type = "audio",
+                    mime_type = "",
+                    original_name = "",
+                    file_size = 0,
+                    created_at = ""
+                )
+            )
+        )
+
+        // 🔥 instant UI
+        _messages.update { current ->
+            current?.copy(messages = current.messages + tempMessage)
+        }
+        notifyScrollToBottom()
+
         viewModelScope.launch {
             try {
-                val audioMedia = listOf(UploadMedia(audioUri, MediaType.AUDIO))
-
                 val response = repository.sendMediaMessage(
                     context,
                     conversationId,
-                    audioMedia
+                    listOf(UploadMedia(audioUri, MediaType.AUDIO))
                 )
 
-                // Register id so socket skips it
                 locallyAddedMessageIds.add(response.id)
 
                 _messages.update { current ->
-                    current?.copy(messages = current.messages + response)
+                    current?.copy(
+                        messages = current.messages.map {
+                            if (it.id == tempId) response else it
+                        }
+                    )
                 }
-
-                notifyScrollToBottom()
 
             } catch (e: Exception) {
                 Log.e("AUDIO_SEND", e.message.toString())
