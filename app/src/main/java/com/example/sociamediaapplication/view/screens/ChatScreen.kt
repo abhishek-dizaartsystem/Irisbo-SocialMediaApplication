@@ -543,7 +543,7 @@ fun ChatScreen(
                                     onClick = {
                                         when {
                                             mediaList.isNotEmpty() -> {
-                                                chatViewModel.sendMedia(context, conversationId!!)
+                                                chatViewModel.sendMedia(context, conversationId!!, profile?.data?.id ?: 0)
                                             }
                                             typeMessage.isNotBlank() -> {
                                                 chatViewModel.sendMessage(

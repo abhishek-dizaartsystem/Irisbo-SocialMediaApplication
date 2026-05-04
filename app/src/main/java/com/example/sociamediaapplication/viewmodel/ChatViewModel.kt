@@ -57,20 +57,12 @@ class ChatViewModel(
     private val _prependedCount = MutableStateFlow(0)
     val prependedCount: StateFlow<Int> = _prependedCount
 
-    // Tracks message ids added locally via REST so socket doesn't duplicate them
+    // Real message IDs added via REST — socket should skip these
     private val locallyAddedMessageIds = mutableSetOf<Int>()
 
-    fun notifyScrollToBottom() {
-        _scrollToBottom.value = true
-    }
-
-    fun consumeScrollToBottom() {
-        _scrollToBottom.value = false
-    }
-
-    fun consumePrependedCount() {
-        _prependedCount.value = 0
-    }
+    fun notifyScrollToBottom() { _scrollToBottom.value = true }
+    fun consumeScrollToBottom() { _scrollToBottom.value = false }
+    fun consumePrependedCount() { _prependedCount.value = 0 }
 
     fun deleteMessage(messageId: Int) {
         val socket = SocketManager.getSocket()
@@ -86,7 +78,6 @@ class ChatViewModel(
         socket?.on("message:deleted") { args ->
             val data = args[0] as JSONObject
             val deletedMessage = data.getJSONObject("data")
-
             val deletedId = deletedMessage.optInt("messageId")
             val msgConversationId = deletedMessage.optInt("conversationId")
 
@@ -114,42 +105,34 @@ class ChatViewModel(
     }
 
     fun observeConversationUpdates(uid: Int) {
-        if (_isListeningConversations) return
-        _isListeningConversations = true
-
         val socket = SocketManager.getSocket()
+        socket?.off("conversation:update")
 
-        socket?.on("conversation:updated") { args ->
+        socket?.on("conversation:update") { args ->
             val data = args[0] as JSONObject
-            val summaryJson = data.getJSONObject("data")
-
-            val updatedConversationId = summaryJson.optInt("conversation_id", -1)
-            val lastMsg = summaryJson.optJSONObject("last_message")
-            val senderId = lastMsg?.optInt("sender_id", -1)
+            val convoJson = data.getJSONObject("data")
 
             viewModelScope.launch {
-                val current = _conversations.value ?: return@launch
 
-                val updatedList = current.conversations.map { conv ->
-                    if (conv.conversation_id == updatedConversationId) {
-                        val shouldMarkUnread = senderId != uid
-                        conv.copy(
-                            last_message_id = lastMsg?.optInt("id") ?: conv.last_message_id,
-                            content = lastMsg?.optString("content") ?: conv.content,
-                            last_message_at = lastMsg?.optString("created_at") ?: conv.last_message_at,
-                            last_sender_id = senderId,
-                            last_read_message_id = if (shouldMarkUnread) {
-                                conv.last_read_message_id
-                            } else {
-                                lastMsg?.optInt("id")
-                            }
-                        )
-                    } else conv
+                val updatedConvoId = convoJson.optInt("conversation_id")
+                val lastMessage = convoJson.optString("content")
+                val lastMessageAt = convoJson.optString("last_message_at")
+
+                _conversations.update { current ->
+
+                    val list = current?.conversations ?: return@update current
+
+                    val updatedList = list.map { convo ->
+                        if (convo.conversation_id == updatedConvoId) {
+                            convo.copy(
+                                content = lastMessage,
+                                last_message_at = lastMessageAt
+                            )
+                        } else convo
+                    }
+
+                    current.copy(conversations = updatedList)
                 }
-
-                _conversations.value = current.copy(
-                    conversations = updatedList.sortedByDescending { it.last_message_at }
-                )
             }
         }
     }
@@ -179,21 +162,12 @@ class ChatViewModel(
             val data = args[0] as JSONObject
             val messageJson = data.getJSONObject("data")
 
-            Log.d("SOCKET_DEBUG", messageJson.toString())
-
             val msgConversationId = messageJson.optInt("conversation_id", -1)
             if (msgConversationId != conversationId) return@on
 
             val incomingId = messageJson.optInt("id", -1)
 
             viewModelScope.launch {
-                val current = _messages.value ?: return@launch
-
-                // Skip if already added locally via REST (media/audio send)
-                if (locallyAddedMessageIds.contains(incomingId)) {
-                    locallyAddedMessageIds.remove(incomingId)
-                    return@launch
-                }
 
                 val attachmentsArray = messageJson.optJSONArray("attachments")
                 val parsedAttachments = mutableListOf<Attachment>()
@@ -240,13 +214,30 @@ class ChatViewModel(
                     attachments = parsedAttachments
                 )
 
-                _messages.value = current.copy(messages = current.messages + newMsg)
-                notifyScrollToBottom()
+                _messages.update { current ->
 
-                // If incoming from other person, mark read
-                if (messageJson.optInt("sender_id", -1) != uid) {
-                    markConversationReadSocket(conversationId)
+                    if (current == null) return@update current
+
+                    //Prevent duplicate
+                    if (current.messages.any { it.id == incomingId }) {
+                        return@update current
+                    }
+
+                    //REMOVE ONLY TEMP MESSAGE (not all)
+                    val cleaned = current.messages.filterNot { temp ->
+                        temp.sender_id == -1 &&
+                                (temp.attachments ?: emptyList()).any { t ->
+                                    newMsg.attachments?.any { r ->
+                                        t.file_url.startsWith("file://") &&
+                                                t.file_type == r.file_type
+                                    } == true
+                                }
+                    }
+
+                    current.copy(messages = cleaned + newMsg)
                 }
+
+                notifyScrollToBottom()
             }
         }
     }
@@ -308,16 +299,12 @@ class ChatViewModel(
             try {
                 val response = repository.getMessages(conversationId, currentPage)
                 val current = _messages.value ?: return@launch
-
                 val combined = response.messages + current.messages
                 val unique = combined.distinctBy { it.id }
-
                 _messages.value = current.copy(messages = unique)
-
                 val addedCount = unique.size - current.messages.size
                 if (addedCount > 0) _prependedCount.value = addedCount
                 if (response.messages.isEmpty()) hasMore = false
-
             } catch (e: Exception) {
                 currentPage--
                 Log.e("Chat_VM", e.message.toString())
@@ -360,55 +347,60 @@ class ChatViewModel(
 
     private var _isListeningReadUpdates = false
 
-    fun observeReadUpdates(currentUserId: Int, currentConversationId: Int) {
-        if (currentUserId == 0) return
-
+    fun observeReadUpdates(uid: Int, activeConversationId: Int) {
         val socket = SocketManager.getSocket()
-        socket?.off("conversation:read:update")
-        _isListeningReadUpdates = false
+        socket?.off("message:read")
 
-        if (_isListeningReadUpdates) return
-        _isListeningReadUpdates = true
-
-        socket?.on("conversation:read:update") { args ->
+        socket?.on("message:read") { args ->
             val data = args[0] as JSONObject
-            val payload = data.getJSONObject("data")
+            val json = data.getJSONObject("data")
 
-            val updatedConversationId = payload.optInt("conversationId", -1)
-            val lastReadMessageId = payload.optInt("last_read_message_id", -1)
-            val readByUserId = payload.optInt("userId", -1)
+            val conversationId = json.optInt("conversation_id")
+            val lastReadMessageId = json.optInt("last_read_message_id")
 
             viewModelScope.launch {
-                val current = _conversations.value
-                if (current != null) {
-                    val updatedList = current.conversations.map { conv ->
-                        if (conv.conversation_id == updatedConversationId) {
-                            conv.copy(last_read_message_id = lastReadMessageId)
-                        } else conv
+
+                // 🔹 update messages (if open chat)
+                if (conversationId == activeConversationId) {
+                    _messages.update { current ->
+                        current?.copy(
+                            messages = current.messages.map {
+                                if (it.id <= lastReadMessageId) {
+                                    it.copy(is_deleted = 0) // or add read flag if you have
+                                } else it
+                            }
+                        )
                     }
-                    _conversations.value = current.copy(conversations = updatedList)
                 }
 
-                if (updatedConversationId == currentConversationId &&
-                    readByUserId != currentUserId
-                ) {
-                    _otherUserLastReadMessageId.value = lastReadMessageId
+                // 🔹 update chat list
+                _conversations.update { current ->
+                    val list = current?.conversations ?: return@update current
+
+                    val updated = list.map {
+                        if (it.conversation_id == conversationId) {
+                            it.copy(last_read_message_id = lastReadMessageId)
+                        } else it
+                    }
+
+                    current.copy(conversations = updated)
                 }
             }
         }
     }
 
-    // Sends images/videos from _mediaList, clears list after, prevents socket duplicate
-    fun sendMedia(context: Context, conversationId: Int) {
+    fun sendMedia(context: Context, conversationId: Int, profileId: Int) {
 
         val tempId = System.currentTimeMillis().toInt()
+
+        Log.d("ChatVM_DEBUG", tempId.toString())
 
         val tempMessage = MessageResponse(
             id = tempId,
             conversation_id = conversationId,
             sender_id = -1,
             message_type = "media",
-            content = "",
+            content = null,
             reply_to_message_id = null,
             client_temp_id = tempId.toString(),
             is_edited = 0,
@@ -428,7 +420,7 @@ class ChatViewModel(
                 Attachment(
                     id = tempId,
                     message_id = tempId,
-                    file_url = it.uri.toString(), // 👈 local preview
+                    file_url = it.uri.toString(),
                     file_type = it.mediaType.name.lowercase(),
                     mime_type = "",
                     original_name = "",
@@ -438,42 +430,31 @@ class ChatViewModel(
             }
         )
 
-        // 🔥 STEP 1: show instantly
-        _messages.update { current ->
-            current?.copy(messages = current.messages + tempMessage)
-        }
+        // ✅ SHOW instantly
+        _messages.update { it?.copy(messages = it.messages + tempMessage) }
         notifyScrollToBottom()
 
         val sendingMedia = mediaList.value
         _mediaList.value = emptyList()
 
-        // 🔥 STEP 2: API call
         viewModelScope.launch {
             try {
-                val response = repository.sendMediaMessage(
-                    context,
-                    conversationId,
-                    sendingMedia
-                )
+                repository.sendMediaMessage(context, conversationId, sendingMedia)
 
-                locallyAddedMessageIds.add(response.id)
-
-                // 🔥 STEP 3: replace temp
-                _messages.update { current ->
-                    current?.copy(
-                        messages = current.messages.map {
-                            if (it.id == tempId) response else it
-                        }
-                    )
-                }
+                // 🔥 ONLY REMOVE TEMP — DO NOT ADD RESPONSE
+//                _messages.update {
+//                    it?.copy(messages = it.messages.filter { msg -> msg.id != tempId })
+//                }
 
             } catch (e: Exception) {
+                _messages.update {
+                    it?.copy(messages = it.messages.filter { msg -> msg.id != tempId })
+                }
                 Log.e("MEDIA_SEND", e.message.toString())
             }
         }
     }
 
-    // Sends audio silently — never touches _mediaList so it never shows in picker
     fun sendAudioSilently(context: Context, conversationId: Int, audioUri: Uri) {
 
         val tempId = System.currentTimeMillis().toInt()
@@ -513,31 +494,26 @@ class ChatViewModel(
             )
         )
 
-        // 🔥 instant UI
-        _messages.update { current ->
-            current?.copy(messages = current.messages + tempMessage)
-        }
+        _messages.update { it?.copy(messages = it.messages + tempMessage) }
         notifyScrollToBottom()
 
         viewModelScope.launch {
             try {
-                val response = repository.sendMediaMessage(
+                repository.sendMediaMessage(
                     context,
                     conversationId,
                     listOf(UploadMedia(audioUri, MediaType.AUDIO))
                 )
 
-                locallyAddedMessageIds.add(response.id)
-
-                _messages.update { current ->
-                    current?.copy(
-                        messages = current.messages.map {
-                            if (it.id == tempId) response else it
-                        }
-                    )
-                }
+                // 🔥 ONLY REMOVE TEMP
+//                _messages.update {
+//                    it?.copy(messages = it.messages.filter { msg -> msg.id != tempId })
+//                }
 
             } catch (e: Exception) {
+                _messages.update {
+                    it?.copy(messages = it.messages.filter { msg -> msg.id != tempId })
+                }
                 Log.e("AUDIO_SEND", e.message.toString())
             }
         }
