@@ -225,13 +225,7 @@ class ChatViewModel(
 
                     //REMOVE ONLY TEMP MESSAGE (not all)
                     val cleaned = current.messages.filterNot { temp ->
-                        temp.sender_id == -1 &&
-                                (temp.attachments ?: emptyList()).any { t ->
-                                    newMsg.attachments?.any { r ->
-                                        t.file_url.startsWith("file://") &&
-                                                t.file_type == r.file_type
-                                    } == true
-                                }
+                        temp.sender_id == -1 && temp.message_type == newMsg.message_type
                     }
 
                     current.copy(messages = cleaned + newMsg)
@@ -395,44 +389,44 @@ class ChatViewModel(
 
         Log.d("ChatVM_DEBUG", tempId.toString())
 
-        val tempMessage = MessageResponse(
-            id = tempId,
-            conversation_id = conversationId,
-            sender_id = -1,
-            message_type = "media",
-            content = null,
-            reply_to_message_id = null,
-            client_temp_id = tempId.toString(),
-            is_edited = 0,
-            edited_at = null,
-            is_deleted = 0,
-            deleted_at = null,
-            created_at = "",
-            updated_at = "",
-            sender_name = "",
-            sender_username = "",
-            sender_profile_image = "",
-            reply_message_id = null,
-            reply_message_content = null,
-            reply_message_type = null,
-            reply_message_sender_id = null,
-            attachments = mediaList.value.map {
-                Attachment(
-                    id = tempId,
-                    message_id = tempId,
-                    file_url = it.uri.toString(),
-                    file_type = it.mediaType.name.lowercase(),
-                    mime_type = "",
-                    original_name = "",
-                    file_size = 0,
-                    created_at = ""
-                )
-            }
-        )
+//        val tempMessage = MessageResponse(
+//            id = tempId,
+//            conversation_id = conversationId,
+//            sender_id = -1,
+//            message_type = "media",
+//            content = null,
+//            reply_to_message_id = null,
+//            client_temp_id = tempId.toString(),
+//            is_edited = 0,
+//            edited_at = null,
+//            is_deleted = 0,
+//            deleted_at = null,
+//            created_at = "",
+//            updated_at = "",
+//            sender_name = "",
+//            sender_username = "",
+//            sender_profile_image = "",
+//            reply_message_id = null,
+//            reply_message_content = null,
+//            reply_message_type = null,
+//            reply_message_sender_id = null,
+//            attachments = mediaList.value.map {
+//                Attachment(
+//                    id = tempId,
+//                    message_id = tempId,
+//                    file_url = it.uri.toString(),
+//                    file_type = it.mediaType.name.lowercase(),
+//                    mime_type = "",
+//                    original_name = "",
+//                    file_size = 0,
+//                    created_at = ""
+//                )
+//            }
+//        )
 
         // ✅ SHOW instantly
-        _messages.update { it?.copy(messages = it.messages + tempMessage) }
-        notifyScrollToBottom()
+//        _messages.update { it?.copy(messages = it.messages + tempMessage) }
+//        notifyScrollToBottom()
 
         val sendingMedia = mediaList.value
         _mediaList.value = emptyList()
@@ -459,43 +453,43 @@ class ChatViewModel(
 
         val tempId = System.currentTimeMillis().toInt()
 
-        val tempMessage = MessageResponse(
-            id = tempId,
-            conversation_id = conversationId,
-            sender_id = -1,
-            message_type = "audio",
-            content = "",
-            reply_to_message_id = null,
-            client_temp_id = tempId.toString(),
-            is_edited = 0,
-            edited_at = null,
-            is_deleted = 0,
-            deleted_at = null,
-            created_at = "",
-            updated_at = "",
-            sender_name = "",
-            sender_username = "",
-            sender_profile_image = "",
-            reply_message_id = null,
-            reply_message_content = null,
-            reply_message_type = null,
-            reply_message_sender_id = null,
-            attachments = listOf(
-                Attachment(
-                    id = tempId,
-                    message_id = tempId,
-                    file_url = audioUri.toString(),
-                    file_type = "audio",
-                    mime_type = "",
-                    original_name = "",
-                    file_size = 0,
-                    created_at = ""
-                )
-            )
-        )
-
-        _messages.update { it?.copy(messages = it.messages + tempMessage) }
-        notifyScrollToBottom()
+//        val tempMessage = MessageResponse(
+//            id = tempId,
+//            conversation_id = conversationId,
+//            sender_id = -1,
+//            message_type = "audio",
+//            content = "",
+//            reply_to_message_id = null,
+//            client_temp_id = tempId.toString(),
+//            is_edited = 0,
+//            edited_at = null,
+//            is_deleted = 0,
+//            deleted_at = null,
+//            created_at = "",
+//            updated_at = "",
+//            sender_name = "",
+//            sender_username = "",
+//            sender_profile_image = "",
+//            reply_message_id = null,
+//            reply_message_content = null,
+//            reply_message_type = null,
+//            reply_message_sender_id = null,
+//            attachments = listOf(
+//                Attachment(
+//                    id = tempId,
+//                    message_id = tempId,
+//                    file_url = audioUri.toString(),
+//                    file_type = "audio",
+//                    mime_type = "",
+//                    original_name = "",
+//                    file_size = 0,
+//                    created_at = ""
+//                )
+//            )
+//        )
+//
+//        _messages.update { it?.copy(messages = it.messages + tempMessage) }
+//        notifyScrollToBottom()
 
         viewModelScope.launch {
             try {
