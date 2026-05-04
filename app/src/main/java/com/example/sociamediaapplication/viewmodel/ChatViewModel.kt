@@ -64,6 +64,7 @@ class ChatViewModel(
     fun consumeScrollToBottom() { _scrollToBottom.value = false }
     fun consumePrependedCount() { _prependedCount.value = 0 }
 
+
     fun deleteMessage(messageId: Int) {
         val socket = SocketManager.getSocket()
         val json = JSONObject()
@@ -106,17 +107,18 @@ class ChatViewModel(
 
     fun observeConversationUpdates(uid: Int) {
         val socket = SocketManager.getSocket()
-        socket?.off("conversation:update")
+        socket?.off("conversation:updated")
 
-        socket?.on("conversation:update") { args ->
+        socket?.on("conversation:updated") { args ->
             val data = args[0] as JSONObject
             val convoJson = data.getJSONObject("data")
+            val lastMessageJson = convoJson.getJSONObject("last_message")
 
             viewModelScope.launch {
 
                 val updatedConvoId = convoJson.optInt("conversation_id")
-                val lastMessage = convoJson.optString("content")
-                val lastMessageAt = convoJson.optString("last_message_at")
+                val lastMessage = lastMessageJson.optString("content")
+                val lastMessageAt = lastMessageJson.optString("created_at")
 
                 _conversations.update { current ->
 
@@ -140,17 +142,27 @@ class ChatViewModel(
     fun observePresence() {
         val socket = SocketManager.getSocket()
 
-        socket?.on("presence:online") { args ->
-            val data = args[0] as JSONObject
-            _onlineUsers.value = _onlineUsers.value + data.optInt("userId")
-        }
+//        socket?.off("presence:online")
+//        socket?.off("presence:offline")
+        socket?.off("presence:sync")
 
-        socket?.on("presence:offline") { args ->
+//        socket?.on("presence:online") { args ->
+//            val data = args[0] as JSONObject
+//            _onlineUsers.value = _onlineUsers.value + data.optInt("userId")
+//        }
+//
+//        socket?.on("presence:offline") { args ->
+//            val data = args[0] as JSONObject
+//            val userId = data.optInt("userId")
+//            val lastSeen = data.optString("lastSeenAt")
+//            _onlineUsers.value = _onlineUsers.value - userId
+//            _lastSeenMap.value = _lastSeenMap.value + (userId to lastSeen)
+//        }
+
+        socket?.on("presence:sync") { args ->
             val data = args[0] as JSONObject
-            val userId = data.optInt("userId")
-            val lastSeen = data.optString("lastSeenAt")
-            _onlineUsers.value = _onlineUsers.value - userId
-            _lastSeenMap.value = _lastSeenMap.value + (userId to lastSeen)
+            _onlineUsers.value = _onlineUsers.value + data.optInt("onlineUserIds")
+            Log.d("PRESENCE_DEBUG", onlineUsers.toString())
         }
     }
 
@@ -195,7 +207,7 @@ class ChatViewModel(
                     conversation_id = msgConversationId,
                     sender_id = messageJson.optInt("sender_id", -1),
                     message_type = messageJson.optString("message_type", "text"),
-                    content = messageJson.optString("content", ""),
+                    content = if (messageJson.isNull("content")) null else messageJson.optString("content", ""),
                     reply_to_message_id = null,
                     client_temp_id = null,
                     is_edited = 0,
@@ -343,16 +355,21 @@ class ChatViewModel(
 
     fun observeReadUpdates(uid: Int, activeConversationId: Int) {
         val socket = SocketManager.getSocket()
-        socket?.off("message:read")
+        socket?.off("conversation:read:update")
 
-        socket?.on("message:read") { args ->
+        socket?.on("conversation:read:update") { args ->
             val data = args[0] as JSONObject
             val json = data.getJSONObject("data")
 
-            val conversationId = json.optInt("conversation_id")
+            val conversationId = json.optInt("conversationId")
             val lastReadMessageId = json.optInt("last_read_message_id")
+            val readerId = json.optInt("userId")
 
             viewModelScope.launch {
+
+                if (conversationId == activeConversationId && readerId != uid) {
+                    _otherUserLastReadMessageId.value = lastReadMessageId  // ← this was missing
+                }
 
                 // 🔹 update messages (if open chat)
                 if (conversationId == activeConversationId) {

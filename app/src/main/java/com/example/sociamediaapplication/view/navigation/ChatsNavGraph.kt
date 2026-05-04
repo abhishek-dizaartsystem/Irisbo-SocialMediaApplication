@@ -36,6 +36,7 @@ fun ChatsNavGraph(
                 chatViewModel.fetchConversations()
                 chatViewModel.observeConversationUpdates(uid)
                 chatViewModel.observeReadUpdates(uid, 0) // 0 = no active conversation
+
             }
 
             ChatsScreen(
