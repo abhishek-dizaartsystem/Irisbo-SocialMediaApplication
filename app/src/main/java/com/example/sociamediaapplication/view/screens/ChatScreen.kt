@@ -14,6 +14,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
@@ -113,6 +114,7 @@ fun ChatScreen(
     val photoUri = photoUriString?.let { Uri.parse(it) }
     var videoUri by remember { mutableStateOf<Uri?>(null) }
     var photoFile by remember { mutableStateOf<File?>(null) }
+    val replyMessage by chatViewModel.replyToMessage.collectAsState()
 
     LaunchedEffect(recordingState) {
         if (recordingState != RecordingState.IDLE) {
@@ -398,6 +400,39 @@ fun ChatScreen(
         },
         bottomBar = {
             Column {
+
+                if (replyMessage != null) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.LightGray)
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text(
+                                text = "Replying to",
+                                fontSize = 12.sp,
+                                color = Color.Gray
+                            )
+                            Text(
+                                text = replyMessage?.content ?: "",
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Icon(
+                            painter = painterResource(R.drawable.cross_svgrepo_com),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clickable {
+                                    chatViewModel.clearReplyMessage()
+                                }
+                        )
+                    }
+                }
+
                 // Media preview
                 if (mediaList.isNotEmpty()) {
                     Row(
@@ -462,6 +497,7 @@ fun ChatScreen(
                                 )
                             }
                         }
+
 
                         TextField(
                             value = typeMessage,
@@ -754,10 +790,22 @@ fun ChatScreen(
                         isUser = msg.sender_id == profile?.data?.id,
                         msgTime = msg.created_at ?: "12:00 PM"
                     ),
+
                     isRead = msg.sender_id == profile?.data?.id &&
                             otherUserLastReadMessageId != null &&
                             msg.id <= (otherUserLastReadMessageId ?: 0),
-                    onDeleteClick = { chatViewModel.deleteMessage(msg.id) },
+
+                    onDeleteClick = {
+                        chatViewModel.deleteMessage(msg.id)
+                    },
+
+                    onReplyClick = {
+                        chatViewModel.setReplyMessage(msg)
+                    },
+
+                    // 🔥 IMPORTANT
+                    replyContent = msg.reply_message_content,
+
                     attachments = msg.attachments.orEmpty()
                 )
             }

@@ -60,6 +60,17 @@ class ChatViewModel(
     // Real message IDs added via REST — socket should skip these
     private val locallyAddedMessageIds = mutableSetOf<Int>()
 
+    private val _replyToMessage = MutableStateFlow<MessageResponse?>(null)
+    val replyToMessage: StateFlow<MessageResponse?> = _replyToMessage
+
+    fun setReplyMessage(message: MessageResponse) {
+        _replyToMessage.value = message
+    }
+
+    fun clearReplyMessage() {
+        _replyToMessage.value = null
+    }
+
     fun notifyScrollToBottom() { _scrollToBottom.value = true }
     fun consumeScrollToBottom() { _scrollToBottom.value = false }
     fun consumePrependedCount() { _prependedCount.value = 0 }
@@ -230,6 +241,8 @@ class ChatViewModel(
             val data = args[0] as JSONObject
             val messageJson = data.getJSONObject("data")
 
+            Log.d("MESSAGE_DEBUG", messageJson.toString())
+
             val msgConversationId = messageJson.optInt("conversation_id", -1)
             if (msgConversationId != conversationId) return@on
 
@@ -264,7 +277,7 @@ class ChatViewModel(
                     sender_id = messageJson.optInt("sender_id", -1),
                     message_type = messageJson.optString("message_type", "text"),
                     content = if (messageJson.isNull("content")) null else messageJson.optString("content", ""),
-                    reply_to_message_id = null,
+                    reply_to_message_id = messageJson.optString("reply_to_message_id"),
                     client_temp_id = null,
                     is_edited = 0,
                     edited_at = null,
@@ -275,10 +288,12 @@ class ChatViewModel(
                     sender_name = messageJson.optString("sender_name", ""),
                     sender_username = messageJson.optString("sender_username", ""),
                     sender_profile_image = messageJson.optString("sender_profile_image", ""),
-                    reply_message_id = null,
-                    reply_message_content = null,
-                    reply_message_type = null,
-                    reply_message_sender_id = null,
+                    reply_message_id = messageJson.optInt("reply_message_id"),
+                    reply_message_content =
+                        if (messageJson.isNull("reply_message_content")) null
+                        else messageJson.optString("reply_message_content"),
+                    reply_message_type = messageJson.optString("reply_message_type"),
+                    reply_message_sender_id = messageJson.optInt("reply_message_sender_id"),
                     attachments = parsedAttachments
                 )
 
@@ -307,9 +322,17 @@ class ChatViewModel(
     fun sendMessage(conversationId: Int, text: String) {
         val socket = SocketManager.getSocket()
         val json = JSONObject()
+
         json.put("conversationId", conversationId)
         json.put("content", text)
+
+        _replyToMessage.value?.let {
+            json.put("reply_to_message_id", it.id)
+        }
+
         socket?.emit("message:send", json)
+
+        clearReplyMessage()
     }
 
     fun addImage(uri: Uri) {

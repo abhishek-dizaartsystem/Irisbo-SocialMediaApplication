@@ -56,7 +56,9 @@ fun ChatBubble(
     message: ChatMessage,
     isRead: Boolean = false,
     onDeleteClick: () -> Unit = {},
-    attachments: List<Attachment> = emptyList()
+    attachments: List<Attachment> = emptyList(),
+    replyContent: String? = null,
+    onReplyClick: () -> Unit = {}
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var viewerStartIndex by remember { mutableStateOf(0) }
@@ -128,6 +130,29 @@ fun ChatBubble(
                 horizontalAlignment = if (message.isUser) Alignment.End else Alignment.Start
             ) {
 
+                // 🔥 REPLY UI
+                if (!replyContent.isNullOrBlank()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Gray.copy(alpha = 0.2f))
+                            .padding(6.dp)
+                    ) {
+                        Text(
+                            text = "Reply",
+                            fontSize = 10.sp,
+                            color = Color.Gray
+                        )
+                        Text(
+                            text = replyContent,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+
                 // ── IMAGE ──────────────────────────────────────────────
                 if (imageAttachments.isNotEmpty()) {
                     Box(
@@ -135,9 +160,16 @@ fun ChatBubble(
                             .size(220.dp)
                             .clip(RoundedCornerShape(16.dp))
                             .background(bubbleColor)
-                            .clickable {
-                                viewerStartIndex = 0
-                                showViewer = true
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onTap = {
+                                        viewerStartIndex = 0
+                                        showViewer = true
+                                    },
+                                    onLongPress = {
+                                        showMenu = true
+                                    }
+                                )
                             }
                     ) {
                         AsyncImage(
@@ -202,7 +234,12 @@ fun ChatBubble(
                             .size(220.dp)
                             .clip(RoundedCornerShape(16.dp))
                             .background(Color.Black)
-                            .clickable { showVideoPlayer = true }
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onTap = { showVideoPlayer = true },
+                                    onLongPress = { showMenu = true }
+                                )
+                            }
                     ) {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
@@ -467,10 +504,26 @@ fun ChatBubble(
                 expanded = showMenu,
                 onDismissRequest = { showMenu = false }
             ) {
+
+                // 🔥 REPLY → for BOTH
                 DropdownMenuItem(
-                    text = { Text("Delete") },
-                    onClick = { showMenu = false; onDeleteClick() }
+                    text = { Text("Reply") },
+                    onClick = {
+                        showMenu = false
+                        onReplyClick()
+                    }
                 )
+
+                // 🔥 DELETE → ONLY YOUR MESSAGES
+                if (message.isUser) {
+                    DropdownMenuItem(
+                        text = { Text("Delete") },
+                        onClick = {
+                            showMenu = false
+                            onDeleteClick()
+                        }
+                    )
+                }
             }
         }
     }
