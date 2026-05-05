@@ -140,29 +140,85 @@ class ChatViewModel(
     }
 
     fun observePresence() {
+
         val socket = SocketManager.getSocket()
 
-//        socket?.off("presence:online")
-//        socket?.off("presence:offline")
         socket?.off("presence:sync")
+        socket?.off("presence:online")
+        socket?.off("presence:offline")
 
-//        socket?.on("presence:online") { args ->
-//            val data = args[0] as JSONObject
-//            _onlineUsers.value = _onlineUsers.value + data.optInt("userId")
-//        }
-//
-//        socket?.on("presence:offline") { args ->
-//            val data = args[0] as JSONObject
-//            val userId = data.optInt("userId")
-//            val lastSeen = data.optString("lastSeenAt")
-//            _onlineUsers.value = _onlineUsers.value - userId
-//            _lastSeenMap.value = _lastSeenMap.value + (userId to lastSeen)
-//        }
-
+        // 🔹 SYNC (initial full list)
         socket?.on("presence:sync") { args ->
+
+            Log.d("PRESENCE_DEBUG", "SYNC Logs")
             val data = args[0] as JSONObject
-            _onlineUsers.value = _onlineUsers.value + data.optInt("onlineUserIds")
-            Log.d("PRESENCE_DEBUG", onlineUsers.toString())
+
+            val usersArray = data.optJSONArray("onlineUserIds")
+
+            val onlineSet = mutableSetOf<Int>()
+
+            if (usersArray != null) {
+                for (i in 0 until usersArray.length()) {
+                    onlineSet.add(usersArray.getInt(i))
+                }
+            }
+
+            Log.d("PRESENCE_DEBUG", "SYNC → $onlineSet")
+
+            _onlineUsers.value = onlineSet   // ✅ FIXED
+            Log.d("PRESENCE_DEBUG", "SYNC → ${_onlineUsers.value}")
+
+        }
+
+        // 🔹 USER ONLINE
+        socket?.on("presence:online") { args ->
+            Log.d("PRESENCE_DEBUG", "ONLINE Logs")
+            val data = args[0] as JSONObject
+            val userId = data.optInt("userId")
+
+            Log.d("PRESENCE_DEBUG", "ONLINE1 → ${_onlineUsers.value}")
+
+            val updated = _onlineUsers.value.toMutableSet()
+
+            Log.d("PRESENCE_DEBUG", "Updated2 → $updated")
+
+            updated.add(userId)
+
+            Log.d("PRESENCE_DEBUG", "Updated2 → $updated")
+
+            Log.d("PRESENCE_DEBUG", "ONLINE2 → ${_onlineUsers.value}")
+
+            Log.d("PRESENCE_DEBUG", "ONLINE → $userId")
+
+            _onlineUsers.value = updated   // ✅ FIXED
+
+            Log.d("PRESENCE_DEBUG", "ONLINE3 → ${_onlineUsers.value}")
+
+            Log.d("PRESENCE_DEBUG", "ONLINE4 → ${_onlineUsers.value}")
+        }
+
+        // 🔹 USER OFFLINE
+        socket?.on("presence:offline") { args ->
+            Log.d("PRESENCE_DEBUG", "OFFLINE Logs")
+            val data = args[0] as JSONObject
+            val userId = data.optInt("userId")
+
+            Log.d("PRESENCE_DEBUG", "OFFLINEon1 → ${_onlineUsers.value}")
+
+            val updated = _onlineUsers.value.toMutableSet()
+
+            Log.d("PRESENCE_DEBUG", "Updated1 → $updated")
+
+            updated.remove(userId)
+
+            Log.d("PRESENCE_DEBUG", "Updated2 → $updated")
+
+            Log.d("PRESENCE_DEBUG", "OFFLINEon2 → ${_onlineUsers.value}")
+
+            Log.d("PRESENCE_DEBUG", "OFFLINE → $userId")
+
+            _onlineUsers.value = updated   // ✅ FIXED
+            Log.d("PRESENCE_DEBUG", "OFFLINEon4 → ${_onlineUsers.value}")
         }
     }
 

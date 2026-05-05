@@ -83,7 +83,8 @@ fun MainScreen(
     mainNavController: NavController,
     authViewModel: AuthViewModel = viewModel(),
     groupViewModel: GroupViewModel = viewModel(),
-    storyViewModel: StoryViewModel = viewModel()
+    storyViewModel: StoryViewModel = viewModel(),
+    chatViewModel: ChatViewModel = viewModel()
 ){
 
 
@@ -118,9 +119,9 @@ fun MainScreen(
     val friendViewModelFactory = remember { FriendsViewModelFactory(friendRepository) }
     val friendViewModel: FriendViewModel = viewModel(factory = friendViewModelFactory)
 
-    val chatRepository = remember { ChatRepository(tokenManager) }
-    val chatViewModelFactory = remember { ChatViewModelFactory(chatRepository) }
-    val chatViewModel: ChatViewModel = viewModel(factory = chatViewModelFactory)
+//    val chatRepository = remember { ChatRepository(tokenManager) }
+//    val chatViewModelFactory = remember { ChatViewModelFactory(chatRepository) }
+//    val chatViewModel: ChatViewModel = viewModel(factory = chatViewModelFactory)
 
     val profile by profileViewModel.profile.collectAsState()
 

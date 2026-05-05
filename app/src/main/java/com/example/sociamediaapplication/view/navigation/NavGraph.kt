@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.data.preferences.SocketManager
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.repository.AuthRepository
+import com.example.sociamediaapplication.data.repository.ChatRepository
 import com.example.sociamediaapplication.data.repository.GroupRepository
 import com.example.sociamediaapplication.data.repository.ReelRepository
 import com.example.sociamediaapplication.data.repository.StoryRepository
@@ -24,10 +25,12 @@ import com.example.sociamediaapplication.view.screens.SplashScreen
 import com.example.sociamediaapplication.view.screens.StatusEditorScreen
 import com.example.sociamediaapplication.viewmodel.AuthUiState
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
+import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.StoryViewModel
 import com.example.sociamediaapplication.viewmodel.factory.AuthViewModelFactory
+import com.example.sociamediaapplication.viewmodel.factory.ChatViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.GroupViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.StoryViewModelFactory
@@ -59,6 +62,10 @@ fun AppNavGraph() {
     val storyViewModelFactory = remember { StoryViewModelFactory(storyRepository) }
     val storyViewModel: StoryViewModel = viewModel(factory = storyViewModelFactory)
 
+    val chatRepository = remember { ChatRepository(tokenManager) }
+    val chatViewModelFactory = remember { ChatViewModelFactory(chatRepository) }
+    val chatViewModel: ChatViewModel = viewModel(factory = chatViewModelFactory)
+
 
     val reels by reelViewModel.reels.collectAsState()
     val loading by reelViewModel.loading.collectAsState()
@@ -77,6 +84,8 @@ fun AppNavGraph() {
             val token = tokenManager.getToken()
             if (!token.isNullOrEmpty()) {
                 SocketManager.connect(token)
+
+                chatViewModel.observePresence()
             }
         }
     }
@@ -130,7 +139,8 @@ fun AppNavGraph() {
                 mainNavController = navController,
                 authViewModel = authViewModel,   // ✅ pass it,
                 groupViewModel = groupViewModel,
-                storyViewModel = storyViewModel
+                storyViewModel = storyViewModel,
+                chatViewModel = chatViewModel
             )
         }
 

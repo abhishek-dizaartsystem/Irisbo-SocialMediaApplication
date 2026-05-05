@@ -140,6 +140,10 @@ fun ChatScreen(
     val otherUserLastReadMessageId by chatViewModel.otherUserLastReadMessageId.collectAsState()
     val mediaList by chatViewModel.mediaList.collectAsState()
 
+    LaunchedEffect(onlineUsers.hashCode()) {
+        Log.d("OnlineUSERS_DEBUG", onlineUsers.toString())
+    }
+
     val friendId = conversationDetails?.data?.other_user_id
     val isOnline = friendId != null && onlineUsers.contains(friendId)
 
