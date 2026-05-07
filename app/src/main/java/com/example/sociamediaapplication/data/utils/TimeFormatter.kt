@@ -121,6 +121,7 @@ fun formatToTime2(date: String): String {
 }
 
 fun formatToDate2(dateTime: String): String {
+
     return try {
 
         val inputFormat = java.text.SimpleDateFormat(
@@ -133,9 +134,35 @@ fun formatToDate2(dateTime: String): String {
             java.util.Locale.getDefault()
         )
 
-        val parsed = inputFormat.parse(dateTime)
+        val parsedDate = inputFormat.parse(dateTime) ?: return dateTime
 
-        outputFormat.format(parsed!!)
+        val calendar = java.util.Calendar.getInstance()
+        val today = java.util.Calendar.getInstance()
+        val yesterday = java.util.Calendar.getInstance()
+
+        yesterday.add(java.util.Calendar.DATE, -1)
+
+        calendar.time = parsedDate
+
+        when {
+
+            // ✅ TODAY
+            calendar.get(java.util.Calendar.YEAR) == today.get(java.util.Calendar.YEAR) &&
+                    calendar.get(java.util.Calendar.DAY_OF_YEAR) == today.get(java.util.Calendar.DAY_OF_YEAR) -> {
+                "Today"
+            }
+
+            // ✅ YESTERDAY
+            calendar.get(java.util.Calendar.YEAR) == yesterday.get(java.util.Calendar.YEAR) &&
+                    calendar.get(java.util.Calendar.DAY_OF_YEAR) == yesterday.get(java.util.Calendar.DAY_OF_YEAR) -> {
+                "Yesterday"
+            }
+
+            // ✅ NORMAL DATE
+            else -> {
+                outputFormat.format(parsedDate)
+            }
+        }
 
     } catch (e: Exception) {
         dateTime

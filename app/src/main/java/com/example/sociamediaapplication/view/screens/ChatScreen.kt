@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
@@ -80,6 +81,7 @@ import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.utils.AudioRecorder
 import com.example.sociamediaapplication.data.utils.compressImage
 import com.example.sociamediaapplication.data.utils.correctUrl
+import com.example.sociamediaapplication.data.utils.formatToDate2
 import com.example.sociamediaapplication.data.utils.formatToTime
 import com.example.sociamediaapplication.data.utils.formatToTime2
 import com.example.sociamediaapplication.model.ChatMessage
@@ -90,6 +92,7 @@ import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.view.components.ChatBubble
+import com.example.sociamediaapplication.view.components.DateSeparator
 import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
@@ -808,10 +811,29 @@ fun ChatScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            items(
-                items = messages?.messages ?: emptyList(),
-                key = { msg -> msg.id }
-            ) { msg ->
+            val messageList = messages?.messages ?: emptyList()
+
+            itemsIndexed(
+                items = messageList,
+                key = { _, msg -> msg.id }
+            ) { index, msg ->
+
+                val currentDate = formatToDate2(msg.created_at ?: "")
+
+                val previousDate =
+                    if (index > 0)
+                        formatToDate2(messageList[index - 1].created_at ?: "")
+                    else
+                        null
+
+                // 🔥 SHOW DATE SEPARATOR WHEN DATE CHANGES
+                if (currentDate != previousDate) {
+
+                    DateSeparator(
+                        date = currentDate
+                    )
+                }
+
                 ChatBubble(
                     message = ChatMessage(
                         message = msg.content ?: "",
@@ -831,7 +853,6 @@ fun ChatScreen(
                         chatViewModel.setReplyMessage(msg)
                     },
 
-                    // 🔥 IMPORTANT
                     replyContent = msg.reply_message_content,
 
                     attachments = msg.attachments.orEmpty()
