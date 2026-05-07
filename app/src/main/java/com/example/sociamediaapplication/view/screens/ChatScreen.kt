@@ -81,6 +81,7 @@ import com.example.sociamediaapplication.data.utils.AudioRecorder
 import com.example.sociamediaapplication.data.utils.compressImage
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.data.utils.formatToTime
+import com.example.sociamediaapplication.data.utils.formatToTime2
 import com.example.sociamediaapplication.model.ChatMessage
 import com.example.sociamediaapplication.model.MediaType
 import com.example.sociamediaapplication.ui.theme.Black
@@ -115,6 +116,10 @@ fun ChatScreen(
     var videoUri by remember { mutableStateOf<Uri?>(null) }
     var photoFile by remember { mutableStateOf<File?>(null) }
     val replyMessage by chatViewModel.replyToMessage.collectAsState()
+    val typingUsers by chatViewModel.typingUsers.collectAsState()
+    var typingJob by remember {
+        mutableStateOf<kotlinx.coroutines.Job?>(null)
+    }
 
     LaunchedEffect(recordingState) {
         if (recordingState != RecordingState.IDLE) {
@@ -149,10 +154,17 @@ fun ChatScreen(
     val friendId = conversationDetails?.data?.other_user_id
     val isOnline = friendId != null && onlineUsers.contains(friendId)
 
+    val isTyping = friendId != null && typingUsers.contains(friendId)
+
     val statusText = when {
+
+        isTyping -> "Typing..."
+
         isOnline -> "Online"
+
         friendId != null && lastSeenMap[friendId] != null ->
             "Last seen ${formatToTime(lastSeenMap[friendId]!!)}"
+
         else -> "Offline"
     }
 
@@ -501,7 +513,22 @@ fun ChatScreen(
 
                         TextField(
                             value = typeMessage,
-                            onValueChange = { typeMessage = it },
+                            onValueChange = {
+                                typeMessage = it
+                                if (conversationId != null) {
+                                    chatViewModel.startTyping(conversationId)
+                                }
+
+                                typingJob?.cancel()
+
+                                typingJob = scope.launch {
+                                    delay(1000)
+
+                                    if (conversationId != null) {
+                                        chatViewModel.stopTyping(conversationId)
+                                    }
+                                }
+                            },
                             placeholder = { Text("Type") },
                             colors = TextFieldDefaults.colors(
                                 focusedIndicatorColor = Transparent,
@@ -591,6 +618,7 @@ fun ChatScreen(
                                                     text = typeMessage
                                                 )
                                                 typeMessage = ""
+                                                chatViewModel.stopTyping(messages?.conversationId ?: 0)
                                             }
                                         }
                                     }
@@ -788,7 +816,7 @@ fun ChatScreen(
                     message = ChatMessage(
                         message = msg.content ?: "",
                         isUser = msg.sender_id == profile?.data?.id,
-                        msgTime = msg.created_at ?: "12:00 PM"
+                        msgTime = formatToTime2(msg.created_at ?: "12:00 PM")
                     ),
 
                     isRead = msg.sender_id == profile?.data?.id &&

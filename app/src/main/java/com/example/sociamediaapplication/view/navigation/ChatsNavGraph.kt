@@ -71,6 +71,7 @@ fun ChatsNavGraph(
                 socket?.emit("conversation:join", json)
 
                 chatViewModel.observeSocketMessages(convId, uid)
+                chatViewModel.observeTyping(convId, uid)
                 chatViewModel.observeDeleteMessages(convId)
                 chatViewModel.observeReadUpdates(uid, convId) // 👈 re-register with conversation context
             }

@@ -45,6 +45,7 @@ import coil.request.videoFrameMillis
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.data.utils.formatToTime
+import com.example.sociamediaapplication.data.utils.formatToTime2
 import com.example.sociamediaapplication.model.ChatMessage
 import com.example.sociamediaapplication.model.response.Attachment
 import com.example.sociamediaapplication.ui.theme.Black
@@ -210,7 +211,7 @@ fun ChatBubble(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = formatToTime(message.msgTime),
+                                text = message.msgTime,
                                 fontSize = 10.sp,
                                 color = Color.White,
                                 modifier = Modifier.padding(end = 2.dp)

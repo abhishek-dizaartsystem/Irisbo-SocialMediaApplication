@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.data.utils
 
+import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -88,6 +89,56 @@ fun formatToTime(isoDate: String): String{
         }
     } catch(e: Exception){
         isoDate
+    }
+}
+
+fun formatToTime2(date: String): String {
+
+    return try {
+
+        val time = date.split(" ")[1]
+
+        val parts = time.split(":")
+
+        val hour24 = parts[0].toInt()
+        val minute = parts[1]
+
+        val amPm = if (hour24 >= 12) "PM" else "AM"
+
+        val hour12 = when {
+            hour24 == 0 -> 12
+            hour24 > 12 -> hour24 - 12
+            else -> hour24
+        }
+
+        "$hour12:$minute $amPm"
+
+    } catch (e: Exception) {
+
+        Log.e("FormatTime2_DEBUG", e.message.toString())
+        date
+    }
+}
+
+fun formatToDate2(dateTime: String): String {
+    return try {
+
+        val inputFormat = java.text.SimpleDateFormat(
+            "yyyy-MM-dd HH:mm:ss",
+            java.util.Locale.getDefault()
+        )
+
+        val outputFormat = java.text.SimpleDateFormat(
+            "dd MMM yyyy",
+            java.util.Locale.getDefault()
+        )
+
+        val parsed = inputFormat.parse(dateTime)
+
+        outputFormat.format(parsed!!)
+
+    } catch (e: Exception) {
+        dateTime
     }
 }
 
