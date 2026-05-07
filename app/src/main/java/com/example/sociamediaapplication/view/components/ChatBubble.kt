@@ -112,7 +112,7 @@ fun ChatBubble(
         }
     }
 
-    val bubbleColor = if (message.isUser) Color(0xFFE0E0E0) else Color(0xFFB3E5FC)
+    val bubbleColor = if (message.isUser) Color(0xFFE0E0E0) else Color(0xFF82D3FC)
 
     Row(
         modifier = Modifier
@@ -140,7 +140,7 @@ fun ChatBubble(
                             .padding(6.dp)
                     ) {
                         Text(
-                            text = "Reply",
+                            text = "Replied to",
                             fontSize = 10.sp,
                             color = Color.Gray
                         )

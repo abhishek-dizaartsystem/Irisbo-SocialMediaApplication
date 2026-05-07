@@ -13,7 +13,9 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -27,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,6 +38,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -88,9 +92,11 @@ import com.example.sociamediaapplication.model.ChatMessage
 import com.example.sociamediaapplication.model.MediaType
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Green
+import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
+import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.ChatBubble
 import com.example.sociamediaapplication.view.components.DateSeparator
 import com.example.sociamediaapplication.view.components.HexagonShape
@@ -351,7 +357,9 @@ fun ChatScreen(
                             tint = Black
                         )
                     }
-                    Box {
+                    Box(
+                        contentAlignment = Alignment.BottomEnd
+                    ) {
                         AsyncImage(
                             model = if (conversationDetails?.data?.other_user_profile_image == null)
                                 R.drawable.profile_image_placeholder
@@ -365,10 +373,13 @@ fun ChatScreen(
                             contentScale = ContentScale.Crop
                         )
                         Icon(
-                            painter = painterResource(R.drawable.dot_small_svgrepo_com),
+                            painter = painterResource(R.drawable.big_dot_svgrepo_com),
                             contentDescription = "",
-                            modifier = Modifier.size(40.dp),
-                            tint = if (isOnline) Green else Black
+                            modifier = Modifier
+                                .size(12.dp)
+                                .offset(x = (-2).dp, y = (-2).dp)
+                                .border(1.dp, White, CircleShape),
+                            tint = if (isOnline) Green else Grey
                         )
                     }
                     Column {
@@ -804,61 +815,75 @@ fun ChatScreen(
             }
         }
     ) { innerPadding ->
-        LazyColumn(
-            state = listState,
+
+        Box(
             modifier = Modifier
-                .background(LBlue)
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            val messageList = messages?.messages ?: emptyList()
+            Image(
+                painter = painterResource(R.drawable.chat_background),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(4.dp)
+            ) {
+                val messageList = messages?.messages ?: emptyList()
 
-            itemsIndexed(
-                items = messageList,
-                key = { _, msg -> msg.id }
-            ) { index, msg ->
+                itemsIndexed(
+                    items = messageList,
+                    key = { _, msg -> msg.id }
+                ) { index, msg ->
 
-                val currentDate = formatToDate2(msg.created_at ?: "")
+                    val currentDate = formatToDate2(msg.created_at ?: "")
 
-                val previousDate =
-                    if (index > 0)
-                        formatToDate2(messageList[index - 1].created_at ?: "")
-                    else
-                        null
+                    val previousDate =
+                        if (index > 0)
+                            formatToDate2(messageList[index - 1].created_at ?: "")
+                        else
+                            null
 
-                // 🔥 SHOW DATE SEPARATOR WHEN DATE CHANGES
-                if (currentDate != previousDate) {
+                    // 🔥 SHOW DATE SEPARATOR WHEN DATE CHANGES
+                    if (currentDate != previousDate) {
 
-                    DateSeparator(
-                        date = currentDate
+                        DateSeparator(
+                            date = currentDate
+                        )
+                    }
+
+                    ChatBubble(
+                        message = ChatMessage(
+                            message = msg.content ?: "",
+                            isUser = msg.sender_id == profile?.data?.id,
+                            msgTime = formatToTime2(msg.created_at ?: "12:00 PM")
+                        ),
+
+                        isRead = msg.sender_id == profile?.data?.id &&
+                                otherUserLastReadMessageId != null &&
+                                msg.id <= (otherUserLastReadMessageId ?: 0),
+
+                        onDeleteClick = {
+                            chatViewModel.deleteMessage(msg.id)
+                        },
+
+                        onReplyClick = {
+                            chatViewModel.setReplyMessage(msg)
+                        },
+
+                        replyContent = msg.reply_message_content,
+
+                        attachments = msg.attachments.orEmpty()
                     )
                 }
-
-                ChatBubble(
-                    message = ChatMessage(
-                        message = msg.content ?: "",
-                        isUser = msg.sender_id == profile?.data?.id,
-                        msgTime = formatToTime2(msg.created_at ?: "12:00 PM")
-                    ),
-
-                    isRead = msg.sender_id == profile?.data?.id &&
-                            otherUserLastReadMessageId != null &&
-                            msg.id <= (otherUserLastReadMessageId ?: 0),
-
-                    onDeleteClick = {
-                        chatViewModel.deleteMessage(msg.id)
-                    },
-
-                    onReplyClick = {
-                        chatViewModel.setReplyMessage(msg)
-                    },
-
-                    replyContent = msg.reply_message_content,
-
-                    attachments = msg.attachments.orEmpty()
-                )
             }
+
         }
+
     }
 }
 
