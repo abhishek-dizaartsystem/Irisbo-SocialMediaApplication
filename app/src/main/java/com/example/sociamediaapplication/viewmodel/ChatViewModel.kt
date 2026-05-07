@@ -39,6 +39,9 @@ class ChatViewModel(
     private val _onlineUsers = MutableStateFlow<Set<Int>>(emptySet())
     val onlineUsers: StateFlow<Set<Int>> = _onlineUsers
 
+    private val _typingUsers = MutableStateFlow<Set<Int>>(emptySet())
+    val typingUsers: StateFlow<Set<Int>> = _typingUsers
+
     private val _lastSeenMap = MutableStateFlow<Map<Int, String>>(emptyMap())
     val lastSeenMap: StateFlow<Map<Int, String>> = _lastSeenMap
 
@@ -81,6 +84,74 @@ class ChatViewModel(
         val json = JSONObject()
         json.put("messageId", messageId)
         socket?.emit("message:delete", json)
+    }
+
+    fun startTyping(conversationId: Int) {
+        val socket = SocketManager.getSocket()
+
+        val json = JSONObject()
+        json.put("conversationId", conversationId)
+
+        socket?.emit("typing:start", json)
+    }
+
+    fun stopTyping(conversationId: Int) {
+        val socket = SocketManager.getSocket()
+
+        val json = JSONObject()
+        json.put("conversationId", conversationId)
+
+        socket?.emit("typing:stop", json)
+    }
+
+    fun observeTyping(conversationId: Int, currentUserId: Int) {
+
+        val socket = SocketManager.getSocket()
+
+        socket?.off("typing:start")
+        socket?.off("typing:stop")
+
+        // 🔥 START
+        socket?.on("typing:start") { args ->
+
+            val data = args[0] as JSONObject
+            val typingData = data.getJSONObject("data")
+
+            val convoId = typingData.optInt("conversationId")
+            val userId = typingData.optInt("userId")
+
+            if (convoId != conversationId) return@on
+            if (userId == currentUserId) return@on
+
+            viewModelScope.launch {
+
+                val updated = _typingUsers.value.toMutableSet()
+                updated.add(userId)
+
+                _typingUsers.value = updated
+            }
+        }
+
+        // 🔥 STOP
+        socket?.on("typing:stop") { args ->
+
+            val data = args[0] as JSONObject
+            val typingData = data.getJSONObject("data")
+
+            val convoId = typingData.optInt("conversationId")
+            val userId = typingData.optInt("userId")
+
+            if (convoId != conversationId) return@on
+            if (userId == currentUserId) return@on
+
+            viewModelScope.launch {
+
+                val updated = _typingUsers.value.toMutableSet()
+                updated.remove(userId)
+
+                _typingUsers.value = updated
+            }
+        }
     }
 
     fun observeDeleteMessages(conversationId: Int) {
