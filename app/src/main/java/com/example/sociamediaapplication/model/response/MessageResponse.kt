@@ -14,7 +14,7 @@ data class MessageResponse(
     val sender_id: Int,
     val message_type: String,
     val content: String?,
-    val reply_to_message_id: String?,
+    val reply_to_message_id: Int?,
     val client_temp_id: String?,
     val is_edited: Int,
     val edited_at: String?,

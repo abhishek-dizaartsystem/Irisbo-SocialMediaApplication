@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -51,6 +52,9 @@ import com.example.sociamediaapplication.model.response.Attachment
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.DGrey
+import com.example.sociamediaapplication.ui.theme.Grey
+import com.example.sociamediaapplication.ui.theme.GreyBtn
+import com.example.sociamediaapplication.ui.theme.GreyTxt
 
 @Composable
 fun ChatBubble(
@@ -59,7 +63,9 @@ fun ChatBubble(
     onDeleteClick: () -> Unit = {},
     attachments: List<Attachment> = emptyList(),
     replyContent: String? = null,
-    onReplyClick: () -> Unit = {}
+    onReplyClick: () -> Unit = {},
+    onReplyPreviewClick: () -> Unit = {},
+    isHighlighted: Boolean = false,
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var viewerStartIndex by remember { mutableStateOf(0) }
@@ -76,6 +82,15 @@ fun ChatBubble(
     var isPlaying by remember { mutableStateOf(false) }
     var mediaPlayer by remember { mutableStateOf<android.media.MediaPlayer?>(null) }
     var progress by remember { mutableStateOf(0f) }
+
+    val animatedHighlightColor by animateColorAsState(
+        targetValue =
+            if (isHighlighted)
+                GreyTxt
+            else
+                Color.Transparent,
+        label = "highlight_animation"
+    )
 
     if (showViewer) {
         ImageViewerDialog(
@@ -117,7 +132,10 @@ fun ChatBubble(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .background(
+            color = animatedHighlightColor
+            ),
         horizontalArrangement = if (message.isUser) Arrangement.End else Arrangement.Start
     ) {
         Box(
@@ -138,6 +156,9 @@ fun ChatBubble(
                             .fillMaxWidth()
                             .background(Color.Gray.copy(alpha = 0.2f))
                             .padding(6.dp)
+                            .clickable {
+                                onReplyPreviewClick()
+                            }
                     ) {
                         Text(
                             text = "Replied to",

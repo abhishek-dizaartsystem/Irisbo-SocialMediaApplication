@@ -348,7 +348,7 @@ class ChatViewModel(
                     sender_id = messageJson.optInt("sender_id", -1),
                     message_type = messageJson.optString("message_type", "text"),
                     content = if (messageJson.isNull("content")) null else messageJson.optString("content", ""),
-                    reply_to_message_id = messageJson.optString("reply_to_message_id"),
+                    reply_to_message_id = messageJson.optInt("reply_to_message_id"),
                     client_temp_id = null,
                     is_edited = 0,
                     edited_at = null,

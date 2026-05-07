@@ -129,6 +129,9 @@ fun ChatScreen(
     var typingJob by remember {
         mutableStateOf<kotlinx.coroutines.Job?>(null)
     }
+    var highlightedMessageId by remember {
+        mutableStateOf<Int?>(null)
+    }
 
     LaunchedEffect(recordingState) {
         if (recordingState != RecordingState.IDLE) {
@@ -235,6 +238,8 @@ fun ChatScreen(
     }
 
     val scope = rememberCoroutineScope()
+
+
 
     val takePictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
@@ -877,7 +882,48 @@ fun ChatScreen(
 
                         replyContent = msg.reply_message_content,
 
-                        attachments = msg.attachments.orEmpty()
+                        attachments = msg.attachments.orEmpty(),
+                        onReplyPreviewClick = {
+
+                            val replyId = msg.reply_to_message_id ?: return@ChatBubble
+
+                            scope.launch {
+
+                                var tries = 0
+
+                                while (tries < 10) {
+
+                                    val currentMessages = messages?.messages ?: emptyList()
+
+                                    val targetIndex = currentMessages.indexOfFirst {
+                                        it.id == replyId
+                                    }
+
+                                    // ✅ FOUND
+                                    if (targetIndex != -1) {
+
+                                        listState.animateScrollToItem(targetIndex)
+
+                                        highlightedMessageId = replyId
+
+                                        delay(1000)
+
+                                        if (highlightedMessageId == replyId) {
+                                            highlightedMessageId = null
+                                        }
+                                        break
+                                    }
+
+                                    // ✅ LOAD MORE
+                                    chatViewModel.loadMoreMessages(conversationId ?: 0)
+
+                                    delay(500)
+
+                                    tries++
+                                }
+                            }
+                        },
+                        isHighlighted = highlightedMessageId == msg.id,
                     )
                 }
             }
