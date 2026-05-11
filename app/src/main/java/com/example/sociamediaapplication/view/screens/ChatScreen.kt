@@ -403,22 +403,6 @@ fun ChatScreen(
                 Row {
                     IconButton(onClick = {}) {
                         Icon(
-                            painter = painterResource(R.drawable.call_svgrepo_com),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(24.dp)
-                                .rotate(-135f)
-                        )
-                    }
-                    IconButton(onClick = {}) {
-                        Icon(
-                            painter = painterResource(R.drawable.video_svgrepo_com),
-                            contentDescription = "",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                    IconButton(onClick = {}) {
-                        Icon(
                             painter = painterResource(R.drawable.menu_dots_svgrepo_com),
                             contentDescription = "",
                             modifier = Modifier
