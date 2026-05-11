@@ -22,6 +22,7 @@ import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
+import com.example.sociamediaapplication.viewmodel.VideoViewModel
 
 @Composable
 fun ProfileNavGraph(
@@ -33,7 +34,8 @@ fun ProfileNavGraph(
     friendViewModel: FriendViewModel,
     reelViewModel: ReelsViewModel,
     mainNavController2: NavHostController,
-    chatViewModel: ChatViewModel
+    chatViewModel: ChatViewModel,
+    videoViewModel: VideoViewModel
 ){
     val navController = rememberNavController()
 
@@ -112,7 +114,8 @@ fun ProfileNavGraph(
                 friendViewModel = friendViewModel,
                 reelViewModel = reelViewModel,
                 mainNavController2 = mainNavController2,
-                chatViewModel = chatViewModel
+                chatViewModel = chatViewModel,
+                videoViewModel = videoViewModel
             )
         }
     }

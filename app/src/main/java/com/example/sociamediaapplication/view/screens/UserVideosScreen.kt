@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,20 +34,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.convertToDuration
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.UserVideoItem
+import com.example.sociamediaapplication.viewmodel.VideoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserVideosScreen(
-    navController: NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
+    videoViewModel: VideoViewModel = viewModel()
 ){
 
     val videoList = listOf(
@@ -63,11 +69,10 @@ fun UserVideosScreen(
     )
 
     var searchTxt by remember { mutableStateOf("") }
+    val myVideos by videoViewModel.myVideos.collectAsState()
 
     Scaffold(
         topBar = {
-
-
             Column() {
                 Row(
                     modifier = Modifier
@@ -159,9 +164,15 @@ fun UserVideosScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(16.dp)
             ) {
-                items(videoList) { thumbnailImage ->
+                items(myVideos?.videos ?: emptyList()) { video ->
                     UserVideoItem(
-                        painter = painterResource(thumbnailImage)
+                        image_url = correctUrl(video.thumbnail_url),
+                        text = video.title,
+                        uploadTime = video.created_at,
+                        durationTime = convertToDuration(video.duration_seconds),
+                        likes = video.likes_count.toString(),
+                        shares = video.shares_count.toString(),
+                        views = video.views_count.toString()
                     )
                     HorizontalDivider()
                 }

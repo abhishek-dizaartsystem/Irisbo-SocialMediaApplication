@@ -1,12 +1,12 @@
 package com.example.sociamediaapplication.model.response
 
-data class GetVideosResponse(
+data class GetMyVideosResponse(
     val success: Boolean,
-    val videos: List<VideoResponse>,
+    val videos: List<MyVideoResponse>,
     val pagination: PaginationResponse
 )
 
-data class VideoResponse(
+data class MyVideoResponse(
     val id: Int,
     val user_id: Int,
     val title: String,
@@ -23,9 +23,9 @@ data class VideoResponse(
     val comments_count: Int,
     val shares_count: Int,
     val tags: List<String>,
+    val is_comments_enabled: Int,
+    val published_at: String?,
     val created_at: String,
-    val category_name: String,
-    val creator_name: String,
-    val creator_username: String,
-    val viewer_reaction: String
+    val updated_at: String,
+    val category_name: String
 )

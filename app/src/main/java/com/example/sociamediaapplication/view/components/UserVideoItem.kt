@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.GreyTxt
@@ -35,10 +36,10 @@ fun UserVideoItem(
     text: String = "How to open Restaurant Startup | Vlogs by Guru ji | ft. Arjun Singh",
     uploadTime: String = "3 w ago",
     durationTime: String = "18:43",
-    painter: Painter = painterResource(R.drawable.rectangle_36),
     likes:String = "14.3K",
     shares: String = "1.4K",
-    views: String = "143.4K"
+    views: String = "143.4K",
+    image_url: String = "hbknj"
 ) {
     Column() {
         Row (
@@ -48,8 +49,8 @@ fun UserVideoItem(
                 contentAlignment = Alignment.BottomEnd,
                 modifier = Modifier.weight(0.6f)
             ) {
-                Image(
-                    painter = painter,
+                AsyncImage(
+                    model = image_url,
                     contentDescription = "",
                     modifier = Modifier
                         .fillMaxWidth()

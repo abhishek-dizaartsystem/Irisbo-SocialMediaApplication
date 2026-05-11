@@ -449,7 +449,8 @@ fun MainScreen(
                     postViewModel = postViewModel,
                     friendViewModel = friendViewModel,
                     reelViewModel = reelViewModel,
-                    chatViewModel = chatViewModel
+                    chatViewModel = chatViewModel,
+                    videoViewModel = videoViewModel
                 )
             }
 

@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
@@ -22,6 +23,7 @@ import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
+import com.example.sociamediaapplication.viewmodel.VideoViewModel
 
 @Composable
 fun MenuNavGraph(
@@ -33,7 +35,8 @@ fun MenuNavGraph(
     friendViewModel: FriendViewModel,
     reelViewModel: ReelsViewModel,
     mainNavController2: NavHostController,
-    chatViewModel: ChatViewModel
+    chatViewModel: ChatViewModel,
+    videoViewModel: VideoViewModel
 ){
     val navController = rememberNavController()
 
@@ -104,7 +107,15 @@ fun MenuNavGraph(
             )
         }
         composable(MenuRoutes.UserVideos.route) {
-            UserVideosScreen(navController)
+
+            LaunchedEffect(Unit) {
+                videoViewModel.fetchMyVideos()
+            }
+
+            UserVideosScreen(
+                navController,
+                videoViewModel = videoViewModel
+            )
         }
         composable(MenuRoutes.Memories.route) {
             MemoriesScreen(navController)
@@ -149,7 +160,8 @@ fun MenuNavGraph(
                 friendViewModel = friendViewModel,
                 reelViewModel = reelViewModel,
                 mainNavController2 = mainNavController2,
-                chatViewModel = chatViewModel
+                chatViewModel = chatViewModel,
+                videoViewModel = videoViewModel
             )
         }
 
