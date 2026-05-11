@@ -6,6 +6,72 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
+
+fun formatToPostTime(dateTime: String): String {
+
+    return try {
+
+        val inputFormat = java.text.SimpleDateFormat(
+            "yyyy-MM-dd HH:mm:ss",
+            java.util.Locale.getDefault()
+        )
+
+        val uploadedDate = inputFormat.parse(dateTime)
+            ?: return dateTime
+
+        val currentTime = System.currentTimeMillis()
+
+        val diffMillis = currentTime - uploadedDate.time
+
+        val seconds = diffMillis / 1000
+        val minutes = seconds / 60
+        val hours = minutes / 60
+        val days = hours / 24
+        val weeks = days / 7
+        val months = days / 30
+        val years = days / 365
+
+        when {
+
+            years > 0 -> {
+                if (years == 1L) "1 year ago"
+                else "$years years ago"
+            }
+
+            months > 0 -> {
+                if (months == 1L) "1 month ago"
+                else "$months months ago"
+            }
+
+            weeks > 0 -> {
+                if (weeks == 1L) "1 week ago"
+                else "$weeks weeks ago"
+            }
+
+            days > 0 -> {
+                if (days == 1L) "1 day ago"
+                else "$days days ago"
+            }
+
+            hours > 0 -> {
+                if (hours == 1L) "1 hour ago"
+                else "$hours hours ago"
+            }
+
+            minutes > 0 -> {
+                if (minutes == 1L) "1 minute ago"
+                else "$minutes minutes ago"
+            }
+
+            else -> {
+                "Just now"
+            }
+        }
+
+    } catch (e: Exception) {
+        dateTime
+    }
+}
 fun formatPostTime(isoDate: String): String {
     return try {
 
@@ -178,5 +244,27 @@ fun convertToBackendFormat(date: String, time: String): String {
         outputFormat.format(dateObj!!)
     } catch (e: Exception) {
         ""
+    }
+}
+
+fun convertToDuration(seconds: Int): String {
+
+    val hours = seconds / 3600
+    val minutes = (seconds % 3600) / 60
+    val remainingSeconds = seconds % 60
+
+    return if (hours > 0) {
+        String.format(
+            "%02d:%02d:%02d",
+            hours,
+            minutes,
+            remainingSeconds
+        )
+    } else {
+        String.format(
+            "%02d:%02d",
+            minutes,
+            remainingSeconds
+        )
     }
 }

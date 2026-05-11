@@ -23,6 +23,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,47 +32,54 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.convertToDuration
+import com.example.sociamediaapplication.data.utils.correctUrl
+import com.example.sociamediaapplication.data.utils.formatPostTime
+import com.example.sociamediaapplication.data.utils.formatToPostTime
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.view.components.VideoThumbnail
+import com.example.sociamediaapplication.view.components.VideoThumbnail2
+import com.example.sociamediaapplication.viewmodel.VideoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VideosScreen(){
+fun VideosScreen(
+    videoViewModel: VideoViewModel = viewModel()
+) {
 
-    val videoList = listOf(
-        R.drawable.rectangle_5,
-        R.drawable.rectangle_36,
-        R.drawable.rectangle_24,
-        R.drawable.rectangle_58,
-        R.drawable.rectangle_6,
-        R.drawable.rectangle_37,
-        R.drawable.rectangle_36__2_,
-        R.drawable.rectangle_36__1_,
-        R.drawable.rectangle_38,
-        R.drawable.rectangle_39
-    )
+    val videos by videoViewModel.videos.collectAsState()
 
     var searchTxt by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
+
             TopAppBar(
                 title = {
+
                     TextField(
                         value = searchTxt,
-                        onValueChange = {newMessage->
+
+                        onValueChange = { newMessage ->
                             searchTxt = newMessage
+
+                            if (newMessage.isNotBlank()) {
+                                videoViewModel.searchVideos(newMessage)
+                            }
                         },
+
                         placeholder = {
                             Text(
                                 text = "Search Videos...",
                                 color = GreyTxt
                             )
                         },
+
                         colors = TextFieldDefaults.colors(
                             focusedIndicatorColor = Transparent,
                             unfocusedIndicatorColor = Transparent,
@@ -79,10 +87,13 @@ fun VideosScreen(){
                             unfocusedContainerColor = LGrey,
                             focusedContainerColor = LGrey
                         ),
+
                         shape = RoundedCornerShape(50.dp),
+
                         modifier = Modifier
                             .height(54.dp)
                             .fillMaxWidth(),
+
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(R.drawable.search_svgrepo_com),
@@ -92,41 +103,51 @@ fun VideosScreen(){
                             )
                         }
                     )
-
                 },
+
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = BackgroundColor
                 ),
             )
-
-
         },
+
         modifier = Modifier.background(BackgroundColor)
-    ) {innerPadding->
+
+    ) { innerPadding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(color = BackgroundColor)
         ) {
+
             HorizontalDivider()
+
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
+
                 modifier = Modifier
                     .heightIn(200.dp, 2000.dp)
-                    .padding(16.dp), // IMPORTANT: prevent infinite height
+                    .padding(16.dp),
+
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(videoList) { thumbnailImage ->
-                    VideoThumbnail(
-                        painter = painterResource(thumbnailImage)
+
+                items(videos?.videos ?: emptyList()) { video ->
+
+                    VideoThumbnail2(
+                        imageUrl = correctUrl(video.thumbnail_url),
+                        text = video.title,
+                        channelName = video.creator_name,
+                        uploadTime = formatToPostTime(video.created_at),
+                        durationTime = convertToDuration(video.duration_seconds)
                     )
                 }
             }
         }
     }
-
 }
 
 @Preview(showBackground = true, showSystemUi = true)

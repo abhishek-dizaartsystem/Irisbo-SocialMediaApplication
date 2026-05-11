@@ -54,7 +54,7 @@ fun UploadItem(
                 contentScale = ContentScale.Crop
             )
         }else{
-            VideoThumbnail(item.uri)
+            VideoUploadThumbnail(item.uri)
         }
 
         Column(

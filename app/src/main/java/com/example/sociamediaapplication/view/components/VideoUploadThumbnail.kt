@@ -14,7 +14,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun VideoThumbnail(videoUri: Uri) {
+fun VideoUploadThumbnail(videoUri: Uri) {
 
     val context = LocalContext.current
 

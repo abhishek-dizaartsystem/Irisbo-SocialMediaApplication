@@ -60,6 +60,7 @@ import com.example.sociamediaapplication.view.components.HexagonShape
 import com.example.sociamediaapplication.view.navigation.ChatsNavGraph
 import com.example.sociamediaapplication.view.navigation.MainRoutes
 import com.example.sociamediaapplication.view.navigation.MenuNavGraph
+import com.example.sociamediaapplication.view.navigation.VideoNavGraph
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.FriendViewModel
@@ -433,7 +434,7 @@ fun MainScreen(
                     videoViewModel.fetchVideoCategories()
                 }
 
-                CategoryScreen(
+                VideoNavGraph(
                     videoViewModel = videoViewModel
                 )
             }

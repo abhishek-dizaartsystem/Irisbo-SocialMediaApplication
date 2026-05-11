@@ -1,6 +1,5 @@
 package com.example.sociamediaapplication.view.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,8 +16,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.utils.correctUrl
@@ -28,7 +28,7 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
-fun VideoThumbnail(
+fun VideoThumbnail2(
     text: String = "How to open Restaurant Startup",
     channelName: String = "Guru ji",
     views: String = "20K views",
@@ -81,15 +81,9 @@ fun VideoThumbnail(
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = channelName+ ", " +views+ ", " +uploadTime,
+            text = "$channelName, $uploadTime",
             color = GreyTxt,
-
-        )
+            fontSize = 10.sp
+            )
     }
-}
-
-@Preview(showBackground = true, showSystemUi = false)
-@Composable
-fun VideoThumbnailPreview(){
-    VideoThumbnail()
 }
