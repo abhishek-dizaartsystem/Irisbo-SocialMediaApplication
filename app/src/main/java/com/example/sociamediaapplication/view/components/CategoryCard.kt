@@ -26,7 +26,10 @@ import com.example.sociamediaapplication.ui.theme.GreyBtn
 
 
 @Composable
-fun CategoryCard() {
+fun CategoryCard(
+    id: Int = 0,
+    name: String = "Category Title"
+) {
     Column(
         modifier = Modifier
             .background(color = GreyBtn, shape = RoundedCornerShape(12.dp))
@@ -52,7 +55,7 @@ fun CategoryCard() {
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            text = "Category Title",
+            text = name,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(8.dp)

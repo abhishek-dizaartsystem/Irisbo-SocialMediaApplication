@@ -48,7 +48,6 @@ import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
-import com.example.sociamediaapplication.data.repository.ChatRepository
 import com.example.sociamediaapplication.data.repository.FriendRepository
 import com.example.sociamediaapplication.data.repository.PostRepository
 import com.example.sociamediaapplication.data.repository.ProfileRepository
@@ -70,7 +69,7 @@ import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.StoryViewModel
 import com.example.sociamediaapplication.viewmodel.UploadViewModel
-import com.example.sociamediaapplication.viewmodel.factory.ChatViewModelFactory
+import com.example.sociamediaapplication.viewmodel.VideoViewModel
 import com.example.sociamediaapplication.viewmodel.factory.FriendsViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.PostViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ProfileViewModelFactory
@@ -84,11 +83,9 @@ fun MainScreen(
     authViewModel: AuthViewModel = viewModel(),
     groupViewModel: GroupViewModel = viewModel(),
     storyViewModel: StoryViewModel = viewModel(),
-    chatViewModel: ChatViewModel = viewModel()
+    chatViewModel: ChatViewModel = viewModel(),
+    videoViewModel: VideoViewModel = viewModel()
 ){
-
-
-
 
     val navController = rememberNavController()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -431,7 +428,14 @@ fun MainScreen(
             }
 
             composable(MainRoutes.Category.route){
-                CategoryScreen()
+
+                LaunchedEffect(Unit) {
+                    videoViewModel.fetchVideoCategories()
+                }
+
+                CategoryScreen(
+                    videoViewModel = videoViewModel
+                )
             }
 
             composable(MainRoutes.Menu.route){
@@ -533,6 +537,6 @@ fun MainScreen(
 @Composable
 fun MainScreenPreview(){
     MainScreen(
-        mainNavController = rememberNavController()
+        mainNavController = rememberNavController(),
     )
 }

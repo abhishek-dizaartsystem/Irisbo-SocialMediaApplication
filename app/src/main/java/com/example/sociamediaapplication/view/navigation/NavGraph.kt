@@ -17,10 +17,9 @@ import com.example.sociamediaapplication.data.repository.ChatRepository
 import com.example.sociamediaapplication.data.repository.GroupRepository
 import com.example.sociamediaapplication.data.repository.ReelRepository
 import com.example.sociamediaapplication.data.repository.StoryRepository
+import com.example.sociamediaapplication.data.repository.VideoRepository
 import com.example.sociamediaapplication.view.screens.AuthScreen
-import com.example.sociamediaapplication.view.screens.ComingSoonScreen
 import com.example.sociamediaapplication.view.screens.MainScreen
-import com.example.sociamediaapplication.view.screens.ReelsScreen
 import com.example.sociamediaapplication.view.screens.SplashScreen
 import com.example.sociamediaapplication.view.screens.StatusEditorScreen
 import com.example.sociamediaapplication.viewmodel.AuthUiState
@@ -29,11 +28,13 @@ import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.StoryViewModel
+import com.example.sociamediaapplication.viewmodel.VideoViewModel
 import com.example.sociamediaapplication.viewmodel.factory.AuthViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ChatViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.GroupViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.StoryViewModelFactory
+import com.example.sociamediaapplication.viewmodel.factory.VideoViewModelFactory
 
 @Composable
 fun AppNavGraph() {
@@ -65,6 +66,10 @@ fun AppNavGraph() {
     val chatRepository = remember { ChatRepository(tokenManager) }
     val chatViewModelFactory = remember { ChatViewModelFactory(chatRepository) }
     val chatViewModel: ChatViewModel = viewModel(factory = chatViewModelFactory)
+
+    val videoRepository = remember { VideoRepository(tokenManager) }
+    val videoViewModelFactory = remember { VideoViewModelFactory(videoRepository) }
+    val videoViewModel: VideoViewModel = viewModel(factory = videoViewModelFactory)
 
 
     val reels by reelViewModel.reels.collectAsState()
@@ -140,7 +145,8 @@ fun AppNavGraph() {
                 authViewModel = authViewModel,   // ✅ pass it,
                 groupViewModel = groupViewModel,
                 storyViewModel = storyViewModel,
-                chatViewModel = chatViewModel
+                chatViewModel = chatViewModel,
+                videoViewModel = videoViewModel
             )
         }
 

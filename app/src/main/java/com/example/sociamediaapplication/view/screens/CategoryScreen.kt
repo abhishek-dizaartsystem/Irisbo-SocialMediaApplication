@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -21,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,18 +32,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.view.components.CategoryCard
+import com.example.sociamediaapplication.viewmodel.VideoViewModel
 
 
 @Composable
-fun CategoryScreen(){
+fun CategoryScreen(
+    videoViewModel: VideoViewModel = viewModel()
+) {
 
     var searchTxt by remember { mutableStateOf("") }
+    val categories by videoViewModel.categories.collectAsState()
 
     Column(
         modifier = Modifier
@@ -179,8 +186,11 @@ fun CategoryScreen(){
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(14) {
-                CategoryCard()
+            items(categories?.data ?: emptyList()) {category->
+                CategoryCard(
+                    id = category.id,
+                    name = category.name
+                )
             }
         }
     }
