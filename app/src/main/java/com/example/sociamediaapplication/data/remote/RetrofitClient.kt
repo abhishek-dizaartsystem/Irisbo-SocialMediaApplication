@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.data.remote
 
+import android.provider.MediaStore
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -67,6 +68,10 @@ object RetrofitClient {
 
     val chatApi: ChatApi by lazy {
         retrofit.create(ChatApi::class.java)
+    }
+
+    val videoApi: VideoApi by lazy {
+        retrofit.create(VideoApi::class.java)
     }
 
 }
