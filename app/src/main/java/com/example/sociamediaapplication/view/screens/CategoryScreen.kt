@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,7 +50,7 @@ import com.example.sociamediaapplication.viewmodel.VideoViewModel
 @Composable
 fun CategoryScreen(
     videoViewModel: VideoViewModel = viewModel(),
-    onSearch: () -> Unit = {}
+    onNavigate: () -> Unit = {}
 ) {
 
     var searchTxt by remember { mutableStateOf("") }
@@ -127,7 +128,7 @@ fun CategoryScreen(
 
                                     videoViewModel.searchVideos(title)
 
-                                    onSearch()
+                                    onNavigate()
                                 }
                                 .padding(12.dp)
                         ) {
@@ -247,7 +248,13 @@ fun CategoryScreen(
                 items(categories?.data ?: emptyList()) {category->
                     CategoryCard(
                         id = category.id,
-                        name = category.name
+                        name = category.name,
+                        onCategoryClick = {
+                            Log.d("Category_DEBUG", category.id.toString())
+                            videoViewModel.fetchVideosByCategory(category.id)
+
+                            onNavigate()
+                        }
                     )
                 }
             }

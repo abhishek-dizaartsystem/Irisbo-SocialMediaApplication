@@ -2,6 +2,7 @@ package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,11 +29,15 @@ import com.example.sociamediaapplication.ui.theme.GreyBtn
 @Composable
 fun CategoryCard(
     id: Int = 0,
-    name: String = "Category Title"
+    name: String = "Category Title",
+    onCategoryClick: ()->Unit = {}
 ) {
     Column(
         modifier = Modifier
             .background(color = GreyBtn, shape = RoundedCornerShape(12.dp))
+            .clickable{
+                onCategoryClick()
+            }
     ){
 
         Box(

@@ -27,5 +27,5 @@ data class VideoResponse(
     val category_name: String,
     val creator_name: String,
     val creator_username: String,
-    val viewer_reaction: String
+    val viewer_reaction: String?
 )

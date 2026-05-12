@@ -29,4 +29,10 @@ class VideoRepository(
 
         return api.getMyVideos(token)
     }
+
+    suspend fun getVideosByCategory(categoryId: Int): GetVideosResponse{
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.getVideosByCategory(token, categoryId)
+    }
 }

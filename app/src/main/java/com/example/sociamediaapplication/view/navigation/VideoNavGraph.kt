@@ -20,7 +20,7 @@ fun VideoNavGraph(videoViewModel: VideoViewModel) {
         composable(VideoRoutes.VideoCategory.route){
             CategoryScreen(
                 videoViewModel = videoViewModel,
-                onSearch = {
+                onNavigate = {
                     navController.navigate(VideoRoutes.Videos.route)
                 }
             )

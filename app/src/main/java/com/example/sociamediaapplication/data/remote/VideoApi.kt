@@ -5,6 +5,7 @@ import com.example.sociamediaapplication.model.response.GetVideosResponse
 import com.example.sociamediaapplication.model.response.VideoCategoryResponse
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface VideoApi {
@@ -24,4 +25,10 @@ interface VideoApi {
     suspend fun getMyVideos(
         @Header("Authorization") token: String,
     ): GetMyVideosResponse
+
+    @GET("api/videos/category/{categoryId}")
+    suspend fun getVideosByCategory(
+        @Header("Authorization") token: String,
+        @Path("categoryId") categoryId: Int
+    ): GetVideosResponse
 }

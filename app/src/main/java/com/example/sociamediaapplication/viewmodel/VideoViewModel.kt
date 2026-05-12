@@ -64,4 +64,20 @@ class VideoViewModel(
             }
         }
     }
+
+    fun fetchVideosByCategory(categoryId: Int){
+        viewModelScope.launch {
+            try {
+                val response = repository.getVideosByCategory(categoryId)
+                Log.d("VideoVM_DEBUG", response.toString())
+
+                _videos.value = response
+
+                _searchSuggestions.value =
+                    response.videos.map { it.title }
+            }catch (e: Exception){
+                Log.e("VideoVM_DEBUG", e.message.toString())
+            }
+        }
+    }
 }
