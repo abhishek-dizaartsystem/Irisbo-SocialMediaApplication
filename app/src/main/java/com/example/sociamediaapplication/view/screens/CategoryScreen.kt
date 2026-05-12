@@ -245,6 +245,18 @@ fun CategoryScreen(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+
+                item{
+                    CategoryCard(
+                        id = 0,
+                        name = "All",
+                        onCategoryClick = {
+                            videoViewModel.fetchAllVideos()
+                            onNavigate()
+                        }
+                    )
+                }
+
                 items(categories?.data ?: emptyList()) {category->
                     CategoryCard(
                         id = category.id,

@@ -31,4 +31,9 @@ interface VideoApi {
         @Header("Authorization") token: String,
         @Path("categoryId") categoryId: Int
     ): GetVideosResponse
+
+    @GET("api/videos")
+    suspend fun getAllVideos(
+        @Header("Authorization") token: String,
+    ): GetVideosResponse
 }
