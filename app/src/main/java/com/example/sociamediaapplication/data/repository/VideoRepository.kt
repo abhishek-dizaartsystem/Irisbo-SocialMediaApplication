@@ -4,6 +4,7 @@ import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.model.response.GetMyVideosResponse
 import com.example.sociamediaapplication.model.response.GetVideosResponse
+import com.example.sociamediaapplication.model.response.SingleVideoResponse
 import com.example.sociamediaapplication.model.response.VideoCategoryResponse
 
 class VideoRepository(
@@ -40,5 +41,11 @@ class VideoRepository(
         val token = "Bearer ${tokenManager.getToken()}"
 
         return api.getAllVideos(token)
+    }
+
+    suspend fun getVideo(videoId: Int): SingleVideoResponse{
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.getVideo(token, videoId)
     }
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.VideoRepository
 import com.example.sociamediaapplication.model.response.GetMyVideosResponse
 import com.example.sociamediaapplication.model.response.GetVideosResponse
+import com.example.sociamediaapplication.model.response.SingleVideoResponse
 import com.example.sociamediaapplication.model.response.VideoCategoryResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +30,9 @@ class VideoViewModel(
 
     private val _myVideos = MutableStateFlow<GetMyVideosResponse?>(null)
     val myVideos: StateFlow<GetMyVideosResponse?> = _myVideos
+
+    private val _video = MutableStateFlow<SingleVideoResponse?>(null)
+    val video: StateFlow<SingleVideoResponse?> = _video
 
     fun searchVideos(value: String){
         viewModelScope.launch {
@@ -91,6 +95,18 @@ class VideoViewModel(
 
                 _searchSuggestions.value =
                     response.videos.map { it.title }
+            }catch (e: Exception){
+                Log.e("VideoVM_DEBUG", e.message.toString())
+            }
+        }
+    }
+
+    fun fetchVideo(videoId: Int){
+        viewModelScope.launch {
+            try {
+                val response = repository.getVideo(videoId)
+
+                _video.value = response
             }catch (e: Exception){
                 Log.e("VideoVM_DEBUG", e.message.toString())
             }
