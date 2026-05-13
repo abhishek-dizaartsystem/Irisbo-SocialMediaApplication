@@ -25,6 +25,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,7 +40,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyBtn
@@ -49,11 +52,16 @@ import com.example.sociamediaapplication.view.components.CommentItem
 import com.example.sociamediaapplication.view.components.DescriptionBottomSheet
 import com.example.sociamediaapplication.view.components.VideoFrame
 import com.example.sociamediaapplication.view.components.VideoThumbnail
+import com.example.sociamediaapplication.viewmodel.VideoViewModel
 
 @Composable
-fun VideoPlayScreen() {
+fun VideoPlayScreen(
+    videoViewModel: VideoViewModel = viewModel()
+) {
 
     var showDescriptionBottomSheet by remember { mutableStateOf(false) }
+    val video by videoViewModel.video.collectAsState()
+    val isFullScreen by videoViewModel.isFullscreen.collectAsState()
 
     val videoList = listOf(
         R.drawable.rectangle_5,
@@ -73,7 +81,11 @@ fun VideoPlayScreen() {
     ) {
 
         // Top Video Player (Not Scrollable)
-        VideoFrame()
+        VideoFrame(
+            videoUrl = correctUrl(video?.data?.video_url),
+            isFullscreen = isFullScreen,
+            onFullscreenToggle = { videoViewModel.setFullscreen(!isFullScreen) }
+        )
 
         // Everything below scrolls
         LazyColumn(

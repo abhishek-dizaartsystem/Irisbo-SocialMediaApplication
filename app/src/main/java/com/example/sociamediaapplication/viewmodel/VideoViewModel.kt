@@ -34,6 +34,14 @@ class VideoViewModel(
     private val _video = MutableStateFlow<SingleVideoResponse?>(null)
     val video: StateFlow<SingleVideoResponse?> = _video
 
+    // VideoViewModel.kt
+    private val _isFullscreen = MutableStateFlow(false)
+    val isFullscreen: StateFlow<Boolean> = _isFullscreen
+
+    fun setFullscreen(value: Boolean) {
+        _isFullscreen.value = value
+    }
+
     fun searchVideos(value: String){
         viewModelScope.launch {
             try {

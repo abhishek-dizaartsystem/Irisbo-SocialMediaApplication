@@ -123,6 +123,8 @@ fun MainScreen(
 
     val profile by profileViewModel.profile.collectAsState()
 
+    val isFullScreen by videoViewModel.isFullscreen.collectAsState()
+
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile()
 
@@ -132,189 +134,195 @@ fun MainScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                scrollBehavior = scrollBehavior,
-                title = {
-                    Row (
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(
-                            onClick = {
-                                navController.navigate(MainRoutes.Menu.route)
-                            },
-                            modifier = Modifier
-                                .size(40.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.menu_svgrepo_com),
-                                contentDescription = "",
-                                modifier = Modifier.size(36.dp)
-                            )
-                        }
-
-                        Text(
-                            text = "@Irisbo",
-                            color = Blue,
-                            fontSize = 28.sp
-                        )
-
-
-                        Row(
-                            modifier = Modifier.width(130.dp),
+            if(!isFullScreen){
+                TopAppBar(
+                    scrollBehavior = scrollBehavior,
+                    title = {
+                        Row (
+                            modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             IconButton(
                                 onClick = {
-                                    navController.navigate(MainRoutes.Add.route)
+                                    navController.navigate(MainRoutes.Menu.route)
                                 },
-                                modifier = Modifier.size(40.dp)
+                                modifier = Modifier
+                                    .size(40.dp)
                             ) {
                                 Icon(
-                                    painter = painterResource(R.drawable.add_square_svgrepo_com),
+                                    painter = painterResource(R.drawable.menu_svgrepo_com),
                                     contentDescription = "",
-                                    modifier = Modifier.height(36.dp)
+                                    modifier = Modifier.size(36.dp)
                                 )
                             }
-                            IconButton(
-                                onClick = {
-                                    navController.navigate(MainRoutes.Search.route)
+
+                            Text(
+                                text = "@Irisbo",
+                                color = Blue,
+                                fontSize = 28.sp
+                            )
+
+
+                            Row(
+                                modifier = Modifier.width(130.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        navController.navigate(MainRoutes.Add.route)
+                                    },
+                                    modifier = Modifier.size(40.dp)
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.add_square_svgrepo_com),
+                                        contentDescription = "",
+                                        modifier = Modifier.height(36.dp)
+                                    )
                                 }
+                                IconButton(
+                                    onClick = {
+                                        navController.navigate(MainRoutes.Search.route)
+                                    }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.search_svgrepo_com),
+                                        contentDescription = "",
+                                        modifier = Modifier.height(32.dp)
+                                    )
+                                }
+                                IconButton(
+                                    onClick = {
+                                        navController.navigate(MainRoutes.Notifications.route)
+                                    },
+                                    modifier = Modifier.size(48.dp)
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.notification_13_svgrepo_com),
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                    )
+                                }
+                            }
+
+
+
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = LLBlue),
+                    modifier = Modifier
+                )
+            }
+
+        },
+        bottomBar = {
+            if(!isFullScreen){
+                AnimatedVisibility(visible = isScrollingUp) {
+                    BottomAppBar(
+                        containerColor = LLBlue,
+                        contentPadding = PaddingValues(horizontal = 16.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    navController.navigate(MainRoutes.Home2.route)
+                                },
+                                modifier = Modifier
+                                    .border(
+                                        width = 1.dp,
+                                        color = Black,
+                                        shape = HexagonShape
+                                    )
+                                    .size(40.dp)
+                                // Set the size of the clickable area
                             ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.search_svgrepo_com),
-                                    contentDescription = "",
-                                    modifier = Modifier.height(32.dp)
+                                AsyncImage(
+                                    model = if(profile?.data?.profile_image == null) R.drawable.profile_image_placeholder else "${RetrofitClient.BASE_URL}${profile?.data?.profile_image?.removePrefix("/")}",
+                                    contentDescription = "Profile Image",
+                                    // This crops the image into a square before clipping to a circle
+
+                                    modifier = Modifier
+                                        .size(50.dp) // Ensure the image fills the button
+                                        .clip(HexagonShape), // Makes it perfectly circular
+                                    contentScale = ContentScale.Crop,
                                 )
                             }
                             IconButton(
                                 onClick = {
-                                    navController.navigate(MainRoutes.Notifications.route)
+                                    navController.navigate(MainRoutes.Category.route)
                                 },
-                                modifier = Modifier.size(48.dp)
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(0.dp))
+                                    .size(40.dp)
                             ) {
                                 Icon(
-                                    painter = painterResource(R.drawable.notification_13_svgrepo_com),
+                                    painter = painterResource(R.drawable.video_frame_play_horizontal_svgrepo_com),
                                     contentDescription = "",
                                     modifier = Modifier
+                                        .padding(4.dp)
+                                        .size(40.dp)
+                                )
+                            }
+                            IconButton(
+                                onClick = {
+                                    navController.navigate(MainRoutes.Home1.route)
+                                },
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(0.dp))
+                                    .size(40.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.home_svgrepo_com),
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .padding(4.dp)
+                                        .size(40.dp)
+                                )
+                            }
+                            IconButton(
+                                onClick = {
+//                                mainNavController.navigate(Routes.Reels.route)
+                                    navController.navigate(MainRoutes.Reels.route)
+                                },
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(0.dp))
+                                    .size(50.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.video_plus_svgrepo_com),
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .padding(4.dp)
+                                        .size(70.dp)
+                                )
+                            }
+                            IconButton(
+                                onClick = {
+                                    navController.navigate(MainRoutes.Chats.route)
+                                },
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(0.dp))
+                                    .size(40.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.chat_dots_svgrepo_com),
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .padding(4.dp)
                                         .size(40.dp)
                                 )
                             }
                         }
-
-
-
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = LLBlue),
-                modifier = Modifier
-            )
-        },
-        bottomBar = {
-            AnimatedVisibility(visible = isScrollingUp) {
-                BottomAppBar(
-                    containerColor = LLBlue,
-                    contentPadding = PaddingValues(horizontal = 16.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        IconButton(
-                            onClick = {
-                                navController.navigate(MainRoutes.Home2.route)
-                            },
-                            modifier = Modifier
-                                .border(
-                                    width = 1.dp,
-                                    color = Black,
-                                    shape = HexagonShape
-                                )
-                                .size(40.dp)
-                            // Set the size of the clickable area
-                        ) {
-                            AsyncImage(
-                                model = if(profile?.data?.profile_image == null) R.drawable.profile_image_placeholder else "${RetrofitClient.BASE_URL}${profile?.data?.profile_image?.removePrefix("/")}",
-                                contentDescription = "Profile Image",
-                                // This crops the image into a square before clipping to a circle
-
-                                modifier = Modifier
-                                    .size(50.dp) // Ensure the image fills the button
-                                    .clip(HexagonShape), // Makes it perfectly circular
-                                contentScale = ContentScale.Crop,
-                            )
-                        }
-                        IconButton(
-                            onClick = {
-                                navController.navigate(MainRoutes.Category.route)
-                            },
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(0.dp))
-                                .size(40.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.video_frame_play_horizontal_svgrepo_com),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .size(40.dp)
-                            )
-                        }
-                        IconButton(
-                            onClick = {
-                                navController.navigate(MainRoutes.Home1.route)
-                            },
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(0.dp))
-                                .size(40.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.home_svgrepo_com),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .size(40.dp)
-                            )
-                        }
-                        IconButton(
-                            onClick = {
-//                                mainNavController.navigate(Routes.Reels.route)
-                                navController.navigate(MainRoutes.Reels.route)
-                            },
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(0.dp))
-                                .size(50.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.video_plus_svgrepo_com),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .size(70.dp)
-                            )
-                        }
-                        IconButton(
-                            onClick = {
-                                navController.navigate(MainRoutes.Chats.route)
-                            },
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(0.dp))
-                                .size(40.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.chat_dots_svgrepo_com),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .size(40.dp)
-                            )
-                        }
                     }
                 }
             }
+
 
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

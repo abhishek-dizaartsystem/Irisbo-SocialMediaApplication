@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -49,6 +50,12 @@ fun VideoNavGraph(videoViewModel: VideoViewModel) {
 
             LaunchedEffect(Unit) {
                 videoViewModel.fetchVideo(videoId?:0)
+            }
+
+            DisposableEffect(Unit) {
+                onDispose {
+                    videoViewModel.setFullscreen(false)
+                }
             }
 
             VideoPlayScreen(

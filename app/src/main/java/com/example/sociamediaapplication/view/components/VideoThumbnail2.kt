@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -16,7 +17,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -35,10 +35,13 @@ fun VideoThumbnail2(
     uploadTime: String = "3 w ago",
     durationTime: String = "18:43",
     painter: Painter = painterResource(R.drawable.rectangle_36),
-    imageUrl: String? = null
+    imageUrl: String? = null,
+    onVideoClick: ()->Unit = {}
 ){
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().clickable{
+            onVideoClick()
+        }
     ) {
         Box(
             contentAlignment = Alignment.BottomEnd

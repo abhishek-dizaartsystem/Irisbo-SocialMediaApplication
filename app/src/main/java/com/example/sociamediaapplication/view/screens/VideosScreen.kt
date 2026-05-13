@@ -36,20 +36,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.utils.convertToDuration
 import com.example.sociamediaapplication.data.utils.correctUrl
-import com.example.sociamediaapplication.data.utils.formatPostTime
 import com.example.sociamediaapplication.data.utils.formatToPostTime
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
-import com.example.sociamediaapplication.view.components.VideoThumbnail
 import com.example.sociamediaapplication.view.components.VideoThumbnail2
 import com.example.sociamediaapplication.viewmodel.VideoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VideosScreen(
-    videoViewModel: VideoViewModel = viewModel()
+    videoViewModel: VideoViewModel = viewModel(),
+    onVideoClick: (Int) -> Unit = {}
 ) {
 
     val videos by videoViewModel.videos.collectAsState()
@@ -142,7 +141,8 @@ fun VideosScreen(
                         text = video.title,
                         channelName = video.creator_name,
                         uploadTime = formatToPostTime(video.created_at),
-                        durationTime = convertToDuration(video.duration_seconds)
+                        durationTime = convertToDuration(video.duration_seconds),
+                        onVideoClick = { onVideoClick(video.id) }
                     )
                 }
             }
