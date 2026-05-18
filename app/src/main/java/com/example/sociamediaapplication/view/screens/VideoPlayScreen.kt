@@ -41,8 +41,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.convertToDuration
 import com.example.sociamediaapplication.data.utils.correctUrl
+import com.example.sociamediaapplication.data.utils.formatPostTime
+import com.example.sociamediaapplication.data.utils.formatToPostTime
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Grey
 import com.example.sociamediaapplication.ui.theme.GreyBtn
@@ -62,6 +66,7 @@ fun VideoPlayScreen(
     var showDescriptionBottomSheet by remember { mutableStateOf(false) }
     val video by videoViewModel.video.collectAsState()
     val isFullScreen by videoViewModel.isFullscreen.collectAsState()
+    val relatedVideos by videoViewModel.relatedVideos.collectAsState()
 
     val videoList = listOf(
         R.drawable.rectangle_5,
@@ -97,7 +102,7 @@ fun VideoPlayScreen(
             // Title
             item {
                 Text(
-                    text = "Wareen buffet-full Recipie",
+                    text = video?.data?.title?:"null",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -109,18 +114,20 @@ fun VideoPlayScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "2K views",
+                        text = "${video?.data?.views_count} views",
                         color = GreyTxt
                     )
                     Text(
-                        text = "10 days ago",
+                        text = "${formatToPostTime(video?.data?.created_at?:"")}",
                         modifier = Modifier.padding(start = 6.dp),
                         color = GreyTxt
                     )
                     Button(
                         onClick = {showDescriptionBottomSheet=true},
                         contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier.height(20.dp).padding(start = 6.dp),
+                        modifier = Modifier
+                            .height(20.dp)
+                            .padding(start = 6.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Transparent)
                     ){
                         Text(
@@ -159,7 +166,7 @@ fun VideoPlayScreen(
                             tint = Black
                         )
                         Text(
-                            text = "24",
+                            text = "${video?.data?.likes_count}",
                             fontSize = 14.sp,
                             color = Black,
                             modifier = Modifier.padding(start = 4.dp)
@@ -178,11 +185,13 @@ fun VideoPlayScreen(
                         Icon(
                             painter = painterResource(R.drawable.like_svgrepo_com),
                             contentDescription = "",
-                            modifier = Modifier.size(20.dp).rotate(180f),
+                            modifier = Modifier
+                                .size(20.dp)
+                                .rotate(180f),
                             tint = Black
                         )
                         Text(
-                            text = "24",
+                            text = "${video?.data?.dislikes_count}",
                             fontSize = 14.sp,
                             color = Black,
                             modifier = Modifier.padding(start = 4.dp)
@@ -205,7 +214,7 @@ fun VideoPlayScreen(
                             tint = Black
                         )
                         Text(
-                            text = "24",
+                            text = "${video?.data?.shares_count}",
                             fontSize = 14.sp,
                             color = Black,
                             modifier = Modifier.padding(start = 4.dp)
@@ -240,11 +249,13 @@ fun VideoPlayScreen(
             // Divider
             item {
                 Spacer( modifier = Modifier.height(8.dp) )
-                Spacer( modifier = Modifier
-                    .height(1.dp)
-                    .fillMaxWidth()
-                    .background(color = Grey, shape = RoundedCornerShape(4.dp))
-                    .padding(vertical = 4.dp) )
+                Spacer(
+                    modifier = Modifier
+                        .height(1.dp)
+                        .fillMaxWidth()
+                        .background(color = Grey, shape = RoundedCornerShape(4.dp))
+                        .padding(vertical = 4.dp)
+                )
                 Spacer( modifier = Modifier.height(12.dp) )
             }
 
@@ -255,8 +266,8 @@ fun VideoPlayScreen(
                     modifier = Modifier.padding(vertical = 12.dp)
                 ) {
 
-                    Image(
-                        painter = painterResource(id = R.drawable.rectangle_5),
+                    AsyncImage(
+                        model = correctUrl(video?.data?.creator_profile_image),
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -266,12 +277,12 @@ fun VideoPlayScreen(
 
                     Column(modifier = Modifier.padding(start = 8.dp)) {
                         Text(
-                            text = "Dr Heric Burg",
+                            text = "${video?.data?.creator_username}",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold
                         )
                         Text(
-                            text = "5.7K Subscribers",
+                            text = "${video?.data?.subscriber_count} Subscribers",
                             color = GreyTxt,
                             fontSize = 12.sp
                         )
@@ -283,7 +294,9 @@ fun VideoPlayScreen(
                         onClick = {},
                         colors = ButtonDefaults.buttonColors(containerColor = Black)
                     ) {
-                        Text(text = "Subscribe")
+                        Text(
+                            text = if(video?.data?.is_subscribed == 1) "Subscribed" else "Subscribe"
+                        )
                     }
                 }
             }
@@ -308,7 +321,7 @@ fun VideoPlayScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "4355 Comments",
+                        text = "${video?.data?.comments_count} Comments",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
@@ -359,9 +372,14 @@ fun VideoPlayScreen(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    items(videoList) { thumbnailImage ->
+                    items(relatedVideos?.data ?: emptyList()) { video ->
                         VideoThumbnail(
-                            painter = painterResource(thumbnailImage)
+                            imageUrl = correctUrl(video.thumbnail_url),
+                            text = video.title,
+                            channelName = video.creator_username,
+                            views = "${video.views_count} views",
+                            uploadTime = formatToPostTime(video.created_at),
+                            durationTime = convertToDuration(video.duration_seconds)
                         )
                     }
                 }

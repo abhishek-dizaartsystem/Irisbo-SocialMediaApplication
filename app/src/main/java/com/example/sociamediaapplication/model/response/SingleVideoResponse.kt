@@ -32,5 +32,6 @@ data class VideoData(
     val subscriber_count: Int,
     val viewer_reaction: String?,
     val is_saved: Int,
-    val is_subscribed: Int
+    val is_subscribed: Int,
+    val creator_profile_image: String
 )

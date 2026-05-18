@@ -2,6 +2,7 @@ package com.example.sociamediaapplication.data.remote
 
 import com.example.sociamediaapplication.model.response.GetMyVideosResponse
 import com.example.sociamediaapplication.model.response.GetVideosResponse
+import com.example.sociamediaapplication.model.response.RelatedVideosResponse
 import com.example.sociamediaapplication.model.response.SingleVideoResponse
 import com.example.sociamediaapplication.model.response.VideoCategoryResponse
 import retrofit2.http.GET
@@ -43,4 +44,10 @@ interface VideoApi {
         @Header("Authorization") token: String,
         @Path("videoId") videoId: Int
     ): SingleVideoResponse
+
+    @GET("api/videos/{videoId}/related")
+    suspend fun getRelatedVideos(
+        @Header("Authorization") token: String,
+        @Path("videoId") videoId: Int
+    ): RelatedVideosResponse
 }

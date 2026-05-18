@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.VideoRepository
 import com.example.sociamediaapplication.model.response.GetMyVideosResponse
 import com.example.sociamediaapplication.model.response.GetVideosResponse
+import com.example.sociamediaapplication.model.response.RelatedVideosResponse
 import com.example.sociamediaapplication.model.response.SingleVideoResponse
 import com.example.sociamediaapplication.model.response.VideoCategoryResponse
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +38,9 @@ class VideoViewModel(
     // VideoViewModel.kt
     private val _isFullscreen = MutableStateFlow(false)
     val isFullscreen: StateFlow<Boolean> = _isFullscreen
+
+    private val _relatedVideos = MutableStateFlow<RelatedVideosResponse?>(null)
+    val relatedVideos: StateFlow<RelatedVideosResponse?> = _relatedVideos
 
     fun setFullscreen(value: Boolean) {
         _isFullscreen.value = value
@@ -115,6 +119,19 @@ class VideoViewModel(
                 val response = repository.getVideo(videoId)
 
                 _video.value = response
+            }catch (e: Exception){
+                Log.e("VideoVM_DEBUG", e.message.toString())
+            }
+        }
+    }
+
+    fun fetchRelatedVideos(videoId: Int){
+        viewModelScope.launch {
+            try {
+                val response = repository.getRelatedVideos(videoId)
+                Log.d("VideoVM_DEBUG", response.toString())
+
+                _relatedVideos.value = response
             }catch (e: Exception){
                 Log.e("VideoVM_DEBUG", e.message.toString())
             }
