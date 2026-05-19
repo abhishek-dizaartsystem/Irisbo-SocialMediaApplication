@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "753127697986",
+    "project_id": "irisbo",
+    "storage_bucket": "irisbo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:753127697986:android:5365e75ccf75d7c912c7db",
+        "android_client_info": {
+          "package_name": "com.example.sociamediaapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtOF6E4FkNzMw71FBsF9qG65l7amq_2Lg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
