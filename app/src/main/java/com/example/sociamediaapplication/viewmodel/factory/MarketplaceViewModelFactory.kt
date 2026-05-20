@@ -13,6 +13,5 @@ class MarketplaceViewModelFactory(
             return MarketplaceViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
-
     }
 }

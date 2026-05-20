@@ -19,6 +19,7 @@ import com.example.sociamediaapplication.view.screens.VideoAnalyticsScreen
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.FriendViewModel
+import com.example.sociamediaapplication.viewmodel.NotificationViewModel
 import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
@@ -36,7 +37,8 @@ fun MenuNavGraph(
     reelViewModel: ReelsViewModel,
     mainNavController2: NavHostController,
     chatViewModel: ChatViewModel,
-    videoViewModel: VideoViewModel
+    videoViewModel: VideoViewModel,
+    notificationViewModel: NotificationViewModel
 ){
     val navController = rememberNavController()
 
@@ -161,7 +163,8 @@ fun MenuNavGraph(
                 reelViewModel = reelViewModel,
                 mainNavController2 = mainNavController2,
                 chatViewModel = chatViewModel,
-                videoViewModel = videoViewModel
+                videoViewModel = videoViewModel,
+                notificationViewModel = notificationViewModel
             )
         }
 
@@ -170,7 +173,8 @@ fun MenuNavGraph(
                 mainNavController = mainNavController,
                 bNavController = navController,
                 authViewModel = authViewModel,
-                profileViewModel = profileViewModel
+                profileViewModel = profileViewModel,
+                notificationViewModel = notificationViewModel
             )
         }
 

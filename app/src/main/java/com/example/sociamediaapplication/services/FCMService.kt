@@ -17,48 +17,70 @@ class FCMService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
 
-        // 🔥 SEND TOKEN TO BACKEND
+        // 🔥 optional:
+        // resend updated token to backend
     }
 
-    override fun onMessageReceived(message: RemoteMessage) {
+    override fun onMessageReceived(
+        message: RemoteMessage
+    ) {
+
         super.onMessageReceived(message)
 
         val title =
-            message.notification?.title ?: "Notification"
+            message.notification?.title
+                ?: "Notification"
 
         val body =
-            message.notification?.body ?: ""
+            message.notification?.body
+                ?: ""
 
-        showNotification(title, body)
+        val conversationId =
+            message.data["conversationId"]
+
+        showNotification(
+            title,
+            body,
+            conversationId
+        )
     }
 
     private fun showNotification(
         title: String,
-        body: String
+        body: String,
+        conversationId: String?
     ) {
 
-        val channelId = "chat_notifications"
+        val channelId =
+            "social_notifications"
 
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE)
-                    as NotificationManager
+        val manager =
+            getSystemService(
+                Context.NOTIFICATION_SERVICE
+            ) as NotificationManager
 
-        // 🔥 ANDROID 8+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             val channel = NotificationChannel(
                 channelId,
-                "Chat Notifications",
+                "Social Notifications",
                 NotificationManager.IMPORTANCE_HIGH
             )
 
-            notificationManager.createNotificationChannel(channel)
+            manager.createNotificationChannel(channel)
         }
 
-        val intent = Intent(
-            this,
-            MainActivity::class.java
+        val intent =
+            Intent(this, MainActivity::class.java)
+
+        intent.putExtra(
+            "conversationId",
+            conversationId
         )
+
+        intent.flags =
+            Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP
 
         val pendingIntent =
             PendingIntent.getActivity(
@@ -70,7 +92,10 @@ class FCMService : FirebaseMessagingService() {
             )
 
         val notification =
-            NotificationCompat.Builder(this, channelId)
+            NotificationCompat.Builder(
+                this,
+                channelId
+            )
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(body)
@@ -78,7 +103,7 @@ class FCMService : FirebaseMessagingService() {
                 .setContentIntent(pendingIntent)
                 .build()
 
-        notificationManager.notify(
+        manager.notify(
             System.currentTimeMillis().toInt(),
             notification
         )

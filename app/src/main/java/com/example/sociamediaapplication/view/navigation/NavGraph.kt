@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.view.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -15,9 +16,11 @@ import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.repository.AuthRepository
 import com.example.sociamediaapplication.data.repository.ChatRepository
 import com.example.sociamediaapplication.data.repository.GroupRepository
+import com.example.sociamediaapplication.data.repository.NotificationRepository
 import com.example.sociamediaapplication.data.repository.ReelRepository
 import com.example.sociamediaapplication.data.repository.StoryRepository
 import com.example.sociamediaapplication.data.repository.VideoRepository
+import com.example.sociamediaapplication.data.utils.getDeviceId
 import com.example.sociamediaapplication.view.screens.AuthScreen
 import com.example.sociamediaapplication.view.screens.MainScreen
 import com.example.sociamediaapplication.view.screens.SplashScreen
@@ -26,15 +29,20 @@ import com.example.sociamediaapplication.viewmodel.AuthUiState
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
+import com.example.sociamediaapplication.viewmodel.NotificationViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.StoryViewModel
 import com.example.sociamediaapplication.viewmodel.VideoViewModel
 import com.example.sociamediaapplication.viewmodel.factory.AuthViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ChatViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.GroupViewModelFactory
+import com.example.sociamediaapplication.viewmodel.factory.NotificationViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.StoryViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.VideoViewModelFactory
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun AppNavGraph() {
@@ -71,6 +79,10 @@ fun AppNavGraph() {
     val videoViewModelFactory = remember { VideoViewModelFactory(videoRepository) }
     val videoViewModel: VideoViewModel = viewModel(factory = videoViewModelFactory)
 
+    val notificationRepository = remember { NotificationRepository(tokenManager) }
+    val notificationViewModelFactory = remember { NotificationViewModelFactory(notificationRepository) }
+    val notificationViewModel: NotificationViewModel = viewModel(factory = notificationViewModelFactory)
+
 
     val reels by reelViewModel.reels.collectAsState()
     val loading by reelViewModel.loading.collectAsState()
@@ -85,12 +97,29 @@ fun AppNavGraph() {
     }
 
     LaunchedEffect(Unit) {
+
         if (repository.isLoggedIn()) {
+
             val token = tokenManager.getToken()
+
             if (!token.isNullOrEmpty()) {
+
                 SocketManager.connect(token)
 
                 chatViewModel.observePresence()
+
+                // 🔥 GET FCM TOKEN
+                FirebaseMessaging.getInstance().token
+                    .addOnSuccessListener { fcmToken ->
+
+                        Log.d("FCM_TOKEN", fcmToken)
+
+                        val deviceId =
+                            getDeviceId(context)
+
+                        notificationViewModel.saveFcmToken(deviceId, fcmToken)
+
+                    }
             }
         }
     }
@@ -146,7 +175,8 @@ fun AppNavGraph() {
                 groupViewModel = groupViewModel,
                 storyViewModel = storyViewModel,
                 chatViewModel = chatViewModel,
-                videoViewModel = videoViewModel
+                videoViewModel = videoViewModel,
+                notificationViewModel = notificationViewModel
             )
         }
 

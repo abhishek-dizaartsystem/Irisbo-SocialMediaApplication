@@ -74,4 +74,8 @@ object RetrofitClient {
         retrofit.create(VideoApi::class.java)
     }
 
+    val notificationApi: NotificationApi by lazy {
+        retrofit.create(NotificationApi::class.java)
+    }
+
 }

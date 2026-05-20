@@ -19,6 +19,7 @@ import com.example.sociamediaapplication.view.screens.SecurityScreen
 import com.example.sociamediaapplication.view.screens.SettingsScreen
 import com.example.sociamediaapplication.viewmodel.AuthUiState
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
+import com.example.sociamediaapplication.viewmodel.NotificationViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
 
 @Composable
@@ -26,7 +27,8 @@ fun SettingsNavGraph(
     mainNavController: NavController,
     bNavController: NavController,
     authViewModel: AuthViewModel,
-    profileViewModel: ProfileViewModel = viewModel()
+    profileViewModel: ProfileViewModel = viewModel(),
+    notificationViewModel: NotificationViewModel = viewModel()
 ){
     val navController = rememberNavController()
 
@@ -60,9 +62,7 @@ fun SettingsNavGraph(
                 onLanguage = { navController.navigate(SettingsRoutes.Language.route) },
                 onHelpCenter = { navController.navigate(SettingsRoutes.HelpCenter.route) },
                 onLogout = {
-                    println("Logout Clicked")
                     authViewModel.logout()
-                    println("Logout Clicked")
                 },
                 profileViewModel = profileViewModel
             )
