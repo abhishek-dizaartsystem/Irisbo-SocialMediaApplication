@@ -151,16 +151,22 @@ fun VideoPlayScreen(
                 ) {
 
                     Button(
-                        onClick = {},
+                        onClick = {
+                            videoViewModel.toggleLike(video?.data?.id?:0)
+                        },
                         modifier = Modifier
                             .padding(end = 8.dp)
                             .height(30.dp),
                         shape = RoundedCornerShape(50.dp),
                         contentPadding = PaddingValues(vertical = 0.dp, horizontal = 16.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = GreyBtn),
-                        border = BorderStroke(1.dp, Grey) ) {
+                        border = BorderStroke(1.dp, Grey)
+                    ) {
                         Icon(
-                            painter = painterResource(R.drawable.like_svgrepo_com),
+                            painter = painterResource(
+                                if(video?.data?.viewer_reaction == "like")R.drawable.like_svgrepo_com__1_
+                                else R.drawable.like_svgrepo_com
+                            ),
                             contentDescription = "",
                             modifier = Modifier.size(20.dp),
                             tint = Black
@@ -174,7 +180,9 @@ fun VideoPlayScreen(
                     }
 
                     Button(
-                        onClick = {},
+                        onClick = {
+                            videoViewModel.toggleDislike(video?.data?.id?:0)
+                        },
                         modifier = Modifier
                             .padding(end = 8.dp)
                             .height(30.dp),
@@ -183,7 +191,10 @@ fun VideoPlayScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = GreyBtn),
                         border = BorderStroke(1.dp, Grey) ) {
                         Icon(
-                            painter = painterResource(R.drawable.like_svgrepo_com),
+                            painter = painterResource(
+                                if(video?.data?.viewer_reaction == "dislike")R.drawable.like_svgrepo_com__1_
+                                else R.drawable.like_svgrepo_com
+                            ),
                             contentDescription = "",
                             modifier = Modifier
                                 .size(20.dp)
@@ -230,7 +241,10 @@ fun VideoPlayScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = GreyBtn),
                         border = BorderStroke(1.dp, Grey) ) {
                         Icon(
-                            painter = painterResource(R.drawable.save_icon),
+                            painter = painterResource(
+                                if(video?.data?.is_saved == 1) R.drawable.save_filled
+                                else R.drawable.save_icon
+                            ),
                             contentDescription = "",
                             modifier = Modifier.size(20.dp),
                             tint = Black

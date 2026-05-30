@@ -5,8 +5,12 @@ import com.example.sociamediaapplication.model.response.GetVideosResponse
 import com.example.sociamediaapplication.model.response.RelatedVideosResponse
 import com.example.sociamediaapplication.model.response.SingleVideoResponse
 import com.example.sociamediaapplication.model.response.VideoCategoryResponse
+import com.example.sociamediaapplication.model.response.VideoReactionRequest
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -50,4 +54,17 @@ interface VideoApi {
         @Header("Authorization") token: String,
         @Path("videoId") videoId: Int
     ): RelatedVideosResponse
+
+    @POST("api/videos/{videoId}/react")
+    suspend fun reactToVideo(
+        @Header("Authorization") token: String,
+        @Path("videoId") videoId: Int,
+        @Body request: VideoReactionRequest
+    )
+
+    @DELETE("api/videos/{videoId}/react")
+    suspend fun removeVideoReaction(
+        @Header("Authorization") token: String,
+        @Path("videoId") videoId: Int
+    )
 }

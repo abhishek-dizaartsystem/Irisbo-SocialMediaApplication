@@ -137,4 +137,150 @@ class VideoViewModel(
             }
         }
     }
+
+    fun toggleLike(videoId: Int) {
+
+        val currentVideo = _video.value ?: return
+        val currentData = currentVideo.data
+
+        val currentReaction = currentData.viewer_reaction
+
+        // 🔥 OPTIMISTIC UPDATE
+        val updatedData = when (currentReaction) {
+
+            "like" -> {
+
+                currentData.copy(
+                    viewer_reaction = null,
+                    likes_count = (currentData.likes_count - 1).coerceAtLeast(0)
+                )
+            }
+
+            "dislike" -> {
+
+                currentData.copy(
+                    viewer_reaction = "like",
+                    likes_count = currentData.likes_count + 1,
+                    dislikes_count = (currentData.dislikes_count - 1)
+                        .coerceAtLeast(0)
+                )
+            }
+
+            else -> {
+
+                currentData.copy(
+                    viewer_reaction = "like",
+                    likes_count = currentData.likes_count + 1
+                )
+            }
+        }
+
+        _video.value = currentVideo.copy(
+            data = updatedData
+        )
+
+        // 🔥 API CALL
+        viewModelScope.launch {
+
+            try {
+
+                when (currentReaction) {
+
+                    "like" -> {
+                        repository.removeVideoReaction(videoId)
+                    }
+
+                    else -> {
+                        repository.likeVideo(videoId)
+                    }
+                }
+
+            } catch (e: Exception) {
+
+                // 🔥 ROLLBACK
+                _video.value = currentVideo
+
+                Log.e(
+                    "VideoVM_DEBUG",
+                    e.message.toString()
+                )
+            }
+        }
+    }
+
+    fun toggleDislike(videoId: Int) {
+
+        val currentVideo = _video.value ?: return
+        val currentData = currentVideo.data
+
+        val currentReaction = currentData.viewer_reaction
+
+        // 🔥 OPTIMISTIC UPDATE
+        val updatedData = when (currentReaction) {
+
+            "dislike" -> {
+
+                currentData.copy(
+                    viewer_reaction = null,
+                    dislikes_count =
+                        (currentData.dislikes_count - 1)
+                            .coerceAtLeast(0)
+                )
+            }
+
+            "like" -> {
+
+                currentData.copy(
+                    viewer_reaction = "dislike",
+                    dislikes_count =
+                        currentData.dislikes_count + 1,
+
+                    likes_count =
+                        (currentData.likes_count - 1)
+                            .coerceAtLeast(0)
+                )
+            }
+
+            else -> {
+
+                currentData.copy(
+                    viewer_reaction = "dislike",
+                    dislikes_count =
+                        currentData.dislikes_count + 1
+                )
+            }
+        }
+
+        _video.value = currentVideo.copy(
+            data = updatedData
+        )
+
+        // 🔥 API CALL
+        viewModelScope.launch {
+
+            try {
+
+                when (currentReaction) {
+
+                    "dislike" -> {
+                        repository.removeVideoReaction(videoId)
+                    }
+
+                    else -> {
+                        repository.dislikeVideo(videoId)
+                    }
+                }
+
+            } catch (e: Exception) {
+
+                // 🔥 ROLLBACK
+                _video.value = currentVideo
+
+                Log.e(
+                    "VideoVM_DEBUG",
+                    e.message.toString()
+                )
+            }
+        }
+    }
 }

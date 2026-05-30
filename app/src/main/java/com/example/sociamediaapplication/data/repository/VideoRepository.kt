@@ -7,6 +7,7 @@ import com.example.sociamediaapplication.model.response.GetVideosResponse
 import com.example.sociamediaapplication.model.response.RelatedVideosResponse
 import com.example.sociamediaapplication.model.response.SingleVideoResponse
 import com.example.sociamediaapplication.model.response.VideoCategoryResponse
+import com.example.sociamediaapplication.model.response.VideoReactionRequest
 
 class VideoRepository(
     private val tokenManager: TokenManager
@@ -54,5 +55,23 @@ class VideoRepository(
         val token = "Bearer ${tokenManager.getToken()}"
 
         return api.getRelatedVideos(token, videoId)
+    }
+
+    suspend fun likeVideo(videoId: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.reactToVideo(token, videoId, VideoReactionRequest("like"))
+    }
+
+    suspend fun dislikeVideo(videoId: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.reactToVideo(token, videoId, VideoReactionRequest("dislike"))
+    }
+
+    suspend fun removeVideoReaction(videoId: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.removeVideoReaction(token, videoId)
     }
 }
