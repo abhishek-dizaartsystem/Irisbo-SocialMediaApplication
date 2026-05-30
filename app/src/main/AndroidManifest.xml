@@ -25,6 +25,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SociaMediaApplication"
         android:usesCleartextTraffic="true">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4160844101420520~2462562710"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

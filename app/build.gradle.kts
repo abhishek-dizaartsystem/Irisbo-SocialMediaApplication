@@ -91,4 +91,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-messaging:23.4.1")
 
+    //Ads Dependencies
+    implementation("com.google.android.gms:play-services-ads:24.3.0")
+
 }
