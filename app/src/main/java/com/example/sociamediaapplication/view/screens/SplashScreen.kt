@@ -67,7 +67,7 @@ fun SplashScreen(
                 ) {
                     GlowingLogo()
                     Text(
-                        text = "FitTrack Pro",
+                        text = "Irisbo",
                         fontSize = 30.sp,
                         color = Blue,
                         fontWeight = FontWeight.Bold,

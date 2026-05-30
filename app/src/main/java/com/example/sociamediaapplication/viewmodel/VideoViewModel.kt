@@ -283,4 +283,56 @@ class VideoViewModel(
             }
         }
     }
+
+    fun toggleSave(videoId: Int){
+        val currentVideo = _video.value ?: return
+        val currentData = currentVideo.data
+
+        val isSaved = currentData.is_saved
+
+        val updatedData = when(isSaved){
+            0->{
+                currentData.copy(
+                    is_saved = 1
+                )
+            }
+
+            1->{
+                currentData.copy(
+                    is_saved = 0
+                )
+            }
+
+            else -> {
+                //To Avoid compile errors
+                currentData
+            }
+        }
+
+        _video.value = currentVideo.copy(
+            data = updatedData
+        )
+
+        viewModelScope.launch {
+            try {
+                when(isSaved){
+                    0->{
+                        repository.saveVideo(videoId)
+                    }
+                    1->{
+                        repository.unsaveVideo(videoId)
+                    }
+                }
+            }catch (e: Exception) {
+
+                // 🔥 ROLLBACK
+                _video.value = currentVideo
+
+                Log.e(
+                    "VideoVM_DEBUG",
+                    e.message.toString()
+                )
+            }
+        }
+    }
 }

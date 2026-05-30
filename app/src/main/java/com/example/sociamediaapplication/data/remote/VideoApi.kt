@@ -67,4 +67,16 @@ interface VideoApi {
         @Header("Authorization") token: String,
         @Path("videoId") videoId: Int
     )
+
+    @POST("api/videos/{videoId}/save")
+    suspend fun saveVideo(
+        @Header("Authorization") token: String,
+        @Path("videoId") videoId: Int
+    )
+
+    @DELETE("api/videos/{videoId}/save")
+    suspend fun unsaveVideo(
+        @Header("Authorization") token: String,
+        @Path("videoId") videoId: Int
+    )
 }

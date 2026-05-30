@@ -232,7 +232,9 @@ fun VideoPlayScreen(
                         )
                     }
                     Button(
-                        onClick = {},
+                        onClick = {
+                            videoViewModel.toggleSave(video?.data?.id?:0)
+                        },
                         modifier = Modifier
                             .padding(end = 8.dp)
                             .height(30.dp),
@@ -248,12 +250,6 @@ fun VideoPlayScreen(
                             contentDescription = "",
                             modifier = Modifier.size(20.dp),
                             tint = Black
-                        )
-                        Text(
-                            text = "24",
-                            fontSize = 14.sp,
-                            color = Black,
-                            modifier = Modifier.padding(start = 4.dp)
                         )
                     }
 

@@ -74,4 +74,16 @@ class VideoRepository(
 
         return api.removeVideoReaction(token, videoId)
     }
+
+    suspend fun saveVideo(videoId: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.saveVideo(token, videoId)
+    }
+
+    suspend fun unsaveVideo(videoId: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.unsaveVideo(token, videoId)
+    }
 }
