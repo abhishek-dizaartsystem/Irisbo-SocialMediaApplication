@@ -86,4 +86,16 @@ class VideoRepository(
 
         return api.unsaveVideo(token, videoId)
     }
+
+    suspend fun subscribeToCreator(creatorId: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.subscribeToCreator(token, creatorId)
+    }
+
+    suspend fun unsubscribeFromCreator(creatorId: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        return api.unsubscribeFromCreator(token, creatorId)
+    }
 }

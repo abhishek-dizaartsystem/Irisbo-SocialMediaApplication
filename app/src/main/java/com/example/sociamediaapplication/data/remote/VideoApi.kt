@@ -79,4 +79,17 @@ interface VideoApi {
         @Header("Authorization") token: String,
         @Path("videoId") videoId: Int
     )
+
+    @POST("api/videos/creator/{creatorId}/subscribe")
+    suspend fun subscribeToCreator(
+        @Header("Authorization") token: String,
+        @Path("creatorId") videoId: Int
+    )
+
+    @DELETE("api/videos/creator/{creatorId}/subscribe")
+    suspend fun unsubscribeFromCreator(
+        @Header("Authorization") token: String,
+        @Path("creatorId") videoId: Int
+    )
+
 }

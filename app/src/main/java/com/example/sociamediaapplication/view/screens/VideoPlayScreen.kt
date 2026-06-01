@@ -301,7 +301,9 @@ fun VideoPlayScreen(
                     Spacer(modifier = Modifier.weight(1f))
 
                     Button(
-                        onClick = {},
+                        onClick = {
+                            videoViewModel.toggleSubscribe(video?.data?.id?:0)
+                        },
                         colors = ButtonDefaults.buttonColors(containerColor = Black)
                     ) {
                         Text(

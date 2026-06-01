@@ -335,4 +335,58 @@ class VideoViewModel(
             }
         }
     }
+
+    fun toggleSubscribe(videoId: Int){
+        val currentVideo = _video.value ?: return
+        val currentData = currentVideo.data
+//        var currentSubscribers = currentData.subscriber_count
+
+        val isSubscribed = currentData.is_subscribed
+
+        val updatedData = when(isSubscribed){
+            0->{
+                currentData.copy(
+                    is_subscribed = 1,
+//                    subscriber_count = currentSubscribers+1
+                )
+            }
+            1->{
+                currentData.copy(
+                    is_subscribed = 0,
+//                    subscriber_count = currentSubscribers-1
+                )
+            }
+
+            else -> {
+                //To Avoid compile errors
+                currentData
+            }
+        }
+
+        _video.value = currentVideo.copy(
+            data = updatedData
+        )
+
+        viewModelScope.launch {
+            try {
+                when(isSubscribed){
+                    0->{
+                        repository.subscribeToCreator(currentData.user_id)
+                    }
+                    1->{
+                        repository.unsubscribeFromCreator(currentData.user_id)
+                    }
+                }
+            }catch (e: Exception) {
+
+                // 🔥 ROLLBACK
+                _video.value = currentVideo
+
+                Log.e(
+                    "VideoVM_DEBUG",
+                    e.message.toString()
+                )
+            }
+        }
+    }
 }
