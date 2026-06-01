@@ -133,11 +133,11 @@ fun CommentSection(
             items(commentList.size){index->
                 val comment = commentList[index]
                 CommentItem(
-                    "@coolboy",
-                    "This is amazing",
-                    comment.likes,
-                    comment.dislikes,
-                    comment.replies,
+                    userName = "@coolboy",
+                    comment = "This is amazing",
+                    totalLikes = comment.likes,
+                    totalDislikes = comment.dislikes,
+                    totalReplies = comment.replies,
                     isLiked = comment.isLiked,
                     isDisliked = comment.isDisliked,
                     onLiked = {

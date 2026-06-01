@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -67,6 +68,7 @@ fun VideoPlayScreen(
     val video by videoViewModel.video.collectAsState()
     val isFullScreen by videoViewModel.isFullscreen.collectAsState()
     val relatedVideos by videoViewModel.relatedVideos.collectAsState()
+    val videoComments by videoViewModel.videoComments.collectAsState()
 
     val videoList = listOf(
         R.drawable.rectangle_5,
@@ -333,7 +335,7 @@ fun VideoPlayScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "${video?.data?.comments_count} Comments",
+                        text = "${videoComments?.total_comments?: 0} Comments",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
@@ -361,8 +363,36 @@ fun VideoPlayScreen(
             }
 
             // Comments List
-            items(2) {
-                CommentItem()
+            items(
+                videoComments?.comments ?: emptyList()
+            ) { comment ->
+
+                CommentItem(
+                    userName = "@${comment.username}",
+                    comment = comment.content,
+                    totalLikes = comment.likes,
+                    totalDislikes = comment.dislikes,
+                    totalReplies = comment.replies.size,
+                    isLiked = comment.user_reaction == "like",
+                    isDisliked = comment.user_reaction == "dislike",
+                    profileImage = comment.profile_image,
+                    commentTime = formatToPostTime(comment.created_at),
+
+                    onLiked = {
+                        videoViewModel.toggleCommentLike(comment.id)
+                    },
+                    onDisliked = {
+                        videoViewModel.toggleCommentDislike(comment.id)
+                    },
+
+                    onReplyClicked = {
+                        // TODO
+                    },
+
+                    onUserProfileClick = {
+                        // TODO
+                    }
+                )
             }
 
             item {

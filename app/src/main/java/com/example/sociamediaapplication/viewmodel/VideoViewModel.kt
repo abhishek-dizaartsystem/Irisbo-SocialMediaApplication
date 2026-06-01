@@ -9,6 +9,7 @@ import com.example.sociamediaapplication.model.response.GetVideosResponse
 import com.example.sociamediaapplication.model.response.RelatedVideosResponse
 import com.example.sociamediaapplication.model.response.SingleVideoResponse
 import com.example.sociamediaapplication.model.response.VideoCategoryResponse
+import com.example.sociamediaapplication.model.response.VideoCommentsResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -34,6 +35,9 @@ class VideoViewModel(
 
     private val _video = MutableStateFlow<SingleVideoResponse?>(null)
     val video: StateFlow<SingleVideoResponse?> = _video
+
+    private val _videoComments = MutableStateFlow<VideoCommentsResponse?>(null)
+    val videoComments: StateFlow<VideoCommentsResponse?> = _videoComments
 
     // VideoViewModel.kt
     private val _isFullscreen = MutableStateFlow(false)
@@ -381,6 +385,168 @@ class VideoViewModel(
 
                 // 🔥 ROLLBACK
                 _video.value = currentVideo
+
+                Log.e(
+                    "VideoVM_DEBUG",
+                    e.message.toString()
+                )
+            }
+        }
+    }
+
+    fun fetchVideoComments(videoId: Int){
+        viewModelScope.launch {
+            try {
+                _videoComments.value = repository.fetchComments(videoId)
+
+            }catch (e: Exception){
+                Log.e(
+                    "VideoVM_DEBUG",
+                    e.message.toString()
+                )
+            }
+        }
+    }
+
+    fun toggleCommentLike(commentId: Int) {
+
+        val currentComments = _videoComments.value ?: return
+
+        val oldComments = currentComments.comments
+
+        val updatedComments = oldComments.map { comment ->
+
+            if (comment.id != commentId) return@map comment
+
+            when (comment.user_reaction) {
+
+                "like" -> {
+                    comment.copy(
+                        user_reaction = null,
+                        likes = (comment.likes - 1)
+                            .coerceAtLeast(0)
+                    )
+                }
+
+                "dislike" -> {
+                    comment.copy(
+                        user_reaction = "like",
+                        likes = comment.likes + 1,
+                        dislikes = (comment.dislikes - 1)
+                            .coerceAtLeast(0)
+                    )
+                }
+
+                else -> {
+                    comment.copy(
+                        user_reaction = "like",
+                        likes = comment.likes + 1
+                    )
+                }
+            }
+        }
+
+        _videoComments.value = currentComments.copy(
+            comments = updatedComments
+        )
+
+        val previousComment =
+            oldComments.firstOrNull {
+                it.id == commentId
+            } ?: return
+
+        viewModelScope.launch {
+
+            try {
+
+                when (previousComment.user_reaction) {
+
+                    "like" -> {
+                        repository.removeCommentReaction(commentId)
+                    }
+
+                    else -> {
+                        repository.likeComment(commentId)
+                    }
+                }
+
+            } catch (e: Exception) {
+
+                _videoComments.value = currentComments
+
+                Log.e(
+                    "VideoVM_DEBUG",
+                    e.message.toString()
+                )
+            }
+        }
+    }
+
+    fun toggleCommentDislike(commentId: Int) {
+
+        val currentComments = _videoComments.value ?: return
+
+        val oldComments = currentComments.comments
+
+        val updatedComments = oldComments.map { comment ->
+
+            if (comment.id != commentId) return@map comment
+
+            when (comment.user_reaction) {
+
+                "dislike" -> {
+                    comment.copy(
+                        user_reaction = null,
+                        dislikes = (comment.dislikes - 1)
+                            .coerceAtLeast(0)
+                    )
+                }
+
+                "like" -> {
+                    comment.copy(
+                        user_reaction = "dislike",
+                        dislikes = comment.dislikes + 1,
+                        likes = (comment.likes - 1)
+                            .coerceAtLeast(0)
+                    )
+                }
+
+                else -> {
+                    comment.copy(
+                        user_reaction = "dislike",
+                        dislikes = comment.dislikes + 1
+                    )
+                }
+            }
+        }
+
+        _videoComments.value = currentComments.copy(
+            comments = updatedComments
+        )
+
+        val previousComment =
+            oldComments.firstOrNull {
+                it.id == commentId
+            } ?: return
+
+        viewModelScope.launch {
+
+            try {
+
+                when (previousComment.user_reaction) {
+
+                    "dislike" -> {
+                        repository.removeCommentReaction(commentId)
+                    }
+
+                    else -> {
+                        repository.dislikeComment(commentId)
+                    }
+                }
+
+            } catch (e: Exception) {
+
+                _videoComments.value = currentComments
 
                 Log.e(
                     "VideoVM_DEBUG",

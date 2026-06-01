@@ -5,6 +5,7 @@ import com.example.sociamediaapplication.model.response.GetVideosResponse
 import com.example.sociamediaapplication.model.response.RelatedVideosResponse
 import com.example.sociamediaapplication.model.response.SingleVideoResponse
 import com.example.sociamediaapplication.model.response.VideoCategoryResponse
+import com.example.sociamediaapplication.model.response.VideoCommentsResponse
 import com.example.sociamediaapplication.model.response.VideoReactionRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -92,4 +93,22 @@ interface VideoApi {
         @Path("creatorId") videoId: Int
     )
 
+    @GET("api/videos/{videoId}/comments")
+    suspend fun fetchComments(
+        @Header("Authorization") token: String,
+        @Path("videoId") videoId: Int
+    ): VideoCommentsResponse
+
+    @POST("api/comments/{commentId}/react")
+    suspend fun reactToComment(
+        @Header("Authorization") token: String,
+        @Path("commentId") commentId: Int,
+        @Body request: VideoReactionRequest
+    )
+
+    @DELETE("api/comments/{commentId}/react")
+    suspend fun removeCommentReaction(
+        @Header("Authorization") token: String,
+        @Path("commentId") videoId: Int
+    )
 }

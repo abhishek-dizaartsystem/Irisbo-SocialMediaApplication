@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -28,7 +29,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.utils.correctUrl
+import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.Red
@@ -38,6 +42,8 @@ import com.example.sociamediaapplication.ui.theme.Transparent
 fun CommentItem(
     userName: String = "@coolboy",
     comment: String = "This is Amazing",
+    profileImage: String = "",
+    commentTime: String = "",
     totalLikes: Int = 20,
     totalDislikes: Int = 2,
     totalReplies: Int = 3,
@@ -58,14 +64,16 @@ fun CommentItem(
             onClick = {
                 onUserProfileClick()
             },
-            modifier = Modifier.size(48.dp),
+            modifier = Modifier.size(48.dp)
+                .border(1.dp, Black, HexagonShape),
             colors = IconButtonDefaults.iconButtonColors(
-                containerColor = Red
-            )
+                containerColor = Transparent
+            ),
+            shape = HexagonShape
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.rectangle_5),
-                contentDescription = "Profile Image",
+            AsyncImage(
+                model = correctUrl(profileImage),
+                contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(50.dp)
@@ -84,7 +92,7 @@ fun CommentItem(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "1 week ago",
+                    text = commentTime,
                     fontSize = 12.sp,
                     color = GreyTxt,
                     modifier = Modifier.padding(start = 8.dp)
