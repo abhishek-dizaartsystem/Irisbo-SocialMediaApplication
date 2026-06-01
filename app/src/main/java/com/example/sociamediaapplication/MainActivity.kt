@@ -17,6 +17,7 @@ import com.example.sociamediaapplication.data.repository.PaymentRepository
 import com.example.sociamediaapplication.view.navigation.AppNavGraph
 import com.example.sociamediaapplication.viewmodel.PaymentViewModel
 import com.example.sociamediaapplication.viewmodel.factory.PaymentViewModelFactory
+import com.google.android.gms.ads.MobileAds
 import com.razorpay.PaymentData
 import com.razorpay.PaymentResultWithDataListener
 
@@ -79,6 +80,7 @@ class MainActivity : ComponentActivity(), PaymentResultWithDataListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MobileAds.initialize(this)
         enableEdgeToEdge()
 
         // 🔥 NOTIFICATION PERMISSION

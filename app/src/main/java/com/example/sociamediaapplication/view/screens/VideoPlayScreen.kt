@@ -224,12 +224,12 @@ fun VideoPlayScreen(
                             modifier = Modifier.size(20.dp),
                             tint = Black
                         )
-                        Text(
-                            text = "${video?.data?.shares_count}",
-                            fontSize = 14.sp,
-                            color = Black,
-                            modifier = Modifier.padding(start = 4.dp)
-                        )
+//                        Text(
+//                            text = "${video?.data?.shares_count}",
+//                            fontSize = 14.sp,
+//                            color = Black,
+//                            modifier = Modifier.padding(start = 4.dp)
+//                        )
                     }
                     Button(
                         onClick = {
