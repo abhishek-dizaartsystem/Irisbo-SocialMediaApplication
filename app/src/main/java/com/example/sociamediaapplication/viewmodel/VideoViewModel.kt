@@ -11,6 +11,7 @@ import com.example.sociamediaapplication.model.response.SingleVideoResponse
 import com.example.sociamediaapplication.model.response.VideoCategoryResponse
 import com.example.sociamediaapplication.model.response.VideoComment
 import com.example.sociamediaapplication.model.response.VideoCommentsResponse
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -398,8 +399,14 @@ class VideoViewModel(
     fun fetchVideoComments(videoId: Int){
         viewModelScope.launch {
             try {
-                _videoComments.value = repository.fetchComments(videoId)
+                val response = repository.fetchComments(videoId)
 
+                Log.d(
+                    "COMMENT_VM",
+                    "Fetched = ${response.total_comments}"
+                )
+
+                _videoComments.value = response
             }catch (e: Exception){
                 Log.e(
                     "VideoVM_DEBUG",
@@ -627,9 +634,13 @@ class VideoViewModel(
         viewModelScope.launch {
             try {
                 repository.commentOnVideo(videoId, content, parentId)
+
+                delay(10000)
+
+                fetchVideoComments(videoId)
             }catch (e: Exception){
                 Log.e(
-                    "VideoVM_DEBUG",
+                    "VideoVM_DEBUG_COMMENT",
                     e.message.toString()
                 )
             }

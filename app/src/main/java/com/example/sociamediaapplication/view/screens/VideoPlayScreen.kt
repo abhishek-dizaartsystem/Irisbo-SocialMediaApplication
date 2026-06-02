@@ -344,8 +344,7 @@ fun VideoPlayScreen(
             item {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -450,9 +449,6 @@ fun VideoPlayScreen(
                                     video?.data?.id ?: return@Button,
                                     commentText
                                 )
-                                videoViewModel.fetchVideoComments(
-                                    video?.data?.id ?: return@Button
-                                )
 
                             } else {
 
@@ -462,9 +458,6 @@ fun VideoPlayScreen(
                                     commentText,
                                     replyingToCommentId
 
-                                )
-                                videoViewModel.fetchVideoComments(
-                                    video?.data?.id ?: return@Button
                                 )
                             }
 
