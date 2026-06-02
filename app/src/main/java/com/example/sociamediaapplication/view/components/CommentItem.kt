@@ -169,16 +169,15 @@ fun CommentItem(
                 colors = ButtonDefaults.buttonColors(containerColor = Transparent)
             ) {
                 Text(
-                    text = "${totalReplies} replies",
+                    text = "Reply",
                     modifier = Modifier.padding(end = 8.dp),
                     color = Blue
                 )
                 Icon(
-                    painter = painterResource(R.drawable.back_svgrepo_com),
+                    painter = painterResource(R.drawable.reply_2_svgrepo_com),
                     contentDescription = "",
                     modifier = Modifier
-                        .size(14.dp)
-                        .rotate(-90f),
+                        .size(18.dp),
                     tint = Blue
                 )
             }

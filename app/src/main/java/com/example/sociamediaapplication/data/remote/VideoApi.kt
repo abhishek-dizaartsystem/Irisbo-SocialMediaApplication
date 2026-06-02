@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.data.remote
 
+import com.example.sociamediaapplication.model.request.AddCommentRequest
 import com.example.sociamediaapplication.model.response.GetMyVideosResponse
 import com.example.sociamediaapplication.model.response.GetVideosResponse
 import com.example.sociamediaapplication.model.response.RelatedVideosResponse
@@ -110,5 +111,12 @@ interface VideoApi {
     suspend fun removeCommentReaction(
         @Header("Authorization") token: String,
         @Path("commentId") videoId: Int
+    )
+
+    @POST("api/videos/{videoId}/comments")
+    suspend fun commentOnVideo(
+        @Header("Authorization") token: String,
+        @Path("videoId") videoId: Int,
+        @Body request: AddCommentRequest
     )
 }

@@ -3,6 +3,7 @@ package com.example.sociamediaapplication.view.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -54,6 +55,8 @@ import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.view.components.CommentItem
+import com.example.sociamediaapplication.view.components.CommentThread
+import com.example.sociamediaapplication.view.components.CustomTextField
 import com.example.sociamediaapplication.view.components.DescriptionBottomSheet
 import com.example.sociamediaapplication.view.components.VideoFrame
 import com.example.sociamediaapplication.view.components.VideoThumbnail
@@ -69,6 +72,18 @@ fun VideoPlayScreen(
     val isFullScreen by videoViewModel.isFullscreen.collectAsState()
     val relatedVideos by videoViewModel.relatedVideos.collectAsState()
     val videoComments by videoViewModel.videoComments.collectAsState()
+
+    var commentText by remember {
+        mutableStateOf("")
+    }
+
+    var replyingTo by remember {
+        mutableStateOf<String?>(null)
+    }
+
+    var replyingToCommentId by remember {
+        mutableStateOf<Int?>(null)
+    }
 
     val videoList = listOf(
         R.drawable.rectangle_5,
@@ -362,35 +377,132 @@ fun VideoPlayScreen(
                 }
             }
 
+
+            //Comment TextField
+            item {
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                ) {
+
+                    replyingTo?.let {
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    GreyBtn,
+                                    RoundedCornerShape(12.dp)
+                                )
+                                .padding(12.dp),
+                            horizontalArrangement =
+                                Arrangement.SpaceBetween
+                        ) {
+
+                            Text(
+                                text = "Replying to $it",
+                                color = GreyTxt
+                            )
+
+                            Text(
+                                text = "Cancel",
+                                color = Black,
+                                modifier = Modifier.clickable {
+                                    replyingTo = null
+                                    replyingToCommentId = null
+                                }
+                            )
+                        }
+
+                        Spacer(
+                            modifier = Modifier.height(8.dp)
+                        )
+                    }
+
+                    CustomTextField(
+                        label = "",
+                        value = commentText,
+                        placeHolder =
+                            if (replyingTo == null)
+                                "Add a comment..."
+                            else
+                                "Write a reply...",
+                        onValueChange = {
+                            commentText = it
+                        }
+                    )
+
+                    Spacer(
+                        modifier = Modifier.height(8.dp)
+                    )
+
+                    Button(
+                        onClick = {
+
+                            if (commentText.isBlank())
+                                return@Button
+
+                            if (replyingTo == null) {
+
+                                videoViewModel.commentOnVideo(
+                                    video?.data?.id ?: return@Button,
+                                    commentText
+                                )
+                                videoViewModel.fetchVideoComments(
+                                    video?.data?.id ?: return@Button
+                                )
+
+                            } else {
+
+                                // reply API later
+                                videoViewModel.commentOnVideo(
+                                    video?.data?.id ?: return@Button,
+                                    commentText,
+                                    replyingToCommentId
+
+                                )
+                                videoViewModel.fetchVideoComments(
+                                    video?.data?.id ?: return@Button
+                                )
+                            }
+
+                            commentText = ""
+                            replyingTo = null
+                            replyingToCommentId = null
+                        },
+                        modifier = Modifier.align(
+                            Alignment.End
+                        )
+                    ) {
+                        Text(
+                            text =
+                                if (replyingTo == null)
+                                    "Comment"
+                                else
+                                    "Reply"
+                        )
+                    }
+                }
+            }
+
             // Comments List
             items(
                 videoComments?.comments ?: emptyList()
             ) { comment ->
 
-                CommentItem(
-                    userName = "@${comment.username}",
-                    comment = comment.content,
-                    totalLikes = comment.likes,
-                    totalDislikes = comment.dislikes,
-                    totalReplies = comment.replies.size,
-                    isLiked = comment.user_reaction == "like",
-                    isDisliked = comment.user_reaction == "dislike",
-                    profileImage = comment.profile_image,
-                    commentTime = formatToPostTime(comment.created_at),
+                CommentThread(
+                    comment = comment,
+                    videoViewModel = videoViewModel,
 
-                    onLiked = {
-                        videoViewModel.toggleCommentLike(comment.id)
-                    },
-                    onDisliked = {
-                        videoViewModel.toggleCommentDislike(comment.id)
-                    },
+                    onReply = { selectedComment ->
 
-                    onReplyClicked = {
-                        // TODO
-                    },
+                        replyingTo =
+                            selectedComment.username
 
-                    onUserProfileClick = {
-                        // TODO
+                        replyingToCommentId =
+                            selectedComment.id
                     }
                 )
             }

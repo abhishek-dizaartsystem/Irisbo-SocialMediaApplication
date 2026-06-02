@@ -23,5 +23,5 @@ data class VideoComment(
     val likes: Int,
     val dislikes: Int,
     val user_reaction: String?,
-    val replies: List<String>
+    val replies: List<VideoComment>
 )
