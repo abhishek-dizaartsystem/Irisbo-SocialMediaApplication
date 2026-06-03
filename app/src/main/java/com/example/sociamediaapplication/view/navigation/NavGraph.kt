@@ -75,7 +75,7 @@ fun AppNavGraph() {
     val chatViewModelFactory = remember { ChatViewModelFactory(chatRepository) }
     val chatViewModel: ChatViewModel = viewModel(factory = chatViewModelFactory)
 
-    val videoRepository = remember { VideoRepository(tokenManager) }
+    val videoRepository = remember { VideoRepository(tokenManager, context) }
     val videoViewModelFactory = remember { VideoViewModelFactory(videoRepository) }
     val videoViewModel: VideoViewModel = viewModel(factory = videoViewModelFactory)
 

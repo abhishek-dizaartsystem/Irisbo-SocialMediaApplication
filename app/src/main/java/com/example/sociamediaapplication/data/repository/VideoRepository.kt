@@ -1,5 +1,9 @@
 package com.example.sociamediaapplication.data.repository
 
+import android.content.Context
+import com.example.sociamediaapplication.data.local.database.DatabaseProvider
+import com.example.sociamediaapplication.data.local.database.DownloadedVideoEntity
+import com.example.sociamediaapplication.data.local.downloader.VideoDownloader
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.model.request.AddCommentRequest
@@ -10,12 +14,69 @@ import com.example.sociamediaapplication.model.response.SingleVideoResponse
 import com.example.sociamediaapplication.model.response.VideoCategoryResponse
 import com.example.sociamediaapplication.model.response.VideoCommentsResponse
 import com.example.sociamediaapplication.model.response.VideoReactionRequest
+import java.io.File
 
 class VideoRepository(
-    private val tokenManager: TokenManager
-) {
+    private val tokenManager: TokenManager,
+    private val context: Context
+){
 
     val api = RetrofitClient.videoApi
+
+    private val downloader = VideoDownloader(context)
+
+    private val dao =
+        DatabaseProvider
+            .getDatabase(context)
+            .downloadedVideoDao()
+
+    suspend fun downloadVideo(
+        videoId: Int,
+        title: String,
+        thumbnailUrl: String,
+        videoUrl: String
+    ) {
+
+        val localPath =
+            downloader.downloadVideo(
+                videoId.toString(),
+                videoUrl
+            )
+
+        dao.insert(
+            DownloadedVideoEntity(
+                videoId = videoId,
+                title = title,
+                thumbnailUrl = thumbnailUrl,
+                videoUrl = videoUrl,
+                localPath = localPath
+            )
+        )
+    }
+
+    suspend fun getDownloadedVideos() = dao.getAllVideos()
+
+    suspend fun isVideoDownloaded(
+        videoId: Int
+    ): Boolean {
+
+        return dao.getVideo(videoId) != null
+    }
+
+    suspend fun deleteDownloadedVideo(
+        videoId: Int
+    ) {
+
+        val video =
+            dao.getVideo(videoId)
+
+        video?.let {
+
+            File(it.localPath).delete()
+
+            dao.delete(it)
+        }
+    }
 
     suspend fun getVideoCategories(): VideoCategoryResponse{
         val token = "Bearer ${tokenManager.getToken()}"

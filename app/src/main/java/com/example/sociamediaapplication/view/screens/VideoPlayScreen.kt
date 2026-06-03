@@ -64,7 +64,8 @@ import com.example.sociamediaapplication.viewmodel.VideoViewModel
 
 @Composable
 fun VideoPlayScreen(
-    videoViewModel: VideoViewModel = viewModel()
+    videoViewModel: VideoViewModel = viewModel(),
+    onVideoClick: (Int) -> Unit = {}
 ) {
 
     var showDescriptionBottomSheet by remember { mutableStateOf(false) }
@@ -264,6 +265,25 @@ fun VideoPlayScreen(
                                 if(video?.data?.is_saved == 1) R.drawable.save_filled
                                 else R.drawable.save_icon
                             ),
+                            contentDescription = "",
+                            modifier = Modifier.size(20.dp),
+                            tint = Black
+                        )
+                    }
+
+                    Button(
+                        onClick = {
+                            videoViewModel.downloadCurrentVideo()
+                        },
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .height(30.dp),
+                        shape = RoundedCornerShape(50.dp),
+                        contentPadding = PaddingValues(vertical = 0.dp, horizontal = 16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = GreyBtn),
+                        border = BorderStroke(1.dp, Grey) ) {
+                        Icon(
+                            painter = painterResource(R.drawable.download_svgrepo_com__1_),
                             contentDescription = "",
                             modifier = Modifier.size(20.dp),
                             tint = Black
@@ -520,14 +540,25 @@ fun VideoPlayScreen(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     items(relatedVideos?.data ?: emptyList()) { video ->
-                        VideoThumbnail(
-                            imageUrl = correctUrl(video.thumbnail_url),
-                            text = video.title,
-                            channelName = video.creator_username,
-                            views = "${video.views_count} views",
-                            uploadTime = formatToPostTime(video.created_at),
-                            durationTime = convertToDuration(video.duration_seconds)
-                        )
+
+                        Column(
+                            modifier = Modifier.clickable {
+
+                                onVideoClick(
+                                    video.id
+                                )
+                            }
+                        ) {
+                            VideoThumbnail(
+                                imageUrl = correctUrl(video.thumbnail_url),
+                                text = video.title,
+                                channelName = video.creator_username,
+                                views = "${video.views_count} views",
+                                uploadTime = formatToPostTime(video.created_at),
+                                durationTime = convertToDuration(video.duration_seconds)
+                            )
+                        }
+
                     }
                 }
             }

@@ -48,7 +48,7 @@ fun VideoNavGraph(videoViewModel: VideoViewModel) {
 
             val videoId = backStackEntry.arguments?.getInt("videoId")
 
-            LaunchedEffect(Unit) {
+            LaunchedEffect(videoId) {
                 videoViewModel.fetchVideo(videoId?:0)
                 videoViewModel.fetchRelatedVideos(videoId?:0)
                 videoViewModel.fetchVideoComments(videoId?: 0)
@@ -61,7 +61,17 @@ fun VideoNavGraph(videoViewModel: VideoViewModel) {
             }
 
             VideoPlayScreen(
-                videoViewModel = videoViewModel
+                videoViewModel = videoViewModel,
+                onVideoClick = { relatedVideoId ->
+
+                    navController.navigate(
+                        VideoRoutes.Video.createRoute(
+                            relatedVideoId
+                        )
+                    ){
+                        launchSingleTop = true
+                    }
+                }
             )
         }
     }

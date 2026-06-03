@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.repository.VideoRepository
+import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.model.response.GetMyVideosResponse
 import com.example.sociamediaapplication.model.response.GetVideosResponse
 import com.example.sociamediaapplication.model.response.RelatedVideosResponse
@@ -11,6 +12,7 @@ import com.example.sociamediaapplication.model.response.SingleVideoResponse
 import com.example.sociamediaapplication.model.response.VideoCategoryResponse
 import com.example.sociamediaapplication.model.response.VideoComment
 import com.example.sociamediaapplication.model.response.VideoCommentsResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,6 +49,54 @@ class VideoViewModel(
 
     private val _relatedVideos = MutableStateFlow<RelatedVideosResponse?>(null)
     val relatedVideos: StateFlow<RelatedVideosResponse?> = _relatedVideos
+
+    private val _isDownloading = MutableStateFlow(false)
+    val isDownloading: StateFlow<Boolean> = _isDownloading
+
+    fun downloadCurrentVideo() {
+
+        val currentVideo = _video.value ?: return
+
+        viewModelScope.launch(Dispatchers.IO) {
+
+            try {
+
+                _isDownloading.value = true
+
+                repository.downloadVideo(
+                    videoId = currentVideo.data.id,
+                    title = currentVideo.data.title,
+                    thumbnailUrl = currentVideo.data.thumbnail_url,
+                    videoUrl = correctUrl(currentVideo.data.video_url)
+                )
+
+            } catch (e: Exception) {
+
+                Log.e(
+                    "DOWNLOAD_DEBUG",
+                    "Download failed",
+                    e
+                )
+
+            } finally {
+
+                _isDownloading.value = false
+            }
+        }
+    }
+
+    fun getDownloadedVideos() {
+        viewModelScope.launch {
+
+            val videos =
+                repository.getDownloadedVideos()
+
+            Log.d(
+                "DOWNLOAD_DEBUG",
+                videos.toString()
+            )
+        }
+    }
 
     fun setFullscreen(value: Boolean) {
         _isFullscreen.value = value
@@ -646,4 +696,6 @@ class VideoViewModel(
             }
         }
     }
+
+
 }
