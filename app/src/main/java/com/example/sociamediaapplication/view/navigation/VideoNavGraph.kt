@@ -51,7 +51,7 @@ fun VideoNavGraph(videoViewModel: VideoViewModel) {
             LaunchedEffect(videoId) {
                 videoViewModel.fetchVideo(videoId?:0)
                 videoViewModel.fetchRelatedVideos(videoId?:0)
-                videoViewModel.fetchVideoComments(videoId?: 0)
+                videoViewModel.fetchVideoComments(videoId?: 0, "desc")
             }
 
             DisposableEffect(Unit) {

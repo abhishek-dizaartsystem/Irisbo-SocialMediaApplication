@@ -171,10 +171,17 @@ class VideoRepository(
         return api.unsubscribeFromCreator(token, creatorId)
     }
 
-    suspend fun fetchComments(videoId: Int): VideoCommentsResponse{
+    suspend fun fetchComments(videoId: Int, sort: String? = null): VideoCommentsResponse{
         val token = "Bearer ${tokenManager.getToken()}"
 
-        return api.fetchComments(token, videoId)
+
+
+        return api.fetchComments(
+            token,
+            videoId,
+            if(sort == null || sort == "asc") "asc"
+            else "desc"
+        )
     }
 
     suspend fun likeComment(commentId: Int){

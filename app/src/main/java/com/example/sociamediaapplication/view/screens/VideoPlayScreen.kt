@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -73,6 +76,14 @@ fun VideoPlayScreen(
     val isFullScreen by videoViewModel.isFullscreen.collectAsState()
     val relatedVideos by videoViewModel.relatedVideos.collectAsState()
     val videoComments by videoViewModel.videoComments.collectAsState()
+
+    var showSortMenu by remember {
+        mutableStateOf(false)
+    }
+
+    var sortOrder by remember {
+        mutableStateOf("Descending")
+    }
 
     var commentText by remember {
         mutableStateOf("")
@@ -374,24 +385,70 @@ fun VideoPlayScreen(
                         fontSize = 18.sp
                     )
 
-                    Button(
-                        onClick = {},
-                        shape = RoundedCornerShape(50.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Transparent),
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.filter_svgrepo_com),
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp),
-                            tint = GreyTxt
-                        )
-                        Text(
-                            text = "Sort by",
-                            fontSize = 14.sp,
-                            color = GreyTxt,
-                            modifier = Modifier.padding(start = 4.dp)
-                        )
+                    Box {
+
+                        Button(
+                            onClick = {
+                                showSortMenu = true
+                            },
+                            shape = RoundedCornerShape(50.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Transparent
+                            )
+                        ) {
+
+                            Icon(
+                                painter = painterResource(
+                                    R.drawable.filter_svgrepo_com
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = GreyTxt
+                            )
+
+                            Text(
+                                text = "Sort by",
+                                fontSize = 14.sp,
+                                color = GreyTxt,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = showSortMenu,
+                            onDismissRequest = {
+                                showSortMenu = false
+                            }
+                        ) {
+
+                            DropdownMenuItem(
+                                text = {
+                                    Text("Newest First")
+                                },
+                                onClick = {
+
+                                    sortOrder = "desc"
+
+                                    videoViewModel.fetchVideoComments(video?.data?.id?:0, "desc")
+
+                                    showSortMenu = false
+                                }
+                            )
+
+                            DropdownMenuItem(
+                                text = {
+                                    Text("Oldest First")
+                                },
+                                onClick = {
+
+                                    sortOrder = "asc"
+
+                                    videoViewModel.fetchVideoComments(video?.data?.id?:0, "asc")
+                                    showSortMenu = false
+                                }
+                            )
+                        }
                     }
                 }
             }

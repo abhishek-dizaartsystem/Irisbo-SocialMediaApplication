@@ -101,7 +101,8 @@ interface VideoApi {
     @GET("api/videos/{videoId}/comments")
     suspend fun fetchComments(
         @Header("Authorization") token: String,
-        @Path("videoId") videoId: Int
+        @Path("videoId") videoId: Int,
+        @Query("sort") sort: String
     ): VideoCommentsResponse
 
     @POST("api/comments/{commentId}/react")

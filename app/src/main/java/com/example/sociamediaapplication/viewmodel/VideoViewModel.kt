@@ -465,10 +465,10 @@ class VideoViewModel(
         }
     }
 
-    fun fetchVideoComments(videoId: Int){
+    fun fetchVideoComments(videoId: Int, sort: String? = null){
         viewModelScope.launch {
             try {
-                val response = repository.fetchComments(videoId)
+                val response = repository.fetchComments(videoId, sort)
 
                 Log.d(
                     "COMMENT_VM",
@@ -704,7 +704,7 @@ class VideoViewModel(
             try {
                 repository.commentOnVideo(videoId, content, parentId)
 
-                fetchVideoComments(videoId)
+                fetchVideoComments(videoId, "desc")
             }catch (e: Exception){
                 Log.e(
                     "VideoVM_DEBUG_COMMENT",
