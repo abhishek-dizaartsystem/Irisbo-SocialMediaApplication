@@ -112,6 +112,7 @@ fun MenuNavGraph(
 
             LaunchedEffect(Unit) {
                 videoViewModel.fetchMyVideos()
+                videoViewModel.fetchDownloadedVideos()
             }
 
             UserVideosScreen(

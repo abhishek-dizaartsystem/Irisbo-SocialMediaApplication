@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.view.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,11 +45,15 @@ import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.utils.convertToDuration
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
+import com.example.sociamediaapplication.ui.theme.Black
+import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
 import com.example.sociamediaapplication.ui.theme.Transparent
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.UserVideoItem
+import com.example.sociamediaapplication.view.components.VideoPlayerDialog
+import com.example.sociamediaapplication.view.components.VideoThumbnail3
 import com.example.sociamediaapplication.viewmodel.VideoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,21 +63,26 @@ fun UserVideosScreen(
     videoViewModel: VideoViewModel = viewModel()
 ){
 
-    val videoList = listOf(
-        R.drawable.rectangle_5,
-        R.drawable.rectangle_36,
-        R.drawable.rectangle_24,
-        R.drawable.rectangle_58,
-        R.drawable.rectangle_6,
-        R.drawable.rectangle_37,
-        R.drawable.rectangle_36__2_,
-        R.drawable.rectangle_36__1_,
-        R.drawable.rectangle_38,
-        R.drawable.rectangle_39
-    )
-
     var searchTxt by remember { mutableStateOf("") }
     val myVideos by videoViewModel.myVideos.collectAsState()
+    var selectedTab by remember {
+        mutableStateOf(0)               //0 = My Videos, 1 = Offline Videos
+    }
+    val downloadedVideos by videoViewModel.downloadedVideos.collectAsState()
+
+    var selectedVideoPath by remember {
+        mutableStateOf<String?>(null)
+    }
+
+    if (selectedVideoPath != null) {
+
+        VideoPlayerDialog(
+            videoUrl = selectedVideoPath!!,
+            onDismiss = {
+                selectedVideoPath = null
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -143,6 +156,61 @@ fun UserVideosScreen(
                         }
                     )
                 }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 12.dp
+                        )
+                ) {
+
+                    Text(
+                        text = "My Videos",
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(
+                                if (selectedTab == 0)
+                                    GreyTxt
+                                else
+                                    Transparent,
+                                RoundedCornerShape(12.dp)
+                            )
+                            .clickable {
+                                selectedTab = 0
+                            }
+                            .padding(12.dp),
+                        color =
+                            if (selectedTab == 0)
+                                White
+                            else
+                                Black,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Text(
+                        text = "Offline Videos",
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(
+                                if (selectedTab == 1)
+                                    GreyTxt
+                                else
+                                    Transparent,
+                                RoundedCornerShape(12.dp)
+                            )
+                            .clickable {
+                                selectedTab = 1
+                            }
+                            .padding(12.dp),
+                        color =
+                            if (selectedTab == 1)
+                                White
+                            else
+                                Black,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
 
@@ -159,22 +227,69 @@ fun UserVideosScreen(
                 .padding(innerPadding)
         ) {
             HorizontalDivider()
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(), // IMPORTANT: prevent infinite height
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(16.dp)
-            ) {
-                items(myVideos?.videos ?: emptyList()) { video ->
-                    UserVideoItem(
-                        image_url = correctUrl(video.thumbnail_url),
-                        text = video.title,
-                        uploadTime = video.created_at,
-                        durationTime = convertToDuration(video.duration_seconds),
-                        likes = video.likes_count.toString(),
-                        shares = video.shares_count.toString(),
-                        views = video.views_count.toString()
-                    )
-                    HorizontalDivider()
+
+            if (selectedTab == 0) {
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement =
+                        Arrangement.spacedBy(16.dp),
+                    contentPadding =
+                        PaddingValues(16.dp)
+                ) {
+
+                    items(
+                        myVideos?.videos ?: emptyList()
+                    ) { video ->
+
+                        UserVideoItem(
+                            image_url =
+                                correctUrl(video.thumbnail_url),
+                            text = video.title,
+                            uploadTime = video.created_at,
+                            durationTime =
+                                convertToDuration(
+                                    video.duration_seconds
+                                ),
+                            likes =
+                                video.likes_count.toString(),
+                            shares =
+                                video.shares_count.toString(),
+                            views =
+                                video.views_count.toString()
+                        )
+
+                        HorizontalDivider()
+                    }
+                }
+
+            } else {
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+
+                    horizontalArrangement =
+                        Arrangement.spacedBy(8.dp),
+
+                    verticalArrangement =
+                        Arrangement.spacedBy(12.dp)
+                ) {
+
+                    items(downloadedVideos) { video ->
+
+                        VideoThumbnail3(
+                            title = video.title,
+                            imageUrl = video.thumbnailUrl,
+                            onVideoClick = {
+                                // Play offline video
+                                selectedVideoPath = video.localPath
+                            }
+                        )
+                    }
                 }
             }
         }

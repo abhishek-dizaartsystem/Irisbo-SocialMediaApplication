@@ -3,6 +3,7 @@ package com.example.sociamediaapplication.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sociamediaapplication.data.local.database.DownloadedVideoEntity
 import com.example.sociamediaapplication.data.repository.VideoRepository
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.model.response.GetMyVideosResponse
@@ -85,16 +86,31 @@ class VideoViewModel(
         }
     }
 
-    fun getDownloadedVideos() {
+    private val _downloadedVideos =
+        MutableStateFlow<List<DownloadedVideoEntity>>(
+            emptyList()
+        )
+
+    val downloadedVideos:
+            StateFlow<List<DownloadedVideoEntity>>
+            = _downloadedVideos
+
+    fun fetchDownloadedVideos() {
+
         viewModelScope.launch {
 
-            val videos =
-                repository.getDownloadedVideos()
+            try {
 
-            Log.d(
-                "DOWNLOAD_DEBUG",
-                videos.toString()
-            )
+                _downloadedVideos.value =
+                    repository.getDownloadedVideos()
+
+            } catch (e: Exception) {
+
+                Log.e(
+                    "DOWNLOAD_DEBUG",
+                    e.message.toString()
+                )
+            }
         }
     }
 
@@ -684,8 +700,6 @@ class VideoViewModel(
         viewModelScope.launch {
             try {
                 repository.commentOnVideo(videoId, content, parentId)
-
-                delay(10000)
 
                 fetchVideoComments(videoId)
             }catch (e: Exception){
