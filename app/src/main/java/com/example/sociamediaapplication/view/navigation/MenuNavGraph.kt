@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -14,6 +15,7 @@ import com.example.sociamediaapplication.view.screens.GamesScreen
 import com.example.sociamediaapplication.view.screens.MemoriesScreen
 import com.example.sociamediaapplication.view.screens.MenuScreen
 import com.example.sociamediaapplication.view.screens.MonetizationScreen
+import com.example.sociamediaapplication.view.screens.UploadVideoScreen
 import com.example.sociamediaapplication.view.screens.UserVideosScreen
 import com.example.sociamediaapplication.view.screens.VideoAnalyticsScreen
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
@@ -43,6 +45,8 @@ fun MenuNavGraph(
     val navController = rememberNavController()
 
     val profile by profileViewModel.profile.collectAsState()
+
+    val context = LocalContext.current
 
     NavHost(
         navController = navController,
@@ -118,6 +122,30 @@ fun MenuNavGraph(
             UserVideosScreen(
                 navController,
                 videoViewModel = videoViewModel
+            )
+        }
+
+        composable(MenuRoutes.UploadVideo.route) {
+            UploadVideoScreen(
+                navController,
+                onUploadClick = {
+                        title,
+                        description,
+                        categoryId,
+                        thumbnailUri,
+                        videoUri ->
+
+                    videoViewModel.uploadVideo(
+                        title = title,
+                        description = description,
+                        categoryId = categoryId,
+                        videoUri = videoUri,
+                        thumbnailUri = thumbnailUri,
+                        context = context
+                    )
+
+                    navController.popBackStack()
+                }
             )
         }
         composable(MenuRoutes.Memories.route) {

@@ -1,6 +1,9 @@
 package com.example.sociamediaapplication.viewmodel
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sociamediaapplication.data.local.database.DownloadedVideoEntity
@@ -711,5 +714,38 @@ class VideoViewModel(
         }
     }
 
+    fun uploadVideo(
+        title: String,
+        description: String,
+        categoryId: Int,
+        videoUri: Uri?,
+        thumbnailUri: Uri?,
+        context: Context
+    ) {
+
+        viewModelScope.launch {
+
+            try {
+
+                repository.uploadVideo(
+                    title = title,
+                    description = description,
+                    categoryId = categoryId,
+                    videoUri = videoUri,
+                    thumbnailUri = thumbnailUri,
+                    context = context
+                )
+
+                fetchMyVideos()
+
+            } catch (e: Exception) {
+
+                Log.e(
+                    "VIDEO_UPLOAD",
+                    e.stackTraceToString()
+                )
+            }
+        }
+    }
 
 }

@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -46,6 +48,7 @@ import com.example.sociamediaapplication.data.utils.convertToDuration
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
 import com.example.sociamediaapplication.ui.theme.Black
+import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.GreyBtn
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGrey
@@ -54,6 +57,8 @@ import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.UserVideoItem
 import com.example.sociamediaapplication.view.components.VideoPlayerDialog
 import com.example.sociamediaapplication.view.components.VideoThumbnail3
+import com.example.sociamediaapplication.view.navigation.GroupsRoutes
+import com.example.sociamediaapplication.view.navigation.MenuRoutes
 import com.example.sociamediaapplication.viewmodel.VideoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,11 +117,26 @@ fun UserVideosScreen(
                         fontSize = 18.sp
                     )
 
-                    Text(
-                        text = "Save",
-                        fontSize = 18.sp,
-                        color = White
-                    )
+                    Button(
+                        onClick = {
+                            navController.navigate(MenuRoutes.UploadVideo.route)
+                        },
+                        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp),
+                        modifier = Modifier
+                            .height(34.dp)
+                            .padding(end = 8.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Blue)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.add_svgrepo_com),
+                            contentDescription = ""
+                        )
+                        Text(
+                            text = "Create",
+                            fontSize = 18.sp
+                        )
+                    }
 
 
                 }

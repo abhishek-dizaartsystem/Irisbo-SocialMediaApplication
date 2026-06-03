@@ -1,11 +1,13 @@
 package com.example.sociamediaapplication.data.repository
 
 import android.content.Context
+import android.net.Uri
 import com.example.sociamediaapplication.data.local.database.DatabaseProvider
 import com.example.sociamediaapplication.data.local.database.DownloadedVideoEntity
 import com.example.sociamediaapplication.data.local.downloader.VideoDownloader
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
+import com.example.sociamediaapplication.data.utils.uriToFile
 import com.example.sociamediaapplication.model.request.AddCommentRequest
 import com.example.sociamediaapplication.model.response.GetMyVideosResponse
 import com.example.sociamediaapplication.model.response.GetVideosResponse
@@ -14,6 +16,13 @@ import com.example.sociamediaapplication.model.response.SingleVideoResponse
 import com.example.sociamediaapplication.model.response.VideoCategoryResponse
 import com.example.sociamediaapplication.model.response.VideoCommentsResponse
 import com.example.sociamediaapplication.model.response.VideoReactionRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 class VideoRepository(
@@ -190,5 +199,73 @@ class VideoRepository(
         val token = "Bearer ${tokenManager.getToken()}"
 
         api.commentOnVideo(token, videoId, AddCommentRequest(content, parentId))
+    }
+
+    suspend fun uploadVideo(
+        title: String,
+        description: String,
+        categoryId: Int,
+        videoUri: Uri?,
+        thumbnailUri: Uri?,
+        context: Context
+    ) = withContext(Dispatchers.IO) {
+
+        val token =
+            tokenManager.getToken()
+                ?: throw Exception("No token")
+
+        require(videoUri != null)
+        require(thumbnailUri != null)
+
+        val videoFile =
+            uriToFile(videoUri, context)
+
+        val thumbnailFile =
+            uriToFile(thumbnailUri, context)
+
+        val videoPart =
+            MultipartBody.Part.createFormData(
+                "video",
+                videoFile.name,
+                videoFile.asRequestBody(
+                    (
+                            context.contentResolver.getType(videoUri)
+                                ?: "video/mp4"
+                            ).toMediaTypeOrNull()
+                )
+            )
+
+        val thumbnailPart =
+            MultipartBody.Part.createFormData(
+                "thumbnail",
+                thumbnailFile.name,
+                thumbnailFile.asRequestBody(
+                    (
+                            context.contentResolver.getType(thumbnailUri)
+                                ?: "image/jpeg"
+                            ).toMediaTypeOrNull()
+                )
+            )
+
+        api.uploadVideo(
+            token = "Bearer $token",
+
+            video = videoPart,
+
+            thumbnail = thumbnailPart,
+
+            title = title.toRequestBody(
+                "text/plain".toMediaType()
+            ),
+
+            description = description.toRequestBody(
+                "text/plain".toMediaType()
+            ),
+
+            categoryId = categoryId.toString()
+                .toRequestBody(
+                    "text/plain".toMediaType()
+                )
+        )
     }
 }

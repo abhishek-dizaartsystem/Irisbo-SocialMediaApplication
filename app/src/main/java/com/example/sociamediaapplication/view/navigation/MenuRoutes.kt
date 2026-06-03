@@ -4,6 +4,7 @@ sealed class MenuRoutes(val route: String) {
     object Marketplace: MenuRoutes("marketplace")
     object Groups: MenuRoutes("groups")
     object UserVideos: MenuRoutes("userVideos")
+    object UploadVideo: MenuRoutes("uploadVideo")
     object Memories: MenuRoutes("memories")
     object Pages: MenuRoutes("pages")
     object Friends: MenuRoutes("friends")
