@@ -9,6 +9,7 @@ import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.utils.uriToFile
 import com.example.sociamediaapplication.model.request.AddCommentRequest
+import com.example.sociamediaapplication.model.request.VideoViewRequest
 import com.example.sociamediaapplication.model.response.GetMyVideosResponse
 import com.example.sociamediaapplication.model.response.GetVideosResponse
 import com.example.sociamediaapplication.model.response.RelatedVideosResponse
@@ -274,5 +275,11 @@ class VideoRepository(
                     "text/plain".toMediaType()
                 )
         )
+    }
+
+    suspend fun markViewed(videoId: Int, seconds: Int){
+        val token = "Bearer ${tokenManager.getToken()}"
+
+        api.markViewed(token, videoId, VideoViewRequest(seconds))
     }
 }

@@ -748,4 +748,22 @@ class VideoViewModel(
         }
     }
 
+    fun markViewed(videoId: Int, seconds: Int){
+        viewModelScope.launch {
+            try {
+                repository.markViewed(videoId, seconds)
+                Log.d(
+                    "VIDEO_UPLOAD",
+                    "Successfully viewed"
+                )
+            }catch (e: Exception) {
+
+                Log.e(
+                    "VIDEO_UPLOAD",
+                    e.stackTraceToString()
+                )
+            }
+        }
+    }
+
 }

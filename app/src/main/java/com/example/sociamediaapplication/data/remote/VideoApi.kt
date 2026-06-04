@@ -1,6 +1,7 @@
 package com.example.sociamediaapplication.data.remote
 
 import com.example.sociamediaapplication.model.request.AddCommentRequest
+import com.example.sociamediaapplication.model.request.VideoViewRequest
 import com.example.sociamediaapplication.model.response.GetMyVideosResponse
 import com.example.sociamediaapplication.model.response.GetVideosResponse
 import com.example.sociamediaapplication.model.response.RelatedVideosResponse
@@ -144,5 +145,12 @@ interface VideoApi {
 
         @Part("category_id")
         categoryId: RequestBody
+    )
+
+    @POST("api/videos/{videoId}/view")
+    suspend fun markViewed(
+        @Header("Authorization") token: String,
+        @Path("videoId") videoId: Int,
+        @Body request: VideoViewRequest
     )
 }

@@ -3,6 +3,10 @@ package com.example.sociamediaapplication.view.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -48,15 +52,38 @@ fun VideoNavGraph(videoViewModel: VideoViewModel) {
 
             val videoId = backStackEntry.arguments?.getInt("videoId")
 
+            var watchTimeSeconds by remember(videoId) {
+                mutableStateOf(0)
+            }
+
             LaunchedEffect(videoId) {
                 videoViewModel.fetchVideo(videoId?:0)
                 videoViewModel.fetchRelatedVideos(videoId?:0)
                 videoViewModel.fetchVideoComments(videoId?: 0, "desc")
+
+            }
+
+            LaunchedEffect(videoId) {
+
+                watchTimeSeconds = 0
+
+                while (true) {
+                    kotlinx.coroutines.delay(1000)
+                    watchTimeSeconds++
+                }
             }
 
             DisposableEffect(Unit) {
                 onDispose {
                     videoViewModel.setFullscreen(false)
+
+                    videoId?.let {
+
+                        videoViewModel.markViewed(
+                            videoId = it,
+                            seconds = watchTimeSeconds
+                        )
+                    }
                 }
             }
 
