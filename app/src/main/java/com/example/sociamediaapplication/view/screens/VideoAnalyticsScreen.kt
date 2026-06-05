@@ -24,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.R
@@ -51,42 +53,49 @@ import com.example.sociamediaapplication.ui.theme.Purple
 import com.example.sociamediaapplication.ui.theme.Red
 import com.example.sociamediaapplication.ui.theme.White
 import com.example.sociamediaapplication.view.components.AgeDistributionCard
+import com.example.sociamediaapplication.view.components.TopVideoCard
 import com.example.sociamediaapplication.view.components.VideoAnalyticsCard
 import com.example.sociamediaapplication.view.components.VideoAnalyticsItem
+import com.example.sociamediaapplication.view.components.VideoPerformanceItem
+import com.example.sociamediaapplication.viewmodel.AnalyticsViewModel
 
 @Composable
 fun VideoAnalyticsScreen(
-    navController: NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
+    analyticsViewModel: AnalyticsViewModel = viewModel()
 ){
 
-    var videosSelected by remember { mutableStateOf(false) }
+    val channelAnalytics by analyticsViewModel.channelAnalytics.collectAsState()
+    val videoDashboard by analyticsViewModel.videoDashboard.collectAsState()
+    val topVideos by analyticsViewModel.topVideos.collectAsState()
 
-    var analyticsItems = remember { mutableStateListOf(
+
+    val analyticsItems = listOf(
         VideoAnalyticsCardModel(
             icon = R.drawable.eye_outlined_svgrepo_com,
             iconTint = Blue,
-            value = "124.5K",
+            value = (channelAnalytics?.data?.total_views_count?:0).toString(),
             name = "Total Views"
         ),
         VideoAnalyticsCardModel(
             icon = R.drawable.heart_svgrepo_com,
             iconTint = Red,
-            value = "8.5K",
+            value = (channelAnalytics?.data?.total_likes_count?:0).toString(),
             name = "Total Likes"
         ),
         VideoAnalyticsCardModel(
             icon = R.drawable.chat_dots_svgrepo_com,
             iconTint = Green,
-            value = "1.4K",
+            value = (channelAnalytics?.data?.total_comments_count?:0).toString(),
             name = "Comments"
         ),
         VideoAnalyticsCardModel(
             icon = R.drawable.share_svgrepo_com,
             iconTint = Purple,
-            value = "824",
+            value = (channelAnalytics?.data?.total_shares_count?:0).toString(),
             name = "Shares"
         )
-    ) }
+    )
 
     Scaffold(
         topBar = {
@@ -174,109 +183,44 @@ fun VideoAnalyticsScreen(
                         }
                     }
                 }
-                item{
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                color = LGrey,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(4.dp)
-                        ) {
-                            Button(
-                                onClick = {},
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if(!videosSelected) LGrey else White
-                                ),
-                                contentPadding = PaddingValues(0.dp),
-                                modifier = Modifier.fillMaxWidth(0.5f),
-                                shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Text(
-                                    text = "Videos",
-                                    color = if(!videosSelected) GreyTxt else Black,
-                                    fontSize = 16.sp
-                                )
-                            }
-                            Button(
-                                onClick = {},
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if(videosSelected) LGrey else White
-                                ),
-                                contentPadding = PaddingValues(0.dp),
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Text(
-                                    text = "Audience",
-                                    color = if(videosSelected) GreyTxt else Black,
-                                    fontSize = 16.sp
-                                )
-                            }
-                        }
-                    }
-                }
-                if(videosSelected){
-                    item {
 
-                        Text(
-                            text = "Top Performing Videos",
-                            color = GreyTxt,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .padding(vertical = 12.dp)
-                        )
-                    }
-                    items(8){
-                        VideoAnalyticsItem()
-                    }
-                }else{
-                    item {
-                        AgeDistributionCard()
-                    }
-                    item{
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp),
-                            elevation = CardDefaults.cardElevation(2.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = White
-                            )
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(12.dp)
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.clock_three_svgrepo_com),
-                                        contentDescription = "",
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Text(
-                                        text = "Watch Time",
-                                        modifier = Modifier.padding(start = 8.dp),
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                                Text(
-                                    text = "2.4K hrs",
-                                    fontSize = 28.sp,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                                Text(
-                                    text = "Watch Time",
-                                    color = GreyTxt
-                                )
-                            }
-                        }
-                    }
+                item {
+
+                    Text(
+                        text = "Top Performing Videos",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                }
+
+                items(
+                    topVideos?.data ?: emptyList()
+                ) { video ->
+
+                    TopVideoCard(
+                        video = video
+                    )
+                }
+
+                item {
+
+                    Text(
+                        text = "Video Performance",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                }
+                items(
+                    videoDashboard
+                        ?.data
+                        ?.videos
+                        ?.data
+                        ?: emptyList()
+                ) { video ->
+
+                    VideoPerformanceItem(
+                        video = video
+                    )
                 }
 
             }

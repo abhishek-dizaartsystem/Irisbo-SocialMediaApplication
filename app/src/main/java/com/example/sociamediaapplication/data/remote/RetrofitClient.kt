@@ -78,4 +78,8 @@ object RetrofitClient {
         retrofit.create(NotificationApi::class.java)
     }
 
+    val analyticsApi: AnalyticsApi by lazy {
+        retrofit.create(AnalyticsApi::class.java)
+    }
+
 }

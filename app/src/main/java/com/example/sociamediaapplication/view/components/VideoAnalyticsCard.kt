@@ -47,7 +47,6 @@ fun VideoAnalyticsCard(
                 .padding(12.dp)
         ) {
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -58,10 +57,10 @@ fun VideoAnalyticsCard(
                     tint = iconTint,
                     modifier = Modifier.size(20.dp)
                 )
-                Text(
-                    text = "12.3%",
-                    color = Green
-                )
+//                Text(
+//                    text = "12.3%",
+//                    color = Green
+//                )
             }
             Text(
                 text = value,

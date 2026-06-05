@@ -18,6 +18,7 @@ import com.example.sociamediaapplication.view.screens.MonetizationScreen
 import com.example.sociamediaapplication.view.screens.UploadVideoScreen
 import com.example.sociamediaapplication.view.screens.UserVideosScreen
 import com.example.sociamediaapplication.view.screens.VideoAnalyticsScreen
+import com.example.sociamediaapplication.viewmodel.AnalyticsViewModel
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.FriendViewModel
@@ -40,7 +41,8 @@ fun MenuNavGraph(
     mainNavController2: NavHostController,
     chatViewModel: ChatViewModel,
     videoViewModel: VideoViewModel,
-    notificationViewModel: NotificationViewModel
+    notificationViewModel: NotificationViewModel,
+    analyticsViewModel: AnalyticsViewModel
 ){
     val navController = rememberNavController()
 
@@ -173,7 +175,14 @@ fun MenuNavGraph(
             GamesScreen(navController)
         }
         composable(MenuRoutes.VideoAnalytics.route) {
-            VideoAnalyticsScreen(navController)
+
+            LaunchedEffect(Unit) {
+                analyticsViewModel.getChannelAnalytics()
+                analyticsViewModel.getAnalyticsDashboard()
+                analyticsViewModel.getTopVideos()
+            }
+
+            VideoAnalyticsScreen(navController, analyticsViewModel)
         }
         composable(MenuRoutes.AdvancedSettings.route) {
             AdvancedSettingsScreen(navController)
@@ -193,7 +202,8 @@ fun MenuNavGraph(
                 mainNavController2 = mainNavController2,
                 chatViewModel = chatViewModel,
                 videoViewModel = videoViewModel,
-                notificationViewModel = notificationViewModel
+                notificationViewModel = notificationViewModel,
+                analyticsViewModel = analyticsViewModel
             )
         }
 

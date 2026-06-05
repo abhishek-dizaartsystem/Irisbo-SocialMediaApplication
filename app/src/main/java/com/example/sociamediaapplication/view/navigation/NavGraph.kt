@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.sociamediaapplication.data.preferences.SocketManager
 import com.example.sociamediaapplication.data.preferences.TokenManager
+import com.example.sociamediaapplication.data.repository.AnalyticsRepository
 import com.example.sociamediaapplication.data.repository.AuthRepository
 import com.example.sociamediaapplication.data.repository.ChatRepository
 import com.example.sociamediaapplication.data.repository.GroupRepository
@@ -25,6 +26,7 @@ import com.example.sociamediaapplication.view.screens.AuthScreen
 import com.example.sociamediaapplication.view.screens.MainScreen
 import com.example.sociamediaapplication.view.screens.SplashScreen
 import com.example.sociamediaapplication.view.screens.StatusEditorScreen
+import com.example.sociamediaapplication.viewmodel.AnalyticsViewModel
 import com.example.sociamediaapplication.viewmodel.AuthUiState
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import com.example.sociamediaapplication.viewmodel.ChatViewModel
@@ -33,6 +35,7 @@ import com.example.sociamediaapplication.viewmodel.NotificationViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.StoryViewModel
 import com.example.sociamediaapplication.viewmodel.VideoViewModel
+import com.example.sociamediaapplication.viewmodel.factory.AnalyticsViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.AuthViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ChatViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.GroupViewModelFactory
@@ -41,8 +44,6 @@ import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.StoryViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.VideoViewModelFactory
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun AppNavGraph() {
@@ -82,6 +83,10 @@ fun AppNavGraph() {
     val notificationRepository = remember { NotificationRepository(tokenManager) }
     val notificationViewModelFactory = remember { NotificationViewModelFactory(notificationRepository) }
     val notificationViewModel: NotificationViewModel = viewModel(factory = notificationViewModelFactory)
+
+    val analyticsRepository = remember { AnalyticsRepository(tokenManager) }
+    val analyticsViewModelFactory = remember { AnalyticsViewModelFactory(analyticsRepository) }
+    val analyticsViewModel: AnalyticsViewModel = viewModel(factory = analyticsViewModelFactory)
 
 
     val reels by reelViewModel.reels.collectAsState()
@@ -176,7 +181,8 @@ fun AppNavGraph() {
                 storyViewModel = storyViewModel,
                 chatViewModel = chatViewModel,
                 videoViewModel = videoViewModel,
-                notificationViewModel = notificationViewModel
+                notificationViewModel = notificationViewModel,
+                analyticsViewModel = analyticsViewModel
             )
         }
 
