@@ -18,13 +18,13 @@ import com.example.sociamediaapplication.view.screens.VideosScreen
 import com.example.sociamediaapplication.viewmodel.VideoViewModel
 
 @Composable
-fun VideoNavGraph(videoViewModel: VideoViewModel) {
+fun VideoNavGraph(videoViewModel: VideoViewModel, initialVideoId: Int? = null) {
 
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = VideoRoutes.VideoCategory.route
+        startDestination = if (initialVideoId != null) VideoRoutes.Video.createRoute(initialVideoId) else VideoRoutes.VideoCategory.route
     ) {
         composable(VideoRoutes.VideoCategory.route){
             CategoryScreen(

@@ -34,11 +34,32 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.SociaMediaApplication"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Deep linking for irisbo.com and dizaartdemo.com -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:host="irisbo.com" />
+                <data android:host="www.irisbo.com" />
+                <data android:host="dizaartdemo.com" />
+                <data android:host="www.dizaartdemo.com" />
+                <data android:host="192.168.1.7" android:port="3000" />
+                <data android:host="192.168.1.7" />
+                <data android:pathPrefix="/post" />
+                <data android:pathPrefix="/profile" />
+                <data android:pathPrefix="/video" />
+                <data android:pathPrefix="/reel" />
+                <data android:pathPrefix="/event" />
             </intent-filter>
         </activity>
         <provider

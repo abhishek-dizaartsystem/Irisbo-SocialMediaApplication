@@ -46,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import coil.compose.AsyncImage
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.data.preferences.NavigationManager
 import com.example.sociamediaapplication.data.preferences.TokenManager
 import com.example.sociamediaapplication.data.remote.RetrofitClient
 import com.example.sociamediaapplication.data.repository.FriendRepository
@@ -57,6 +58,7 @@ import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.LLBlue
 import com.example.sociamediaapplication.view.components.HexagonShape
+import com.example.sociamediaapplication.view.navigation.AppDestination
 import com.example.sociamediaapplication.view.navigation.ChatsNavGraph
 import com.example.sociamediaapplication.view.navigation.MainRoutes
 import com.example.sociamediaapplication.view.navigation.MenuNavGraph
@@ -130,6 +132,58 @@ fun MainScreen(
     val profile by profileViewModel.profile.collectAsState()
 
     val isFullScreen by videoViewModel.isFullscreen.collectAsState()
+
+    LaunchedEffect(NavigationManager.pendingDestination) {
+        val destination = NavigationManager.pendingDestination ?: return@LaunchedEffect
+
+        when(destination) {
+
+            is AppDestination.Reel -> {
+
+                navController.navigate(
+                    MainRoutes.Reels.createRoute(destination.reelId)
+                )
+                NavigationManager.pendingDestination = null
+            }
+
+            is AppDestination.Video -> {
+
+                navController.navigate(
+                    MainRoutes.Category.createRoute(destination.videoId)
+                )
+                NavigationManager.pendingDestination = null
+            }
+
+            is AppDestination.Profile -> {
+
+                navController.navigate(
+                    MainRoutes.OtherProfile
+                        .createRoute(destination.userId)
+                )
+
+                NavigationManager.pendingDestination =
+                    null
+            }
+
+            is AppDestination.Post -> {
+
+                navController.navigate(
+                    MainRoutes.Home1.createRoute(destination.postId)
+                )
+                NavigationManager.pendingDestination = null
+            }
+
+            is AppDestination.Event -> {
+
+                navController.navigate(
+                    MainRoutes.Menu.createRoute(destination.eventId)
+                )
+                NavigationManager.pendingDestination = null
+            }
+
+            else -> {}
+        }
+    }
 
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile()
@@ -344,13 +398,23 @@ fun MainScreen(
             )
         ) {
 
-            composable(MainRoutes.Home1.route) {
+            composable(
+                route = MainRoutes.Home1.routePattern,
+                arguments = listOf(
+                    navArgument("postId") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    }
+                )
+            ) { backStackEntry ->
+                val postId = backStackEntry.arguments?.getInt("postId") ?: -1
                 val profile by profileViewModel.profile.collectAsState()
                 HomeScreen1(
                     postViewModel = postViewModel,
+                    targetPostId = postId,
                     onOtherProfileClick = {userId->
                         if(profile?.data?.id == userId){
-                            navController.navigate(MainRoutes.Menu.route)
+                            navController.navigate("menu")
                         }else{
                             navController.navigate(
                                 MainRoutes.OtherProfile.createRoute(userId)
@@ -365,7 +429,16 @@ fun MainScreen(
                 SearchScreen()
             }
 
-            composable(MainRoutes.Reels.route) {
+            composable(
+                route = MainRoutes.Reels.routePattern,
+                arguments = listOf(
+                    navArgument("reelId") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    }
+                )
+            ) { backStackEntry ->
+                val targetReelId = backStackEntry.arguments?.getInt("reelId") ?: -1
 
                 LaunchedEffect(Unit) {
                     reelViewModel.loadReels()
@@ -373,8 +446,18 @@ fun MainScreen(
 
                 val reels by reelViewModel.reels.collectAsState()
 
+                val startIndex = remember(reels, targetReelId) {
+                    if (targetReelId != -1) {
+                        val index = reels.indexOfFirst { it.id == targetReelId }
+                        if (index != -1) index else 0
+                    } else {
+                        0
+                    }
+                }
+
                 ReelsScreen(
                     reels = reels,
+                    startIndex = startIndex,
                     onLike = {
                         reelViewModel.toggleLike(it)
                     },
@@ -442,18 +525,38 @@ fun MainScreen(
                 )
             }
 
-            composable(MainRoutes.Category.route){
+            composable(
+                route = MainRoutes.Category.routePattern,
+                arguments = listOf(
+                    navArgument("videoId") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    }
+                )
+            ) { backStackEntry ->
+                val targetVideoId = backStackEntry.arguments?.getInt("videoId") ?: -1
 
                 LaunchedEffect(Unit) {
                     videoViewModel.fetchVideoCategories()
                 }
 
                 VideoNavGraph(
-                    videoViewModel = videoViewModel
+                    videoViewModel = videoViewModel,
+                    initialVideoId = if (targetVideoId != -1) targetVideoId else null
                 )
             }
 
-            composable(MainRoutes.Menu.route){
+            composable(
+                route = MainRoutes.Menu.routePattern,
+                arguments = listOf(
+                    navArgument("eventId") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    }
+                )
+            ) { backStackEntry ->
+                val targetEventId = backStackEntry.arguments?.getInt("eventId") ?: -1
+
                 MenuNavGraph(
                     mainNavController,
                     mainNavController2 = navController,
@@ -467,7 +570,8 @@ fun MainScreen(
                     videoViewModel = videoViewModel,
                     notificationViewModel = notificationViewModel,
                     analyticsViewModel = analyticsViewModel,
-                    monetizationViewModel = monetizationViewModel
+                    monetizationViewModel = monetizationViewModel,
+                    initialEventId = if (targetEventId != -1) targetEventId else null
                 )
             }
 

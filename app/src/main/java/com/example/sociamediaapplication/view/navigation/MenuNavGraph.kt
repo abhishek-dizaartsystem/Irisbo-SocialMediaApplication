@@ -44,7 +44,8 @@ fun MenuNavGraph(
     videoViewModel: VideoViewModel,
     notificationViewModel: NotificationViewModel,
     analyticsViewModel: AnalyticsViewModel,
-    monetizationViewModel: MonetizationViewModel
+    monetizationViewModel: MonetizationViewModel,
+    initialEventId: Int? = null
 ){
     val navController = rememberNavController()
 
@@ -54,7 +55,7 @@ fun MenuNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = "menu"
+        startDestination = if (initialEventId != null) MenuRoutes.Events.route else "menu"
     ){
         composable("menu"){
             MenuScreen(
@@ -168,7 +169,10 @@ fun MenuNavGraph(
             )
         }
         composable(MenuRoutes.Events.route) {
-            EventNavGraph(bNavController = navController,)
+            EventNavGraph(
+                bNavController = navController,
+                initialEventId = initialEventId
+            )
         }
         composable(MenuRoutes.Jobs.route) {
             JobsNavGraph(navController)

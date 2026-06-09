@@ -18,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +62,14 @@ fun ReelsScreen(
     }
 
     val pagerState = rememberPagerState(initialPage = startIndex, pageCount =  { reels.size })
+    var hasScrolled by remember(startIndex) { mutableStateOf(false) }
+
+    LaunchedEffect(startIndex, reels) {
+        if (!hasScrolled && startIndex in reels.indices) {
+            pagerState.scrollToPage(startIndex)
+            hasScrolled = true
+        }
+    }
 
     VerticalPager(
         state = pagerState,

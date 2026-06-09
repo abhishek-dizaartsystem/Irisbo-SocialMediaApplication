@@ -103,7 +103,7 @@ fun GroupsNavGraph(
                 },
                 onOtherProfileClick = {userId->
                     if(profile?.data?.id == userId){
-                        mainNavController2.navigate(MainRoutes.Menu.route)
+                        mainNavController2.navigate("menu")
                     }else{
                         mainNavController2.navigate(
                             MainRoutes.OtherProfile.createRoute(userId)

@@ -20,7 +20,7 @@ import com.example.sociamediaapplication.viewmodel.EventViewModel
 import com.example.sociamediaapplication.viewmodel.factory.EventViewModelFactory
 
 @Composable
-fun EventNavGraph(bNavController: NavHostController) {
+fun EventNavGraph(bNavController: NavHostController, initialEventId: Int? = null) {
 
     val navController = rememberNavController()
 
@@ -34,7 +34,7 @@ fun EventNavGraph(bNavController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = EventRoutes.Events.route
+        startDestination = if (initialEventId != null) EventRoutes.Event.createRoute(initialEventId, false) else EventRoutes.Events.route
     ) {
         composable(EventRoutes.Events.route){
 

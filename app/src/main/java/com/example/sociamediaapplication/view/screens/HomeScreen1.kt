@@ -14,19 +14,33 @@ import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.view.components.Post
 
+import androidx.compose.foundation.lazy.rememberLazyListState
+
 @Composable
 fun HomeScreen1(
     postViewModel: PostViewModel,
+    targetPostId: Int = -1,
     onOtherProfileClick: (Int) -> Unit = {}
 ) {
 
     val posts by postViewModel.globalPosts.collectAsState()
+    val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
         postViewModel.loadGlobalPosts()
     }
 
+    LaunchedEffect(posts, targetPostId) {
+        if (targetPostId != -1 && posts.isNotEmpty()) {
+            val index = posts.indexOfFirst { it.id == targetPostId }
+            if (index != -1) {
+                listState.scrollToItem(index)
+            }
+        }
+    }
+
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .padding(16.dp)
     ) {

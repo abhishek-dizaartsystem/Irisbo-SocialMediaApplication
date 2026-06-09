@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.sociamediaapplication.MainActivity
 import com.example.sociamediaapplication.R
@@ -21,6 +22,30 @@ class FCMService : FirebaseMessagingService() {
         // resend updated token to backend
     }
 
+//    override fun onMessageReceived(
+//        message: RemoteMessage
+//    ) {
+//
+//        super.onMessageReceived(message)
+//
+//        val title =
+//            message.notification?.title
+//                ?: "Notification"
+//
+//        val body =
+//            message.notification?.body
+//                ?: ""
+//
+//        val conversationId =
+//            message.data["conversationId"]
+//
+//        showNotification(
+//            title,
+//            body,
+//            conversationId
+//        )
+//    }
+
     override fun onMessageReceived(
         message: RemoteMessage
     ) {
@@ -35,20 +60,25 @@ class FCMService : FirebaseMessagingService() {
             message.notification?.body
                 ?: ""
 
-        val conversationId =
-            message.data["conversationId"]
+        val entityType =
+            message.data["entity_type"]
+
+        val entityId =
+            message.data["entity_id"]
 
         showNotification(
             title,
             body,
-            conversationId
+            entityType,
+            entityId
         )
     }
 
     private fun showNotification(
         title: String,
         body: String,
-        conversationId: String?
+        entityType: String?,
+        entityId: String?
     ) {
 
         val channelId =
@@ -71,16 +101,24 @@ class FCMService : FirebaseMessagingService() {
         }
 
         val intent =
-            Intent(this, MainActivity::class.java)
+            Intent(
+                this,
+                MainActivity::class.java
+            )
 
         intent.putExtra(
-            "conversationId",
-            conversationId
+            "entity_type",
+            entityType
+        )
+
+        intent.putExtra(
+            "entity_id",
+            entityId
         )
 
         intent.flags =
-            Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+            Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP
 
         val pendingIntent =
             PendingIntent.getActivity(
@@ -106,6 +144,11 @@ class FCMService : FirebaseMessagingService() {
         manager.notify(
             System.currentTimeMillis().toInt(),
             notification
+        )
+
+        Log.d(
+            "FCM_DEBUG",
+            "type=$entityType id=$entityId"
         )
     }
 }
