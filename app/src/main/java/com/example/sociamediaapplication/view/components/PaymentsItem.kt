@@ -16,13 +16,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.sociamediaapplication.data.utils.formatToDate2
+import com.example.sociamediaapplication.data.utils.formatToPostTime
+import com.example.sociamediaapplication.model.response.Payout
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LBlue
 import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
-fun PaymentsItem(){
+fun PaymentsItem(
+    payout: Payout
+){
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -40,11 +45,12 @@ fun PaymentsItem(){
         ) {
             Column() {
                 Text(
-                    text = "$450.00",
+                    text = "₹${payout.amount}",
                     fontSize = 18.sp,
                 )
+
                 Text(
-                    text = "Jan 15, 2025",
+                    text = formatToDate2(payout.paid_at ?: payout.created_at),
                     color = GreyTxt
                 )
             }
@@ -56,7 +62,9 @@ fun PaymentsItem(){
                     )
             ) {
                 Text(
-                    text = "Completed",
+                    text = payout.status.replaceFirstChar {
+                        it.uppercase()
+                    },
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                     color = Black
                 )
@@ -68,5 +76,20 @@ fun PaymentsItem(){
 @Preview(showBackground = true)
 @Composable
 fun PaymentsItemPreview(){
-    PaymentsItem()
+    PaymentsItem(
+        payout = Payout(
+            0,
+            0,
+            "",
+            0,
+            0.0,
+            "",
+            "",
+            batch_status = "TODO()",
+            failure_reason = "TODO()",
+            processed_at = "TODO()",
+            paid_at = "TODO()",
+            created_at = "TODO()",
+        )
+    )
 }

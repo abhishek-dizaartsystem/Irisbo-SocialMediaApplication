@@ -14,12 +14,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.sociamediaapplication.model.response.EarningData
 import com.example.sociamediaapplication.ui.theme.GreyTxt
 import com.example.sociamediaapplication.ui.theme.LGreen
 import com.example.sociamediaapplication.ui.theme.White
 
 @Composable
-fun EarningsItem(){
+fun EarningsItem(
+    earning: EarningData
+){
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -37,16 +40,19 @@ fun EarningsItem(){
         ) {
             Column() {
                 Text(
-                    text = "Morning Routine 2025",
+                    text = "Order #${earning.order_id}",
                     fontSize = 18.sp,
                 )
+
                 Text(
-                    text = "42.3K views",
+                    text = earning.earning_status.replaceFirstChar {
+                        it.uppercase()
+                    },
                     color = GreyTxt
                 )
             }
             Text(
-                text = "$125.50",
+                text = "₹${earning.seller_net_amount}",
                 color = LGreen,
                 fontSize = 18.sp
             )
@@ -57,5 +63,31 @@ fun EarningsItem(){
 @Preview(showBackground = true)
 @Composable
 fun EarningsItemPreview(){
-    EarningsItem()
+    EarningsItem(
+        earning = EarningData(
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            platform_gross_amount = 0,
+            gateway_fee = 1f,
+            seller_fee_share = 1f,
+            platform_fee_share = 1f,
+            seller_net_amount = 1f,
+            platform_net_amount = 1f,
+            earning_status = "TODO()",
+            payout_eligible_at = "TODO()",
+            payment_status = "TODO()",
+            order_status = "TODO()",
+            created_at = "TODO()",
+        )
+    )
 }

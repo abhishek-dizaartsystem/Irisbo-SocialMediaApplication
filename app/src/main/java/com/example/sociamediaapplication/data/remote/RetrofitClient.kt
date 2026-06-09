@@ -82,4 +82,7 @@ object RetrofitClient {
         retrofit.create(AnalyticsApi::class.java)
     }
 
+    val monetizationApi: MonetizationApi by lazy {
+        retrofit.create(MonetizationApi::class.java)
+    }
 }

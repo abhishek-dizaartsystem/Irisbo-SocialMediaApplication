@@ -66,6 +66,7 @@ import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.FriendViewModel
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
+import com.example.sociamediaapplication.viewmodel.MonetizationViewModel
 import com.example.sociamediaapplication.viewmodel.NotificationViewModel
 import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
@@ -89,7 +90,8 @@ fun MainScreen(
     chatViewModel: ChatViewModel = viewModel(),
     videoViewModel: VideoViewModel = viewModel(),
     notificationViewModel: NotificationViewModel = viewModel(),
-    analyticsViewModel: AnalyticsViewModel = viewModel()
+    analyticsViewModel: AnalyticsViewModel = viewModel(),
+    monetizationViewModel: MonetizationViewModel = viewModel()
 ){
 
     val navController = rememberNavController()
@@ -464,7 +466,8 @@ fun MainScreen(
                     chatViewModel = chatViewModel,
                     videoViewModel = videoViewModel,
                     notificationViewModel = notificationViewModel,
-                    analyticsViewModel = analyticsViewModel
+                    analyticsViewModel = analyticsViewModel,
+                    monetizationViewModel = monetizationViewModel
                 )
             }
 

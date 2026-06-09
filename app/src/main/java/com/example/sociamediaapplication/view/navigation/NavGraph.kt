@@ -17,6 +17,7 @@ import com.example.sociamediaapplication.data.repository.AnalyticsRepository
 import com.example.sociamediaapplication.data.repository.AuthRepository
 import com.example.sociamediaapplication.data.repository.ChatRepository
 import com.example.sociamediaapplication.data.repository.GroupRepository
+import com.example.sociamediaapplication.data.repository.MonetizationRepository
 import com.example.sociamediaapplication.data.repository.NotificationRepository
 import com.example.sociamediaapplication.data.repository.ReelRepository
 import com.example.sociamediaapplication.data.repository.StoryRepository
@@ -31,6 +32,7 @@ import com.example.sociamediaapplication.viewmodel.AuthUiState
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.GroupViewModel
+import com.example.sociamediaapplication.viewmodel.MonetizationViewModel
 import com.example.sociamediaapplication.viewmodel.NotificationViewModel
 import com.example.sociamediaapplication.viewmodel.ReelsViewModel
 import com.example.sociamediaapplication.viewmodel.StoryViewModel
@@ -39,6 +41,7 @@ import com.example.sociamediaapplication.viewmodel.factory.AnalyticsViewModelFac
 import com.example.sociamediaapplication.viewmodel.factory.AuthViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ChatViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.GroupViewModelFactory
+import com.example.sociamediaapplication.viewmodel.factory.MonetizationViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.NotificationViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.ReelsViewModelFactory
 import com.example.sociamediaapplication.viewmodel.factory.StoryViewModelFactory
@@ -88,6 +91,9 @@ fun AppNavGraph() {
     val analyticsViewModelFactory = remember { AnalyticsViewModelFactory(analyticsRepository) }
     val analyticsViewModel: AnalyticsViewModel = viewModel(factory = analyticsViewModelFactory)
 
+    val monetizationRepository = remember { MonetizationRepository(tokenManager) }
+    val monetizationViewModelFactory = remember { MonetizationViewModelFactory(monetizationRepository) }
+    val monetizationViewModel: MonetizationViewModel = viewModel(factory = monetizationViewModelFactory)
 
     val reels by reelViewModel.reels.collectAsState()
     val loading by reelViewModel.loading.collectAsState()
@@ -182,7 +188,8 @@ fun AppNavGraph() {
                 chatViewModel = chatViewModel,
                 videoViewModel = videoViewModel,
                 notificationViewModel = notificationViewModel,
-                analyticsViewModel = analyticsViewModel
+                analyticsViewModel = analyticsViewModel,
+                monetizationViewModel = monetizationViewModel
             )
         }
 

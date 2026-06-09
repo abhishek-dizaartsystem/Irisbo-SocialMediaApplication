@@ -22,6 +22,7 @@ import com.example.sociamediaapplication.viewmodel.AnalyticsViewModel
 import com.example.sociamediaapplication.viewmodel.AuthViewModel
 import com.example.sociamediaapplication.viewmodel.ChatViewModel
 import com.example.sociamediaapplication.viewmodel.FriendViewModel
+import com.example.sociamediaapplication.viewmodel.MonetizationViewModel
 import com.example.sociamediaapplication.viewmodel.NotificationViewModel
 import com.example.sociamediaapplication.viewmodel.PostViewModel
 import com.example.sociamediaapplication.viewmodel.ProfileViewModel
@@ -42,7 +43,8 @@ fun MenuNavGraph(
     chatViewModel: ChatViewModel,
     videoViewModel: VideoViewModel,
     notificationViewModel: NotificationViewModel,
-    analyticsViewModel: AnalyticsViewModel
+    analyticsViewModel: AnalyticsViewModel,
+    monetizationViewModel: MonetizationViewModel
 ){
     val navController = rememberNavController()
 
@@ -188,7 +190,22 @@ fun MenuNavGraph(
             AdvancedSettingsScreen(navController)
         }
         composable(MenuRoutes.VideoMonetization.route) {
-            MonetizationScreen(navController)
+
+            LaunchedEffect(Unit){
+
+                monetizationViewModel.getWalletSummary()
+
+                monetizationViewModel.getOrderwiseEarnings()
+
+                monetizationViewModel.fetchPayoutHistory()
+
+                monetizationViewModel.getTransactionHistory()
+            }
+
+            MonetizationScreen(
+                navController,
+                monetizationViewModel = monetizationViewModel
+            )
         }
         composable(MenuRoutes.Profile.route) {
             ProfileNavGraph(
@@ -203,7 +220,8 @@ fun MenuNavGraph(
                 chatViewModel = chatViewModel,
                 videoViewModel = videoViewModel,
                 notificationViewModel = notificationViewModel,
-                analyticsViewModel = analyticsViewModel
+                analyticsViewModel = analyticsViewModel,
+                monetizationViewModel = monetizationViewModel
             )
         }
 
