@@ -74,43 +74,18 @@ class MainActivity : ComponentActivity(), PaymentResultWithDataListener {
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+
+        handleIntent(intent)
+    }
+
     override fun onPaymentError(
         code: Int,
         response: String?,
         paymentData: PaymentData?
     ) {
         Toast.makeText(this, "Payment Failed: $response", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        handleIntent(intent)
-
-        MobileAds.initialize(this)
-        enableEdgeToEdge()
-
-        // 🔥 NOTIFICATION PERMISSION
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(
-                    Manifest.permission.POST_NOTIFICATIONS
-                ),
-                1001
-            )
-        }
-
-        setContent {
-            AppNavGraph()
-        }
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-
-        handleIntent(intent)
     }
 
     private fun handleIntent(intent: Intent?) {
@@ -159,6 +134,36 @@ class MainActivity : ComponentActivity(), PaymentResultWithDataListener {
             "Parsed pendingDestination: ${NavigationManager.pendingDestination}"
         )
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        handleIntent(intent)
+
+        MobileAds.initialize(this)
+        enableEdgeToEdge()
+
+        // 🔥 NOTIFICATION PERMISSION
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.POST_NOTIFICATIONS
+                ),
+                1001
+            )
+        }
+
+        setContent {
+            AppNavGraph()
+        }
+    }
+
+
+
+
+
 }
 
 
