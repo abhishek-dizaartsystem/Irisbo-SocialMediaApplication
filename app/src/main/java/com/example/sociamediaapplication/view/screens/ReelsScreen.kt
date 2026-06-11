@@ -35,9 +35,15 @@ import com.example.sociamediaapplication.model.response.Reel
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.DTransparentBlack
 import com.example.sociamediaapplication.ui.theme.White
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
+import com.example.sociamediaapplication.model.response.VideoComment
+import com.example.sociamediaapplication.view.components.CommentSection
 import com.example.sociamediaapplication.view.components.ReelDetailComponent
 import com.example.sociamediaapplication.view.components.ReelItem
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReelsScreen(
     loading: Boolean = false,
@@ -46,10 +52,17 @@ fun ReelsScreen(
     onLike: (Reel) -> Unit = {},
     onSave: (Reel) -> Unit = {},
     profileImage: String? = null,
-    userName: String? = null
+    userName: String? = null,
+    comments: List<VideoComment> = emptyList(),
+    onCommentsRequested: (Int) -> Unit = {},
+    onAddComment: (Int, String, Int?) -> Unit = { _, _, _ -> },
+    onLikeComment: (Int, Int) -> Unit = { _, _ -> },
+    onDislikeComment: (Int, Int) -> Unit = { _, _ -> }
 ) {
 
     var isMuted by remember { mutableStateOf(false) }
+    var showCommentSection by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     if (loading && reels.isEmpty()) {
         Box(
@@ -140,7 +153,9 @@ fun ReelsScreen(
                             fontSize = 16.sp
                         )
                         IconButton(
-                            onClick = {},
+                            onClick = {
+                                showCommentSection = !showCommentSection
+                            },
                             colors = IconButtonDefaults.iconButtonColors(containerColor = DTransparentBlack),
                             modifier = Modifier.size(45.dp)
                         ) {
@@ -194,6 +209,33 @@ fun ReelsScreen(
 
         }
 
+    }
+
+    if (showCommentSection) {
+        val currentReel = reels.getOrNull(pagerState.currentPage)
+        if (currentReel != null) {
+            LaunchedEffect(currentReel.id) {
+                onCommentsRequested(currentReel.id)
+            }
+            ModalBottomSheet(
+                onDismissRequest = { showCommentSection = false },
+                sheetState = sheetState,
+                containerColor = White
+            ) {
+                CommentSection(
+                    comments = comments,
+                    onAddComment = { content, parentId ->
+                        onAddComment(currentReel.id, content, parentId)
+                    },
+                    onLikeComment = { commentId ->
+                        onLikeComment(currentReel.id, commentId)
+                    },
+                    onDislikeComment = { commentId ->
+                        onDislikeComment(currentReel.id, commentId)
+                    }
+                )
+            }
+        }
     }
 }
 

@@ -14,12 +14,12 @@ import androidx.compose.ui.unit.dp
 import com.example.sociamediaapplication.data.utils.formatToPostTime
 import com.example.sociamediaapplication.model.response.VideoComment
 import com.example.sociamediaapplication.ui.theme.GreyTxt
-import com.example.sociamediaapplication.viewmodel.VideoViewModel
 
 @Composable
 fun CommentThread(
     comment: VideoComment,
-    videoViewModel: VideoViewModel,
+    onLiked: (Int) -> Unit,
+    onDisliked: (Int) -> Unit,
     onReply: (VideoComment) -> Unit,
     depth: Int = 0
 ) {
@@ -48,15 +48,11 @@ fun CommentThread(
             ),
 
             onLiked = {
-                videoViewModel.toggleCommentLike(
-                    comment.id
-                )
+                onLiked(comment.id)
             },
 
             onDisliked = {
-                videoViewModel.toggleCommentDislike(
-                    comment.id
-                )
+                onDisliked(comment.id)
             },
 
             onReplyClicked = {
@@ -93,7 +89,8 @@ fun CommentThread(
 
                 CommentThread(
                     comment = reply,
-                    videoViewModel = videoViewModel,
+                    onLiked = onLiked,
+                    onDisliked = onDisliked,
                     onReply = onReply,
                     depth = depth + 1
                 )

@@ -59,6 +59,7 @@ import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.data.utils.correctUrl2
 import com.example.sociamediaapplication.data.utils.getFrameFromUrl
 import com.example.sociamediaapplication.data.utils.isVideo
+import com.example.sociamediaapplication.model.response.VideoComment
 import com.example.sociamediaapplication.model.response.PostResponse
 import com.example.sociamediaapplication.model.response.Reel
 import com.example.sociamediaapplication.ui.theme.BackgroundColor
@@ -90,7 +91,17 @@ fun OtherProfileScreen(
     onReelSave: (Reel) -> Unit = {},
     onPostLike: (PostResponse) -> Unit = {},
     onPostSave: (PostResponse) -> Unit = {},
-    userId: Int = 0
+    userId: Int = 0,
+    comments: List<VideoComment> = emptyList(),
+    onCommentsRequested: (Int) -> Unit = {},
+    onAddComment: (Int, String, Int?) -> Unit = { _, _, _ -> },
+    onLikeComment: (Int, Int) -> Unit = { _, _ -> },
+    onDislikeComment: (Int, Int) -> Unit = { _, _ -> },
+    reelComments: List<VideoComment> = emptyList(),
+    onReelCommentsRequested: (Int) -> Unit = {},
+    onReelAddComment: (Int, String, Int?) -> Unit = { _, _, _ -> },
+    onReelLikeComment: (Int, Int) -> Unit = { _, _ -> },
+    onReelDislikeComment: (Int, Int) -> Unit = { _, _ -> }
 ) {
 
     var postSelected by remember { mutableStateOf(true) }
@@ -594,6 +605,11 @@ fun OtherProfileScreen(
                 isLiked = post.user_reaction == "like",
                 profileImageUrl = post.profile_image,
                 createdAt = post.created_at,
+                comments = comments,
+                onCommentsRequested = { onCommentsRequested(post.id) },
+                onAddComment = { content, parentId -> onAddComment(post.id, content, parentId) },
+                onLikeComment = { commentId -> onLikeComment(post.id, commentId) },
+                onDislikeComment = { commentId -> onDislikeComment(post.id, commentId) }
             )
         }
     }
@@ -609,7 +625,12 @@ fun OtherProfileScreen(
             onLike = onReelLike,
             onSave = onReelSave,
             profileImage = profile?.data?.profile_image,
-            userName = profile?.data?.username
+            userName = profile?.data?.username,
+            comments = reelComments,
+            onCommentsRequested = onReelCommentsRequested,
+            onAddComment = onReelAddComment,
+            onLikeComment = onReelLikeComment,
+            onDislikeComment = onReelDislikeComment
         )
 
 

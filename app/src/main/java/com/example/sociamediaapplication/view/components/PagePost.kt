@@ -29,6 +29,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.example.sociamediaapplication.R
+import com.example.sociamediaapplication.model.response.VideoComment
 import com.example.sociamediaapplication.ui.theme.TTransparentWhite
 import com.example.sociamediaapplication.ui.theme.White
 
@@ -59,7 +61,12 @@ fun PagePost(
     onLiked: () -> Unit = {},
     onFollow: () -> Unit = {},
     isLiked: Boolean = false,
-    onPostProfileClick: ()-> Unit = {}
+    onPostProfileClick: ()-> Unit = {},
+    comments: List<VideoComment> = emptyList(),
+    onCommentsRequested: () -> Unit = {},
+    onAddComment: (String, Int?) -> Unit = { _, _ -> },
+    onLikeComment: (Int) -> Unit = {},
+    onDislikeComment: (Int) -> Unit = {}
 ){
     val size = mediaList?.size
 
@@ -285,12 +292,20 @@ fun PagePost(
     }
 
     if(showCommentSection){
+        LaunchedEffect(Unit) {
+            onCommentsRequested()
+        }
         ModalBottomSheet(
             onDismissRequest = {showCommentSection = false},
             sheetState = sheetState,
             containerColor = White
         ) {
-            CommentSection()
+            CommentSection(
+                comments = comments,
+                onAddComment = onAddComment,
+                onLikeComment = onLikeComment,
+                onDislikeComment = onDislikeComment
+            )
         }
     }
     if (showSendSection) {

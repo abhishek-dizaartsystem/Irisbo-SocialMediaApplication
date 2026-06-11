@@ -24,6 +24,7 @@ fun HomeScreen1(
 ) {
 
     val posts by postViewModel.globalPosts.collectAsState()
+    val postComments by postViewModel.postComments.collectAsState()
     val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
@@ -63,7 +64,12 @@ fun HomeScreen1(
                 createdAt = post.created_at,
                 onOtherProfileClick = {
                     onOtherProfileClick(post.user_id)
-                }
+                },
+                comments = postComments?.comments ?: emptyList(),
+                onCommentsRequested = { postViewModel.fetchPostComments(post.id) },
+                onAddComment = { content, parentId -> postViewModel.commentOnPost(post.id, content, parentId) },
+                onLikeComment = { commentId -> postViewModel.toggleCommentLike(post.id, commentId) },
+                onDislikeComment = { commentId -> postViewModel.toggleCommentDislike(post.id, commentId) }
             )
 
             Spacer(modifier = Modifier.height(12.dp))

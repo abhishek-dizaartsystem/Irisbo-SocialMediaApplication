@@ -55,6 +55,8 @@ import com.example.sociamediaapplication.R
 import com.example.sociamediaapplication.data.utils.correctUrl
 import com.example.sociamediaapplication.data.utils.formatPostTime
 import com.example.sociamediaapplication.data.utils.isVideo
+import androidx.compose.runtime.LaunchedEffect
+import com.example.sociamediaapplication.model.response.VideoComment
 import com.example.sociamediaapplication.ui.theme.Black
 import com.example.sociamediaapplication.ui.theme.Blue
 import com.example.sociamediaapplication.ui.theme.TTransparentWhite
@@ -82,7 +84,12 @@ fun Post(
     profileImageUrl: String? = null,
     createdAt: String = "",
     type: String = "post",
-    onOtherProfileClick: () -> Unit = {}
+    onOtherProfileClick: () -> Unit = {},
+    comments: List<VideoComment> = emptyList(),
+    onCommentsRequested: () -> Unit = {},
+    onAddComment: (String, Int?) -> Unit = { _, _ -> },
+    onLikeComment: (Int) -> Unit = {},
+    onDislikeComment: (Int) -> Unit = {}
 ){
 
     val sincePosted = remember(createdAt) {
@@ -484,12 +491,20 @@ fun Post(
     }
 
     if(showCommentSection){
+        LaunchedEffect(Unit) {
+            onCommentsRequested()
+        }
         ModalBottomSheet(
             onDismissRequest = {showCommentSection = false},
             sheetState = sheetState,
             containerColor = White
         ) {
-            CommentSection()
+            CommentSection(
+                comments = comments,
+                onAddComment = onAddComment,
+                onLikeComment = onLikeComment,
+                onDislikeComment = onDislikeComment
+            )
         }
     }
     if (showSendSection) {

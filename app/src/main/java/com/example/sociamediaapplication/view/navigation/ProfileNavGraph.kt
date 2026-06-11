@@ -49,9 +49,11 @@ fun ProfileNavGraph(
     val tokenManager = remember { TokenManager(context) }
 
     val posts by postViewModel.posts.collectAsState()
+    val postComments by postViewModel.postComments.collectAsState()
 
 
     val myReels by reelViewModel.myReels.collectAsState()
+    val reelComments by reelViewModel.reelComments.collectAsState()
 
     val profile by profileViewModel.profile.collectAsState()
 
@@ -92,7 +94,17 @@ fun ProfileNavGraph(
                 onPostSave = {
                     postViewModel.toggleSave(it, profile?.data?.id ?: 0)
                 },
-                myReels = myReels
+                myReels = myReels,
+                comments = postComments?.comments ?: emptyList(),
+                onCommentsRequested = { postId -> postViewModel.fetchPostComments(postId) },
+                onAddComment = { postId, content, parentId -> postViewModel.commentOnPost(postId, content, parentId) },
+                onLikeComment = { postId, commentId -> postViewModel.toggleCommentLike(postId, commentId) },
+                onDislikeComment = { postId, commentId -> postViewModel.toggleCommentDislike(postId, commentId) },
+                reelComments = reelComments?.comments ?: emptyList(),
+                onReelCommentsRequested = { reelId -> reelViewModel.fetchReelComments(reelId) },
+                onReelAddComment = { reelId, content, parentId -> reelViewModel.commentOnReel(reelId, content, parentId) },
+                onReelLikeComment = { reelId, commentId -> reelViewModel.toggleCommentLike(reelId, commentId) },
+                onReelDislikeComment = { reelId, commentId -> reelViewModel.toggleCommentDislike(reelId, commentId) }
             )
         }
         composable(ProfileRoutes.EditProfile.route){

@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+import com.example.sociamediaapplication.model.response.VideoCommentsResponse
+import com.example.sociamediaapplication.model.response.VideoComment
+import kotlinx.coroutines.flow.asStateFlow
+
 class PostViewModel(
     private val repository: PostRepository
 ) : ViewModel() {
@@ -274,11 +278,147 @@ class PostViewModel(
                         )
                     }else it
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 loadPosts(id)
             }
         }
     }
 
+    private val _postComments = MutableStateFlow<VideoCommentsResponse?>(null)
+    val postComments = _postComments.asStateFlow()
+
+    fun fetchPostComments(postId: Int) {
+        viewModelScope.launch {
+            try {
+                _postComments.value = repository.fetchComments(postId)
+            } catch (e: Exception) {
+                Log.e("PostViewModel_DEBUG", e.message.toString())
+            }
+        }
+    }
+
+    fun commentOnPost(postId: Int, content: String, parentId: Int? = null) {
+        viewModelScope.launch {
+            try {
+                repository.commentOnPost(postId, content, parentId)
+                fetchPostComments(postId)
+            } catch (e: Exception) {
+                Log.e("PostViewModel_DEBUG", e.message.toString())
+            }
+        }
+    }
+
+    private fun findComment(comments: List<VideoComment>, commentId: Int): VideoComment? {
+        for (comment in comments) {
+            if (comment.id == commentId) return comment
+            val found = findComment(comment.replies, commentId)
+            if (found != null) return found
+        }
+        return null
+    }
+
+    private fun updateCommentLike(comments: List<VideoComment>, commentId: Int): List<VideoComment> {
+        return comments.map { comment ->
+            if (comment.id == commentId) {
+                when (comment.user_reaction) {
+                    "like" -> {
+                        comment.copy(
+                            user_reaction = null,
+                            likes = (comment.likes - 1).coerceAtLeast(0)
+                        )
+                    }
+                    "dislike" -> {
+                        comment.copy(
+                            user_reaction = "like",
+                            likes = comment.likes + 1,
+                            dislikes = (comment.dislikes - 1).coerceAtLeast(0)
+                        )
+                    }
+                    else -> {
+                        comment.copy(
+                            user_reaction = "like",
+                            likes = comment.likes + 1
+                        )
+                    }
+                }
+            } else {
+                comment.copy(replies = updateCommentLike(comment.replies, commentId))
+            }
+        }
+    }
+
+    private fun updateCommentDislike(comments: List<VideoComment>, commentId: Int): List<VideoComment> {
+        return comments.map { comment ->
+            if (comment.id == commentId) {
+                when (comment.user_reaction) {
+                    "dislike" -> {
+                        comment.copy(
+                            user_reaction = null,
+                            dislikes = (comment.dislikes - 1).coerceAtLeast(0)
+                        )
+                    }
+                    "like" -> {
+                        comment.copy(
+                            user_reaction = "dislike",
+                            dislikes = comment.dislikes + 1,
+                            likes = (comment.likes - 1).coerceAtLeast(0)
+                        )
+                    }
+                    else -> {
+                        comment.copy(
+                            user_reaction = "dislike",
+                            dislikes = comment.dislikes + 1
+                        )
+                    }
+                }
+            } else {
+                comment.copy(replies = updateCommentDislike(comment.replies, commentId))
+            }
+        }
+    }
+
+    fun toggleCommentLike(postId: Int, commentId: Int) {
+        val currentComments = _postComments.value ?: return
+        val oldComments = currentComments.comments
+        val updatedComments = updateCommentLike(oldComments, commentId)
+
+        _postComments.value = currentComments.copy(comments = updatedComments)
+
+        val previousComment = findComment(oldComments, commentId) ?: return
+
+        viewModelScope.launch {
+            try {
+                when (previousComment.user_reaction) {
+                    "like" -> repository.removeCommentReaction(commentId)
+                    else -> repository.likeComment(commentId)
+                }
+            } catch (e: Exception) {
+                _postComments.value = currentComments
+                Log.e("PostViewModel_DEBUG", e.message.toString())
+            }
+        }
+    }
+
+    fun toggleCommentDislike(postId: Int, commentId: Int) {
+        val currentComments = _postComments.value ?: return
+        val oldComments = currentComments.comments
+        val updatedComments = updateCommentDislike(oldComments, commentId)
+
+        _postComments.value = currentComments.copy(comments = updatedComments)
+
+        val previousComment = findComment(oldComments, commentId) ?: return
+
+        viewModelScope.launch {
+            try {
+                when (previousComment.user_reaction) {
+                    "dislike" -> repository.removeCommentReaction(commentId)
+                    else -> repository.dislikeComment(commentId)
+                }
+            } catch (e: Exception) {
+                _postComments.value = currentComments
+                Log.e("PostViewModel_DEBUG", e.message.toString())
+            }
+        }
+    }
 }
 

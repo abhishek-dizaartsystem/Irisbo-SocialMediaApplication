@@ -58,6 +58,7 @@ fun HomeScreen2(
 
 
     val posts by postViewModel.globalPosts.collectAsState()
+    val postComments by postViewModel.postComments.collectAsState()
 
     val profile by profileViewModel.profile.collectAsState()
 
@@ -206,7 +207,12 @@ fun HomeScreen2(
                     isLiked = post.user_reaction == "like",
                     profileImageUrl = correctUrl(post.profile_image),
                     createdAt = post.created_at,
-                    onOtherProfileClick = { onOtherProfileClick(post.user_id) }
+                    onOtherProfileClick = { onOtherProfileClick(post.user_id) },
+                    comments = postComments?.comments ?: emptyList(),
+                    onCommentsRequested = { postViewModel.fetchPostComments(post.id) },
+                    onAddComment = { content, parentId -> postViewModel.commentOnPost(post.id, content, parentId) },
+                    onLikeComment = { commentId -> postViewModel.toggleCommentLike(post.id, commentId) },
+                    onDislikeComment = { commentId -> postViewModel.toggleCommentDislike(post.id, commentId) }
                 )
             }
 

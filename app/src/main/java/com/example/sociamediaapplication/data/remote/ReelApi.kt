@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.data.remote
 
+import com.example.sociamediaapplication.model.request.AddCommentRequest
 import com.example.sociamediaapplication.model.request.PostReactionRequest
 import com.example.sociamediaapplication.model.request.UpdateReelRequest
 import com.example.sociamediaapplication.model.response.BasicResponse
@@ -9,6 +10,7 @@ import com.example.sociamediaapplication.model.response.LikeReelResponse
 import com.example.sociamediaapplication.model.response.LikeResponse
 import com.example.sociamediaapplication.model.response.ReelListResponse
 import com.example.sociamediaapplication.model.response.SaveResponse
+import com.example.sociamediaapplication.model.response.VideoReactionRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -20,6 +22,8 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
+
+import com.example.sociamediaapplication.model.response.VideoCommentsResponse
 
 interface ReelApi {
     @GET("api/reels")
@@ -76,4 +80,30 @@ interface ReelApi {
         @Header("Authorization") token: String,
         @Path("userId") userId: Int
     ): ReelListResponse
+
+    @GET("api/reels/{reelId}/comments")
+    suspend fun getComments(
+        @Header("Authorization") token: String,
+        @Path("reelId") reelId: Int
+    ): VideoCommentsResponse
+
+    @POST("api/reels/{reelId}/comments")
+    suspend fun createComment(
+        @Header("Authorization") token: String,
+        @Path("reelId") reelId: Int,
+        @Body request: AddCommentRequest
+    )
+
+    @POST("api/comments/{commentId}/react")
+    suspend fun reactToComment(
+        @Header("Authorization") token: String,
+        @Path("commentId") commentId: Int,
+        @Body request: VideoReactionRequest
+    )
+
+    @DELETE("api/comments/{commentId}/react")
+    suspend fun removeCommentReaction(
+        @Header("Authorization") token: String,
+        @Path("commentId") videoId: Int
+    )
 }

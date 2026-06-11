@@ -455,6 +455,8 @@ fun MainScreen(
                     }
                 }
 
+                val reelComments by reelViewModel.reelComments.collectAsState()
+
                 ReelsScreen(
                     reels = reels,
                     startIndex = startIndex,
@@ -463,7 +465,12 @@ fun MainScreen(
                     },
                     onSave = {
                         reelViewModel.toggleSave(it)
-                    }
+                    },
+                    comments = reelComments?.comments ?: emptyList(),
+                    onCommentsRequested = { reelId -> reelViewModel.fetchReelComments(reelId) },
+                    onAddComment = { reelId, content, parentId -> reelViewModel.commentOnReel(reelId, content, parentId) },
+                    onLikeComment = { reelId, commentId -> reelViewModel.toggleCommentLike(reelId, commentId) },
+                    onDislikeComment = { reelId, commentId -> reelViewModel.toggleCommentDislike(reelId, commentId) }
                 )
             }
 
@@ -500,6 +507,8 @@ fun MainScreen(
 
                 val posts by postViewModel.otherProfilePosts.collectAsState()
                 val reels by reelViewModel.otherProfileReels.collectAsState()
+                val postComments by postViewModel.postComments.collectAsState()
+                val reelComments by reelViewModel.reelComments.collectAsState()
 
                 OtherProfileScreen(
                     onChatClick = {
@@ -521,7 +530,17 @@ fun MainScreen(
                     onPostSave = {
                         postViewModel.toggleOtherProfileSave(it, profile?.data?.id ?: 0)
                     },
-                    userId = userId?:0
+                    userId = userId?:0,
+                    comments = postComments?.comments ?: emptyList(),
+                    onCommentsRequested = { postId -> postViewModel.fetchPostComments(postId) },
+                    onAddComment = { postId, content, parentId -> postViewModel.commentOnPost(postId, content, parentId) },
+                    onLikeComment = { postId, commentId -> postViewModel.toggleCommentLike(postId, commentId) },
+                    onDislikeComment = { postId, commentId -> postViewModel.toggleCommentDislike(postId, commentId) },
+                    reelComments = reelComments?.comments ?: emptyList(),
+                    onReelCommentsRequested = { reelId -> reelViewModel.fetchReelComments(reelId) },
+                    onReelAddComment = { reelId, content, parentId -> reelViewModel.commentOnReel(reelId, content, parentId) },
+                    onReelLikeComment = { reelId, commentId -> reelViewModel.toggleCommentLike(reelId, commentId) },
+                    onReelDislikeComment = { reelId, commentId -> reelViewModel.toggleCommentDislike(reelId, commentId) }
                 )
             }
 

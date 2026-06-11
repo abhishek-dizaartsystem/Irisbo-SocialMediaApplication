@@ -1,5 +1,6 @@
 package com.example.sociamediaapplication.data.remote
 
+import com.example.sociamediaapplication.model.request.AddCommentRequest
 import com.example.sociamediaapplication.model.request.PostReactionRequest
 import com.example.sociamediaapplication.model.response.BasicResponse
 import com.example.sociamediaapplication.model.response.BasicResponse2
@@ -10,6 +11,7 @@ import com.example.sociamediaapplication.model.response.LikeResponse
 import com.example.sociamediaapplication.model.response.PostResponse
 import com.example.sociamediaapplication.model.response.PostsListResponse
 import com.example.sociamediaapplication.model.response.SaveResponse
+import com.example.sociamediaapplication.model.response.VideoReactionRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -20,6 +22,8 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
+
+import com.example.sociamediaapplication.model.response.VideoCommentsResponse
 
 interface PostApi {
 
@@ -49,9 +53,31 @@ interface PostApi {
         @Body request: PostReactionRequest
     ): LikePostResponse
 
+    @GET("api/posts/{postId}/comments")
+    suspend fun getComments(
+        @Header("Authorization") token: String,
+        @Path("postId") postId: Int
+    ): VideoCommentsResponse
 
+    @POST("api/posts/{postId}/comments")
+    suspend fun createComment(
+        @Header("Authorization") token: String,
+        @Path("postId") postId: Int,
+        @Body request: AddCommentRequest
+    )
 
+    @POST("api/comments/{commentId}/react")
+    suspend fun reactToComment(
+        @Header("Authorization") token: String,
+        @Path("commentId") commentId: Int,
+        @Body request: VideoReactionRequest
+    )
 
+    @DELETE("api/comments/{commentId}/react")
+    suspend fun removeCommentReaction(
+        @Header("Authorization") token: String,
+        @Path("commentId") videoId: Int
+    )
 
 
 

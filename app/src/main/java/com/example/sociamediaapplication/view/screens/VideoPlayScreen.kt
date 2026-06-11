@@ -564,7 +564,8 @@ fun VideoPlayScreen(
 
                 CommentThread(
                     comment = comment,
-                    videoViewModel = videoViewModel,
+                    onLiked = { videoViewModel.toggleCommentLike(it) },
+                    onDisliked = { videoViewModel.toggleCommentDislike(it) },
 
                     onReply = { selectedComment ->
 

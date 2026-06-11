@@ -22,6 +22,10 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
+import com.example.sociamediaapplication.model.response.VideoCommentsResponse
+import com.example.sociamediaapplication.model.request.AddCommentRequest
+import com.example.sociamediaapplication.model.response.VideoReactionRequest
+
 class ReelRepository(
     private val tokenManager: TokenManager
 ) {
@@ -131,5 +135,30 @@ class ReelRepository(
         val token = "Bearer ${tokenManager.getToken()}"
 
         return api.getUserReels(token, userId).data.reels
+    }
+
+    suspend fun fetchComments(reelId: Int): VideoCommentsResponse {
+        val token = "Bearer ${tokenManager.getToken()}"
+        return api.getComments(token, reelId)
+    }
+
+    suspend fun commentOnReel(reelId: Int, content: String, parentId: Int? = null) {
+        val token = "Bearer ${tokenManager.getToken()}"
+        api.createComment(token, reelId, AddCommentRequest(content, parentId))
+    }
+
+    suspend fun likeComment(commentId: Int) {
+        val token = "Bearer ${tokenManager.getToken()}"
+        api.reactToComment(token, commentId, VideoReactionRequest("like"))
+    }
+
+    suspend fun dislikeComment(commentId: Int) {
+        val token = "Bearer ${tokenManager.getToken()}"
+        api.reactToComment(token, commentId, VideoReactionRequest("dislike"))
+    }
+
+    suspend fun removeCommentReaction(commentId: Int) {
+        val token = "Bearer ${tokenManager.getToken()}"
+        api.removeCommentReaction(token, commentId)
     }
 }
